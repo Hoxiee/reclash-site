@@ -1,0 +1,764 @@
+/* ReClash site — foundation: tokens, reset, typography, primitives.
+   The 20deg tilt is taken from the logo mark and drives the whole layout. */
+
+:root {
+  /* Brand gradient sampled from the application icon */
+  --violet: #7c5cff;
+  --violet-deep: #5b3ff0;
+  --blue: #3686ed;
+  --cyan: #2fd3b6;
+  --cyan-bright: #22d3ee;
+  --amber: #ffd45f;
+  --magenta: #f0448c;
+
+  /* Six surfaces on one hue, a plum a good deal warmer than the blue-black
+     they started at, each a clear 0.04 OKLCH lightness apart. The old ladder
+     stepped by 0.02 and everything below the text sank into one dark smudge. */
+  --ink: #0d090f; /* page          L .148 */
+  --ink-1: #171119; /* panel         L .190 */
+  --ink-2: #221a25; /* raised panel  L .232 */
+  --ink-3: #2e2433; /* chip, code    L .278 */
+  --line-soft: #332a38; /* quiet rule    L .300 */
+  --line: #453a4e; /* rule          L .368 */
+
+  --text: #f1eaf2;
+  --text-dim: #baaabf;
+  /* 4.5:1 has to hold on the raised surfaces too, not just on --ink: eyebrows
+     and slugs sit on cards as often as on the page. This clears it on --ink-3,
+     the lightest plate. */
+  --text-faint: #9b88a1;
+
+  /* The paper insert is a light plate inside a dark site, so every dark-theme
+     text colour is wrong on it. These are the paper-side equivalents; the
+     number after each is its contrast ratio against --paper. */
+  --paper: #efe9dc;
+  --paper-ink: #14111b;          /* 16.5 */
+  --paper-line: #cec6b4;
+  --paper-dim: #443d31;          /* 8.9  — body copy, ledes */
+  --paper-mid: #57503f;          /* 6.6  — card copy */
+  --paper-faint: #6b6350;        /* 5.0  — eyebrows, slugs, mono notes */
+  --paper-accent: #0f6f5c;       /* 5.0  — the cyan's paper-side counterpart */
+  --paper-card: #f7f3ea;
+  --paper-code: #e5ddcb;
+
+  --tilt: 20deg;
+  --tan: 0.36397;
+  --shell: 1340px;
+  --gutter: clamp(1.15rem, 4vw, 3.5rem);
+  --rail: clamp(0px, 3.5vw, 58px);
+
+  --step-1: 0.35rem;
+  --step-2: 0.7rem;
+  --step-3: 1.15rem;
+  --step-4: 1.9rem;
+  --step-5: 3rem;
+  --step-6: 4.75rem;
+  --step-7: clamp(4.5rem, 9vw, 8.5rem);
+
+  --display: 'Unbounded', 'Trebuchet MS', system-ui, sans-serif;
+  --body: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --ease: cubic-bezier(0.22, 0.68, 0.24, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --focus: 2px solid var(--cyan-bright);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* The page is dark, so the browser's own chrome has to be too: without this
+     the date picker, the scrollbars and the select popup all arrive white. */
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 6.5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: clamp(0.99rem, 0.93rem + 0.28vw, 1.09rem);
+  line-height: 1.62;
+  font-weight: 400;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Film grain + a faint diagonal ruling that echoes the mark. Both are painted,
+   never scrolled, so they cost nothing after first frame. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -10%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.32;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* UA style gives <fieldset> min-width:min-content, so one long form row
+   pushes the whole page sideways on a phone. */
+fieldset {
+  min-width: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--violet);
+  color: #fff;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--display);
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: -0.028em;
+  margin: 0;
+  text-wrap: balance;
+  /* Display sizes are large enough that a single long word ("подключитесь",
+     "Subscription") can be wider than its column. Sizes below are tuned so it
+     does not come to this, but a heading must never clip. */
+  overflow-wrap: break-word;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- layout */
+
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  position: relative;
+  z-index: 1;
+}
+
+.shell--wide {
+  max-width: 1600px;
+}
+
+.section {
+  position: relative;
+  padding-block: clamp(4.5rem, 9vw, 8rem);
+}
+
+/* Two of these stacked give 16rem of nothing between the last line of one and
+   the first of the next — which reads as the page running out rather than as
+   breathing room. Where sections abut, only the outer edges keep full height. */
+.section + .section {
+  padding-top: clamp(3rem, 5.5vw, 5rem);
+}
+
+.section--tight {
+  padding-block: clamp(3rem, 6vw, 5.5rem);
+}
+
+/* Section header: numeral, rule and slug set on the same diagonal rhythm. */
+.rubric {
+  display: flex;
+  align-items: baseline;
+  gap: var(--step-3);
+  margin-bottom: var(--step-4);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--step-2);
+}
+
+.rubric__num {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: var(--amber);
+  padding: 0.18em 0.5em 0.24em;
+  transform: skewX(calc(var(--tilt) * -1));
+  display: inline-block;
+  flex: none;
+}
+
+.rubric__num > span {
+  display: inline-block;
+  transform: skewX(var(--tilt));
+}
+
+.rubric__slug {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  flex: none;
+}
+
+.rubric__line {
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent);
+  align-self: center;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 0;
+}
+
+.lede {
+  font-size: clamp(1.05rem, 0.98rem + 0.45vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--text-dim);
+  max-width: 58ch;
+}
+
+.muted {
+  color: var(--text-dim);
+}
+
+.faint {
+  color: var(--text-faint);
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+/* Diagonal cut — the section boundary motif. */
+.cut-top {
+  clip-path: polygon(0 var(--cut, 3.2vw), 100% 0, 100% 100%, 0 100%);
+  margin-top: calc(var(--cut, 3.2vw) * -1);
+  padding-top: calc(var(--cut, 3.2vw) + clamp(3rem, 6vw, 6rem));
+}
+
+.cut-top--rev {
+  clip-path: polygon(0 0, 100% var(--cut, 3.2vw), 100% 100%, 0 100%);
+}
+
+/* The three-stroke mark reduced to an ornament. */
+.ticks {
+  display: inline-flex;
+  gap: 0.32em;
+  align-items: flex-end;
+  flex: none;
+}
+
+.ticks i {
+  display: block;
+  width: 0.2em;
+  border-radius: 1em;
+  background: currentColor;
+  transform: skewX(calc(var(--tilt) * -1));
+}
+
+.ticks i:nth-child(1) {
+  height: 0.62em;
+}
+
+.ticks i:nth-child(2) {
+  height: 1.08em;
+}
+
+.ticks i:nth-child(3) {
+  height: 0.44em;
+}
+
+/* --------------------------------------------------------------- buttons */
+
+.btn {
+  --btn-bg: var(--violet);
+  --btn-fg: #fff;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.85em 1.4em;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 0;
+  cursor: pointer;
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), background 0.18s var(--ease);
+  clip-path: polygon(0.7em 0, 100% 0, calc(100% - 0.7em) 100%, 0 100%);
+  padding-inline: 1.75em;
+}
+
+/* Inline icons carry only a viewBox, so they need an explicit box or the
+   browser falls back to the 300x150 replaced-element default. */
+.btn__icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex: 0 0 auto;
+  margin-inline-start: -0.15em;
+}
+
+.btn--lg .btn__icon {
+  width: 1.3em;
+  height: 1.3em;
+}
+
+.btn:hover {
+  transform: translate(2px, -2px);
+  box-shadow: -4px 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+.btn:active {
+  transform: translate(0, 0);
+  box-shadow: none;
+}
+
+/* clip-path eats an inset border along the two slanted edges, so the ghost
+   variant states its shape with a faint fill instead of an outline alone. */
+.btn--ghost {
+  --btn-bg: color-mix(in oklab, var(--text) 7%, transparent);
+  --btn-fg: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.btn--ghost:hover {
+  --btn-bg: color-mix(in oklab, var(--violet) 22%, transparent);
+  --btn-fg: #fff;
+  box-shadow: inset 0 0 0 1px var(--violet), -4px 4px 0 rgba(0, 0, 0, 0.4);
+}
+
+.btn--paper {
+  --btn-bg: var(--paper-ink);
+  --btn-fg: var(--paper);
+}
+
+.btn--amber {
+  --btn-bg: var(--amber);
+  --btn-fg: #14100a;
+}
+
+.btn--sm {
+  font-size: 0.78rem;
+  padding: 0.6em 1.35em;
+}
+
+/* Text link with a diagonal underline that grows on hover. */
+.link {
+  position: relative;
+  color: var(--text);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.18em;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0.28);
+  transform-origin: left;
+  transition: transform 0.28s var(--ease-out);
+}
+
+.link:hover::after,
+.link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.link--cyan {
+  color: var(--cyan-bright);
+}
+
+.link--violet {
+  color: #b7a5ff;
+}
+
+/* ------------------------------------------------------------------ chips */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  padding: 0.4em 0.75em;
+  white-space: nowrap;
+}
+
+.chip--live {
+  color: var(--cyan);
+  border-color: color-mix(in oklab, var(--cyan) 45%, transparent);
+}
+
+.chip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+/* ------------------------------------------------------------------ code */
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--mono);
+  font-size: 0.86em;
+}
+
+:not(pre) > code {
+  background: var(--ink-3);
+  border: 1px solid var(--line-soft);
+  padding: 0.12em 0.4em;
+  color: #d7ccff;
+  word-break: break-word;
+}
+
+pre {
+  margin: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  /* A long header line is cut dead at the edge with nothing to say there is
+     more. These four layers are the scroll-shadow trick: the two `local`
+     covers travel with the text and uncover the fixed fades beneath them, so
+     an edge lights up exactly while there is something past it. */
+  background:
+    linear-gradient(90deg, var(--ink-1) 70%, transparent) 0 0 / 2.6rem 100% no-repeat local,
+    linear-gradient(270deg, var(--ink-1) 70%, transparent) 100% 0 / 2.6rem 100% no-repeat local,
+    linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--violet) 20%, var(--ink-1)),
+        transparent
+      )
+      0 0 / 2.4rem 100% no-repeat scroll,
+    linear-gradient(
+        270deg,
+        color-mix(in oklab, var(--violet) 20%, var(--ink-1)),
+        transparent
+      )
+      100% 0 / 2.4rem 100% no-repeat scroll,
+    var(--ink-1);
+  border: 1px solid var(--line);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--violet) 55%, var(--line)) transparent;
+  padding: var(--step-3);
+  font-size: 0.82rem;
+  line-height: 1.62;
+  tab-size: 2;
+}
+
+.tok-key {
+  color: #9ecbff;
+}
+
+.tok-val {
+  color: #d7c9ff;
+}
+
+.tok-str {
+  color: var(--cyan);
+}
+
+.tok-com {
+  color: var(--text-faint);
+}
+
+.tok-num {
+  color: var(--amber);
+}
+
+/* --------------------------------------------------------------- helpers */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.gap-1 {
+  gap: var(--step-1);
+}
+
+.gap-2 {
+  gap: var(--step-2);
+}
+
+.gap-3 {
+  gap: var(--step-3);
+}
+
+.gap-4 {
+  gap: var(--step-4);
+}
+
+.gap-5 {
+  gap: var(--step-5);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -4rem;
+  z-index: 200;
+  background: var(--amber);
+  color: #14100a;
+  padding: 0.7em 1.1em;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  transition: top 0.2s var(--ease);
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* --------------------------------------------------------- text utilities */
+
+.grad {
+  background: linear-gradient(100deg, var(--violet) 8%, var(--blue) 52%, var(--cyan) 96%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ico-sm {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+}
+
+/* ------------------------------------------- definition list (editorial) */
+.deflist {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+}
+
+.deflist > div {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: var(--step-2);
+  padding-block: var(--step-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.deflist dt {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  padding-top: 0.28rem;
+}
+
+.deflist dd {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.96rem;
+}
+
+.deflist dd b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+@media (max-width: 620px) {
+  .deflist > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+}
+
+/* ------------------------------------------------------------- platforms */
+
+.platforms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.platform {
+  background: var(--ink-1);
+  padding: var(--step-4) var(--step-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--step-2);
+  position: relative;
+  transition: background 0.2s var(--ease);
+}
+
+.platform:hover {
+  background: var(--ink-2);
+}
+
+.platform__os {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+}
+
+/* The brand glyph is the first thing scanned in each card, so it carries the
+   body weight rather than the faint one — a 2rem mark at 5:1 still reads as
+   switched off next to the OS name beside it. */
+.platform__icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--text-dim);
+  transition: color 0.2s var(--ease);
+}
+
+.platform:hover .platform__icon {
+  color: var(--cyan-bright);
+}
+
+.platform__icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.platform ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.platform ul li::before {
+  content: '';
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-right: 0.5rem;
+  background: var(--violet);
+  transform: skewX(calc(var(--tilt) * -1));
+}
+
+.platform[data-current='true'] {
+  background: var(--ink-2);
+  box-shadow: inset 3px 0 0 var(--cyan-bright);
+}
+
+.platform[data-current='true'] .platform__icon {
+  color: var(--cyan-bright);
+}
+
+.btn--lg {
+  font-size: 1rem;
+  padding: 1em 2em;
+}
+
+/* Two editorial columns that stack early. */
+.doc__cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--step-4);
+  align-items: start;
+}
+
+.doc__cols h3 {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: var(--step-2);
+}
+
+/* The visitor's own platform, highlighted in the live release list. */
+.dl-row[data-current='true'] {
+  background: var(--ink-2);
+  box-shadow: inset 3px 0 0 var(--cyan-bright);
+}

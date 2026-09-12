@@ -1,0 +1,851 @@
+/* Landing page: hero, marquee, feature grids, DPI diagram, platforms. */
+
+/* ------------------------------------------------------------------ hero */
+
+.hero {
+  position: relative;
+  padding-block: clamp(3rem, 7vw, 6.5rem) clamp(2.5rem, 5vw, 4.5rem);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.85;
+}
+
+.hero__glow {
+  position: absolute;
+  z-index: -2;
+  width: min(70vw, 900px);
+  aspect-ratio: 1;
+  right: -14%;
+  top: -32%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--violet) 34%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.hero__glow--2 {
+  right: auto;
+  left: -22%;
+  top: auto;
+  bottom: -46%;
+  width: min(60vw, 700px);
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--cyan) 22%, transparent),
+    transparent 70%
+  );
+}
+
+.hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.32fr) minmax(0, 0.68fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--step-3);
+}
+
+.hero__meta .ticks {
+  color: var(--violet);
+  font-size: 0.9rem;
+}
+
+/* The lines never wrap, so the size is bounded by the longest of them:
+   "YOUR TRAFFIC" measures about 8.75x the font size, and 9.2vw keeps it inside
+   the viewport at every width. It may still bleed out of its grid column —
+   that overhang is the point — but it must never run off the screen. */
+.hero__title {
+  font-size: clamp(2rem, 9.2vw, 8.2rem);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Each line steps right by tan(20°) × line-height: the headline itself
+   traces the same diagonal as the three strokes in the mark. */
+.hero__title .hl {
+  display: block;
+  margin-left: calc(var(--i) * var(--tan) * 0.86em);
+  white-space: nowrap;
+}
+
+.hero__title .grad {
+  background: linear-gradient(96deg, var(--violet) 8%, var(--blue) 48%, var(--cyan) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+}
+
+.hero__title .slash {
+  color: var(--amber);
+  -webkit-text-fill-color: var(--amber);
+}
+
+.hero__lede {
+  margin-top: var(--step-4);
+  max-width: 46ch;
+  font-size: clamp(1.02rem, 0.96rem + 0.4vw, 1.22rem);
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+.hero__lede strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--step-2);
+  margin-top: var(--step-4);
+}
+
+.hero__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: var(--step-3);
+}
+
+/* Interactive mark */
+.hero__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: 30rem;
+  margin-inline: auto;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.hero__mark svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.hero__mark .stroke {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: stroke-width 0.5s var(--ease-out);
+}
+
+.hero__mark .ring {
+  fill: none;
+  stroke-width: 1.2;
+  opacity: 0.35;
+}
+
+.hero__mark .halo {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--violet) 40%, transparent),
+    transparent 72%
+  );
+  filter: blur(14px);
+  z-index: -1;
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+.hero__mark:hover .halo {
+  transform: scale(1.08);
+}
+
+.hero__mark__hint {
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+
+.hero__mark:hover .hero__mark__hint,
+.hero__mark:focus-visible .hero__mark__hint {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero__mark {
+    max-width: 17rem;
+    order: -1;
+    margin-inline: 0;
+  }
+
+  .hero__title .hl {
+    margin-left: calc(var(--i) * var(--tan) * 0.4em);
+  }
+}
+
+/* --------------------------------------------------------------- marquee */
+
+.marquee {
+  border-block: 1px solid var(--line);
+  background: var(--ink-1);
+  overflow: hidden;
+  padding-block: 0.7rem;
+  --speed: 42s;
+}
+
+.marquee__track {
+  display: flex;
+  gap: 2.5rem;
+  width: max-content;
+  animation: marquee var(--speed) linear infinite;
+}
+
+.marquee:hover .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee span {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.marquee span::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: var(--violet);
+  transform: rotate(45deg);
+  flex: none;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    animation: none;
+  }
+}
+
+/* ----------------------------------------------------------- first run */
+
+/* Steps left, a tool that actually works right. The panel is the point of the
+   section, so it gets the raised surface and the accent glow; the steps stay
+   flat text so they do not compete with it. */
+.launch {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .launch {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.launch__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* The plate sits in its own column and the text hangs off it; the connector is
+   drawn on the step itself so it spans exactly that step's height, whatever the
+   copy does. */
+.launch__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  column-gap: var(--step-3);
+  padding-bottom: var(--step-4);
+}
+
+.launch__step:last-child {
+  padding-bottom: 0;
+}
+
+.launch__step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 1.5rem;
+  top: 3.4rem;
+  bottom: 0.35rem;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    var(--line),
+    color-mix(in oklab, var(--line) 15%, transparent)
+  );
+}
+
+.launch__step__n {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  font-family: var(--display);
+  font-weight: 800;
+  /* 20px bold clears the large-text contrast bar, which the violet plate needs:
+     ink on --violet measures 4.45:1, comfortably past 3:1 but not past 4.5. */
+  font-size: 1.25rem;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  background: var(--plate, var(--violet));
+  transform: skewX(calc(var(--tilt) * -1));
+}
+
+.launch__step__n > span {
+  transform: skewX(var(--tilt));
+}
+
+/* The three plates walk the hero gradient from violet to cyan, so the section
+   reads as one run rather than three identical rows. */
+.launch__step:nth-child(1) {
+  --plate: var(--violet);
+}
+
+.launch__step:nth-child(2) {
+  --plate: var(--blue);
+}
+
+.launch__step:nth-child(3) {
+  --plate: var(--cyan);
+}
+
+.launch__step h3 {
+  grid-column: 2;
+  align-self: center;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  font-size: clamp(1.02rem, 0.95rem + 0.35vw, 1.22rem);
+  letter-spacing: -0.02em;
+  line-height: 1.16;
+}
+
+.launch__step p {
+  grid-column: 2;
+  margin-top: var(--step-1);
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* A notched top-right corner, same trick as .cut-top: the clip slices the
+   border away along the diagonal, which is the look — a torn-off corner, not a
+   rounded card. */
+.launch__tool {
+  position: relative;
+  border: 1px solid var(--line);
+  background: linear-gradient(158deg, var(--ink-2), var(--ink-1) 64%);
+  padding: var(--step-4) var(--step-3);
+  clip-path: polygon(0 0, calc(100% - 2.4rem) 0, 100% 2.4rem, 100% 100%, 0 100%);
+  /* clip-path hides the glow but does not shrink the scroll box: without this
+     the ::before bleeds 115px of scrollable width out through .shell and puts a
+     horizontal scrollbar on the document. */
+  overflow: hidden;
+}
+
+.launch__tool::before {
+  content: '';
+  position: absolute;
+  right: -20%;
+  top: -38%;
+  width: 22rem;
+  aspect-ratio: 1;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--violet) 26%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.launch__tool > * {
+  position: relative;
+}
+
+.launch__tool h3 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(1.18rem, 1rem + 0.8vw, 1.6rem);
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  margin-block: 0.4rem var(--step-2);
+}
+
+.launch__tool > p {
+  color: var(--text-dim);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.launch__tool .deeplink {
+  margin-top: var(--step-3);
+}
+
+.launch__tool__go {
+  margin-top: var(--step-3);
+}
+
+/* -------------------------------------------------------- feature layout */
+
+.feature-grid {
+  display: grid;
+  /* Six cards, so the track count has to divide six — auto-fit happily lands
+     on four at desktop width and leaves two empty cells reading as a hole. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+@media (max-width: 1080px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .feature-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.feature-grid .card {
+  border: 0;
+  background: var(--ink-1);
+  padding: var(--step-4) var(--step-3);
+}
+
+/* ------------------------------------------------------------- DPI panel */
+
+.dpi {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .dpi {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.dpi__say {
+  align-self: center;
+}
+
+/* The stage stretches to the height of the text beside it, so it is built to
+   fill: caption on top, lanes in the middle, controls and legend at the foot. */
+.dpi__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--ink-2), var(--ink-1));
+  padding: var(--step-3);
+  overflow: hidden;
+  min-height: 21rem;
+}
+
+/* A faint diagonal hatch on the same 20 degrees keeps a mostly-empty panel
+   from reading as a hole. */
+.dpi__stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    calc(90deg - var(--tilt)),
+    transparent 0 44px,
+    color-mix(in oklab, var(--line) 60%, transparent) 44px 45px
+  );
+  opacity: 0.5;
+}
+
+.dpi__stage > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dpi__stage__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.4rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.7rem;
+}
+
+.dpi__stage__mode {
+  color: var(--cyan-bright);
+}
+
+.dpi__lanes {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: var(--step-3);
+  padding-block: var(--step-3);
+}
+
+/* One dashed diagonal cuts through both lanes: it is a single DPI box, and
+   both connections meet the same wall. */
+.dpi__wall {
+  position: absolute;
+  left: 58%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--magenta) 0 6px,
+    transparent 6px 12px
+  );
+  transform: skewX(calc(var(--tilt) * -1));
+}
+
+.dpi__wall span {
+  position: absolute;
+  top: -0.15rem;
+  left: 50%;
+  transform: translateX(-50%) skewX(var(--tilt));
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: var(--magenta);
+  white-space: nowrap;
+  background: var(--ink-1);
+  padding: 0 0.35rem;
+}
+
+.dpi__lane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.dpi__lane__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+}
+
+.dpi__lane__label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.dpi__lane[data-lane='reclash'] .dpi__lane__label {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.dpi__lane__verdict {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  padding: 0.22rem 0.5rem;
+  color: var(--magenta);
+  border: 1px solid color-mix(in oklab, var(--magenta) 45%, transparent);
+  background: color-mix(in oklab, var(--magenta) 12%, transparent);
+  transition:
+    color 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    background 0.2s var(--ease);
+}
+
+.dpi__lane__verdict[data-ok='true'] {
+  color: var(--cyan-bright);
+  border-color: color-mix(in oklab, var(--cyan-bright) 45%, transparent);
+  background: color-mix(in oklab, var(--cyan-bright) 12%, transparent);
+}
+
+.dpi__track {
+  position: relative;
+  display: block;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--line),
+    color-mix(in oklab, var(--line) 35%, transparent)
+  );
+}
+
+.dpi__pkt {
+  position: absolute;
+  top: 50%;
+  width: 1.5rem;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 3px;
+  background: var(--cyan-bright);
+  transform: skewX(calc(var(--tilt) * -1));
+  box-shadow: 0 0 14px color-mix(in oklab, var(--cyan-bright) 60%, transparent);
+}
+
+.dpi__pkt--blocked {
+  background: var(--magenta);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--magenta) 60%, transparent);
+}
+
+.dpi__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem var(--step-3);
+  border-top: 1px solid var(--line);
+  padding-top: var(--step-3);
+}
+
+.dpi__toggle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--line);
+}
+
+.dpi__toggle button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 0.5rem 0.9rem;
+  transition:
+    background 0.16s var(--ease),
+    color 0.16s var(--ease);
+}
+
+.dpi__toggle button:hover {
+  color: var(--text);
+}
+
+.dpi__toggle button[aria-pressed='true'] {
+  background: var(--cyan);
+  color: #04231f;
+  font-weight: 700;
+}
+
+.dpi__readout {
+  flex: 1 1 14rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  min-height: 2.2em;
+}
+
+.dpi__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.dpi__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.dpi__legend i {
+  width: 1.1rem;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--cyan-bright);
+  transform: skewX(calc(var(--tilt) * -1));
+}
+
+.dpi__legend i.is-blocked {
+  background: var(--magenta);
+}
+
+.dpi__legend i.is-wall {
+  width: 3px;
+  height: 0.85rem;
+  border-radius: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--magenta) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+/* ------------------------------------------------------------- honest box */
+
+.honest {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--step-3);
+}
+
+.honest__col {
+  border: 1px solid var(--line);
+  padding: var(--step-3);
+  background: var(--ink-1);
+}
+
+.honest__col h3 {
+  font-size: 1.05rem;
+  margin-bottom: var(--step-2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.honest__col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-size: 0.94rem;
+  color: var(--text-dim);
+}
+
+.honest__col li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.honest__col li::before {
+  content: attr(data-glyph);
+  font-family: var(--mono);
+  color: var(--sign, var(--cyan));
+  flex: none;
+  line-height: 1.5;
+}
+
+.honest__col--no {
+  --sign: var(--magenta);
+}
+
+/* ------------------------------------------------------------------- CTA */
+
+.cta {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: linear-gradient(120deg, var(--ink-2), var(--ink-1) 60%);
+  /* 2rem a side is a third of a 360px screen; the heading needs that width more
+     than the panel needs the air. */
+  padding: clamp(1.25rem, 5vw, 4rem);
+  text-align: center;
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 200deg,
+    transparent 0deg,
+    color-mix(in oklab, var(--violet) 24%, transparent) 60deg,
+    transparent 140deg,
+    color-mix(in oklab, var(--cyan) 20%, transparent) 220deg,
+    transparent 300deg
+  );
+  animation: cta-spin 34s linear infinite;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+@keyframes cta-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.cta > * {
+  position: relative;
+}
+
+.cta h2 {
+  /* "ПОДКЛЮЧИТЕСЬ" measures close to 11x the font size and will not break: at
+     360px it has 283px to live in, so the narrow end has to stay near 24px.
+     The 3.6rem ceiling still governs every desktop width, so nothing moves there. */
+  font-size: clamp(1.5rem, 0.55rem + 4vw, 3.6rem);
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.cta .hero__actions {
+  justify-content: center;
+}

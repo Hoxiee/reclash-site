@@ -1,0 +1,1431 @@
+/* The live phone preview inside the header builder.
+
+   The connection screen is a deliberate near-copy of the application's own
+   hero — lib/views/dashboard/widgets/hero_{connect,orb,status,routing}.dart —
+   because a provider setting ReClash-ActiveText or ReClash-HeroRing needs to
+   see the thing they are changing, not an impression of it. Radii, paddings
+   and colour rules below are the Flutter values at roughly 0.9 scale: the
+   preview is 344px wide where the phone is 360.
+
+   Everything here paints inside .phone and reads the eight --app-* custom
+   properties builder.js writes on it, so the whole mock re-themes the moment
+   reclash-hex changes. */
+
+/* ------------------------------------------------------------ the handset */
+
+.phone {
+  --accent: #7c5cff;
+  --accent-2: #22d3ee;
+  --app-bg: #0d0b14;
+  --app-surface: #15121f;
+  --app-surface-2: #1c1829;
+  --app-line: #272134;
+  --app-text: #ece9f5;
+  --app-dim: #9d96b8;
+  /* The traffic donut's two arcs. globalState.theme separates them by tone
+     rather than by hue — darken3PrimaryContainer against
+     darken2SecondaryContainer — because accent2 is only 34 degrees round the
+     wheel from accent and two arcs that close together would read as one. */
+  --traf-up: color-mix(in oklab, var(--accent) 54%, #000);
+  --traf-down: color-mix(in oklab, var(--accent-2) 82%, #000);
+
+  /* AppCorner, verbatim: md for the widget tiles, lg for the hero cards,
+     sm for anything inlaid into one of them. */
+  --radius: 16px;
+  --card: 20px;
+  --inlay: 8px;
+
+  position: relative;
+  width: 100%;
+  max-width: 21.5rem;
+  margin-inline: auto;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  padding: 0.5rem;
+  background: #05040a;
+  box-shadow: 0 30px 70px -40px rgba(0, 0, 0, 0.95);
+}
+
+.phone__screen {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--app-bg);
+  min-height: 36rem;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+}
+
+.phone__bgimg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.4s var(--ease);
+}
+
+/* Clock, app-bar title and signal on one line. A three-column grid rather
+   than space-between, or the title drifts off centre as the clock changes. */
+.phone__status {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--app-dim);
+}
+
+.phone__title {
+  font-family: var(--body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--app-text);
+  text-align: center;
+}
+
+.phone__sig {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  justify-self: end;
+}
+
+.phone__sig i {
+  width: 3px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.phone__sig i:nth-child(1) { height: 4px; }
+.phone__sig i:nth-child(2) { height: 7px; }
+.phone__sig i:nth-child(3) { height: 10px; }
+
+.phone__content {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0.5rem 0.9rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-line) transparent;
+}
+
+/* The widget wall and the proxy list are lists and may be taller than the
+   handset; the connection screen is a fixed composition and must never be
+   given a scrollbar, which would be an artefact of the preview, not the app. */
+.phone[data-screen='dash'] .phone__content,
+.phone[data-screen='proxy'] .phone__content {
+  overflow-y: auto;
+  max-height: 33rem;
+}
+
+/* The start button floats over the wall; the client scrolls the last widget
+   clear of it with BottomInsetScope, and so does this. */
+.phone[data-screen='dash'] .phone__content {
+  padding-bottom: 3.6rem;
+}
+
+.phone__nav {
+  display: flex;
+  border-top: 1px solid var(--app-line);
+  background: color-mix(in oklab, var(--app-surface) 92%, transparent);
+  padding: 0.4rem 0.2rem 0.5rem;
+}
+
+.phone__nav div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  font-size: 0.6rem;
+  color: var(--app-dim);
+}
+
+/* Material 3 marks the active destination with a filled pill behind the icon;
+   the label takes the accent and the icon stays light against the tinted pill. */
+.phone__nav div[data-on='true'] {
+  color: var(--accent);
+}
+
+.phone__navico {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 1.3rem;
+  border-radius: 99px;
+}
+
+.phone__nav div[data-on='true'] .phone__navico {
+  background: color-mix(in oklab, var(--accent) 32%, transparent);
+  color: var(--app-text);
+}
+
+.phone__nav svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.phone__fab {
+  position: absolute;
+  right: 0.85rem;
+  bottom: 3.9rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, var(--accent) 40%, var(--app-surface-2));
+  color: #fff;
+  z-index: 4;
+}
+
+/* The connection screen has the orb; a floating connect button on top of it
+   would be a second, contradictory control. */
+.phone:not([data-screen='dash']) .phone__fab {
+  display: none;
+}
+
+.phone__fab svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------------------------------------------------- the connect screen */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0.68rem; /* metrics.gapCard at regular density */
+  padding-top: 0.5rem;
+}
+
+/* ---- the orb -----------------------------------------------------------
+   hero_orb.dart draws a halo, a swept rim and a lit core. Three stacked
+   layers do the same here: a blurred radial glow, a conic ring masked to an
+   annulus, and a domed core with the service mark inside. */
+
+/* The box is the orb slot, not the ring: _haloSpread puts 34 logical px of
+   halo around a 192 ring, so the glow belongs inside the widget's own bounds
+   rather than hanging out of them. 192/(192+68) is the 74% below. */
+.horb {
+  position: relative;
+  width: 14.5rem;
+  aspect-ratio: 1;
+  margin-inline: auto;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.horb__glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--r2) 26%, transparent),
+    transparent 72%
+  );
+  filter: blur(6px);
+}
+
+.horb__rim {
+  position: absolute;
+  inset: 13%;
+  border-radius: 50%;
+  background: conic-gradient(from -90deg, var(--r1), var(--r2), var(--r3), var(--r1));
+  /* _ringStroke is 10 of 192 — a shade over 5% of the diameter. */
+  mask: radial-gradient(closest-side, transparent 0 calc(100% - 11px), #000 calc(100% - 10px));
+  -webkit-mask: radial-gradient(closest-side, transparent 0 calc(100% - 11px), #000 calc(100% - 10px));
+  animation: ring-spin 7s linear infinite;
+}
+
+.horb__core {
+  position: relative;
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  grid-template-areas: 'mark';
+  place-items: center;
+  color: #fff;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.22), transparent 58%),
+    radial-gradient(
+      circle at 50% 120%,
+      color-mix(in oklab, var(--r1) 55%, transparent),
+      transparent 70%
+    ),
+    color-mix(in oklab, var(--app-surface-2) 88%, var(--r2));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 12px 30px -16px color-mix(in oklab, var(--r2) 70%, transparent);
+}
+
+/* _coreMarkExtent = 0.54 of the core box. The two share one cell: the mark is
+   the floor the logo stands on, so a logo that fails to load uncovers it. */
+.horb__mark,
+.horb__logo {
+  grid-area: mark;
+  width: 54%;
+  height: 54%;
+  object-fit: contain;
+}
+
+.horb__mark {
+  overflow: visible;
+}
+
+/* ---- the caption ------------------------------------------------------- */
+
+.hcap {
+  text-align: center;
+  display: grid;
+  gap: 3px; /* the SizedBox between title and subtitle */
+}
+
+.hcap__t {
+  font-family: var(--body);
+  font-size: 1.35rem; /* headlineSmall, w700 */
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--app-text);
+}
+
+.hcap__s {
+  font-size: 0.8rem; /* bodyMedium */
+  color: var(--app-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- card surface -----------------------------------------------------
+   heroSurfaceDecoration: surfaceContainerHigh at .6 over outlineVariant
+   at .6. Both are mixed rather than flat so the dashboard background image
+   still shows through, exactly as it does in the app. */
+
+.hcard {
+  border-radius: var(--card);
+  background: color-mix(in oklab, var(--app-surface-2) 72%, transparent);
+  border: 1px solid color-mix(in oklab, var(--app-line) 70%, transparent);
+  overflow: hidden;
+}
+
+.hcard__div {
+  height: 1px;
+  background: color-mix(in oklab, var(--app-line) 70%, transparent);
+}
+
+.hico {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hico--chev {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--app-dim);
+}
+
+.hico--accent {
+  color: var(--accent);
+}
+
+/* ---- the server card --------------------------------------------------- */
+
+.hsrv {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.55rem;
+}
+
+/* _FlagCircle always draws two dimmed discs behind the live one, so a group
+   of servers reads as a stack rather than as a single node. */
+.hflag {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+}
+
+/* The change-server widget shows one flag at the size of a 20px icon. */
+.hflag--sm {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.hflag i,
+.hflag__d {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  border: 1.5px solid var(--app-surface);
+  transform: translate(-50%, -50%);
+}
+
+.hflag i {
+  background: color-mix(in oklab, var(--app-surface-2) 80%, #000);
+}
+
+.hflag i:nth-child(1) {
+  width: 72%;
+  height: 72%;
+  margin-top: -0.72rem;
+}
+
+.hflag i:nth-child(2) {
+  width: 86%;
+  height: 86%;
+  margin-top: -0.36rem;
+}
+
+/* The client pulls flags from flagcdn.com; this site loads nothing at
+   runtime, so the sample node's tricolour is three CSS bands. */
+.hflag__d {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    #ae1c28 0 33.34%,
+    #f5f5f5 33.34% 66.67%,
+    #21468b 66.67%
+  );
+}
+
+.hflag__n {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  background: var(--accent);
+  border: 1.5px solid var(--app-surface);
+  border-radius: 99px;
+  padding: 0.1rem 0.28rem;
+}
+
+.hsrv__id {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.hsrv__id b {
+  font-size: 0.8rem; /* titleSmall, w600 */
+  font-weight: 600;
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hsrv__ip {
+  font-size: 0.7rem; /* bodySmall, JetBrains Mono */
+  color: var(--app-dim);
+}
+
+.hsrv__sig {
+  width: 2.6rem;
+  flex: none;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+
+/* Four bars, 4px wide with 3px gaps, rising 9-13-17-21. */
+.hbars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 21px;
+}
+
+.hbars i {
+  width: 4px;
+  border-radius: var(--inlay);
+  background: color-mix(in oklab, var(--app-dim) 25%, transparent);
+}
+
+.hbars i[data-on='true'] {
+  background: var(--app-dim);
+}
+
+.hbars i:nth-child(1) { height: 9px; }
+.hbars i:nth-child(2) { height: 13px; }
+.hbars i:nth-child(3) { height: 17px; }
+.hbars i:nth-child(4) { height: 21px; }
+
+.hsrv__ms {
+  font-size: 0.64rem; /* labelSmall, w600 */
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* HeroServiceRow — the routing line under the divider. */
+.hsvc {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: color-mix(in oklab, var(--app-dim) 78%, transparent);
+}
+
+.hsvc .hico {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+/* routingOn is accented in heroServiceLineViewOf. */
+.hsvc--on {
+  color: var(--accent);
+}
+
+.hsvc--on .hico {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* ---- the subscription strip -------------------------------------------- */
+
+.hcard--sub {
+  padding: 0.68rem 0.9rem 0.8rem; /* fromLTRB(16,12,16,14) */
+  display: grid;
+  gap: 0.45rem;
+}
+
+.hsub__top {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hsub__caps {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.hsub__cap {
+  font-size: 0.8rem; /* labelLarge, w600 */
+  font-weight: 600;
+  color: var(--app-dim);
+}
+
+.hpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 99px;
+  padding: 0.16rem 0.5rem;
+  font-size: 0.68rem; /* labelMedium, w700 */
+  font-weight: 700;
+  color: var(--pc, var(--accent));
+  background: color-mix(in oklab, var(--pc, var(--accent)) 14%, transparent);
+}
+
+.hpill .hico {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.hsub__num {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.hsub__num b {
+  font-size: 1.25rem; /* titleLarge, w700, mono */
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--app-text);
+}
+
+.hsub__num span {
+  font-size: 0.8rem;
+  color: var(--app-dim);
+}
+
+.hbar {
+  height: 8px;
+  border-radius: var(--inlay);
+  background: color-mix(in oklab, var(--app-line) 85%, transparent);
+  overflow: hidden;
+}
+
+.hbar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--bc, var(--accent)) 70%, transparent),
+    var(--bc, var(--accent))
+  );
+  transition: width 0.42s var(--ease-out);
+}
+
+.hbuys {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+.hbuy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  border-radius: 99px;
+  padding: 0.28rem 0.5rem;
+  /* Both offers belong on one line: stacked and right-aligned they read as a
+     staircase rather than as a pair. */
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 13%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 32%, transparent);
+}
+
+.hbuy .hico {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+/* _NoticeOpenCard — what stands in for the strip when there is no quota and
+   no expiry but the provider has an announcement to make. */
+.hnote {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--app-text);
+}
+
+/* ---- the action row ---------------------------------------------------- */
+
+.hacts {
+  display: flex;
+  align-items: stretch;
+  gap: 0.45rem;
+}
+
+.hact .hico {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.hact {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 2.5rem; /* 44 logical px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 99px;
+  /* 12 logical px of padding would be 0.68rem here, and at four chips across
+     a 344px row that is the difference between "Поддержка" and "Поддер…" —
+     the app truncates it too, but a preview has no business showing off a
+     clipped word. */
+  padding-inline: 0.45rem;
+  /* Four chips on a 344px row is as tight here as it is in the app, which
+     drops the whole hero to HeroDensity.compact for it. labelMedium and a
+     1rem icon are what that density uses. */
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--app-text);
+  background: color-mix(in oklab, var(--app-surface-2) 72%, transparent);
+  border: 1px solid color-mix(in oklab, var(--app-line) 70%, transparent);
+}
+
+.hact span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hact--sq {
+  flex: none;
+  width: 2.5rem;
+  padding-inline: 0;
+  color: var(--accent);
+}
+
+/* _PageAffordance — the way down to the provider page of the pager. */
+.hmore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.hmore .hico {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ------------------------------------------------- the widget wall + list */
+
+/* dashboard.dart lays the wall out on a handset with _compactCrossAxisCount
+   columns and 14 logical px of spacing, and every widget sizes itself with
+   getWidgetHeight(lines) = lines * 94 - 14. Put the row at 80 and the gutter
+   at 14 and the two arithmetics agree, so a `span 2` row here is the same
+   height as getWidgetHeight(2) there — at the preview's 0.9 scale, 72px rows
+   and a 12.6px gutter. minmax keeps a long service name from being clipped
+   rather than holding the grid to the millimetre. */
+.appgrid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-auto-rows: minmax(4.5rem, auto);
+  gap: 0.7rem;
+}
+
+/* CommonCard at AppCorner.lg, DashboardInfoCard's 16/12 padding. */
+.tile {
+  background: var(--app-surface);
+  border: 1px solid var(--app-line);
+  border-radius: var(--card);
+  padding: 0.68rem 0.9rem;
+  grid-column: span 4;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tile--wide {
+  grid-column: 1 / -1;
+}
+
+.tile--tall {
+  grid-row: span 2;
+}
+
+.tile__head {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  color: var(--app-dim);
+  margin-bottom: 0.45rem;
+  flex: none;
+}
+
+/* The label takes the whole line and the action icon, if there is one, is
+   pushed to the end of it. */
+.tile__head span {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* DashboardInfoCard tints the leading icon onSurfaceVariant, not primary —
+   nineteen accent-coloured glyphs would turn the wall into a sticker album. */
+.tile__head svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+/* network_speed.dart puts the live figure at the far end of the header in
+   bodySmall/onSurfaceVariant. It must not inherit the label's flexible slot. */
+.tile__now {
+  flex: none !important;
+  min-width: auto !important;
+  overflow: visible !important;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* The announcement's own text: bodyMedium at the client's 1.35 line spacing,
+   cut on a whole line the way AnnounceText does. */
+.tile__body {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--app-text);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tile__sub {
+  font-size: 0.7rem;
+  color: var(--app-dim);
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* network_speed.dart gives every pixel below its header to a gradient chart.
+   Its chart has no horizontal or bottom padding, so the frozen frame bleeds
+   through the CommonCard padding to all three edges in exactly the same way. */
+.spark {
+  flex: 1 1 auto;
+  min-height: 1.5rem;
+  margin: 0.4rem -0.9rem -0.68rem;
+  color: var(--accent);
+}
+
+.spark__c {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+}
+
+.spark__f {
+  fill: url(#pv-spark);
+  stroke: none;
+}
+
+.spark__l {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* quick_options.dart: the body contains only the word "Options" and the
+   platform switch. The whole card still opens the options sheet on tap. */
+.quick {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0 0.1rem;
+  color: var(--app-dim);
+  font-size: 0.7rem;
+  font-weight: 300;
+}
+
+.swi {
+  position: relative;
+  width: 2rem;
+  height: 1.15rem;
+  flex: none;
+  border-radius: 99px;
+  background: color-mix(in oklab, var(--app-dim) 38%, var(--app-surface-2));
+  border: 1px solid color-mix(in oklab, var(--app-dim) 38%, transparent);
+}
+
+.swi::after {
+  content: '';
+  position: absolute;
+  width: 0.78rem;
+  height: 0.78rem;
+  left: 0.16rem;
+  top: 50%;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--app-dim) 90%, #fff);
+  transform: translateY(-50%);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.32);
+}
+
+/* meta_info.dart: profile label, prominent term, then either the traffic
+   caption or live purchase offers beside the quota figure and progress. */
+.meta__label {
+  color: var(--app-dim);
+  font-size: 0.68rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta__st {
+  margin-top: 0.2rem;
+  color: var(--app-text);
+  font-size: 1.08rem;
+  line-height: 1.15;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta__row {
+  margin-top: auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.meta__cap,
+.meta__row > .hbuys {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.meta__cap {
+  color: var(--app-dim);
+  font-size: 0.68rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta__row > .hbuys {
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.meta__row .hbuy {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.meta__v {
+  flex: none;
+  max-width: 50%;
+  color: var(--app-text);
+  font-size: 0.68rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta__row + .hbar {
+  flex: none;
+  height: 4px;
+  margin-top: 0.35rem;
+}
+
+/* network_detection.dart keeps the verdict and measured address in one Row.
+   The first takes the remaining width and ellipsises before the IP does. */
+.detect {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.detect__s {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--app-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detect__ip {
+  flex: none;
+  max-width: 55%;
+  color: var(--app-dim);
+  font-size: 0.66rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* intranet_ip.dart uses bodyMedium; memory_info.dart uses titleMedium for the
+   number and bodySmall/onSurfaceVariant for its unit. */
+.value {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  color: var(--app-text);
+  font-size: 0.86rem;
+  font-weight: 300;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value small {
+  margin-left: 0.22rem;
+  color: var(--app-dim);
+  font-size: 0.68rem;
+  font-weight: 400;
+}
+
+/* smart_routing_card.dart reuses the hero's routing line and its accent. */
+.sline {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--accent);
+}
+
+.sline__i {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  fill: currentColor;
+  stroke: none;
+}
+
+.sline__t {
+  min-width: 0;
+  font-size: 0.68rem;
+  line-height: 1.15;
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 2.3em;
+  overflow: hidden;
+}
+
+/* outboundModeV2: a CommonTabBar filling the card, with the thumb's colour
+   repeated as an 8px strip along the bottom edge. */
+.tile--seg {
+  padding: 0;
+}
+
+.segbar {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  padding: 0.55rem;
+}
+
+/* "Глобальный" is the long one: at four tabs across 344px it only clears the
+   pill without an ellipsis below about 11px, and the client truncates it
+   rather than shrinking, which is not a thing to put in a shop window. */
+.segbar button {
+  border: 0;
+  border-radius: 99px;
+  background: none;
+  cursor: pointer;
+  min-width: 0;
+  padding: 0 0.1rem;
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: var(--app-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+
+.segbar button:hover {
+  color: var(--app-text);
+}
+
+.segbar button[aria-selected='true'] {
+  background: color-mix(in oklab, var(--accent) 34%, var(--app-surface-2));
+  color: #fff;
+}
+
+.segbar__strip {
+  flex: none;
+  height: 7px;
+  background: color-mix(in oklab, var(--accent) 26%, transparent);
+}
+
+.modes {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 0.1rem;
+}
+
+.modes button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--app-dim);
+  font-size: 0.82rem;
+  padding: 0.32rem 0.2rem;
+  text-align: left;
+  transition: color 0.16s var(--ease);
+}
+
+.modes button:hover {
+  color: var(--app-text);
+}
+
+.modes button span {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  border: 2px solid var(--app-line);
+  flex: none;
+  display: grid;
+  place-items: center;
+  transition: border-color 0.16s var(--ease);
+}
+
+.modes button span::after {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: scale(0);
+  transition: transform 0.18s var(--ease-out);
+}
+
+.modes button[aria-checked='true'] {
+  color: var(--app-text);
+}
+
+.modes button[aria-checked='true'] span {
+  border-color: var(--accent);
+}
+
+.modes button[aria-checked='true'] span::after {
+  transform: scale(1);
+}
+
+/* DonutChart takes whatever height the two spelled-out figures leave under
+   it, and stays square inside that. */
+.donut {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  padding-block: 0.3rem 0.4rem;
+}
+
+/* One ring, split at --up: the upload arc in the darkened primary container
+   and the download arc in the secondary one, as globalState.theme mixes them. */
+.donut__ring {
+  flex: none;
+  height: 100%;
+  aspect-ratio: 1;
+  max-width: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--traf-up) 0 var(--up, 50%),
+    var(--traf-down) var(--up, 50%) 100%
+  );
+  mask: radial-gradient(closest-side, transparent 0 56%, #000 57%);
+  -webkit-mask: radial-gradient(closest-side, transparent 0 56%, #000 57%);
+}
+
+/* _TrafficDataItem: the arrow, the figure, and the unit alone on the right. */
+.tflow {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.7rem;
+  color: var(--app-text);
+  margin-top: 0.3rem;
+}
+
+.tflow__a {
+  flex: none;
+  font-style: normal;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+/* The arrows are the donut's key, so they take the arc colours exactly —
+   lifted towards white only enough to stay legible as 11px glyphs. */
+.tflow__a--up {
+  color: color-mix(in oklab, var(--traf-up) 74%, #fff);
+}
+
+.tflow__a--down {
+  color: color-mix(in oklab, var(--traf-down) 88%, #fff);
+}
+
+.tflow__v {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tflow b {
+  flex: none;
+  font-family: var(--mono);
+  font-weight: 400;
+  color: var(--app-dim);
+}
+
+/* change_server_button.dart's body row: flag, name, delay. */
+.active {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.active__n {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.active__d {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: #4ade80;
+}
+
+.service {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.service__logo {
+  position: relative;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: var(--inlay);
+  background: color-mix(in oklab, var(--accent) 26%, var(--app-surface-2));
+  display: grid;
+  place-items: center;
+  flex: none;
+  overflow: hidden;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+/* Laid over the initial rather than instead of it, so a logo that will not
+   load uncovers the letter instead of an empty tinted square. */
+.service__logo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.service__name {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.grouptabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  scrollbar-width: none;
+}
+
+.grouptabs::-webkit-scrollbar {
+  display: none;
+}
+
+.grouptabs button {
+  background: var(--app-surface);
+  border: 1px solid var(--app-line);
+  border-radius: 99px;
+  cursor: pointer;
+  color: var(--app-dim);
+  font-size: 0.75rem;
+  padding: 0.32rem 0.75rem;
+  white-space: nowrap;
+  transition: all 0.16s var(--ease);
+}
+
+.grouptabs button[aria-selected='true'] {
+  background: color-mix(in oklab, var(--accent) 30%, var(--app-surface));
+  border-color: color-mix(in oklab, var(--accent) 60%, var(--app-line));
+  color: #fff;
+}
+
+.nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.5rem;
+  max-height: 17rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-line) transparent;
+}
+
+.node {
+  position: relative;
+  background: var(--app-surface);
+  border: 1px solid var(--app-line);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.7rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.16s var(--ease), background 0.16s var(--ease);
+  min-width: 0;
+}
+
+.node:hover {
+  border-color: color-mix(in oklab, var(--accent) 50%, var(--app-line));
+}
+
+.node[aria-checked='true'] {
+  background: color-mix(in oklab, var(--accent) 16%, var(--app-surface));
+  border-color: var(--accent);
+}
+
+.node__name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--app-dim);
+}
+
+.node__delay {
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s var(--ease);
+}
+
+.node__delay[data-q='fast'] {
+  color: #4ade80;
+}
+
+.node__delay[data-q='ok'] {
+  color: var(--amber);
+}
+
+.node__delay[data-q='slow'] {
+  color: #fb7185;
+}
+
+.node__delay[data-q='test'] {
+  color: var(--app-dim);
+  opacity: 0.6;
+}
+
+.node__flag {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--app-dim);
+  border: 1px solid var(--app-line);
+  border-radius: 4px;
+  padding: 0 0.25rem;
+}
+
+.fab__ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--ring-a, #2e5bff),
+    var(--ring-b, #7a36f0),
+    var(--ring-c, #ff1744),
+    var(--ring-a, #2e5bff)
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+  z-index: 0;
+  animation: ring-spin 4.5s linear infinite;
+  mask: radial-gradient(circle, transparent 0 calc(50% - 3px), #000 calc(50% - 3px));
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 3px), #000 calc(50% - 3px));
+}
+
+@keyframes ring-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
