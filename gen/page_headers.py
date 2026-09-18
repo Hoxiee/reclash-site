@@ -76,7 +76,11 @@ def group(num, title, headers, body, open_=False):
     an accent rail and a live dot, and the provider can see what is on without
     opening anything."""
     return (
-        '<details class="bgroup" data-group="' + esc(num) + '"'
+        # name= makes the group an exclusive accordion natively: the browser
+        # shuts the others when one opens, no JS and no dependence on a script
+        # that a stale cache might not have. builder.js repeats it for browsers
+        # too old for name (pre-2024), so both paths keep one block open.
+        '<details class="bgroup" name="bgroup" data-group="' + esc(num) + '"'
         + (" open" if open_ else "") + ">"
         '<summary class="bgroup__sum">'
         '<span class="bgroup__num mono">' + esc(num) + "</span>"
