@@ -186,6 +186,18 @@ def footer(ctx):
 
 def document(ctx, *, active, title, description, body, css=(), js=(), head_extra=""):
     other_lang = "en" if ctx.lang == "ru" else "ru"
+    # Fonts are discovered only after fonts.css parses, so the display and body
+    # faces the first screen always needs start late. Preload the one subset the
+    # page's language actually renders — Cyrillic for ru, Latin for en — so the
+    # fetch runs in parallel with the stylesheets instead of after them. Only the
+    # two above-the-fold faces (Unbounded display, Onest body); the mono subset
+    # is code-only and can swap in later without a preload.
+    sub = "cyrillic" if ctx.lang == "ru" else "latin"
+    font_preload = "".join(
+        '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>'
+        % esc(ctx.asset("assets/fonts/%s-%s.woff2" % (family, sub)))
+        for family in ("onest", "unbounded")
+    )
     styles = "".join(
         '<link rel="stylesheet" href="%s">' % esc(ctx.asset("assets/css/" + name))
         for name in ("fonts.css", "base.css", "site.css") + tuple(css)
@@ -223,6 +235,7 @@ def document(ctx, *, active, title, description, body, css=(), js=(), head_extra
         '<meta name="twitter:title" content="%(title)s">\n'
         '<meta name="twitter:description" content="%(desc)s">\n'
         '<meta name="twitter:image" content="%(og)s">\n'
+        "%(fontpreload)s\n"
         "%(styles)s\n"
         "%(head_extra)s"
         '<script>document.documentElement.classList.remove("no-js");</script>\n'
@@ -273,6 +286,7 @@ def document(ctx, *, active, title, description, body, css=(), js=(), head_extra
             "other_url": esc("%s/%s/%s" % (ctx.base_url, other_lang, FILE[active])),
             "xdefault": esc("%s/en/%s" % (ctx.base_url, FILE[active])),
             "oglocale": "ru_RU" if ctx.lang == "ru" else "en_US",
+            "fontpreload": font_preload,
             "styles": styles,
             "scripts": scripts,
             "head_extra": head_extra,

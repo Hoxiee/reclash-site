@@ -38,12 +38,88 @@ def write(path, text):
     return len(text.encode("utf-8"))
 
 
+def minify_css(text):
+    """Strip comments and collapse whitespace without changing meaning.
+
+    A character walk, not a regex: strings ('...' / "...") and url() payloads
+    are copied verbatim so the data-URI noise texture and its embedded spaces
+    survive intact, and a collapsed whitespace run is only dropped when it sits
+    against a separator that never carries selector or media-query meaning
+    ({ } ; ,). Spaces around :, >, +, ~, ( and calc() operators are kept, so
+    combinators and `and (min-width: …)` stay valid. /*! banners are preserved.
+    """
+    out = []
+    pending = False  # a collapsed whitespace run is waiting to be emitted
+    i, n = 0, len(text)
+    sep = "{};,"
+
+    def flush_before(nextc):
+        nonlocal pending
+        if pending:
+            if out and out[-1] not in sep and nextc not in sep:
+                out.append(" ")
+            pending = False
+
+    while i < n:
+        c = text[i]
+        if c == "/" and i + 1 < n and text[i + 1] == "*":
+            if i + 2 < n and text[i + 2] == "!":  # keep licence banners
+                end = text.find("*/", i + 3)
+                end = n if end == -1 else end + 2
+                flush_before(c)
+                out.append(text[i:end])
+                i = end
+                continue
+            end = text.find("*/", i + 2)
+            i = n if end == -1 else end + 2
+            pending = True  # a comment is a token boundary
+            continue
+        if c == '"' or c == "'":
+            flush_before(c)
+            q = c
+            out.append(c)
+            i += 1
+            while i < n:
+                ch = text[i]
+                out.append(ch)
+                if ch == "\\" and i + 1 < n:
+                    out.append(text[i + 1])
+                    i += 2
+                    continue
+                i += 1
+                if ch == q:
+                    break
+            continue
+        if c in " \t\r\n\f":
+            j = i
+            while j < n and text[j] in " \t\r\n\f":
+                j += 1
+            pending = True
+            i = j
+            continue
+        flush_before(c)
+        if c == "}" and out and out[-1] == ";":
+            out.pop()
+        out.append(c)
+        i += 1
+    return "".join(out).strip()
+
+
 def copy_assets():
     src = os.path.join(ROOT, "assets")
     dst = os.path.join(DIST, "assets")
     if os.path.isdir(dst):
         shutil.rmtree(dst)
     shutil.copytree(src, dst)
+    for r, _, files in os.walk(dst):
+        for f in files:
+            if not f.endswith(".css"):
+                continue
+            p = os.path.join(r, f)
+            with open(p, "r", encoding="utf-8") as fh:
+                css = fh.read()
+            with open(p, "w", encoding="utf-8") as fh:
+                fh.write(minify_css(css))
     total = sum(
         os.path.getsize(os.path.join(r, f))
         for r, _, files in os.walk(dst)
@@ -193,7 +269,6 @@ def main():
 
     if args.serve:
         import http.server
-        import socketserver
 
         os.chdir(DIST)
 
@@ -208,7 +283,19 @@ def main():
                 except (BrokenPipeError, ConnectionResetError):
                     self.close_connection = True
 
-        with socketserver.TCPServer(("127.0.0.1", 8000), Handler) as httpd:
+        # A thread per connection, not one connection at a time. A browser opens
+        # several sockets up front and leaves a few idle for reuse; a
+        # single-threaded server blocks inside handle_one_request() reading a
+        # socket that has not sent a request yet, and every real asset request
+        # queues behind it. That is the page taking ~ten seconds to fill in:
+        # the HTML arrives, then the CSS and fonts stall until an idle browser
+        # socket times out and frees the one server thread. daemon_threads lets
+        # Ctrl-C exit even while sockets are still held open.
+        class Server(http.server.ThreadingHTTPServer):
+            daemon_threads = True
+            allow_reuse_address = True
+
+        with Server(("127.0.0.1", 8000), Handler) as httpd:
             print("\n  http://127.0.0.1:8000/  (Ctrl-C to stop)")
             try:
                 httpd.serve_forever()

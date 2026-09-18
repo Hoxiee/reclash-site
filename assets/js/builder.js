@@ -1056,7 +1056,26 @@
 
     renderPreview(res.preview);
     markActiveGroups();
-    syncHash(res);
+    scheduleHash();
+  }
+
+  /* A burst of `input` events — a held key, a paste, a drag on a range —
+     collapses to one render per animation frame instead of one per event.
+     Direct callers (presets, undo, view toggle) still hit update() straight
+     away, so a click stays instant; only the keystroke path is coalesced. */
+  var frame = 0;
+  function queueUpdate() {
+    if (frame) return;
+    frame = requestAnimationFrame(function () { frame = 0; update(); });
+  }
+
+  /* history.replaceState with a full-form JSON+base64 payload is the most
+     expensive thing per keystroke and the least urgent: the link only has to
+     be right once typing settles. Debounced off the hot path. */
+  var hashTimer = 0;
+  function scheduleHash() {
+    if (hashTimer) clearTimeout(hashTimer);
+    hashTimer = setTimeout(function () { hashTimer = 0; syncHash(); }, 300);
   }
 
   /* A block wears its accent rail and live dot when it is actually doing
@@ -1242,8 +1261,8 @@
     });
   }
 
-  form.addEventListener('input', update);
-  form.addEventListener('change', update);
+  form.addEventListener('input', queueUpdate);
+  form.addEventListener('change', queueUpdate);
   form.addEventListener('submit', function (e) { e.preventDefault(); });
 
   loadHash();
