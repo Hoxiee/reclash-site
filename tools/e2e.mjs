@@ -157,6 +157,15 @@ for (const lang of LANGS) {
       note(`${lang}/builder: no default output (${JSON.stringify((initial || '').slice(0, 80))})`);
     }
 
+    /* The form is an accordion now: one block open at a time, the rest shut, so
+       a field in a shut block is not visible until its <details> is opened. */
+    const reveal = (sel) => page.evaluate((s) => {
+      const el = document.querySelector(s);
+      const det = el && el.closest('details');
+      if (det) det.open = true;
+    }, sel);
+
+    await reveal('#f_svcname');
     await page.fill('#f_svcname', 'Небула VPN');
     await page.waitForTimeout(200);
     const b64 = await page.textContent('#out-http');
@@ -165,6 +174,7 @@ for (const lang of LANGS) {
     }
 
     // plain http and credentials in a URL must surface as hard warnings
+    await reveal('#f_support');
     await page.fill('#f_support', 'http://insecure.example');
     await page.waitForTimeout(220);
     let hard = await page.locator('#builder-warnings .warnline--err').count();
@@ -184,6 +194,7 @@ for (const lang of LANGS) {
     if (wrows !== 15) note(`${lang}/builder: ${wrows} widget rows, expected 15`);
 
     // preview follows the theme colour
+    await reveal('#f_hex');
     await page.fill('#f_hex', 'FF2FD3B6');
     await page.waitForTimeout(250);
     const accent = await page.evaluate(() =>
@@ -236,13 +247,13 @@ for (const lang of LANGS) {
     const shut = await page.evaluate((id) => document.getElementById(id).getBoundingClientRect().height, panelId);
     if (shut > 10) note(`${lang}/faq: a closed answer is ${shut}px tall, not collapsed`);
     await q.click();
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(600);
     const open = await q.getAttribute('aria-expanded');
     if (open !== 'true') note(`${lang}/faq: item did not open`);
     const h = await page.evaluate((id) => document.getElementById(id).getBoundingClientRect().height, panelId);
     if (h < 20) note(`${lang}/faq: panel height ${h} after opening`);
     await q.click();
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(600);
     const reshut = await page.evaluate((id) => document.getElementById(id).getBoundingClientRect().height, panelId);
     if (reshut > 10) note(`${lang}/faq: answer did not collapse again (${reshut}px)`);
 

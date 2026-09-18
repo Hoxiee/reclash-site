@@ -1079,6 +1079,21 @@
     });
   }
 
+  /* Accordion: one block open at a time. Opening a block shuts the rest, so the
+     form never grows back into the tall column it used to be — the provider
+     always sees exactly one set of controls plus every other block's signpost.
+     Closing the open block leaves them all shut, which is fine; nothing forces
+     one to stay open. Without JS the blocks are plain <details> and open
+     independently, which still works. */
+  groups.forEach(function (g) {
+    g.addEventListener('toggle', function () {
+      if (!g.open) return;
+      groups.forEach(function (other) {
+        if (other !== g && other.open) other.open = false;
+      });
+    });
+  });
+
   /* shareable configuration link */
   var hashLock = false;
   function syncHash() {
