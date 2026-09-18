@@ -241,7 +241,7 @@ for (const lang of LANGS) {
     await page.close();
   }
 
-  // ---- home: first-run tool + dpi ----
+  // ---- home: first-run tool + dashboard demo ----
   {
     const page = await ctx.newPage();
     const errs = [];
@@ -281,12 +281,56 @@ for (const lang of LANGS) {
       note(`${lang}/home: junk input drew no message`);
     }
 
-    for (const m of ['split', 'fake', 'off']) {
-      await page.click(`.dpi__toggle button[data-mode="${m}"]`);
-      await page.waitForTimeout(300);
+    const seenServices = new Set();
+    const seenThemes = new Set();
+    for (const preset of ['default', 'nebula', 'mono']) {
+      await page.click(`[data-demo-preset="${preset}"]`);
+      await page.waitForTimeout(120);
+
+      const state = await page.evaluate((key) => {
+        const root = document.querySelector('[data-dashboard-demo]');
+        const visible = [...root.querySelectorAll('[data-demo-panel]')]
+          .filter((panel) => !panel.hidden);
+        const pressed = [...root.querySelectorAll('[data-demo-preset]')]
+          .filter((button) => button.getAttribute('aria-pressed') === 'true');
+        const panel = visible[0];
+        const css = panel ? getComputedStyle(panel) : null;
+        return {
+          visible: visible.map((el) => el.dataset.demoPanel),
+          pressed: pressed.map((el) => el.dataset.demoPreset),
+          service: panel?.querySelector('[data-demo-service]')?.textContent.trim() || '',
+          widgets: panel?.querySelectorAll('[data-widget]').length || 0,
+          label: root.querySelector('.live-panel__viewport')?.getAttribute('aria-label') || '',
+          status: root.querySelector('[data-demo-status]')?.textContent.trim() || '',
+          theme: css ? [
+            css.getPropertyValue('--demo-accent').trim(),
+            css.getPropertyValue('--demo-ring-a').trim(),
+            css.getPropertyValue('--demo-ring-b').trim(),
+            css.getPropertyValue('--demo-ring-c').trim(),
+          ].join('|') : '',
+          key,
+        };
+      }, preset);
+      if (state.visible.length !== 1 || state.visible[0] !== preset) {
+        note(`${lang}/home: preset ${preset} visible panels ${JSON.stringify(state.visible)}`);
+      }
+      if (state.pressed.length !== 1 || state.pressed[0] !== preset) {
+        note(`${lang}/home: preset ${preset} pressed buttons ${JSON.stringify(state.pressed)}`);
+      }
+      if (state.widgets < 3 || state.widgets > 4) {
+        note(`${lang}/home: preset ${preset} has ${state.widgets} widgets`);
+      }
+      if (!state.service || !state.label || !state.status) {
+        note(`${lang}/home: preset ${preset} has incomplete accessible state`);
+      }
+      if (state.theme.split('|').some((value) => !value)) {
+        note(`${lang}/home: preset ${preset} has incomplete theme properties`);
+      }
+      seenServices.add(state.service);
+      seenThemes.add(state.theme);
     }
-    const readout = await page.textContent('.dpi__readout');
-    if (!readout.trim()) note(`${lang}/home: dpi readout empty`);
+    if (seenServices.size !== 3) note(`${lang}/home: dashboard service names do not vary`);
+    if (seenThemes.size !== 3) note(`${lang}/home: dashboard themes do not vary`);
 
     if (errs.length) note(`${lang}/home: pageerror ${JSON.stringify(errs.slice(0, 2))}`);
     await page.close();

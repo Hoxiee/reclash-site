@@ -20,13 +20,13 @@ const COPY = {
     file: 'og.png',
     eyebrow: 'форк flclash · ядро mihomo · gpl-3.0',
     lines: ['ВАШ ТРАФИК', '— ВАШИ', 'ПРАВИЛА'],
-    lede: 'Клиент mihomo со встроенным обходом DPI, живой темой от провайдера и настройками, которые не приходится искать.',
+    lede: 'Открытый клиент mihomo с живой темой от провайдера, настраиваемой панелью и понятными параметрами.',
   },
   en: {
     file: 'og-en.png',
     eyebrow: 'a fork of flclash · mihomo core · gpl-3.0',
     lines: ['YOUR TRAFFIC', 'IS YOURS', 'TO ROUTE'],
-    lede: 'A mihomo client with built-in DPI bypass, a live provider theme and settings you do not have to hunt for.',
+    lede: 'An open-source mihomo client with a live provider theme, configurable dashboard and clear settings.',
   },
 };
 

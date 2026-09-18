@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hoxiee.github.io/ReClash-site/sitemap.xml

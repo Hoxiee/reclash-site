@@ -1,7 +1,7 @@
 """Landing page."""
 
 from . import ui
-from .ui import esc, icon, brand_icon, mark, ticks, rubric, chip, btn, json_block
+from .ui import esc, icon, brand_icon, mark, ticks, rubric, chip, btn
 
 
 def hero(ctx):
@@ -33,17 +33,17 @@ def hero(ctx):
         '<h1 class="hero__title">', head, "</h1>",
         '<p class="hero__lede">',
         t(
-            "ReClash — клиент для <strong>mihomo</strong> с встроенным обходом DPI, "
+            "ReClash — открытый клиент для <strong>mihomo</strong> с понятной панелью, "
             "живой темой от провайдера и настройками, которые не приходится искать. "
             "Свои серверы, свои правила, свой трафик.",
-            "ReClash is a <strong>mihomo</strong> client with built-in DPI bypass, "
+            "ReClash is an open-source <strong>mihomo</strong> client with a clear dashboard, "
             "a live provider theme and settings you do not have to hunt for. "
             "Your own servers, your own rules, your own traffic.",
         ),
         "</p>",
         '<div class="hero__actions">',
         btn(ctx.page("download"), t("Скачать клиент", "Download the client"), "", "download"),
-        btn(ctx.page("headers"), t("Документация по заголовкам", "Header reference"), "btn--ghost", "book"),
+        btn("#get-started", t("Быстрый старт", "Quick start"), "btn--ghost", "bolt"),
         "</div>",
         '<div class="hero__chips">',
         chip("Windows"), chip("macOS"), chip("Linux"), chip("Android"),
@@ -65,14 +65,14 @@ def marquee(ctx):
     t = ctx.t
     words = t(
         [
-            "обход DPI из коробки", "ByeDPI встроен", "mihomo под капотом",
-            "темы от провайдера", "виджеты панели", "TUN и системный прокси",
-            "правила и группы", "без телеметрии", "GPL-3.0",
+            "mihomo под капотом", "профиль одной ссылкой", "темы от провайдера",
+            "виджеты панели", "TUN и системный прокси", "правила и группы",
+            "GeoIP и GeoSite", "без телеметрии", "GPL-3.0",
         ],
         [
-            "DPI bypass out of the box", "ByeDPI built in", "mihomo under the hood",
-            "provider themes", "dashboard widgets", "TUN and system proxy",
-            "rules and groups", "no telemetry", "GPL-3.0",
+            "mihomo under the hood", "one-link profile", "provider themes",
+            "dashboard widgets", "TUN and system proxy", "rules and groups",
+            "GeoIP and GeoSite", "no telemetry", "GPL-3.0",
         ],
     )
     run = "".join("<span>%s</span>" % esc(w) for w in words)
@@ -104,10 +104,10 @@ def section_launch(ctx):
            "The link from your provider brings the profile, the servers and the rules "
            "in one go. Nothing to fill in by hand."),),
         (t("Подключитесь", "Connect"),
-         t("Провайдер режет соединение — включите обход DPI на том же экране, "
-           "рядом с кнопкой подключения. Дальше клиент разбирается сам.",
-           "Your ISP is cutting the connection — switch DPI bypass on from the same "
-           "screen, next to the connect button. The client takes it from there.")),
+         t("Выберите TUN для всего устройства или системный прокси для приложений, "
+           "которые его поддерживают. Режим всегда можно сменить на главном экране.",
+           "Choose TUN for the whole device or system proxy for apps that support it. "
+           "You can switch the mode from the main screen at any time.")),
     ]
     ol = "".join(
         '<li class="launch__step reveal" data-delay="%s">'
@@ -176,12 +176,12 @@ def section_launch(ctx):
 def section_features(ctx):
     t = ctx.t
     items = [
-        ("shield",
-         t("Обход DPI без плясок", "DPI bypass without the dance"),
-         t("ByeDPI встроен в клиент. Не нужен отдельный процесс, отдельный порт и "
-           "отдельная инструкция — включается одним переключателем.",
-           "ByeDPI is built into the client. No separate process, no separate port, "
-           "no separate tutorial — one switch and it is on.")),
+        ("route",
+         t("Ядро mihomo целиком", "The full mihomo core"),
+         t("Правила, группы, провайдеры прокси, GeoIP и GeoSite, fake-ip, "
+           "внешние контроллеры — всё, к чему вы привыкли в Clash.Meta.",
+           "Rules, groups, proxy providers, GeoIP and GeoSite, fake-ip, external "
+           "controllers — everything you expect from Clash.Meta.")),
         ("palette",
          t("Тема, которую задаёт провайдер", "A theme your provider sets"),
          t("Один заголовок в ответе подписки — и приложение перекрашивается под бренд: "
@@ -190,16 +190,16 @@ def section_features(ctx):
            "connection ring, logo and the widget set.")),
         ("layers",
          t("Панель, которую можно собрать", "A dashboard you can assemble"),
-         t("Четырнадцать виджетов: скорость, расход трафика, режим, определение сети, "
+         t("Пятнадцать виджетов: скорость, расход трафика, режим, определение сети, "
            "TUN, системный прокси, объявление, карточка сервиса.",
-           "Fourteen widgets: speed, traffic usage, mode, network detection, TUN, "
+           "Fifteen widgets: speed, traffic usage, mode, network detection, TUN, "
            "system proxy, announcement, service card.")),
-        ("route",
-         t("Ядро mihomo целиком", "The full mihomo core"),
-         t("Правила, группы, провайдеры прокси, GeoIP и GeoSite, fake-ip, "
-           "внешние контроллеры — всё, к чему вы привыкли в Clash.Meta.",
-           "Rules, groups, proxy providers, GeoIP and GeoSite, fake-ip, external "
-           "controllers — everything you expect from Clash.Meta.")),
+        ("shield",
+         t("Обход DPI — когда он нужен", "DPI bypass — when you need it"),
+         t("Если сеть фильтрует соединение по сигнатуре, ByeDPI включается одним "
+           "переключателем. В обычной сети его можно не трогать.",
+           "If the network filters the connection by signature, ByeDPI is one switch "
+           "away. On a regular network you can leave it off.")),
         ("globe",
          t("Четыре платформы", "Four platforms"),
          t("Windows, macOS, Linux и Android из одной кодовой базы на Flutter. "
@@ -217,8 +217,11 @@ def section_features(ctx):
         '<article class="card reveal" data-delay="%s">'
         '<span class="card__icon">%s</span>'
         '<span class="card__num">%02d</span>'
-        "<h3>%s</h3><p>%s</p></article>"
-        % (round(i * 0.06, 2), icon(ic), i + 1, esc(title), esc(text))
+        "<h3>%s</h3><p>%s</p>%s</article>"
+        % (round(i * 0.06, 2), icon(ic), i + 1, esc(title), esc(text),
+           ('<a class="link link--cyan" href="%s">%s</a>' %
+            (ctx.page("start") + "#faq-dpi", esc(t("Когда включать DPI", "When to enable DPI"))))
+           if ic == "shield" else "")
         for i, (ic, title, text) in enumerate(items)
     )
     return "".join([
@@ -230,116 +233,108 @@ def section_features(ctx):
     ])
 
 
-# --------------------------------------------------------------- DPI stage
+# ---------------------------------------------------------- live dashboard
 
 
-def section_dpi(ctx):
-    t = ctx.t
-    # key, button label, what happens, per-lane verdict for ReClash, did it pass
-    modes = [
-        # The baseline, not a verdict on the client: it is what any client does
-        # with the bypass switched off, and the lane says so in those words —
-        # "signature matched" on the ReClash lane read as "ReClash fails".
-        ("off", t("Без обхода", "No bypass"),
-         t("Обход выключен: ClientHello уходит как есть, и провайдер рвёт "
-           "соединение на первом пакете. Так ведёт себя любой клиент.",
-           "Bypass off: the ClientHello goes out as-is and the ISP drops the "
-           "connection on the first packet. Any client behaves this way."),
-         t("обход выключен → RST", "bypass off → RST"), False),
-        ("split", t("Разрез", "Split"),
-         t("ClientHello режется на части — сигнатура не собирается, соединение живёт.",
-           "The ClientHello is cut into pieces — the signature never forms and the connection survives."),
-         t("сигнатура не собралась", "signature never formed"), True),
-        ("fake", t("Фейк + десинк", "Fake + desync"),
-         t("Впереди летит поддельный пакет с коротким TTL: DPI видит одно, сервер — другое.",
-           "A fake low-TTL packet goes first: the DPI sees one thing, the server another."),
-         t("DPI поверил фейку", "DPI believed the decoy"), True),
-    ]
-    direct_verdict = t("сигнатура найдена → RST", "signature matched → RST")
-
-    buttons = "".join(
-        '<button type="button" data-mode="%s" aria-pressed="%s" title="%s">%s</button>'
-        % (key, "true" if key == "split" else "false", esc(note), esc(label))
-        for key, label, note, _, _ in modes
+def _demo_widget(title, value, detail="", kind="", wide=False):
+    return (
+        '<div class="live-panel__widget%s" data-widget="%s">'
+        '<span class="live-panel__widget-title">%s</span>'
+        '<strong>%s</strong>%s</div>'
+    ) % (
+        " live-panel__widget--wide" if wide else "",
+        esc(kind), esc(title), value,
+        '<span class="live-panel__widget-detail">%s</span>' % detail if detail else "",
     )
 
-    lanes = "".join(
-        '<div class="dpi__lane" data-lane="%s">'
-        '<div class="dpi__lane__head">'
-        '<span class="dpi__lane__label">%s</span>'
-        '<span class="dpi__lane__verdict" data-verdict="%s" data-ok="%s">%s</span>'
-        "</div>"
-        '<span class="dpi__track"></span></div>'
-        % (key, esc(label), key,
-           "true" if key == "reclash" else "false",
-           esc(modes[1][3] if key == "reclash" else direct_verdict))
-        for key, label in (
-            ("direct", t("Обычный клиент", "Plain client")),
-            ("reclash", "ReClash"),
-        )
-    )
 
-    legend = "".join(
-        '<span><i class="%s"></i>%s</span>' % (cls, esc(text))
-        for cls, text in (
-            ("", t("пакет", "packet")),
-            ("is-blocked", t("отброшен", "dropped")),
-            ("is-wall", t("точка инспекции", "inspection point")),
-        )
-    )
-
-    stage = "".join([
-        '<div class="dpi__stage">',
-        '<div class="dpi__stage__head">',
-        '<span>tcp/443 · tls clienthello</span>',
-        '<span class="dpi__stage__mode" data-mode-label>%s</span>' % esc(modes[1][1]),
-        "</div>",
-        '<div class="dpi__lanes"><span class="dpi__wall"><span>DPI</span></span>%s</div>' % lanes,
-        # the control belongs next to the thing it controls, not in the text column
-        '<div class="dpi__controls">',
-        '<div class="dpi__toggle" role="group" aria-label="%s">%s</div>'
-        % (esc(t("Режим обхода", "Bypass mode")), buttons),
-        '<p class="dpi__readout" role="status"></p>',
-        "</div>",
-        '<div class="dpi__legend">%s</div>' % legend,
-        "</div>",
+def _demo_panel(ctx, key, name, initial, theme, widgets, label, hidden=False):
+    style = ";".join("%s:%s" % pair for pair in theme.items())
+    return "".join([
+        '<div class="live-panel__screen" data-demo-panel="%s" data-demo-label="%s" '
+        'style="%s"%s aria-hidden="true">' %
+        (esc(key), esc(label), esc(style), " hidden" if hidden else ""),
+        '<div class="live-panel__top"><span class="live-panel__logo">%s</span>' % esc(initial),
+        '<span class="live-panel__service" data-demo-service>%s</span>' % esc(name),
+        '<span class="live-panel__state">%s</span></div>' % esc(ctx.t("подключено", "connected")),
+        '<div class="live-panel__body"><div class="live-panel__ring">'
+        '<span><b>%s</b><small>%s</small></span></div>' %
+        (esc(ctx.t("Защищено", "Protected")), esc(ctx.t("соединение активно", "connection active"))),
+        '<div class="live-panel__widgets">%s</div></div></div>' % "".join(widgets),
     ])
 
+
+def section_live_dashboard(ctx):
+    t = ctx.t
+    speed = lambda rate: _demo_widget(
+        t("Скорость сети", "Network speed"),
+        '<span class="live-panel__metric">%s</span>' % esc(rate),
+        '<span class="live-panel__spark" aria-hidden="true"></span>', "networkSpeed", True)
+    presets = [
+        ("default", "ReClash", "R", {
+            "--demo-accent": "#7c5cff", "--demo-bg": "#11101a", "--demo-surface": "#1a1826",
+            "--demo-text": "#f1eaf2", "--demo-ring-a": "#7c5cff", "--demo-ring-b": "#3686ed",
+            "--demo-ring-c": "#2fd3b6",
+        }, [
+            speed("18.4 MB/s"),
+            _demo_widget(t("Режим", "Mode"), t("Правила", "Rule"), "mihomo", "outboundModeV2"),
+            _demo_widget(t("Трафик", "Traffic"), "42.8 GB", "↑ 4.7 · ↓ 38.1", "trafficUsage"),
+        ]),
+        ("nebula", "Nebula VPN", "N", {
+            "--demo-accent": "#2fd3b6", "--demo-bg": "#071b1d", "--demo-surface": "#102b2d",
+            "--demo-text": "#e9fffb", "--demo-ring-a": "#2fd3b6", "--demo-ring-b": "#58a6ff",
+            "--demo-ring-c": "#b6f36b",
+        }, [
+            _demo_widget(t("Сервис", "Service"), "Nebula VPN", "user-4821", "serviceInfo", True),
+            speed("24.1 MB/s"),
+            _demo_widget(t("Подписка", "Subscription"), "68%", t("24 дня", "24 days"), "metaInfo"),
+            _demo_widget(t("Состояние сети", "Network status"), t("Доступна", "Available"), "185.22.17.4", "networkDetection"),
+        ]),
+        ("mono", "Northline", "N", {
+            "--demo-accent": "#f2f0ea", "--demo-bg": "#111111", "--demo-surface": "#202020",
+            "--demo-text": "#f2f0ea", "--demo-ring-a": "#f2f0ea", "--demo-ring-b": "#969696",
+            "--demo-ring-c": "#4a4a4a",
+        }, [
+            _demo_widget(t("Сервис", "Service"), "Northline", "member-08", "serviceInfo", True),
+            _demo_widget(t("Маршрутизация", "Routing"), t("Глобально", "Global"), "mihomo", "outboundModeV2"),
+            _demo_widget(t("Состояние сети", "Network status"), t("В норме", "Healthy"), "91.204.12.8", "networkDetection"),
+        ]),
+    ]
+    names = {"default": "ReClash", "nebula": "Nebula VPN", "mono": t("Моно", "Mono")}
+    labels = {
+        key: t("Панель %s: тема, кольцо подключения и виджеты" % name,
+               "%s dashboard: theme, connection ring and widgets" % name)
+        for key, name, _, _, _ in presets
+    }
+    buttons = "".join(
+        '<button type="button" data-demo-preset="%s" aria-pressed="%s">%s</button>' %
+        (key, "true" if i == 0 else "false", esc(names[key]))
+        for i, (key, _, _, _, _) in enumerate(presets)
+    )
+    panels = "".join(
+        _demo_panel(ctx, key, name, initial, theme, widgets, labels[key], i > 0)
+        for i, (key, name, initial, theme, widgets) in enumerate(presets)
+    )
     return "".join([
-        '<section class="section" id="dpi">',
-        '<div class="shell">',
-        rubric("03", t("обход блокировок", "getting through")),
-        '<div class="dpi">',
-        '<div class="dpi__say">',
-        '<h2 class="statement">%s</h2>' % t(
-            "DPI смотрит на <em>первые байты</em>. ByeDPI делает так, чтобы смотреть было не на что.",
-            "DPI reads the <em>first bytes</em>. ByeDPI makes sure there is nothing to read.",
-        ),
-        '<p class="lede" style="margin-top:var(--step-3)">%s</p>' % esc(t(
-            "Переключите режим и посмотрите, что происходит с пакетами. "
-            "Схема упрощена, но порядок событий настоящий.",
-            "Switch the mode and watch what happens to the packets. "
-            "The diagram is simplified, but the order of events is real.",
-        )),
-        "</div>",
-        stage,
-        "</div>",
-        '<p class="notice notice--info" style="margin-top:var(--step-4)">'
-        "<span>%s</span></p>" % esc(t(
-            "Обход DPI помогает против фильтрации по сигнатурам. Это не анонимайзер "
-            "и не защита от целевого наблюдения — и ReClash этого не обещает.",
-            "DPI bypass helps against signature filtering. It is not an anonymiser and "
-            "not protection from targeted surveillance — and ReClash does not claim otherwise.",
-        )),
-        "</div>",
-        json_block("dpi-strings", {
-            "direct": direct_verdict,
-            "modes": {
-                key: {"label": label, "note": note, "verdict": verdict, "ok": ok}
-                for key, label, note, verdict, ok in modes
-            },
-        }),
-        "</section>",
+        '<section class="section" id="dashboard">',
+        '<div class="shell">', rubric("03", t("живая панель", "live dashboard")),
+        '<div class="live-panel" data-dashboard-demo>',
+        '<div class="live-panel__copy"><h2 class="statement">%s</h2>' % t(
+            "Провайдер задаёт <em>характер</em>. Вы решаете, что оставить на панели.",
+            "Your provider sets the <em>character</em>. You choose what stays on the dashboard."),
+        '<p class="lede">%s</p>' % esc(t(
+            "Попробуйте три готовых варианта. Заголовки подписки могут менять бренд, палитру, "
+            "кольцо подключения и порядок виджетов — без отдельной сборки приложения.",
+            "Try three ready-made variants. Subscription headers can change the brand, palette, "
+            "connection ring and widget order — without a custom app build.")),
+        '<div class="live-panel__presets" role="group" aria-label="%s">%s</div>' %
+        (esc(t("Вариант панели", "Dashboard preset")), buttons),
+        '<div class="live-panel__action">%s</div></div>' % btn(
+            ctx.page("headers") + "#builder", t("Собрать свою панель", "Build your dashboard"), "btn--ghost", "wrench"),
+        '<div class="live-panel__viewport" role="img" aria-label="%s">%s</div>' %
+        (esc(labels["default"]), panels),
+        '<p class="visually-hidden" data-demo-status role="status" aria-live="polite"></p>',
+        '</div></div></section>',
     ])
 
 
@@ -525,7 +520,7 @@ def render(ctx):
         marquee(ctx),
         section_launch(ctx),
         section_features(ctx),
-        section_dpi(ctx),
+        section_live_dashboard(ctx),
         section_providers(ctx),
         section_platforms(ctx),
         section_honest(ctx),
@@ -534,14 +529,14 @@ def render(ctx):
     return {
         "active": "index",
         "title": t(
-            "ReClash — клиент mihomo с обходом DPI",
-            "ReClash — a mihomo client with DPI bypass",
+            "ReClash — открытый клиент для mihomo",
+            "ReClash — an open-source mihomo client",
         ),
         "description": t(
-            "ReClash — открытый клиент для mihomo с встроенным обходом DPI, темами от "
-            "провайдера и виджетами панели. Windows, macOS, Linux, Android.",
-            "ReClash is an open-source mihomo client with built-in DPI bypass, provider "
-            "themes and dashboard widgets. Windows, macOS, Linux, Android.",
+            "ReClash — открытый клиент для mihomo с темами провайдера, настраиваемой "
+            "панелью и опциональным обходом DPI. Windows, macOS, Linux, Android.",
+            "ReClash is an open-source mihomo client with provider themes, a configurable "
+            "dashboard and optional DPI bypass. Windows, macOS, Linux, Android.",
         ),
         "body": body,
         "css": ("home.css",),

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ReClash">
+  <defs>
+    <linearGradient id="rcTile" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7C5CFF"/>
+      <stop offset=".5" stop-color="#3686ED"/>
+      <stop offset="1" stop-color="#2FD3B6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#rcTile)"/>
+  <g fill="none" stroke="#fff" stroke-width="62.1" stroke-linecap="round">
+    <path d="M137.3,225.8 L184.5,355.5"/>
+    <path d="M208.8,126.3 L303.2,385.7"/>
+    <path d="M335.3,178.1 L366.7,264.6"/>
+  </g>
+</svg>

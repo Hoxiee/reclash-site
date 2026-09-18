@@ -213,12 +213,25 @@ for lang in ("ru", "en"):
 
     # home.js / core.js ↔ index.html
     src = pages[(lang, "index.html")][1]
-    for need in ('class="dpi__stage"', 'id="dpi-strings"',
+    for need in ('data-dashboard-demo', 'class="live-panel__viewport"',
+                 'href="headers.html#builder"',
                  # the first-run panel mounts the same converter core.js wires
                  'id="get-started"', 'class="deeplink"', 'data-scheme="reclash"',
                  'class="deeplink__out"', "data-make"):
         if need not in src:
             fails.append("%s/index.html: missing %s" % (lang, need))
+    for key in ("default", "nebula", "mono"):
+        if src.count('data-demo-preset="%s"' % key) != 1:
+            fails.append("%s/index.html: dashboard preset %s missing or duplicated" % (lang, key))
+        if src.count('data-demo-panel="%s"' % key) != 1:
+            fails.append("%s/index.html: dashboard panel %s missing or duplicated" % (lang, key))
+    if 'data-demo-preset="default" aria-pressed="true"' not in src:
+        fails.append("%s/index.html: dashboard default preset is not pressed" % lang)
+    if 'data-demo-panel="default"' not in src or 'data-demo-panel="default" data-demo-label=' not in src:
+        fails.append("%s/index.html: dashboard default panel state is invalid" % lang)
+    for stale in ('class="dpi__stage"', 'id="dpi-strings"', 'data-mode="split"'):
+        if stale in src:
+            fails.append("%s/index.html: stale DPI demo hook %s" % (lang, stale))
     if src.count('class="launch__step reveal"') != 3:
         fails.append("%s/index.html: %d first-run steps, expected 3"
                      % (lang, src.count('class="launch__step reveal"')))
