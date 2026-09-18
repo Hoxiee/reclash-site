@@ -104,6 +104,39 @@
   -webkit-text-fill-color: var(--amber);
 }
 
+/* Entrance choreography. Each piece rises and fades in on its own --d delay,
+   so the hero assembles top-to-bottom on load. Guarded by html:not(.no-js):
+   with no JS (or before the inline unblock runs) the content is simply there,
+   exactly like the reveal-on-scroll blocks elsewhere. */
+.no-js .hero .enter {
+  opacity: 1;
+  transform: none;
+}
+
+html:not(.no-js) .hero .enter {
+  opacity: 0;
+  animation: hero-enter 0.9s var(--ease-out) both;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(1.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.no-js) .hero .enter {
+    opacity: 1;
+    animation: none;
+  }
+}
+
 .hero__lede {
   margin-top: var(--step-4);
   max-width: 46ch;
@@ -131,8 +164,9 @@
   margin-top: var(--step-3);
 }
 
-/* Interactive mark */
-.hero__mark {
+/* The mark and everything orbiting it share one square stage so the rings and
+   telemetry chips position against the same box. */
+.hero__stage {
   position: relative;
   display: grid;
   place-items: center;
@@ -140,6 +174,46 @@
   width: 100%;
   max-width: 30rem;
   margin-inline: auto;
+  /* The dashed ring is a circle (border-radius:50%) but its layout box is a
+     square; while it spins, that square's axis-aligned bounds swell past the
+     stage. The visual never leaves the inscribed circle, so clipping the stage
+     keeps the box honest without changing what you see. */
+  overflow: hidden;
+}
+
+/* Two concentric rings: a still inner one and a slow dashed outer one, both on
+   the brand hue. They give the mark somewhere to sit rather than floating in
+   the void. */
+.hero__orbit {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero__orbit--1 {
+  inset: 8%;
+  border: 1px solid color-mix(in oklab, var(--violet) 26%, transparent);
+}
+
+.hero__orbit--2 {
+  inset: 0;
+  border: 1px dashed color-mix(in oklab, var(--cyan) 24%, transparent);
+  animation: orbit-spin 56s linear infinite;
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Interactive mark */
+.hero__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  width: 76%;
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -200,13 +274,98 @@
   opacity: 1;
 }
 
+/* Floating telemetry chips — a live delay/speed readout that frames the mark.
+   Notched glass plates, gently bobbing, tinted to the two ends of the brand
+   gradient. Decorative: aria-hidden, and they hold still under reduced-motion. */
+.hero__chip {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.8rem;
+  background: color-mix(in oklab, var(--ink-2) 82%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+  clip-path: polygon(0 0, calc(100% - 0.7rem) 0, 100% 0.7rem, 100% 100%, 0.7rem 100%, 0 calc(100% - 0.7rem));
+  box-shadow: 0 0.6rem 1.6rem rgb(0 0 0 / 0.32);
+}
+
+.hero__chip--a {
+  left: 0;
+  top: 12%;
+  border-color: color-mix(in oklab, var(--cyan) 42%, transparent);
+  animation: hero-bob 7s var(--ease) infinite;
+}
+
+.hero__chip--b {
+  right: 0;
+  bottom: 15%;
+  border-color: color-mix(in oklab, var(--violet) 42%, transparent);
+  animation: hero-bob 7s var(--ease) infinite;
+  animation-delay: -3.5s;
+}
+
+.hero__chip__k {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.hero__chip b {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero__chip--a b {
+  color: var(--cyan-bright);
+}
+
+.hero__chip--b b {
+  color: #b7a5ff;
+}
+
+.hero__chip b i {
+  font-family: var(--body);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-left: 0.25rem;
+}
+
+@keyframes hero-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.6rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__orbit--2,
+  .hero__chip {
+    animation: none;
+  }
+}
+
+/* On a phone the mark shrinks and moves above the copy; the chips would crowd
+   it and risk the viewport edge, so they step aside there. */
+@media (max-width: 620px) {
+  .hero__chip {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .hero__inner {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .hero__mark {
-    max-width: 17rem;
+  .hero__stage {
+    max-width: 19rem;
     order: -1;
     margin-inline: 0;
   }
@@ -224,6 +383,9 @@
   overflow: hidden;
   padding-block: 0.7rem;
   --speed: 42s;
+  /* fade the words in and out at the rails rather than slicing them dead */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
 .marquee__track {

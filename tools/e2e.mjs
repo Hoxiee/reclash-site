@@ -223,14 +223,28 @@ for (const lang of LANGS) {
     const page = await ctx.newPage();
     await page.goto('file://' + path.join(DIST, lang, 'start.html'));
     await page.waitForTimeout(300);
+
+    // A stuck no-js class pins every FAQ answer open, which reads as "the whole
+    // section is broken": the +/- toggles but nothing ever collapses. Guard both
+    // the class and the collapsed height of a shut item, since an open-only
+    // height check passes right through that bug.
+    if (await page.evaluate(() => document.documentElement.classList.contains('no-js'))) {
+      note(`${lang}/faq: html still carries no-js after load (deferred core.js handshake broke)`);
+    }
     const q = page.locator('.faq__q').nth(3);
+    const panelId = await q.getAttribute('aria-controls');
+    const shut = await page.evaluate((id) => document.getElementById(id).getBoundingClientRect().height, panelId);
+    if (shut > 10) note(`${lang}/faq: a closed answer is ${shut}px tall, not collapsed`);
     await q.click();
     await page.waitForTimeout(400);
     const open = await q.getAttribute('aria-expanded');
     if (open !== 'true') note(`${lang}/faq: item did not open`);
-    const panelId = await q.getAttribute('aria-controls');
     const h = await page.evaluate((id) => document.getElementById(id).getBoundingClientRect().height, panelId);
     if (h < 20) note(`${lang}/faq: panel height ${h} after opening`);
+    await q.click();
+    await page.waitForTimeout(400);
+    const reshut = await page.evaluate((id) => document.getElementById(id).getBoundingClientRect().height, panelId);
+    if (reshut > 10) note(`${lang}/faq: answer did not collapse again (${reshut}px)`);
 
     await page.fill('.deeplink input', 'https://sub.example/x?token=1');
     await page.waitForTimeout(200);

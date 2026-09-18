@@ -11,8 +11,8 @@ def hero(ctx):
         ["YOUR TRAFFIC", "IS YOURS", "TO ROUTE"],
     )
     head = "".join(
-        '<span class="hl%s" style="--i:%d">%s</span>'
-        % (" grad" if i == 2 else "", i, esc(line))
+        '<span class="hl enter%s" style="--i:%d;--d:%.2fs">%s</span>'
+        % (" grad" if i == 2 else "", i, 0.14 + i * 0.1, esc(line))
         for i, line in enumerate(lines)
     )
 
@@ -22,8 +22,8 @@ def hero(ctx):
         '<div class="hero__glow" aria-hidden="true"></div>',
         '<div class="hero__glow hero__glow--2" aria-hidden="true"></div>',
         '<div class="shell hero__inner">',
-        "<div>",
-        '<p class="hero__meta">',
+        '<div class="hero__copy">',
+        '<p class="hero__meta enter" style="--d:.05s">',
         ticks(),
         "<span>",
         esc(t("Форк FlClash", "A fork of FlClash")),
@@ -31,7 +31,7 @@ def hero(ctx):
         esc(t("ядро mihomo", "mihomo core")),
         "</span><span>GPL-3.0</span></p>",
         '<h1 class="hero__title">', head, "</h1>",
-        '<p class="hero__lede">',
+        '<p class="hero__lede enter" style="--d:.5s">',
         t(
             "ReClash — открытый клиент для <strong>mihomo</strong> с понятной панелью, "
             "живой темой от провайдера и настройками, которые не приходится искать. "
@@ -41,21 +41,35 @@ def hero(ctx):
             "Your own servers, your own rules, your own traffic.",
         ),
         "</p>",
-        '<div class="hero__actions">',
+        '<div class="hero__actions enter" style="--d:.62s">',
         btn(ctx.page("download"), t("Скачать клиент", "Download the client"), "", "download"),
         btn("#get-started", t("Быстрый старт", "Quick start"), "btn--ghost", "bolt"),
         "</div>",
-        '<div class="hero__chips">',
+        '<div class="hero__chips enter" style="--d:.72s">',
         chip("Windows"), chip("macOS"), chip("Linux"), chip("Android"),
         chip(t("открытый код", "open source"), True),
         "</div>",
         "</div>",
+        '<div class="hero__stage">',
+        '<span class="hero__orbit hero__orbit--1" aria-hidden="true"></span>',
+        '<span class="hero__orbit hero__orbit--2" aria-hidden="true"></span>',
         '<div class="hero__mark" tabindex="0" role="img" aria-label="%s">'
         % esc(t("Знак ReClash", "The ReClash mark")),
         '<span class="halo" aria-hidden="true"></span>',
         mark("mkHero", 62.1, "", ""),
         '<span class="hero__mark__hint">%s</span>'
         % esc(t("наведите · кликните", "hover · click")),
+        "</div>",
+        # Floating telemetry: the numbers tick on their own (home.js), so the
+        # mark sits inside a small live readout rather than a still picture.
+        '<div class="hero__chip hero__chip--a" aria-hidden="true">'
+        '<span class="hero__chip__k">%s</span>'
+        '<b><span data-tele="delay">32</span><i>ms</i></b></div>'
+        % esc(t("задержка", "delay")),
+        '<div class="hero__chip hero__chip--b" aria-hidden="true">'
+        '<span class="hero__chip__k">%s</span>'
+        '<b><span data-tele="down">6.4</span><i>MB/s</i></b></div>'
+        % esc(t("скорость", "down")),
         "</div>",
         "</div></section>",
     ])
@@ -214,7 +228,7 @@ def section_features(ctx):
            "nothing beyond your subscription.")),
     ]
     cards = "".join(
-        '<article class="card reveal" data-delay="%s">'
+        '<article class="card reveal" data-glow data-delay="%s">'
         '<span class="card__icon">%s</span>'
         '<span class="card__num">%02d</span>'
         "<h3>%s</h3><p>%s</p>%s</article>"
@@ -414,7 +428,7 @@ def section_platforms(ctx):
           t("режим VPN-сервиса", "VPN service mode")]),
     ]
     cards = "".join(
-        '<div class="platform" data-platform="%s">'
+        '<div class="platform" data-glow data-platform="%s">'
         '<span class="platform__icon">%s</span>'
         '<span class="platform__os">%s</span>'
         "<ul>%s</ul></div>"

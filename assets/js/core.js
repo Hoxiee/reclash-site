@@ -36,6 +36,83 @@
     });
   });
 
+  /* --------------------------------------------- scroll progress + shadow
+     One scroll listener drives both the reading-progress rail under the
+     masthead and the bar's own "scrolled" state. rAF-throttled so a fast
+     wheel does not queue a layout on every tick. */
+
+  if (head) {
+    var progress = $('.masthead__progress span');
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var y = window.pageYOffset || d.documentElement.scrollTop || 0;
+        var max = d.documentElement.scrollHeight - window.innerHeight;
+        var p = max > 0 ? Math.min(1, y / max) : 0;
+        if (progress) progress.style.setProperty('--progress', p.toFixed(4));
+        head.setAttribute('data-scrolled', y > 8 ? 'true' : 'false');
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
+  }
+
+  /* ----------------------------------------------------------- cursor aura
+     A soft light that trails the pointer, only where there is a fine pointer
+     to trail. It eases towards the cursor and swells over interactive targets.
+     No aura element is created at all under reduced-motion or on touch, so the
+     loop below never runs there. */
+
+  var finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (finePointer && !reduced) {
+    var aura = d.createElement('div');
+    aura.className = 'aura';
+    aura.setAttribute('aria-hidden', 'true');
+    d.body.appendChild(aura);
+
+    var ax = window.innerWidth / 2, ay = window.innerHeight / 2;
+    var tx = ax, ty = ay, asc = 1, tsc = 1;
+
+    function auraMove(e) {
+      tx = e.clientX; ty = e.clientY;
+      aura.style.opacity = '0.55';
+      var el = e.target;
+      tsc = el && el.closest && el.closest("a,button,input,select,textarea,summary,[role='button'],[tabindex]")
+        ? 1.25 : 1;
+    }
+    function auraLeave() { aura.style.opacity = '0'; }
+    function auraLoop() {
+      ax += (tx - ax) * 0.15;
+      ay += (ty - ay) * 0.15;
+      asc += (tsc - asc) * 0.12;
+      aura.style.transform = 'translate3d(' + ax.toFixed(1) + 'px,' + ay.toFixed(1) + 'px,0) scale(' + asc.toFixed(3) + ')';
+      requestAnimationFrame(auraLoop);
+    }
+    window.addEventListener('pointermove', auraMove, { passive: true });
+    d.addEventListener('pointerleave', auraLeave);
+    requestAnimationFrame(auraLoop);
+  }
+
+  /* --------------------------------------------- pointer-tracked card glow
+     Interactive surfaces track the cursor as an (x, y) pair on the element, so
+     a highlight can bloom under the pointer. Pure custom properties — the CSS
+     decides what to do with them, and it costs nothing where the rule is absent. */
+
+  var glowables = $$('[data-glow]');
+  if (glowables.length && finePointer) {
+    glowables.forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+        el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+      });
+    });
+  }
+
   /* ------------------------------------------------------------- reveals */
 
   var revealables = $$('.reveal');

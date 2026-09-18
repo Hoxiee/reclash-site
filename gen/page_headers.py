@@ -69,11 +69,18 @@ def group(num, title, headers, body, open_=False):
     header names the block emits: the provider can find the one control they
     came for without opening all nine. The <legend> stays in the markup for
     screen readers, which announce a fieldset by it, but it is hidden — the
-    summary above is already saying the same words on screen."""
+    summary above is already saying the same words on screen.
+
+    data-group carries the block number to builder.js, which sets data-active
+    on it whenever the block is emitting headers — so a shut, filled block wears
+    an accent rail and a live dot, and the provider can see what is on without
+    opening anything."""
     return (
-        '<details class="bgroup"' + (" open" if open_ else "") + ">"
+        '<details class="bgroup" data-group="' + esc(num) + '"'
+        + (" open" if open_ else "") + ">"
         '<summary class="bgroup__sum">'
         '<span class="bgroup__num mono">' + esc(num) + "</span>"
+        '<span class="bgroup__dot" aria-hidden="true"></span>'
         '<span class="bgroup__ttl">' + esc(title) + "</span>"
         '<span class="bgroup__hdrs mono">' + esc(headers) + "</span>"
         '<span class="bgroup__chev" aria-hidden="true">'
@@ -602,13 +609,16 @@ def builder_output(ctx):
         for i, (key, label) in enumerate(panes)
     )
 
-    # The phone used to sit a full form-height below the fields it previews,
-    # which made "watch what the user will see" a promise the page broke. It
-    # rides in the sticky column now, opposite the switch that reveals the
-    # snippet — while the count and the warnings stay put under both, because
-    # a warning you have to go looking for is not a warning.
+    # The phone rides in the sticky column opposite the fields it previews. The
+    # switch and the live count sit in a fixed-height header bar, the preview and
+    # the code share one fixed-height stage — so flipping Preview↔Code changes
+    # nothing about the column's size and the page never jumps under the cursor.
+    # Count, warnings and the share link used to live here too and pushed the
+    # phone off a laptop screen; they moved to a full-width strip below (see
+    # builder_foot) where they get room to breathe and stay in view.
     return (
         '<div class="builder__out">'
+        '<div class="builder__switch">'
         '<div class="tabs tabs--seg" data-tabs role="tablist" aria-label="'
         + esc(t("Что показывать", "What to show")) + '">'
         '<button type="button" role="tab" id="tab-pv" aria-controls="tp-pv" '
@@ -618,6 +628,9 @@ def builder_output(ctx):
         'aria-selected="false" tabindex="-1">'
         + esc(t("Код", "Code")) + "</button>"
         "</div>"
+        '<p class="builder__count mono" id="builder-count"></p>'
+        "</div>"
+        '<div class="builder__stage">'
         '<div class="tabpanel" id="tp-pv" role="tabpanel" aria-labelledby="tab-pv">'
         + builder_preview(ctx) + "</div>"
         '<div class="tabpanel" id="tp-code" role="tabpanel" aria-labelledby="tab-code" hidden>'
@@ -626,18 +639,35 @@ def builder_output(ctx):
         + tabs + "</div>"
         + panels
         + "</div>"
-        + '<p class="mono faint" id="builder-count"></p>'
-        + '<div class="builder__warnings" id="builder-warnings" role="status" aria-live="polite"></div>'
-        + '<div class="builder__actions">'
-        + '<button class="btn btn--sm" type="button" id="builder-share">'
+        + "</div>"
+        + "</div>"
+    )
+
+
+def builder_foot(ctx):
+    """The warnings, the share link and its note — a full-width strip under the
+    two-column builder. Warnings you must scroll a sticky pane to find are not
+    warnings, so they run the whole width here, directly under the fields that
+    raise them."""
+    t = ctx.t
+    return (
+        '<div class="builder__foot">'
+        '<div class="builder__warnings" id="builder-warnings" role="status" '
+        'aria-live="polite" data-ok="' + esc(t(
+            "Значения проходят проверку — заголовки готовы к отправке.",
+            "Every value checks out — the headers are ready to serve.",
+        )) + '"></div>'
+        '<div class="builder__actions">'
+        '<button class="btn btn--sm" type="button" id="builder-share">'
         + esc(t("Скопировать ссылку на конфигурацию", "Copy a link to this configuration"))
-        + "</button></div>"
-        + '<p class="faint" style="font-size:.8rem">' + esc(t(
+        + "</button>"
+        + '<p class="builder__sharenote faint">' + esc(t(
             "Ссылка хранит всю форму в адресе страницы — её можно отправить коллеге "
             "или сохранить в задаче.",
             "The link stores the whole form in the page address — send it to a colleague "
             "or paste it into a ticket.",
         )) + "</p>"
+        + "</div>"
         + "</div>"
     )
 
@@ -706,17 +736,30 @@ def builder_preview(ctx):
 
 def section_builder(ctx):
     t = ctx.t
+    # A preset is a starting point, not a plain button: each card names what it
+    # turns on so a provider picks by outcome rather than by guessing what
+    # "Branding" fills in. The undo sits apart, in amber, because it appears only
+    # after a preset has already overwritten a filled-in form.
+    preset_defs = [
+        ("minimal", t("Минимум", "Minimal"),
+         t("Трафик, имя, поддержка", "Traffic, name, support")),
+        ("brand", t("Брендирование", "Branding"),
+         t("Тема, кольцо, виджеты", "Theme, ring, widgets")),
+        ("full", t("Всё сразу", "Everything"),
+         t("Каждый блок разом", "Every block at once")),
+    ]
+    preset_cards = "".join(
+        '<button class="preset-card" type="button" data-preset="%s">'
+        '<span class="preset-card__name">%s</span>'
+        '<span class="preset-card__desc">%s</span></button>'
+        % (key, esc(name), esc(desc))
+        for key, name, desc in preset_defs
+    )
     presets = (
-        '<div class="row gap-2" style="flex-wrap:wrap;margin-bottom:var(--step-4)">'
-        '<span class="eyebrow" style="margin:0 .4rem 0 0">' + esc(t("Пресеты", "Presets")) + "</span>"
-        '<button class="btn btn--sm btn--ghost" type="button" data-preset="minimal">'
-        + esc(t("Минимум", "Minimal")) + "</button>"
-        '<button class="btn btn--sm btn--ghost" type="button" data-preset="brand">'
-        + esc(t("Брендирование", "Branding")) + "</button>"
-        '<button class="btn btn--sm btn--ghost" type="button" data-preset="full">'
-        + esc(t("Всё сразу", "Everything")) + "</button>"
-        # A preset overwrites a filled-in form; this is the way back.
-        '<button class="btn btn--sm btn--amber" type="button" id="builder-undo" hidden>'
+        '<div class="preset-bar">'
+        '<span class="preset-bar__label eyebrow">' + esc(t("Начните с пресета", "Start from a preset")) + "</span>"
+        '<div class="preset-bar__cards">' + preset_cards + "</div>"
+        '<button class="btn btn--sm btn--amber preset-bar__undo" type="button" id="builder-undo" hidden>'
         + esc(t("Вернуть как было", "Undo")) + "</button>"
         "</div>"
     )
@@ -742,6 +785,7 @@ def section_builder(ctx):
         + builder_form(ctx)
         + builder_output(ctx)
         + "</div>"
+        + builder_foot(ctx)
         + "</div>"
         + json_block("builder-strings", builder_strings(ctx))
         + json_block("widget-spec", spec.widget_spec(ctx.lang))

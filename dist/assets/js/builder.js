@@ -1055,7 +1055,28 @@
     }
 
     renderPreview(res.preview);
+    markActiveGroups();
     syncHash(res);
+  }
+
+  /* A block wears its accent rail and live dot when it is actually doing
+     something: a checkbox switched on, or a text/URL field filled. Number and
+     date fields are excluded — they live only in block 01, whose master
+     checkbox already governs whether any of them are emitted, so an unchecked
+     block with its default 12.5 in the boxes must still read as off. */
+  var groups = $$('[data-group]', form);
+  function markActiveGroups() {
+    groups.forEach(function (g) {
+      var live = false;
+      $$('input, textarea', g).forEach(function (el) {
+        if (live) return;
+        if (el.type === 'checkbox') { if (el.checked) live = true; return; }
+        if (el.type === 'text' || el.type === 'url' || el.tagName === 'TEXTAREA') {
+          if (el.value.trim()) live = true;
+        }
+      });
+      g.setAttribute('data-active', live ? 'true' : 'false');
+    });
   }
 
   /* shareable configuration link */

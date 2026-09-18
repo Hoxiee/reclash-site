@@ -4,10 +4,41 @@
   position: sticky;
   top: 0;
   z-index: 90;
-  background: color-mix(in oklab, var(--ink) 88%, transparent);
+  background: color-mix(in oklab, var(--ink) 82%, transparent);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--line-soft);
-  transition: border-color 0.3s var(--ease);
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
+}
+
+/* Once the page has scrolled, the bar earns a little more weight: darker ground
+   so content passing under it never muddies the nav, and a soft lift. */
+.masthead[data-scrolled='true'] {
+  background: color-mix(in oklab, var(--ink) 92%, transparent);
+  border-bottom-color: var(--line);
+  box-shadow: 0 0.5rem 1.75rem rgb(0 0 0 / 0.34);
+}
+
+/* Reading-progress rail pinned to the bar's bottom edge. The span is scaled on
+   the X axis from JS — cheaper than animating width and it never reflows. */
+.masthead__progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.masthead__progress span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--violet), var(--blue) 52%, var(--cyan));
+  transition: transform 0.1s linear;
 }
 
 .masthead__inner {
@@ -221,6 +252,41 @@
   pointer-events: none;
 }
 
+/* Diagonal beams on the mark's angle, faded to the right so they frame the
+   glow without touching the headline. Same motif as the hero and the backdrop,
+   which is what ties the inner pages to the landing. */
+.pagehead::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: repeating-linear-gradient(
+    calc(90deg - var(--tilt)),
+    transparent 0 92px,
+    color-mix(in oklab, var(--cyan) 20%, transparent) 92px 93px,
+    transparent 93px 184px,
+    color-mix(in oklab, var(--violet) 22%, transparent) 184px 185px
+  );
+  -webkit-mask-image: linear-gradient(90deg, transparent 40%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 40%, #000 100%);
+}
+
+/* the headline and copy ride above both decorative layers */
+.pagehead .shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* the border-bottom becomes a brand hairline that fades in from the left */
+.pagehead {
+  border-bottom-color: transparent;
+  background-image: linear-gradient(90deg, var(--violet), var(--blue) 45%, var(--cyan) 80%, transparent);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 68% 1px;
+}
+
 .pagehead h1 {
   /* "Subscription" runs about 8x the font size; at 360px the screen holds 323px,
      so the narrow end has to stay under 40px. Desktop is unchanged — both the
@@ -319,6 +385,45 @@
   color: var(--text);
 }
 
+/* A small living pulse: the project is maintained, said without words. Pushed
+   to the far end of the base row. */
+.footer__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  color: var(--text-dim);
+}
+
+.footer__live i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--cyan);
+  flex: none;
+  /* the expanding ring is a box-shadow, not a scaled box: it paints outward
+     without ever changing the dot's layout size */
+  animation: live-pulse 2.4s var(--ease-out) infinite;
+}
+
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--cyan) 70%, transparent); }
+  100% { box-shadow: 0 0 0 0.6rem transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__live i {
+    animation: none;
+  }
+}
+
+/* the base row wraps on narrow widths; the pulse should not island itself */
+@media (max-width: 560px) {
+  .footer__live {
+    margin-left: 0;
+  }
+}
+
 /* ------------------------------------------------------- editorial cards */
 
 .card {
@@ -355,6 +460,34 @@
 .card:hover::after {
   transform: translateY(0);
   opacity: 1;
+}
+
+/* Pointer-tracked bloom: core.js writes --mx/--my as the cursor moves over a
+   [data-glow] card, and this radial layer follows it. Defaults keep the glow
+   centred (and harmless) before any pointer event or without JS. */
+.card[data-glow]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(
+    22rem circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in oklab, var(--violet) 15%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+  pointer-events: none;
+}
+
+.card[data-glow]:hover::before {
+  opacity: 1;
+}
+
+/* the bloom sits behind the card's own content */
+.card[data-glow] > * {
+  position: relative;
+  z-index: 1;
 }
 
 .card__num {

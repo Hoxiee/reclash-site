@@ -180,6 +180,21 @@
     });
   }
 
+  /* ===================================================== hero telemetry
+     The two chips flanking the mark tick through plausible values so the hero
+     reads as a live readout. Decorative and aria-hidden; frozen when the
+     visitor asked for less motion. */
+
+  var teleDelay = $('[data-tele="delay"]');
+  var teleDown = $('[data-tele="down"]');
+  if ((teleDelay || teleDown) && !RC.reduced) {
+    var tick = function () {
+      if (teleDelay) teleDelay.textContent = (18 + Math.round(Math.random() * 78));
+      if (teleDown) teleDown.textContent = (1.2 + Math.random() * 8.2).toFixed(1);
+    };
+    setInterval(tick, 1700);
+  }
+
   /* ======================================================= dashboard demo */
 
   var demo = $('[data-dashboard-demo]');

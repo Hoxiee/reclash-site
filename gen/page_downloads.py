@@ -150,7 +150,7 @@ def section_platforms(ctx):
     for key, ico, ru, en, pkg, arches, note in PLATFORMS:
         arch_chips = "".join('<li>%s</li>' % esc(a) for a in arches)
         cards += (
-            '<article class="platform" data-platform="' + key + '">'
+            '<article class="platform" data-glow data-platform="' + key + '">'
             '<span class="platform__icon">' + brand_icon(ico) + "</span>"
             '<h3 class="platform__os">' + esc(ru if L == 0 else en) + "</h3>"
             '<p class="mono faint" style="font-size:.72rem;letter-spacing:.08em">'

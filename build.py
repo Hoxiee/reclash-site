@@ -196,10 +196,24 @@ def main():
         import socketserver
 
         os.chdir(DIST)
-        handler = http.server.SimpleHTTPRequestHandler
-        with socketserver.TCPServer(("127.0.0.1", 8000), handler) as httpd:
+
+        class Handler(http.server.SimpleHTTPRequestHandler):
+            # A browser that navigates away mid-response drops the connection,
+            # and SimpleHTTPRequestHandler lets the resulting BrokenPipeError
+            # bubble up as a scary traceback. It is expected and harmless, so
+            # swallow it quietly instead of dumping a stack over the log.
+            def handle_one_request(self):
+                try:
+                    super().handle_one_request()
+                except (BrokenPipeError, ConnectionResetError):
+                    self.close_connection = True
+
+        with socketserver.TCPServer(("127.0.0.1", 8000), Handler) as httpd:
             print("\n  http://127.0.0.1:8000/  (Ctrl-C to stop)")
-            httpd.serve_forever()
+            try:
+                httpd.serve_forever()
+            except KeyboardInterrupt:
+                print("\n  stopped")
 
 
 if __name__ == "__main__":

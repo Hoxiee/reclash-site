@@ -79,7 +79,9 @@ def masthead(ctx, active):
         '<nav class="nav" aria-label="%(navlabel)s">%(links)s</nav>'
         '<div class="lang" role="group" aria-label="%(langlabel)s">%(langs)s</div>'
         '<a class="btn btn--sm masthead__cta" href="%(dl)s">%(dllabel)s</a>'
-        "</div></header>"
+        "</div>"
+        '<div class="masthead__progress" aria-hidden="true"><span></span></div>'
+        "</header>"
         % {
             "home": ctx.page("index"),
             "mark": mark("mkNav"),
@@ -147,6 +149,7 @@ def footer(ctx):
         "<span>&copy; %(year)s ReClash</span>"
         "<span>%(license)s</span>"
         "<span>%(disclaimer)s</span>"
+        '<span class="footer__live"><i aria-hidden="true"></i>%(live)s</span>'
         "</div>"
         "</div></footer>"
         % {
@@ -173,6 +176,7 @@ def footer(ctx):
                     "A fork of FlClash. Not affiliated with FlClash, mihomo or FlClashX.",
                 )
             ),
+            "live": esc(t("проект живой", "project alive")),
         }
     )
 
@@ -225,12 +229,33 @@ def document(ctx, *, active, title, description, body, css=(), js=(), head_extra
         "%(scripts)s\n"
         "</head>\n<body>\n"
         '<a class="skip-link" href="#main">%(skip)s</a>\n'
+        # Site-wide atmosphere: drifting brand light, a masked grid and diagonal
+        # beams cut on the mark's angle, a vignette. Painted once, fixed behind
+        # everything, never intercepts pointer events. Degrades to a flat ink
+        # panel with no JS and under reduced-motion.
+        '<div class="backdrop" aria-hidden="true">'
+        '<span class="backdrop__blob backdrop__blob--v"></span>'
+        '<span class="backdrop__blob backdrop__blob--c"></span>'
+        '<span class="backdrop__blob backdrop__blob--b"></span>'
+        '<span class="backdrop__grid"></span>'
+        '<span class="backdrop__beams"></span>'
+        '<span class="backdrop__vignette"></span>'
+        "</div>\n"
+        # Soft brand-coloured light that trails the cursor. Desktop-only, added
+        # by core.js so it never exists without the loop that drives it.
         "%(masthead)s\n"
         '<main id="main">\n%(body)s\n</main>\n'
         "%(footer)s\n"
         # If a deferred script never arrived (blocked, cached wrong, 404), put
         # the no-js class back so reveal blocks and FAQ answers stay readable.
-        "<script>if(!window.RC){document.documentElement.classList.add('no-js');}</script>\n"
+        # This must wait for DOMContentLoaded: core.js is deferred, so it has not
+        # run yet while the body is still parsing, and checking window.RC now
+        # would re-add no-js on every load — which pins every FAQ answer open.
+        # DOMContentLoaded fires after deferred scripts, so by then window.RC is
+        # set in the normal case and missing only on a genuine load failure.
+        "<script>addEventListener('DOMContentLoaded',function(){"
+        "if(!window.RC){document.documentElement.classList.add('no-js');}"
+        "});</script>\n"
         "</body>\n</html>\n"
         % {
             "lang": ctx.lang,

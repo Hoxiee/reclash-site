@@ -12,7 +12,7 @@ def faq_item(uid, question, answer, open_=False):
         '<span class="faq__q__mark" aria-hidden="true"></span>'
         "<span>%(q)s</span></button>"
         '<div class="faq__a" id="%(id)s" data-open="%(exp)s">'
-        '<div class="faq__a__inner">%(a)s</div></div></div>'
+        '<div class="faq__a__inner"><div class="faq__a__body">%(a)s</div></div></div></div>'
         % {"id": uid, "exp": "true" if open_ else "false",
            "q": esc(question), "a": answer}
     )
