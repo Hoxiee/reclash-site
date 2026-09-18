@@ -158,11 +158,13 @@ for (const lang of LANGS) {
     }
 
     /* The form is an accordion now: one block open at a time, the rest shut, so
-       a field in a shut block is not visible until its <details> is opened. */
+       a field in a shut block is not visible until its block is opened. The
+       block is a <button>-driven .bgroup with a grid-collapse reveal. */
     const reveal = (sel) => page.evaluate((s) => {
       const el = document.querySelector(s);
-      const det = el && el.closest('details');
-      if (det) det.open = true;
+      const g = el && el.closest('.bgroup');
+      const btn = g && g.querySelector('.bgroup__sum');
+      if (g && g.getAttribute('data-open') !== 'true' && btn) btn.click();
     }, sel);
 
     await reveal('#f_svcname');

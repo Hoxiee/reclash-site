@@ -341,7 +341,7 @@
 /* The open block lifts off the column: a violet-tinted panel, a violet left
    rail (over the cyan active-rail below it), and a soft inset so the eye lands
    on the one set of controls that is actually unfolded. */
-.bgroup[open] {
+.bgroup[data-open='true'] {
   background: linear-gradient(
     180deg,
     color-mix(in oklab, var(--violet) 12%, var(--ink-2)),
@@ -350,13 +350,22 @@
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--violet) 22%, transparent);
 }
 
-.bgroup[open]::before {
+.bgroup[data-open='true']::before {
   transform: scaleY(1);
   width: 3px;
   background: linear-gradient(var(--violet), var(--blue));
 }
 
+/* The toggle is a <button>, so its UA chrome has to be reset back to a plain
+   full-width row before the grid layout below takes over. */
 .bgroup__sum {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  appearance: none;
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr) auto;
   grid-template-areas:
@@ -389,15 +398,6 @@
   box-shadow: 0 0 0 0.2rem color-mix(in oklab, var(--cyan) 22%, transparent);
 }
 
-/* The summary carries its own chevron, so both UA markers have to go. */
-.bgroup__sum {
-  list-style: none;
-}
-
-.bgroup__sum::-webkit-details-marker {
-  display: none;
-}
-
 .bgroup__sum:hover {
   background: color-mix(in oklab, var(--violet) 9%, transparent);
 }
@@ -410,7 +410,7 @@
   transition: color 0.16s var(--ease);
 }
 
-.bgroup[open] .bgroup__num {
+.bgroup[data-open='true'] .bgroup__num {
   color: var(--amber);
 }
 
@@ -424,7 +424,7 @@
   transition: color 0.16s var(--ease);
 }
 
-.bgroup[open] .bgroup__ttl,
+.bgroup[data-open='true'] .bgroup__ttl,
 .bgroup__sum:hover .bgroup__ttl {
   color: var(--text);
 }
@@ -459,22 +459,44 @@
   stroke-linejoin: round;
 }
 
-.bgroup[open] .bgroup__chev {
+.bgroup[data-open='true'] .bgroup__chev {
   transform: rotate(180deg);
   color: var(--violet);
+}
+
+/* The reveal: a grid row that eases between 0fr and 1fr, so height animates
+   with nothing measured in JS. The clip child hides the overflow while the row
+   is short; padding lives on the fieldset inside it, never on the grid item,
+   so a shut block collapses to a true zero. */
+.bgroup__reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s var(--ease-out);
+}
+
+.bgroup[data-open='true'] .bgroup__reveal {
+  grid-template-rows: 1fr;
+}
+
+.bgroup__clip {
+  overflow: hidden;
 }
 
 .bgroup__body {
   border: 0;
   margin: 0;
   padding: 0 var(--step-3) var(--step-3);
-  animation: bgroup-in 0.22s var(--ease-out) both;
 }
 
-@keyframes bgroup-in {
-  from {
-    opacity: 0;
-    transform: translateY(-0.35rem);
+/* Without JS nothing toggles data-open, so every block stands open and all its
+   controls stay reachable. */
+.no-js .bgroup__reveal {
+  grid-template-rows: 1fr;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bgroup__reveal {
+    transition: none;
   }
 }
 

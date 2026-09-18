@@ -1079,18 +1079,27 @@
     });
   }
 
-  /* Accordion: one block open at a time. Opening a block shuts the rest, so the
-     form never grows back into the tall column it used to be — the provider
-     always sees exactly one set of controls plus every other block's signpost.
-     Closing the open block leaves them all shut, which is fine; nothing forces
-     one to stay open. Without JS the blocks are plain <details> and open
-     independently, which still works. */
+  /* Accordion: one block open at a time, and the switch is animated on both
+     sides — the grid row of each block eases between 0fr and 1fr in CSS, so
+     opening one while another closes reads as a single glide, not a snap. JS
+     only flips data-open and aria-expanded; the CSS does the motion. Without
+     JS every block stays open (see the .no-js rule), so nothing is trapped. */
+  function setOpen(g, open) {
+    g.setAttribute('data-open', open ? 'true' : 'false');
+    var btn = $('.bgroup__sum', g);
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
   groups.forEach(function (g) {
-    g.addEventListener('toggle', function () {
-      if (!g.open) return;
-      groups.forEach(function (other) {
-        if (other !== g && other.open) other.open = false;
-      });
+    var btn = $('.bgroup__sum', g);
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var willOpen = g.getAttribute('data-open') !== 'true';
+      if (willOpen) {
+        groups.forEach(function (other) {
+          if (other !== g) setOpen(other, false);
+        });
+      }
+      setOpen(g, willOpen);
     });
   });
 

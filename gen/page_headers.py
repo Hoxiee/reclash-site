@@ -65,35 +65,35 @@ def chk(fid, label, checked=False, attr=""):
 def group(num, title, headers, body, open_=False):
     """One collapsible block of the builder form.
 
-    The <summary> is the only thing a shut group shows, so it carries the
-    header names the block emits: the provider can find the one control they
-    came for without opening all nine. The <legend> stays in the markup for
-    screen readers, which announce a fieldset by it, but it is hidden — the
-    summary above is already saying the same words on screen.
+    A button toggles the block; the answer lives in a grid wrapper that
+    animates 0fr -> 1fr, the same trick the FAQ uses, so opening and closing
+    glide instead of snapping. builder.js keeps one block open at a time and
+    drives the animation on both sides; without it the .no-js rule leaves every
+    block open, so a plain button still reveals everything.
 
-    data-group carries the block number to builder.js, which sets data-active
-    on it whenever the block is emitting headers — so a shut, filled block wears
-    an accent rail and a live dot, and the provider can see what is on without
-    opening anything."""
+    The button carries the header names the block emits, so a shut block still
+    says what is inside it, and data-group carries the block number to
+    builder.js, which sets data-active whenever the block is emitting headers —
+    a shut, filled block wears an accent rail and a live dot."""
+    uid = "bgroup-" + esc(num)
     return (
-        # name= makes the group an exclusive accordion natively: the browser
-        # shuts the others when one opens, no JS and no dependence on a script
-        # that a stale cache might not have. builder.js repeats it for browsers
-        # too old for name (pre-2024), so both paths keep one block open.
-        '<details class="bgroup" name="bgroup" data-group="' + esc(num) + '"'
-        + (" open" if open_ else "") + ">"
-        '<summary class="bgroup__sum">'
+        '<div class="bgroup" data-group="' + esc(num) + '"'
+        + (' data-open="true"' if open_ else ' data-open="false"') + ">"
+        '<button class="bgroup__sum" type="button" aria-controls="' + uid + '"'
+        ' aria-expanded="' + ("true" if open_ else "false") + '">'
         '<span class="bgroup__num mono">' + esc(num) + "</span>"
         '<span class="bgroup__dot" aria-hidden="true"></span>'
         '<span class="bgroup__ttl">' + esc(title) + "</span>"
         '<span class="bgroup__hdrs mono">' + esc(headers) + "</span>"
         '<span class="bgroup__chev" aria-hidden="true">'
         '<svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></span>'
-        "</summary>"
+        "</button>"
+        '<div class="bgroup__reveal" id="' + uid + '">'
+        '<div class="bgroup__clip">'
         '<fieldset class="bgroup__body">'
         '<legend class="visually-hidden">' + esc(num + " " + title) + "</legend>"
         + body
-        + "</fieldset></details>"
+        + "</fieldset></div></div></div>"
     )
 
 
