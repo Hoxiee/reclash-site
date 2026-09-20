@@ -1,6 +1,6 @@
 """Provider header reference + the interactive header builder."""
 
-from . import spec, ui
+from . import spec, ui, remnawave
 from .ui import esc, icon, mark, rubric, chip, btn, codeblock, notice, table, json_block
 
 
@@ -562,7 +562,43 @@ def builder_form(ctx):
         )) + "</small>"
     )
 
-    # The nine blocks used to stand open all at once, which made the form a
+    # --- 10 Remnawave -----------------------------------------------------
+    # These fields shape the three Remnawave artefacts (SRR rules, global
+    # headers, subscription page) and the check command — not any reclash-*
+    # header, so they live in their own block at the end of the form.
+    g_remnawave = (
+        '<p class="faint">' + esc(t(
+            "Настройки трёх артефактов для панели Remnawave: правил ответа (SRR), "
+            "глобальных заголовков и страницы подписки. Готовое — на вкладках "
+            "справа.",
+            "Settings for the three Remnawave artefacts — response rules (SRR), "
+            "global headers and the subscription page. The output is on the tabs "
+            "to the right.",
+        )) + "</p>"
+        + fld("f_rw_fallback", esc(t("Формат для остальных клиентов",
+                                     "Format for other clients")),
+              sel("f_rw_fallback", remnawave.FALLBACK_TYPES, "CLASH"),
+              esc(t("Завершающее правило SRR: что получат клиенты, кроме ReClash "
+                    "(иначе панель отдаст им 403).",
+                    "The catch-all SRR rule: what clients other than ReClash get "
+                    "(otherwise the panel answers them with 403).")))
+        + chk("f_rw_hwid", esc(t("Отключить HWID-лимит для правила ReClash",
+                                 "Disable the HWID limit for the ReClash rule")))
+        + rule()
+        + '<p class="faint">' + esc(t("Локали страницы подписки",
+                                      "Subscription-page locales")) + "</p>"
+        + '<div class="checkgrid">'
+        + chk("f_rw_en", esc(t("Английский", "English")), True)
+        + chk("f_rw_ru", esc(t("Русский", "Russian")), True)
+        + "</div>"
+        + fld("f_rw_suburl", esc(t("Ссылка подписки для проверки",
+                                   "Subscription URL to check")),
+              txt("f_rw_suburl", "https://panel.example.com/api/sub/<id>", "url"),
+              esc(t("Подставляется в команду curl на вкладке «Проверка».",
+                    "Filled into the curl command on the Check tab.")))
+    )
+
+    # The ten blocks used to stand open all at once, which made the form a
     # single 4000-pixel column: the five that most providers never touch were
     # in the way of the four they always do. Each block now names the headers
     # it emits, so a shut one still says what is inside it.
@@ -585,6 +621,9 @@ def builder_form(ctx):
          "ReClash-Settings", g_settings, False),
         ("09", t("Миграция и совместимость", "Migration and compatibility"),
          "ReClash-NewDomain · FallbackHosts · FlClashX-*", g_migration, False),
+        ("10", t("Remnawave", "Remnawave"),
+         "SRR · " + t("глобальные заголовки", "global headers") + " · "
+         + t("страница", "subscription page"), g_remnawave, False),
     ]
     return (
         '<form class="builder__form" id="builder" novalidate>'
@@ -595,23 +634,64 @@ def builder_form(ctx):
 
 def builder_output(ctx):
     t = ctx.t
-    panes = [("http", "HTTP"), ("nginx", "nginx"), ("caddy", "Caddy"),
-             ("php", "PHP"), ("go", "Go"), ("py", "Python")]
-    tabs = "".join(
-        '<button type="button" role="tab" id="tab-%s" aria-controls="tp-%s" '
+    # Ten output formats do not fit one strip without a horizontal scroll, so
+    # they nest: two top-level categories, each opening its own sub-tabs.
+    # Remnawave first — the panel path needs no server of your own; the server
+    # snippets stay under "self-host" for providers who front the endpoint.
+    categories = [
+        ("rw", t("Remnawave", "Remnawave"),
+         t("Артефакты Remnawave", "Remnawave artefacts"),
+         [("srr", t("Правила", "Rules")),
+          ("rwh", t("Заголовки", "Headers")),
+          ("subpage", t("Страница", "Page")),
+          ("curl", t("Проверка", "Check"))]),
+        ("self", t("Свой сервер", "Self-host"),
+         t("Серверные сниппеты", "Server snippets"),
+         [("http", "HTTP"), ("nginx", "nginx"), ("caddy", "Caddy"),
+          ("php", "PHP"), ("go", "Go"), ("py", "Python")]),
+    ]
+
+    def panel(key, active):
+        return (
+            '<div class="tabpanel" id="tp-%s" role="tabpanel" aria-labelledby="tab-%s"%s>'
+            '<div class="codeblock builder__code">'
+            '<button class="copy" type="button" data-done-label="%s">%s</button>'
+            '<pre><code id="out-%s"></code></pre></div></div>'
+            % (key, key, "" if active else " hidden",
+               esc(t("готово", "copied")), esc(t("копировать", "copy")), key)
+        )
+
+    def subtabs(panes, label):
+        buttons = "".join(
+            '<button type="button" role="tab" id="tab-%s" aria-controls="tp-%s" '
+            'aria-selected="%s" tabindex="%s">%s</button>'
+            % (key, key, "true" if i == 0 else "false", "0" if i == 0 else "-1", esc(lbl))
+            for i, (key, lbl) in enumerate(panes)
+        )
+        rows = "".join(panel(key, i == 0) for i, (key, lbl) in enumerate(panes))
+        return (
+            '<div class="tabs" data-tabs role="tablist" aria-label="' + esc(label) + '">'
+            + buttons + "</div>" + rows
+        )
+
+    # Top-level category tabs (each controls a group that holds its own sub-tabs).
+    cat_tabs = "".join(
+        '<button type="button" role="tab" id="tab-cat-%s" aria-controls="cat-%s" '
         'aria-selected="%s" tabindex="%s">%s</button>'
-        % (key, key, "true" if i == 0 else "false", "0" if i == 0 else "-1", esc(label))
-        for i, (key, label) in enumerate(panes)
+        % (cat, cat, "true" if i == 0 else "false", "0" if i == 0 else "-1", esc(name))
+        for i, (cat, name, sublabel, panes) in enumerate(categories)
     )
-    panels = "".join(
-        '<div class="tabpanel" id="tp-%s" role="tabpanel" aria-labelledby="tab-%s"%s>'
-        '<div class="codeblock builder__code">'
-        '<button class="copy" type="button" data-done-label="%s">%s</button>'
-        '<pre><code id="out-%s"></code></pre></div></div>'
-        % (key, key, "" if i == 0 else " hidden",
-           esc(t("готово", "copied")), esc(t("копировать", "copy")), key)
-        for i, (key, label) in enumerate(panes)
+    cat_groups = "".join(
+        '<div class="tabpanel tabgroup" id="cat-%s" role="tabpanel" '
+        'aria-labelledby="tab-cat-%s"%s>%s</div>'
+        % (cat, cat, "" if i == 0 else " hidden", subtabs(panes, sublabel))
+        for i, (cat, name, sublabel, panes) in enumerate(categories)
     )
+    tabs = (
+        '<div class="tabs" data-tabs role="tablist" aria-label="'
+        + esc(t("Куда встроить", "Where to integrate")) + '">' + cat_tabs + "</div>"
+    )
+    panels = cat_groups
 
     # The phone rides in the sticky column opposite the fields it previews. The
     # switch and the live count sit in a fixed-height header bar, the preview and
@@ -638,9 +718,7 @@ def builder_output(ctx):
         '<div class="tabpanel" id="tp-pv" role="tabpanel" aria-labelledby="tab-pv">'
         + builder_preview(ctx) + "</div>"
         '<div class="tabpanel" id="tp-code" role="tabpanel" aria-labelledby="tab-code" hidden>'
-        '<div class="tabs" data-tabs role="tablist" aria-label="'
-        + esc(t("Формат вывода", "Output format")) + '">'
-        + tabs + "</div>"
+        + tabs
         + panels
         + "</div>"
         + "</div>"
@@ -778,11 +856,13 @@ def section_builder(ctx):
         + "</h2>"
         + '<div><p class="lede">' + esc(t(
             "Форма проверяет значения по тем же правилам, что и клиент: HTTPS, "
-            "диапазоны, длину объявления, порты в запасных хостах. Справа — готовый "
-            "фрагмент для nginx, Caddy, PHP, Go или Python.",
+            "диапазоны, длину объявления, порты в запасных хостах. Справа — готовые "
+            "артефакты для панели Remnawave и фрагменты для nginx, Caddy, PHP, Go "
+            "или Python.",
             "The form validates values by the same rules as the client: HTTPS, ranges, "
-            "announcement length, ports in fallback hosts. On the right — a ready snippet "
-            "for nginx, Caddy, PHP, Go or Python.",
+            "announcement length, ports in fallback hosts. On the right — ready-made "
+            "artefacts for the Remnawave panel and snippets for nginx, Caddy, PHP, Go "
+            "or Python.",
         )) + "</p></div></div>"
         + presets
         + '<div class="builder">'
@@ -793,6 +873,7 @@ def section_builder(ctx):
         + "</div>"
         + json_block("builder-strings", builder_strings(ctx))
         + json_block("widget-spec", spec.widget_spec(ctx.lang))
+        + json_block("remnawave-template", remnawave.template())
         + "</section>"
     )
 
@@ -947,9 +1028,9 @@ def doc_body(ctx):
     ]
     out.append(sec("reclash", t("Заголовки ReClash", "ReClash headers"),
         "<p>" + t(
-            "Семнадцать заголовков, которые понимает только ReClash. Все они "
+            "Восемнадцать заголовков, которые понимает только ReClash. Все они "
             "необязательны — берите ровно те, которые вам нужны.",
-            "Seventeen headers only ReClash understands. Every one is optional — take "
+            "Eighteen headers only ReClash understands. Every one is optional — take "
             "exactly the ones you need.",
         ) + "</p>"
         + table([t("Заголовок", "Header"), t("Значение", "Value"), t("Назначение", "Purpose")], rows)))
@@ -1076,12 +1157,14 @@ def doc_body(ctx):
     out.append(sec("settings", t("Настройки по умолчанию", "Default settings"),
         sig("reclash-settings")
         + "<p>" + t(
-            "Токены через запятую. Применяются <strong>один раз</strong> — при первом "
-            "добавлении профиля. Дальше настройками владеет пользователь, и повторная "
-            "отправка ничего не изменит.",
-            "Comma-separated tokens. They apply <strong>once</strong> — when the profile is "
-            "first added. After that the settings belong to the user, and re-sending the "
-            "header changes nothing.",
+            "Токены через запятую. Предлагаются <strong>один раз</strong> — при первом "
+            "добавлении профиля: ReClash покажет запрошенные изменения и применит их "
+            "только после подтверждения. Не перечисленные настройки остаются как есть, "
+            "а дальше настройками владеет пользователь — повторная отправка ничего не изменит.",
+            "Comma-separated tokens. They are offered <strong>once</strong> — when the "
+            "profile is first added: ReClash shows the requested changes and applies them "
+            "only after the user confirms. Unlisted settings keep their current values, and "
+            "after that the settings belong to the user — re-sending the header changes nothing.",
         ) + "</p>"
         + table([t("Токен", "Token"), t("Что включает", "What it turns on")], s_rows)
         + notice("<span>" + t(
@@ -1138,10 +1221,10 @@ def doc_body(ctx):
         ) + "</p>"
         + table([t("Что задаётся", "What it sets"), t("Приоритет", "Priority")], a_rows)
         + notice("<span>" + t(
-            "У кольца, виджетов, <code>reclash-custom</code>, <code>reclash-settings</code> "
-            "и запасных хостов псевдонимов нет — это возможности ReClash.",
-            "The hero ring, widgets, <code>reclash-custom</code>, <code>reclash-settings</code> "
-            "and fallback hosts have no aliases — they are ReClash features.",
+            "У надписи подключения, кольца, виджетов, <code>reclash-custom</code>, "
+            "<code>reclash-settings</code> и запасных хостов псевдонимов нет — это возможности ReClash.",
+            "The active-protection text, hero ring, widgets, <code>reclash-custom</code>, "
+            "<code>reclash-settings</code> and fallback hosts have no aliases — they are ReClash features.",
         ) + "</span>", "notice--info")))
 
     # -- hwid -------------------------------------------------------------
@@ -1221,7 +1304,7 @@ def render(ctx):
             "that assembles them for you — with a live preview of the app.",
         )) + "</p>",
         '<p class="pagehead__meta">',
-        chip("17 reclash-*"), chip(t("6 общих", "6 common")),
+        chip("18 reclash-*"), chip(t("6 общих", "6 common")),
         chip(t("12 псевдонимов", "12 aliases")), chip("HWID"),
         "</p></div></section>",
         section_builder(ctx),
@@ -1241,6 +1324,7 @@ def render(ctx):
             "announcements, traffic limits, HWID — plus a builder with a live preview.",
         ),
         "body": body,
-        "css": ("preview.css", "docs.css"),
+        "css": ("docs.css",),
+        "css_defer": ("preview.css",),
         "js": ("builder.js",),
     }

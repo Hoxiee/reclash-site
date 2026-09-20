@@ -984,6 +984,22 @@
   display: none;
 }
 
+/* Two-tier output tabs: a category strip (Remnawave / self-host) opens a group
+   that carries its own sub-tab strip. The small gap sets the child row apart
+   from its parent instead of reading as one long run of tabs. */
+.tabgroup > .tabs {
+  margin-top: var(--step-2);
+}
+
+/* Scoped to the output column: let these strips wrap to a second row instead
+   of scrolling sideways. The self-host row (six formats) is the only one that
+   ever needs it, and only on a narrow phone — but wrapping beats a hidden
+   horizontal scroll the reader cannot see. */
+#tp-code .tabs {
+  flex-wrap: wrap;
+  overflow-x: visible;
+}
+
 .builder__code pre {
   max-height: 26rem;
   overflow: auto;

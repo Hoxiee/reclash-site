@@ -7,9 +7,10 @@
   if (!form) return;
 
   var $ = RC.$, $$ = RC.$$;
-  var S = {}, WIDGETS = [];
+  var S = {}, WIDGETS = [], RWTPL = null;
   try { S = JSON.parse(document.getElementById('builder-strings').textContent); } catch (e) {}
   try { WIDGETS = JSON.parse(document.getElementById('widget-spec').textContent); } catch (e) {}
+  try { RWTPL = JSON.parse(document.getElementById('remnawave-template').textContent); } catch (e) {}
   function s(k) { return S[k] !== undefined ? S[k] : k; }
 
   /* "4 заголовков" is wrong. Russian picks the form from the last digits and
@@ -38,6 +39,16 @@
     return btoa(bin);
   }
   function isAscii(str) { return /^[\x20-\x7e]*$/.test(str); }
+  /* Inverse of b64() — used to turn a collect()ed `base64:<payload>` value
+     back into text for the global-headers `rwEncodeBase64:` transform. */
+  function b64decode(str) {
+    try {
+      var bin = atob(str);
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new TextDecoder().decode(bytes);
+    } catch (e) { return str; }
+  }
 
   /* ---------------------------------------------------- colour utilities */
 
@@ -462,6 +473,134 @@
       '    )';
   }
 
+  /* ------------------------------------------------------- Remnawave out */
+
+  /* Remnawave emits Subscription-Userinfo and Content-Disposition itself, so
+     the panel artefacts must not repeat them, or the client sees two values. */
+  function rwHeaderSet(headers) {
+    return headers.filter(function (h) {
+      var n = h[0].toLowerCase();
+      return n !== 'subscription-userinfo' && n !== 'content-disposition';
+    });
+  }
+
+  function rwOpts() {
+    var locales = [];
+    if (on('f_rw_en')) locales.push('en');
+    if (on('f_rw_ru')) locales.push('ru');
+    if (!locales.length) locales.push('en');
+    return {
+      fallback: val('f_rw_fallback') || 'CLASH',
+      disableHwid: on('f_rw_hwid'),
+      locales: locales,
+      suburl: val('f_rw_suburl')
+    };
+  }
+
+  /* Subscription Response Rules. Rules match top to bottom and the first hit
+     wins; if none match while SRR is on, the panel answers 403 — so the config
+     is always the ReClash rule plus a catch-all fallback, never just one. */
+  function srrBlock(headers, opts) {
+    var mods = {
+      headers: rwHeaderSet(headers).map(function (h) { return { key: h[0], value: h[1] }; }),
+      applyHeadersToEnd: true,
+      additionalExtendedClientsRegex: ['^ReClash/']
+    };
+    if (opts.disableHwid) mods.disableHwidCheck = true;
+    var reclash = {
+      name: 'ReClash',
+      description: 'Serve mihomo with ReClash provider headers to ReClash and FlClashX clients.',
+      enabled: true,
+      operator: 'OR',
+      conditions: [
+        { headerName: 'user-agent', operator: 'STARTS_WITH', value: 'ReClash/', caseSensitive: false },
+        { headerName: 'user-agent', operator: 'STARTS_WITH', value: 'FlClashX/', caseSensitive: false }
+      ],
+      responseType: 'MIHOMO',
+      responseModifications: mods
+    };
+    var fallback = {
+      name: 'All other clients',
+      description: 'Catch-all so non-ReClash clients are not answered with 403.',
+      enabled: true,
+      operator: 'AND',
+      conditions: [],
+      responseType: opts.fallback
+    };
+    return JSON.stringify({ version: '1', rules: [reclash, fallback] }, null, 2);
+  }
+
+  /* The same header set for the panel's global "Response Headers", where the
+     rwEncodeBase64: transform is available — so non-ASCII goes as readable
+     text rather than as our own base64: payload. */
+  function rwHeadersBlock(headers) {
+    var set = rwHeaderSet(headers);
+    if (!set.length) return '';
+    return set.map(function (h) {
+      var v = h[1];
+      if (v.indexOf('base64:') === 0) return h[0] + ': rwEncodeBase64:' + b64decode(v.slice(7));
+      return h[0] + ': ' + v;
+    }).join('\n');
+  }
+
+  /* A LocalizedText is an object whose keys are all two-letter codes mapping
+     to strings — that lets the walker narrow only real translations and leave
+     branding URLs and config flags untouched. */
+  function isLocalized(o) {
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return false;
+    var ks = Object.keys(o);
+    if (!ks.length) return false;
+    return ks.every(function (k) { return /^[a-z]{2}$/.test(k) && typeof o[k] === 'string'; });
+  }
+
+  function narrowLocales(node, locales) {
+    if (Array.isArray(node)) { node.forEach(function (x) { narrowLocales(x, locales); }); return; }
+    if (!node || typeof node !== 'object') return;
+    Object.keys(node).forEach(function (k) {
+      var v = node[k];
+      if (isLocalized(v)) {
+        var picked = {};
+        locales.forEach(function (l) { picked[l] = v[l] !== undefined ? v[l] : (v.en || v[Object.keys(v)[0]]); });
+        node[k] = picked;
+      } else {
+        narrowLocales(v, locales);
+      }
+    });
+  }
+
+  /* Subscription-page config: the shipped ReClash template with the provider's
+     branding folded in and every translation narrowed to the chosen locales,
+     so the saved config never declares a locale it cannot fill. */
+  function subpageBlock(opts, preview) {
+    if (!RWTPL) return '';
+    var cfg = JSON.parse(JSON.stringify(RWTPL));
+    cfg.locales = opts.locales.slice();
+    var title = preview.name || cfg.brandingSettings.title;
+    cfg.brandingSettings.title = title;
+    cfg.brandingSettings.logoUrl = preview.logo || '';
+    cfg.brandingSettings.supportUrl = preview.support || '';
+    cfg.baseSettings.metaTitle = title;
+    narrowLocales(cfg, opts.locales);
+    return JSON.stringify(cfg, null, 2);
+  }
+
+  /* The panel can't be probed from the browser — fetch cannot set User-Agent
+     and cross-origin reads are blocked — so the check is a copy-paste curl the
+     provider runs themselves: expect 200, a mihomo YAML body, and the
+     Subscription-Userinfo the panel adds. */
+  function curlBlock(opts) {
+    var url = opts.suburl || 'https://panel.example.com/api/sub/<id>';
+    var q = "'" + url.replace(/'/g, "'\\''") + "'";
+    return [
+      '# Expect: 200, Content-Type application/yaml, Subscription-Userinfo, ReClash-* headers.',
+      '# FlClashX compatibility user-agent (the ReClash default):',
+      "curl -sS -D - -o /dev/null -A 'FlClashX/v0.4.2' " + q,
+      '',
+      '# Native ReClash user-agent:',
+      "curl -sS -D - -o /dev/null -A 'ReClash/1.0' " + q
+    ].join('\n');
+  }
+
   /* ------------------------------------------------------------- preview */
 
   function bytes(gb) {
@@ -696,7 +835,7 @@
              with a typo in it leaves the client showing its fallback, and the
              preview has to show the same thing rather than an empty square. */
           '<div class="service__logo">' + esc(p.name.slice(0, 1).toUpperCase()) +
-          (p.logo ? '<img src="' + esc(p.logo) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
+          (p.logo ? '<img src="' + esc(p.logo) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
           '</div>' +
           '<div style="min-width:0"><div class="service__name">' + esc(p.name) + '</div>' +
           '<div class="tile__sub">user-4821</div></div></div></div>';
@@ -848,7 +987,7 @@
          the markup, the image on top, and it takes itself out on error. */
       '<span class="horb__core">' + APP_MARK +
       (p.logo
-        ? '<img class="horb__logo" src="' + esc(p.logo) + '" alt="" onerror="this.remove()">'
+        ? '<img class="horb__logo" src="' + esc(p.logo) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">'
         : '') +
       '</span></div>';
   }
@@ -945,6 +1084,10 @@
   var titleEl = document.getElementById('pv-title');
   var titleDash = titleEl ? titleEl.textContent : '';
 
+  /* Guards background loads: a fetch that resolves after the URL changed
+     must not overwrite the current one. Bumped on every bg (re)apply. */
+  var bgToken = 0;
+
   function renderPreview(p) {
     if (!screenEl || !phoneEl) return;
     var sc = scheme('#' + p.hex, p.theme ? p.variant : 'tonalspot', p.theme && p.pureblack);
@@ -963,9 +1106,39 @@
     var bgEl = document.getElementById('pv-bg');
     if (bgEl) {
       if (p.bg) {
-        bgEl.style.backgroundImage = 'url("' + p.bg.replace(/"/g, '') + '")';
-        bgEl.style.opacity = String(Math.max(1, Math.min(100, p.bgOpacity)) / 100);
+        /* The background art is the one thing in the preview that reaches out
+           to a host the provider typed. On the blocked or throttled networks
+           this audience lives on, a dead host would otherwise pin the tab's
+           loading indicator for the browser's full image timeout — which is
+           exactly the "#cfg= link takes forever to load" report. So fetch it
+           out of band: paint it only once it actually decodes, drop it on
+           error or after 6s, and ignore a load that resolves after the URL
+           has already changed. A missing image just leaves the flat scheme. */
+        var url = p.bg.replace(/"/g, '');
+        var op = String(Math.max(1, Math.min(100, p.bgOpacity)) / 100);
+        var token = ++bgToken;
+        bgEl.style.backgroundImage = '';
+        bgEl.style.opacity = '0';
+        var img = new Image();
+        var settled = false;
+        var timer = setTimeout(function () {
+          if (settled) return;
+          settled = true;
+          img.onload = img.onerror = null;
+          img.src = '';
+        }, 6000);
+        img.onload = function () {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          if (token !== bgToken) return;
+          bgEl.style.backgroundImage = 'url("' + url + '")';
+          bgEl.style.opacity = op;
+        };
+        img.onerror = function () { settled = true; clearTimeout(timer); };
+        img.src = url;
       } else {
+        bgToken++;
         bgEl.style.backgroundImage = '';
         bgEl.style.opacity = '0';
       }
@@ -1020,6 +1193,10 @@
 
   var warnBox = document.getElementById('builder-warnings');
   var outputs = {
+    srr: document.getElementById('out-srr'),
+    rwh: document.getElementById('out-rwh'),
+    subpage: document.getElementById('out-subpage'),
+    curl: document.getElementById('out-curl'),
     http: document.getElementById('out-http'),
     nginx: document.getElementById('out-nginx'),
     caddy: document.getElementById('out-caddy'),
@@ -1032,6 +1209,15 @@
   function update() {
     var res = collect();
     var h = res.headers;
+
+    /* Remnawave artefacts stay valid even with no headers: SRR always needs
+       its ReClash rule plus the catch-all, the page is a full template, and
+       the check is a command — so these render unconditionally. */
+    var rw = rwOpts();
+    if (outputs.srr) outputs.srr.textContent = srrBlock(h, rw);
+    if (outputs.rwh) outputs.rwh.textContent = rwHeadersBlock(h);
+    if (outputs.subpage) outputs.subpage.textContent = subpageBlock(rw, res.preview);
+    if (outputs.curl) outputs.curl.textContent = curlBlock(rw);
 
     if (outputs.http) outputs.http.textContent = httpBlock(h);
     if (outputs.nginx) outputs.nginx.textContent = h.length ? nginxBlock(h) : '';
