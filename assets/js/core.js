@@ -415,4 +415,146 @@
 
     build(false);
   });
+
+  /* --------------------------------------------------- header catalogue
+     Search + category filter over the reference cards. Every card is an open
+     <details> in the markup, so with no JS the whole catalogue reads as plain
+     sections; this only hides what does not match and opens matches so you see
+     why they matched. */
+  var catalog = $('[data-catalog]');
+  if (catalog) {
+    var input = $('.catalog__input', catalog);
+    var filters = $$('.hfilter', catalog);
+    var cards = $$('.hcard', catalog);
+    var groups = $$('.hgroup', catalog);
+    var empty = $('.catalog__empty', catalog);
+    var cat = 'all';
+
+    /* Cards start collapsed once JS is in; without JS they stay open. */
+    cards.forEach(function (c) { c.open = false; });
+
+    function apply() {
+      var q = (input ? input.value : '').trim().toLowerCase();
+      var shown = 0;
+      cards.forEach(function (c) {
+        var okCat = cat === 'all' || c.getAttribute('data-cat') === cat;
+        var hay = (c.getAttribute('data-name') + ' ' +
+          (c.getAttribute('data-keys') || '') + ' ' +
+          c.textContent).toLowerCase();
+        var okQ = !q || hay.indexOf(q) !== -1;
+        var on = okCat && okQ;
+        c.hidden = !on;
+        /* Open matches while searching so the reason is visible; leave them
+           as the user left them once the query is cleared. */
+        if (q && on) c.open = true;
+        if (on) shown++;
+      });
+      /* Hide a group whose every card is filtered out. */
+      groups.forEach(function (g) {
+        var any = $$('.hcard', g).some(function (c) { return !c.hidden; });
+        g.hidden = !any;
+      });
+      if (empty) empty.hidden = shown !== 0;
+    }
+
+    if (input) {
+      input.addEventListener('input', apply);
+      /* Escape clears the field, the way a search box should. */
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { input.value = ''; apply(); }
+      });
+    }
+    filters.forEach(function (b) {
+      b.addEventListener('click', function () {
+        cat = b.getAttribute('data-cat') || 'all';
+        filters.forEach(function (x) {
+          x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+        });
+        apply();
+      });
+    });
+
+    /* Deep link: /reference.html#h-reclash-hex opens and reveals that card. */
+    function openFromHashCard() {
+      var id = location.hash.slice(1);
+      if (!id) return;
+      var card = d.getElementById(id);
+      if (card && card.classList.contains('hcard')) {
+        card.hidden = false;
+        card.open = true;
+        card.scrollIntoView({ block: 'center' });
+      }
+    }
+    openFromHashCard();
+    window.addEventListener('hashchange', openFromHashCard);
+
+    apply();
+  }
+
+  /* ------------------------------------------------- page-transition direction
+     Cross-document View Transitions do the swap (CSS opts in with
+     `@view-transition`). Here we only *label* each transition so the stylesheet
+     can pick a direction: `forward`/`back` along the nav order, or `lang` for
+     the language switch — same page, other tongue. `pageswap` fires on the page
+     being left, `pagereveal` on the one arriving; both must tag it, because the
+     type lives on each document's own transition. No API, no tags — the swap is
+     just the browser default, and the CSS default animation still applies. */
+  if ('addEventListener' in window) {
+    /* Nav order = reading order of the masthead links, mock/reference folded in
+       under their parent. Index decides which way a jump travels. */
+    var VT_ORDER = ['index', 'gallery', 'start', 'docs', 'reference', 'headers',
+      'mock', 'download'];
+    function vtFile(name) { return name.replace(/^.*\//, '').replace(/[?#].*$/, ''); }
+    function vtKey(file) {
+      var f = vtFile(file);
+      var i = f.lastIndexOf('.html');
+      return i === -1 ? f : f.slice(0, i);
+    }
+    function vtLang(path) {
+      var m = path.match(/\/(ru|en)\//);
+      return m ? m[1] : '';
+    }
+    function vtTypes(fromURL, toURL) {
+      var types = [];
+      try {
+        var from = new URL(fromURL, location.href);
+        var to = new URL(toURL, location.href);
+        if (to.origin !== from.origin) return types;
+        var fl = vtLang(from.pathname), tl = vtLang(to.pathname);
+        var fk = vtKey(from.pathname), tk = vtKey(to.pathname);
+        if (fl && tl && fl !== tl && fk === tk) {
+          types.push('lang');            /* same page, switched language */
+        } else if (fk !== tk) {
+          var a = VT_ORDER.indexOf(fk), b = VT_ORDER.indexOf(tk);
+          if (a !== -1 && b !== -1) types.push(b > a ? 'forward' : 'back');
+          else types.push('forward');    /* unknown page — treat as advancing */
+        }
+      } catch (e) {}
+      return types;
+    }
+    function vtApply(vt, types) {
+      if (vt && vt.types && types.length) {
+        types.forEach(function (t) { try { vt.types.add(t); } catch (e) {} });
+      }
+    }
+    window.addEventListener('pageswap', function (e) {
+      if (!e.viewTransition || !e.activation || !e.activation.entry) return;
+      vtApply(e.viewTransition,
+        vtTypes(location.href, e.activation.entry.url));
+    });
+    window.addEventListener('pagereveal', function (e) {
+      if (!e.viewTransition) return;
+      var nav = window.navigation;
+      var from = nav && nav.activation && nav.activation.from
+        ? nav.activation.from.url : d.referrer;
+      if (from) vtApply(e.viewTransition, vtTypes(from, location.href));
+    });
+    /* No leave-side interception here on purpose. On engines without native
+       cross-document View Transitions (Firefox, older Safari) the only way to
+       hide the inter-document gap is to hold the old frame — i.e. delay the
+       navigation behind an exit animation — and that delay makes every click
+       feel laggy, which is worse than the brief gap it hides. So those engines
+       just navigate instantly; the arriving page still eases in via the CSS
+       `page-enter` fallback, which costs the click nothing. */
+  }
 })();

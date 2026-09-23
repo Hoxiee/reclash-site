@@ -1,20 +1,42 @@
 """Page skeleton: <head>, masthead, footer. Shared by all four pages."""
 
-from . import ui
+from . import ui, seo
 from .ui import esc, icon, brand_icon, mark, ticks
 
+# "download" is intentionally absent: the masthead already carries a prominent
+# "Скачать" CTA on the right, so a second nav link to the same page is noise.
+# The page still exists (footer links to it, and the CTA points at it).
 NAV = (
     ("index", "Клиент", "Client"),
-    ("headers", "Заголовки", "Headers"),
-    ("download", "Загрузки", "Download"),
+    ("gallery", "Галерея", "Gallery"),
     ("start", "Старт и FAQ", "Start & FAQ"),
+    ("headers", "Разработчикам", "Developers"),
 )
 
 FILE = {
     "index": "index.html",
+    "gallery": "gallery.html",
+    "docs": "docs.html",
     "headers": "headers.html",
+    "reference": "reference.html",
     "download": "download.html",
     "start": "start.html",
+    "mock": "mock-subs.html",
+}
+
+# A nav item may open a hover/focus sub-menu instead of being a plain link.
+# Each entry is (page-key, ru, en). The "Разработчикам" item is the provider
+# toolchain: the docs, the header catalogue, the builder and the mock
+# subscriptions all live under it. It sits last in NAV, next to the language
+# switch, so the client-facing links come first. Keyed by NAV key so any page's
+# masthead grows the same drop-down.
+SUBNAV = {
+    "headers": (
+        ("docs", "Документация", "Documentation"),
+        ("reference", "Заголовки", "Headers"),
+        ("headers", "Конструктор", "Builder"),
+        ("mock", "Мок-подписки", "Mock subs"),
+    ),
 }
 
 
@@ -46,15 +68,43 @@ class Ctx:
 # ------------------------------------------------------------------ chrome
 
 
+def _nav_item(ctx, key, ru, en, active):
+    """One masthead entry. A key in SUBNAV becomes a hover/focus drop-down whose
+    items are separate pages (the builder and the reference); every other key is
+    a plain link.
+
+    The parent points at its first sub-page and lights up as current whenever
+    any of its sub-pages is active. A keyboard user who never triggers hover
+    still reaches that first page by clicking, and the sub-menu is progressive:
+    with no CSS it is just two more links, and core.js closes the mobile menu on
+    any of them because they are `.nav a` too."""
+    sub = SUBNAV.get(key)
+    if not sub:
+        current = ' aria-current="page"' if key == active else ""
+        return '<a href="%s"%s>%s</a>' % (ctx.page(key), current, esc(ctx.t(ru, en)))
+    sub_keys = [sk for sk, _, _ in sub]
+    parent_current = ' aria-current="page"' if active in sub_keys else ""
+    chevron = ('<svg class="nav__chev" viewBox="0 0 24 24" aria-hidden="true">'
+               '<path d="m7 10 5 5 5-5"/></svg>')
+    items = "".join(
+        '<a href="%s" role="menuitem"%s>%s</a>'
+        % (ctx.page(sk), ' aria-current="page"' if sk == active else "",
+           esc(ctx.t(sru, sen)))
+        for sk, sru, sen in sub
+    )
+    return (
+        '<div class="nav__item nav__item--has-sub">'
+        '<a href="%s"%s aria-haspopup="true">%s%s</a>'
+        '<div class="nav__sub" role="menu" aria-label="%s">%s</div>'
+        "</div>"
+        % (ctx.page(sub_keys[0]), parent_current, esc(ctx.t(ru, en)), chevron,
+           esc(ctx.t(ru, en)), items)
+    )
+
+
 def masthead(ctx, active):
     links = "".join(
-        '<a href="%s"%s>%s</a>'
-        % (
-            ctx.page(key),
-            ' aria-current="page"' if key == active else "",
-            esc(ctx.t(ru, en)),
-        )
-        for key, ru, en in NAV
+        _nav_item(ctx, key, ru, en, active) for key, ru, en in NAV
     )
     lang_links = "".join(
         '<a href="%s" data-lang="%s" hreflang="%s"%s>%s</a>'
@@ -111,7 +161,9 @@ def footer(ctx):
         t("Сайт", "Site"),
         [
             (t("Клиент", "Client"), ctx.page("index"), False),
-            (t("Заголовки для провайдеров", "Provider headers"), ctx.page("headers"), False),
+            (t("Документация по заголовкам", "Header documentation"), ctx.page("docs"), False),
+            (t("Справочник по заголовкам", "Header reference"), ctx.page("reference"), False),
+            (t("Конструктор заголовков", "Header builder"), ctx.page("headers"), False),
             (t("Загрузки", "Downloads"), ctx.page("download"), False),
             (t("Быстрый старт и FAQ", "Quick start & FAQ"), ctx.page("start"), False),
         ],
@@ -184,7 +236,7 @@ def footer(ctx):
 # -------------------------------------------------------------------- shell
 
 
-def document(ctx, *, active, title, description, body, css=(), js=(), head_extra=""):
+def document(ctx, *, active, title, description, body, css=(), js=(), css_defer=(), head_extra="", faq=None):
     other_lang = "en" if ctx.lang == "ru" else "ru"
     # Fonts are discovered only after fonts.css parses, so the display and body
     # faces the first screen always needs start late. Preload the one subset the
@@ -202,6 +254,19 @@ def document(ctx, *, active, title, description, body, css=(), js=(), head_extra
         '<link rel="stylesheet" href="%s">' % esc(ctx.asset("assets/css/" + name))
         for name in ("fonts.css", "base.css", "site.css") + tuple(css)
     )
+    # Below-the-fold or JS-driven styles that must not block the first paint.
+    # `media="print"` lets the browser fetch the sheet at a low, non-blocking
+    # priority; the onload flips it to `all` once it lands. A <noscript> copy
+    # restores it as a normal blocking stylesheet when JS is off, so the markup
+    # still renders styled without the loop that would otherwise apply it.
+    deferred = tuple(css_defer)
+    deferred_styles = "".join(
+        '<link rel="stylesheet" href="%(h)s" media="print" '
+        'onload="this.media=\'all\'">'
+        '<noscript><link rel="stylesheet" href="%(h)s"></noscript>'
+        % {"h": esc(ctx.asset("assets/css/" + name))}
+        for name in deferred
+    )
     scripts = "".join(
         '<script src="%s" defer></script>' % esc(ctx.asset("assets/js/" + name))
         for name in ("core.js",) + tuple(js)
@@ -215,11 +280,13 @@ def document(ctx, *, active, title, description, body, css=(), js=(), head_extra
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         "<title>%(title)s</title>\n"
         '<meta name="description" content="%(desc)s">\n'
+        '<meta name="robots" content="%(robots)s">\n'
         '<meta name="color-scheme" content="dark">\n'
         '<meta name="theme-color" content="#07060b">\n'
         '<link rel="icon" href="%(favsvg)s" type="image/svg+xml">\n'
         '<link rel="alternate icon" href="%(favico)s" sizes="16x16 32x32 48x48">\n'
         '<link rel="apple-touch-icon" href="%(apple)s">\n'
+        '<link rel="manifest" href="%(manifest)s">\n'
         '<link rel="canonical" href="%(canonical)s">\n'
         '<link rel="alternate" hreflang="%(lang)s" href="%(canonical)s">\n'
         '<link rel="alternate" hreflang="%(other)s" href="%(other_url)s">\n'
@@ -231,12 +298,20 @@ def document(ctx, *, active, title, description, body, css=(), js=(), head_extra
         '<meta property="og:description" content="%(desc)s">\n'
         '<meta property="og:url" content="%(canonical)s">\n'
         '<meta property="og:image" content="%(og)s">\n'
+        '<meta property="og:image:secure_url" content="%(og)s">\n'
+        '<meta property="og:image:type" content="image/png">\n'
+        '<meta property="og:image:width" content="1200">\n'
+        '<meta property="og:image:height" content="630">\n'
+        '<meta property="og:image:alt" content="%(ogalt)s">\n'
         '<meta name="twitter:card" content="summary_large_image">\n'
         '<meta name="twitter:title" content="%(title)s">\n'
         '<meta name="twitter:description" content="%(desc)s">\n'
         '<meta name="twitter:image" content="%(og)s">\n'
+        '<meta name="twitter:image:alt" content="%(ogalt)s">\n'
         "%(fontpreload)s\n"
         "%(styles)s\n"
+        "%(deferred_styles)s"
+        "%(ldjson)s"
         "%(head_extra)s"
         '<script>document.documentElement.classList.remove("no-js");</script>\n'
         "%(scripts)s\n"
@@ -275,6 +350,12 @@ def document(ctx, *, active, title, description, body, css=(), js=(), head_extra
             "other": other_lang,
             "title": esc(full_title),
             "desc": esc(description),
+            "robots": ("noindex, follow" if active in ui.NOINDEX else
+                       "index, follow, max-image-preview:large, "
+                       "max-snippet:-1, max-video-preview:-1"),
+            "ogalt": esc(ctx.t("ReClash — открытый клиент для mihomo",
+                               "ReClash — an open-source mihomo client")),
+            "manifest": esc(ctx.asset("site.webmanifest")),
             "favsvg": esc(ctx.asset("assets/img/favicon.svg")),
             "favico": esc(ctx.asset("assets/img/favicon.ico")),
             "apple": esc(ctx.asset("assets/img/apple-touch-icon.png")),
@@ -288,6 +369,8 @@ def document(ctx, *, active, title, description, body, css=(), js=(), head_extra
             "oglocale": "ru_RU" if ctx.lang == "ru" else "en_US",
             "fontpreload": font_preload,
             "styles": styles,
+            "deferred_styles": deferred_styles,
+            "ldjson": seo.jsonld(ctx, active, title, description, faq=faq),
             "scripts": scripts,
             "head_extra": head_extra,
             "skip": esc(ctx.t("К содержимому", "Skip to content")),

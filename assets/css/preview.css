@@ -51,7 +51,11 @@
   border-radius: 24px;
   overflow: hidden;
   background: var(--app-bg);
-  min-height: 36rem;
+  /* One fixed height for every screen: hero, widgets and proxies share the
+     same handset so switching tabs never resizes the frame, and the ratio
+     stays close to a real phone. Content that overruns scrolls inside this box
+     (see .phone__content below). */
+  height: 47rem;
   display: flex;
   flex-direction: column;
   isolation: isolate;
@@ -113,17 +117,13 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  /* The frame is one fixed height on every screen, so any screen whose content
+     runs past it scrolls inside the box rather than stretching the handset.
+     The connection screen usually fits and shows no bar; the widget wall and
+     proxy list are lists and scroll. */
+  overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--app-line) transparent;
-}
-
-/* The widget wall and the proxy list are lists and may be taller than the
-   handset; the connection screen is a fixed composition and must never be
-   given a scrollbar, which would be an artefact of the preview, not the app. */
-.phone[data-screen='dash'] .phone__content,
-.phone[data-screen='proxy'] .phone__content {
-  overflow-y: auto;
-  max-height: 33rem;
 }
 
 /* The start button floats over the wall; the client scrolls the last widget
@@ -245,6 +245,31 @@
   filter: blur(6px);
 }
 
+/* ReClash-HeroEffect: aurora — hero_effect.dart paints a slow aurora behind
+   the ring. A blurred, drifting glow keyed off the same three ring colours
+   the rim uses, so the effect and the ring can never disagree. */
+.horb__aurora {
+  position: absolute;
+  inset: -6%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    color-mix(in oklab, var(--r1) 60%, transparent),
+    color-mix(in oklab, var(--r2) 60%, transparent),
+    color-mix(in oklab, var(--r3) 60%, transparent),
+    color-mix(in oklab, var(--r1) 60%, transparent)
+  );
+  filter: blur(16px);
+  opacity: 0.5;
+  animation: aurora-drift 9s ease-in-out infinite;
+}
+
+@keyframes aurora-drift {
+  0%   { transform: rotate(0deg) scale(1); opacity: 0.4; }
+  50%  { transform: rotate(180deg) scale(1.08); opacity: 0.62; }
+  100% { transform: rotate(360deg) scale(1); opacity: 0.4; }
+}
+
 .horb__rim {
   position: absolute;
   inset: 13%;
@@ -315,6 +340,45 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ---- the speed pair ----------------------------------------------------
+   hero_connect_orb_slot.dart shows a centred download/upload readout once
+   connected: an icon, a monospace value in titleMedium weight, then the
+   unit in a dimmer bodySmall. The 22px gap between the two entries is the
+   SizedBox the client puts there. */
+.hspeed {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 1.3rem;
+  margin-top: 0.4rem;
+}
+
+.hspeed__e {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.28rem;
+}
+
+.hspeed__e .hico {
+  width: 0.92rem;
+  height: 0.92rem;
+  color: var(--app-dim);
+  align-self: center;
+}
+
+.hspeed__e b {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--app-text);
+  letter-spacing: -0.01em;
+}
+
+.hspeed__u {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--app-dim);
 }
 
 /* ---- card surface -----------------------------------------------------
@@ -1429,3 +1493,13 @@
     transform: rotate(1turn);
   }
 }
+
+/* ============================================================ preview frame
+   The phone is a fixed-size handset centred in the preview pane; every screen
+   shares one frame so switching tabs never resizes it. */
+.pv-scaler {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+

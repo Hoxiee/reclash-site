@@ -135,6 +135,86 @@
   color: var(--text);
 }
 
+/* ------------------------------------------------------------ nav sub-menu
+
+   "Headers" carries a drop-down to the builder and the reference. The parent
+   is still a real link; the panel opens on hover and on keyboard focus inside
+   the item (:focus-within), so it needs no JS. It is absolutely positioned so
+   it never widens the bar, and pointer-events guard against it swallowing
+   clicks while hidden. */
+.nav__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav__item--has-sub > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.nav__chev {
+  width: 0.72rem;
+  height: 0.72rem;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  fill: none;
+  opacity: 0.7;
+  transition: transform 0.2s var(--ease);
+}
+
+.nav__item--has-sub:hover .nav__chev,
+.nav__item--has-sub:focus-within .nav__chev {
+  transform: rotate(-180deg);
+}
+
+.nav__sub {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 12.5rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0.4rem);
+  transition: opacity 0.18s var(--ease), transform 0.18s var(--ease),
+    visibility 0s linear 0.18s;
+  z-index: 60;
+}
+
+.nav__item--has-sub:hover .nav__sub,
+.nav__item--has-sub:focus-within .nav__sub {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.nav__sub a {
+  padding: 0.55rem 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: color 0.16s var(--ease), background 0.16s var(--ease);
+}
+
+.nav__sub a::before {
+  display: none;
+}
+
+.nav__sub a:hover {
+  color: var(--text);
+  background: color-mix(in oklab, var(--violet) 16%, transparent);
+}
+
 .lang {
   display: inline-flex;
   border: 1px solid var(--line);
@@ -219,6 +299,44 @@
     right: auto;
     width: 1.6rem;
     bottom: 0.55rem;
+  }
+
+  /* In the burger drawer there is no hover: the sub-menu drops its overlay
+     styling and simply lists its items inline, indented under the parent, so
+     the builder and the reference are always one tap away. */
+  .nav__item {
+    display: block;
+  }
+
+  .nav__item--has-sub > a {
+    display: flex;
+    border-top: 1px solid var(--line-soft);
+    padding: 0.85rem 0;
+    font-size: 0.82rem;
+  }
+
+  .nav__chev {
+    display: none;
+  }
+
+  .nav__sub {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    min-width: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .nav__sub a {
+    padding: 0.7rem 0 0.7rem 1.4rem;
+    border-top: 1px solid var(--line-soft);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-size: 0.78rem;
   }
 
   .masthead__cta {
@@ -843,6 +961,17 @@ table.data code {
   color: transparent;
 }
 
+/* The builder page has no pagehead above it: its section header is the page
+   header. Give the eyebrow-to-statement gap and the trailing scope chips the
+   same rhythm the pagehead used to. */
+.builder-head {
+  margin-block: var(--step-2) var(--step-5);
+}
+
+.builder-head__meta {
+  margin-top: var(--step-4);
+}
+
 /* ------------------------------------------------ deep-link tester
    Lives here rather than in docs.css: the landing's first-run panel and the
    quick-start page both mount one, and core.js wires whichever it finds. */
@@ -977,4 +1106,177 @@ table.data code {
   font-size: 0.86rem;
   color: var(--text-faint);
   margin-top: var(--step-2);
+}
+
+/* ---------------------------------------------------------- page transitions
+
+   Cross-document View Transitions: on same-origin navigation the browser
+   crossfades the outgoing page into the incoming one, so moving around the
+   site reads as one surface shifting rather than a white blink and a reload.
+   Pure progressive enhancement — where the API is absent (Firefox, older
+   Safari) navigation stays the ordinary instant swap, and reduced-motion
+   turns the animation off while keeping the instant navigation. */
+@view-transition {
+  navigation: auto;
+}
+
+/* The chrome is identical on every page, so lift the masthead, the fixed
+   backdrop and the footer out of the root snapshot under their own names: the
+   bar and backdrop hold still across the swap while the footer morphs its size
+   smoothly, instead of flashing through the crossfade with the body. What is
+   left in `root` is the content plate — that is what does the travelling. */
+.masthead {
+  view-transition-name: masthead;
+}
+.backdrop {
+  view-transition-name: backdrop;
+}
+.footer {
+  view-transition-name: footer;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The content plate sweeps along the nav axis while it fades, so a click
+     reads as one surface pushing the next into view. Direction is set by
+     core.js, which tags the transition `forward`/`back` (nav order) or `lang`
+     (the language switch); the default below covers any untagged jump.
+
+     Only `transform` and `opacity` are animated — both run on the compositor,
+     so the swap stays smooth. `filter: blur()` is deliberately absent: it would
+     force a full re-raster of the page snapshot every frame and stutter. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.42s;
+    animation-timing-function: var(--ease-out);
+  }
+
+  /* Default: a soft rise with a micro-zoom for depth. */
+  ::view-transition-old(root) {
+    animation-name: vt-out-up;
+  }
+  ::view-transition-new(root) {
+    animation-name: vt-in-up;
+  }
+  @keyframes vt-out-up {
+    to {
+      opacity: 0;
+      transform: translateY(-1.6%) scale(0.99);
+    }
+  }
+  @keyframes vt-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(2%) scale(1.012);
+    }
+  }
+
+  /* Forward through the nav: the current plate slides out left and the next
+     rides in from the right, each scaled so the one behind sits further away.
+     Back is the mirror. */
+  html:active-view-transition-type(forward)::view-transition-old(root) {
+    animation-name: vt-slide-out-left;
+  }
+  html:active-view-transition-type(forward)::view-transition-new(root) {
+    animation-name: vt-slide-in-right;
+  }
+  html:active-view-transition-type(back)::view-transition-old(root) {
+    animation-name: vt-slide-out-right;
+  }
+  html:active-view-transition-type(back)::view-transition-new(root) {
+    animation-name: vt-slide-in-left;
+  }
+  @keyframes vt-slide-out-left {
+    to {
+      opacity: 0;
+      transform: translateX(-4%) scale(0.975);
+    }
+  }
+  @keyframes vt-slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(5%) scale(0.99);
+    }
+  }
+  @keyframes vt-slide-out-right {
+    to {
+      opacity: 0;
+      transform: translateX(4%) scale(0.975);
+    }
+  }
+  @keyframes vt-slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-5%) scale(0.99);
+    }
+  }
+
+  /* Language switch: same page, other tongue. No horizontal bias — a soft
+     zoom-through crossfade, as if the text re-focuses in the same frame. */
+  html:active-view-transition-type(lang)::view-transition-old(root) {
+    animation-name: vt-lang-out;
+  }
+  html:active-view-transition-type(lang)::view-transition-new(root) {
+    animation-name: vt-lang-in;
+  }
+  @keyframes vt-lang-out {
+    to {
+      opacity: 0;
+      transform: scale(1.03);
+    }
+  }
+  @keyframes vt-lang-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+
+  /* The footer holds a name so it morphs rather than pops; keep its crossfade
+     gentle and a touch quicker than the plate so the resize never draws focus. */
+  ::view-transition-group(footer) {
+    animation-duration: 0.34s;
+    animation-timing-function: var(--ease);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-group(footer) {
+    animation: none;
+  }
+}
+
+/* Fallback for browsers WITHOUT cross-document View Transitions (Firefox, older
+   Safari). There the navigation above is an ordinary reload: the old document
+   is torn down and, until the new one paints its first frame, the browser shows
+   its own canvas — a bare grey flash on a dark theme. `@supports not
+   (view-transition-name: none)` is the detector — false in Chromium (native VT
+   runs there instead), true in Firefox/old Safari.
+
+   We deliberately animate only the ARRIVAL, not the departure. Holding the old
+   frame to hide the inter-document gap means delaying the navigation behind an
+   exit animation, and that delay makes every click feel laggy — worse than the
+   gap it hides. So the click navigates instantly and the new page just eases
+   its content in from the ink root: paint begins on ink, the body washes in
+   over it, and the click paid nothing for it.
+
+   A pure opacity fade, no transform — a slide on arrival can itself read as a
+   jerk, and this only needs to take the hard edge off the swap. Gated behind
+   `:not(.no-js)`: the inline head script strips `no-js` the moment it runs, so
+   with JS off the page never starts hidden (no script would reveal it). Plain
+   `both`-fill animation, so it needs no JS cleanup — it settles on its last
+   frame on its own. */
+@supports not (view-transition-name: none) {
+  @media (prefers-reduced-motion: no-preference) {
+    html:not(.no-js) body {
+      animation: page-enter 0.26s var(--ease-out) both;
+    }
+    @keyframes page-enter {
+      from {
+        opacity: 0;
+      }
+    }
+  }
 }

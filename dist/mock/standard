@@ -1,0 +1,12 @@
+# Mock subscription: standard. Fake nodes, for testing ReClash only.
+mixed-port: 7890
+mode: rule
+proxies:
+  - {name: "Demo Provider 01", type: ss, server: 127.0.0.1, port: 8388, cipher: aes-256-gcm, password: mock}
+  - {name: "Demo Provider 02", type: ss, server: 127.0.0.1, port: 8389, cipher: aes-256-gcm, password: mock}
+  - {name: "Demo Provider 03", type: ss, server: 127.0.0.1, port: 8390, cipher: aes-256-gcm, password: mock}
+  - {name: "Demo Provider 04", type: ss, server: 127.0.0.1, port: 8391, cipher: aes-256-gcm, password: mock}
+proxy-groups:
+  - {name: "Demo Provider", type: select, proxies: ["Demo Provider 01", "Demo Provider 02", "Demo Provider 03", "Demo Provider 04", DIRECT]}
+rules:
+  - MATCH,Demo Provider

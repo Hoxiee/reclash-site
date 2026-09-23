@@ -1,0 +1,55 @@
+{
+"/mock/standard": {
+"Content-Type": "text/yaml; charset=utf-8",
+"Content-Disposition": "attachment; filename=\"standard.yaml\"",
+"Profile-Title": "Standard demo",
+"ReClash-ServiceName": "Demo Provider",
+"ReClash-ServiceLogo": "{BASE}/assets/mock/logo-standard.svg",
+"ReClash-Widgets": "networkSpeed,trafficUsage,serviceInfo,changeServerButton",
+"ReClash-SupportURL": "https://t.me/ReClashApp",
+"ReClash-AutoUpdateInterval": "720",
+"Subscription-Userinfo": "upload=21474836480; download=26843545600; total=214748364800; expire=1792020160"
+},
+"/mock/expiring": {
+"Content-Type": "text/yaml; charset=utf-8",
+"Content-Disposition": "attachment; filename=\"expiring.yaml\"",
+"Profile-Title": "Expiring demo",
+"ReClash-ServiceName": "Demo Provider",
+"ReClash-ServiceLogo": "{BASE}/assets/mock/logo-standard.svg",
+"ReClash-Widgets": "networkSpeed,trafficUsage,serviceInfo,changeServerButton",
+"ReClash-SupportURL": "https://t.me/ReClashApp",
+"ReClash-BuyPlan": "https://t.me/ReClashApp",
+"ReClash-BuyTraffic": "https://t.me/ReClashApp",
+"ReClash-AutoUpdateInterval": "360",
+"Subscription-Userinfo": "upload=103079215104; download=107374182400; total=214748364800; expire=1790378560"
+},
+"/mock/unlimited": {
+"Content-Type": "text/yaml; charset=utf-8",
+"Content-Disposition": "attachment; filename=\"unlimited.yaml\"",
+"Profile-Title": "Unlimited demo",
+"ReClash-ServiceName": "Demo Provider",
+"ReClash-ServiceLogo": "{BASE}/assets/mock/logo-standard.svg",
+"ReClash-Widgets": "networkSpeed,serviceInfo,changeServerButton,smartRouting",
+"ReClash-SupportURL": "https://t.me/ReClashApp",
+"ReClash-AutoUpdateInterval": "1440"
+},
+"/mock/themed": {
+"Content-Type": "text/yaml; charset=utf-8",
+"Content-Disposition": "attachment; filename=\"themed.yaml\"",
+"Profile-Title": "Themed demo",
+"ReClash-ServiceName": "Aurora VPN",
+"ReClash-ActiveText": "Aurora on",
+"ReClash-Hex": "7C5CFF",
+"ReClash-HeroRing": "7C5CFF;3686ED;2FD3B6",
+"ReClash-HeroEffect": "aurora",
+"ReClash-ServiceLogo": "{BASE}/assets/mock/logo-aurora.svg",
+"ReClash-Background": "{BASE}/assets/mock/bg-aurora.svg,22",
+"ReClash-Widgets": "networkSpeed,trafficUsage,serviceInfo,changeServerButton,announce",
+"ReClash-View": "type:tab; sort:delay; layout:standard; icon:standard; card:expand",
+"ReClash-SupportURL": "https://t.me/ReClashApp",
+"ReClash-BuyPlan": "https://t.me/ReClashApp",
+"ReClash-Announce": "base64:0KLQtdGB0YLQvtCy0L7QtSDQvtCx0YrRj9Cy0LvQtdC90LjQtSDQv9GA0L7QstCw0LnQtNC10YDQsCDigJQg0Y3RgtC+INC80L7Qui3QtNCw0L3QvdGL0LUu",
+"ReClash-AutoUpdateInterval": "720",
+"Subscription-Userinfo": "upload=5368709120; download=8589934592; total=107374182400; expire=1797808960"
+}
+}

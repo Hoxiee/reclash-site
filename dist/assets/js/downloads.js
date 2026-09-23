@@ -158,4 +158,128 @@
       render(rel);
     })
     .catch(function () { state(failed); });
+
+  /* ------------------------------------------------ SHA256 verifier
+     Pick or drop a file, hash it locally with the Web Crypto API (the file is
+     never uploaded), and compare against a value pasted from the release —
+     either a bare 64-hex digest or a whole SHA256SUMS listing, where the line
+     is matched by the dropped file's name. */
+
+  var vRoot = $('[data-verify]');
+  if (vRoot) (function () {
+    var drop = $('[data-drop]', vRoot);
+    var fileIn = $('[data-file]', vRoot);
+    var dropCap = $('[data-drop-cap]', vRoot);
+    var hashBox = $('[data-hash-box]', vRoot);
+    var hashOut = $('[data-hash]', vRoot);
+    var expect = $('[data-expect]', vRoot);
+    var verdict = $('[data-verdict]', vRoot);
+    if (!drop || !fileIn || !hashOut || !expect || !verdict) return;
+
+    var subtle = window.crypto && window.crypto.subtle;
+    var HEX = /\b[0-9a-f]{64}\b/;
+    var curHash = '';   // hash of the file in hand, '' while none/computing
+    var curName = '';   // its name, for matching a SHA256SUMS line
+    var token = 0;      // guards against a slow hash landing after a newer file
+
+    function say(key, tone) {
+      verdict.textContent = s(key);
+      verdict.setAttribute('data-tone', tone);
+    }
+
+    /* What the pasted text expects for THIS file: a single digest wins; a
+       SHA256SUMS is scanned for the line naming this file, else — if only one
+       digest is present at all — that one. Returns {hash} or {notfound}. */
+    function expected(text, name) {
+      var lines = text.split(/\r?\n/);
+      var hashes = [];
+      var byName = null;
+      var base = (name || '').toLowerCase();
+      lines.forEach(function (ln) {
+        var m = ln.match(HEX);
+        if (!m) return;
+        hashes.push(m[0]);
+        if (base && ln.toLowerCase().indexOf(base) !== -1) byName = m[0];
+      });
+      if (byName) return { hash: byName };
+      if (hashes.length === 1) return { hash: hashes[0] };
+      if (hashes.length > 1) {
+        /* several sums, none names this file: a match on any is still a match,
+           otherwise we cannot say which line was meant */
+        if (hashes.indexOf(curHash) !== -1) return { hash: curHash };
+        return { notfound: true };
+      }
+      return {};
+    }
+
+    function compare() {
+      var text = (expect.value || '').trim();
+      if (!curHash) { say(text ? 'v_needfile' : 'v_hint', 'idle'); return; }
+      if (!text) { say('v_needexp', 'idle'); return; }
+      var exp = expected(text, curName);
+      if (exp.notfound) { say('v_notfound', 'warn'); return; }
+      if (!exp.hash) { say('v_needexp', 'idle'); return; }
+      var ok = exp.hash === curHash;
+      say(ok ? 'v_match' : 'v_mismatch', ok ? 'good' : 'bad');
+    }
+
+    function toHex(buf) {
+      var b = new Uint8Array(buf), out = '';
+      for (var i = 0; i < b.length; i++) out += (b[i] + 0x100).toString(16).slice(1);
+      return out;
+    }
+
+    function hashFile(file) {
+      if (!file) return;
+      curHash = '';
+      curName = file.name || '';
+      dropCap.textContent = curName + (file.size ? '  ·  ' + size(file.size) : '');
+      drop.setAttribute('data-has-file', 'true');
+      if (!subtle || !window.isSecureContext) {
+        hashBox.hidden = true;
+        say('v_unsupported', 'warn');
+        return;
+      }
+      hashBox.hidden = false;
+      hashOut.textContent = s('v_computing');
+      var mine = ++token;
+      say('v_computing', 'busy');
+      file.arrayBuffer()
+        .then(function (buf) { return subtle.digest('SHA-256', buf); })
+        .then(function (dg) {
+          if (mine !== token) return;   // a newer file superseded this one
+          curHash = toHex(dg);
+          hashOut.textContent = curHash;
+          compare();
+        })
+        .catch(function () {
+          if (mine !== token) return;
+          hashBox.hidden = true;
+          say('v_error', 'warn');
+        });
+    }
+
+    drop.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileIn.click(); }
+    });
+    fileIn.addEventListener('change', function () {
+      if (fileIn.files && fileIn.files[0]) hashFile(fileIn.files[0]);
+    });
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      drop.addEventListener(ev, function (e) {
+        e.preventDefault();
+        drop.setAttribute('data-over', 'true');
+      });
+    });
+    ['dragleave', 'dragend'].forEach(function (ev) {
+      drop.addEventListener(ev, function () { drop.removeAttribute('data-over'); });
+    });
+    drop.addEventListener('drop', function (e) {
+      e.preventDefault();
+      drop.removeAttribute('data-over');
+      var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) hashFile(f);
+    });
+    expect.addEventListener('input', compare);
+  })();
 })();

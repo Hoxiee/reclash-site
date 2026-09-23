@@ -100,11 +100,15 @@ def section_steps(ctx):
                 "it is more honest than a country flag.",
             )),
             p(t(
-                "<b>По правилам</b> — обычный режим: локальное идёт напрямую, остальное "
-                "через прокси. <b>Глобально</b> — всё в туннель. <b>Напрямую</b> — "
+                "Режим маршрутизации переключается на панели. <b>Авто</b> — режим по "
+                "умолчанию: правила плюс умная маршрутизация, которая сама держит "
+                "рабочий узел под текущую сеть. <b>По правилам</b> — то же без "
+                "автоподбора. <b>Глобально</b> — всё в туннель. <b>Напрямую</b> — "
                 "туннель выключен, но клиент остаётся в строю.",
-                "<b>Rule</b> is the everyday mode: local traffic goes direct, the rest "
-                "through the proxy. <b>Global</b> sends everything down the tunnel. "
+                "The routing mode is switched on the dashboard. <b>Auto</b> is the "
+                "default: rules plus smart routing, which keeps a working node for the "
+                "current network on its own. <b>Rule</b> is the same without the "
+                "auto-pick. <b>Global</b> sends everything down the tunnel. "
                 "<b>Direct</b> switches the tunnel off while the client stays up.",
             )),
         ),
@@ -143,14 +147,28 @@ def section_steps(ctx):
 def section_deeplink(ctx):
     t = ctx.t
     schemes = [
-        ("reclash://connect", t("подключиться", "connect")),
-        ("reclash://disconnect", t("отключиться", "disconnect")),
-        ("reclash://toggle", t("переключить", "toggle")),
-        ("reclash://open", t("открыть окно", "open the window")),
-        ("reclash://close", t("закрыть окно", "close the window")),
-        ("reclash://add/&lt;url&gt;", t("добавить подписку", "add a subscription")),
+        ("reclash://connect",
+         t("запустить туннель и подключиться", "start the tunnel and connect")),
+        ("reclash://disconnect", t("остановить туннель", "stop the tunnel")),
+        ("reclash://toggle",
+         t("подключить, если остановлено, иначе отключить",
+           "connect if stopped, disconnect if running")),
+        ("reclash://open",
+         t("вывести окно на передний план", "bring the window to the front")),
+        ("reclash://close",
+         t("свернуть в трей или выйти, если так настроено",
+           "hide to tray, or exit when configured")),
+        ("reclash://add/&lt;url&gt;",
+         t("URL подписки — добавляется после подтверждения",
+           "a subscription URL, added after confirmation")),
+        ("reclash://import/&lt;base64&gt;",
+         t("конфиг в base64 — импортируется как профиль",
+           "a base64-encoded config, imported as a profile")),
         ("reclash://install-config?url=&lt;url&gt;",
-         t("импортировать профиль", "import a profile")),
+         t("совместимая ссылка кнопок Clash и FlClash; "
+           "необязательный &name= задаёт имя профиля",
+           "the compat link Clash and FlClash buttons already use; "
+           "an optional &name= sets the profile name")),
     ]
     rows = [["<code>%s</code>" % s, esc(d)] for s, d in schemes]
     return (
@@ -176,16 +194,32 @@ def section_deeplink(ctx):
         + table([t("Схема", "Scheme"), t("Что делает", "What it does")], rows)
         + "</div>"
         + notice("<span>" + t(
-            "Ссылки <code>add</code> и <code>install-config</code> несут доступ к "
-            "вашему трафику. Открывайте только те, которым доверяете.",
-            "<code>add</code> and <code>install-config</code> links carry access to your "
-            "traffic. Only open the ones you trust.",
+            "Ссылки <code>add</code>, <code>import</code> и <code>install-config</code> "
+            "несут доступ к вашему трафику. Открывайте только те, которым доверяете.",
+            "<code>add</code>, <code>import</code> and <code>install-config</code> links "
+            "carry access to your traffic. Only open the ones you trust.",
         ) + "</span>", "notice--warn")
         + "</div></section>"
     )
 
 
 def section_faq(ctx):
+    t = ctx.t
+    items = faq_items(ctx)
+    return (
+        '<section class="section section--tight"><div class="shell">'
+        + rubric("03", t("вопросы", "questions"))
+        + '<h2 class="statement">'
+        + t("Отвечаем <em>до</em> того, как вы спросите.",
+            "Answered <em>before</em> you ask.")
+        + "</h2>"
+        + '<div class="faq" style="margin-top:var(--step-4)">'
+        + "".join(faq_item(*i) for i in items)
+        + "</div></div></section>"
+    )
+
+
+def faq_items(ctx):
     t = ctx.t
     items = [
         ("faq-what",
@@ -203,19 +237,37 @@ def section_faq(ctx):
         ("faq-flclash",
          t("Чем это отличается от FlClash?", "How is this different from FlClash?"),
          t('<p>ReClash — форк <a class="link link--cyan" href="%s" target="_blank" '
-           'rel="noopener">FlClash</a>. Основные добавления: встроенный обход DPI на '
-           "движке ByeDPI, расширенный набор заголовков для провайдеров (тема, "
-           "виджеты, объявления, миграция домена), переработанная панель и "
-           "виджеты. Ядро маршрутизации то же — mihomo.</p>"
+           'rel="noopener">FlClash</a>. Основные добавления: умная маршрутизация, '
+           "которая сама держит рабочий узел под текущую сеть, расширенный набор "
+           "заголовков для провайдеров (тема, виджеты, объявления, миграция домена), "
+           "переработанная панель с виджетами, импорт из большего числа форматов "
+           "(в том числе Amnezia) и встроенный обход DPI. Ядро маршрутизации то "
+           "же — mihomo.</p>"
            "<p>Проект не аффилирован с FlClash, mihomo или FlClashX.</p>"
            % ui.UPSTREAM_FLCLASH,
            '<p>ReClash is a fork of <a class="link link--cyan" href="%s" target="_blank" '
-           'rel="noopener">FlClash</a>. The main additions: a built-in DPI bypass on the '
-           "ByeDPI engine, a much larger provider header set (theme, widgets, "
-           "announcements, domain migration), and a reworked dashboard with widgets. "
-           "The routing core is the same — mihomo.</p>"
+           'rel="noopener">FlClash</a>. The main additions: smart routing that keeps a '
+           "working node for the current network on its own, a much larger provider "
+           "header set (theme, widgets, announcements, domain migration), a reworked "
+           "dashboard with widgets, import from more formats (Amnezia among them), and "
+           "a built-in DPI bypass. The routing core is the same — mihomo.</p>"
            "<p>The project is not affiliated with FlClash, mihomo or FlClashX.</p>"
            % ui.UPSTREAM_FLCLASH),
+         False),
+        ("faq-smart",
+         t("Что такое умная маршрутизация?", "What is smart routing?"),
+         t("<p>Это режим «Авто»: клиент сам подбирает узел, который работает в вашей "
+           "текущей сети, и переключается, когда сеть меняется, — не открывая окно. "
+           "Начать проще с регионального пресета (Россия, Иран, Китай), а стратегию, "
+           "проверки и маркеры можно донастроить.</p>"
+           "<p>Обычные режимы никуда не делись: «Авто» — это те же правила плюс "
+           "автоподбор, который можно выключить.</p>",
+           "<p>It is the “Auto” mode: the client picks a node that works on your current "
+           "network and switches on its own when the network changes — without opening "
+           "the window. Start from a region preset (Russia, Iran, China); strategy, "
+           "checks and markers can be fine-tuned.</p>"
+           "<p>The plain modes are still there: “Auto” is the same rules plus an "
+           "auto-pick you can switch off.</p>"),
          False),
         ("faq-dpi",
          t("Обход DPI — это то же самое, что VPN?",
@@ -254,16 +306,24 @@ def section_faq(ctx):
          False),
         ("faq-logs",
          t("Что ReClash собирает обо мне?", "What does ReClash collect about me?"),
-         t("<p>Ничего не отправляет наружу. Телеметрии нет, аналитики нет, аккаунта "
-           "нет. Логи и статистика соединений живут локально и нужны для диагностики; "
-           "их можно очистить в любой момент.</p>"
-           "<p>Наружу клиент ходит ровно в два адреса: за вашей подпиской и — если вы "
-           "не выключили проверку — за списком релизов на GitHub.</p>",
-           "<p>It sends nothing outward. No telemetry, no analytics, no account. Logs "
-           "and connection statistics stay local and exist for diagnostics; you can "
-           "clear them at any moment.</p>"
-           "<p>The client reaches out to exactly two places: your subscription, and — "
-           "unless you turned the check off — the GitHub release list.</p>"),
+         t("<p>На десктопе — ничего: наружу клиент ходит только за вашей подпиской и, "
+           "если вы не выключили проверку, за списком релизов на GitHub. Логи и "
+           "статистика соединений остаются на устройстве и нужны для диагностики — их "
+           "можно очистить в любой момент.</p>"
+           "<p>На Android в сборку входит аналитика сбоев (Firebase Crashlytics). По "
+           "умолчанию она выключена; включить можно вручную в настройках, о чём "
+           "приложение предупреждает при первом запуске. Когда включена — отправляет "
+           "данные об устройстве и детали сбоя, без личных данных, и отключается "
+           "там же.</p>",
+           "<p>On desktop, nothing: the client only reaches your subscription and, "
+           "unless you turned the check off, the GitHub release list. Logs and "
+           "connection statistics stay on the device for diagnostics — you can clear "
+           "them at any time.</p>"
+           "<p>On Android the build includes crash analytics (Firebase Crashlytics). "
+           "It is off by default; you can turn it on in settings, and the app tells "
+           "you about it on first launch. When on, it sends device information and "
+           "crash details — no personal data — and can be turned off in the same "
+           "place.</p>"),
          False),
         ("faq-hwid",
          t("Что за HWID и зачем он провайдеру?",
@@ -273,16 +333,14 @@ def section_faq(ctx):
            "список ваших устройств и лимит по тарифу. Передача выключается в "
            "настройках.</p>"
            '<p>Провайдерам: подробности — на странице '
-           '<a class="link link--cyan" href="%s#hwid">заголовков</a>. Не используйте '
-           "HWID как границу аутентификации: он приходит от клиента и подделывается.</p>"
-           % ctx.page("headers"),
+           '<a class="link link--cyan" href="%s#hwid">документации</a>.</p>'
+           % ctx.page("docs"),
            "<p>It is a stable 16-character device hash the client can attach to the "
            "subscription request, so the provider can show you a readable list of your "
            "devices and your plan limit. Sharing it can be switched off in settings.</p>"
            '<p>For providers: the details are on the '
-           '<a class="link link--cyan" href="%s#hwid">headers</a> page. Do not use HWID '
-           "as an authentication boundary: it comes from the client and can be forged.</p>"
-           % ctx.page("headers")),
+           '<a class="link link--cyan" href="%s#hwid">documentation</a>.</p>'
+           % ctx.page("docs")),
          False),
         ("faq-theme",
          t("Почему приложение вдруг сменило цвет?",
@@ -349,17 +407,7 @@ def section_faq(ctx):
            "logs before you post them: it carries your credentials.</p>" % ui.GITHUB_ISSUES),
          False),
     ]
-    return (
-        '<section class="section section--tight"><div class="shell">'
-        + rubric("03", t("вопросы", "questions"))
-        + '<h2 class="statement">'
-        + t("Отвечаем <em>до</em> того, как вы спросите.",
-            "Answered <em>before</em> you ask.")
-        + "</h2>"
-        + '<div class="faq" style="margin-top:var(--step-4)">'
-        + "".join(faq_item(*i) for i in items)
-        + "</div></div></section>"
-    )
+    return items
 
 
 def section_help(ctx):
@@ -398,11 +446,14 @@ def render(ctx):
         "title": t("Быстрый старт и FAQ", "Quick start & FAQ"),
         "description": t(
             "Как запустить ReClash за четыре шага, чем TUN отличается от системного "
-            "прокси, что делает обход DPI и что клиент о вас не собирает.",
+            "прокси и что делает обход DPI.",
             "How to get ReClash running in four steps, how TUN differs from a system "
-            "proxy, what the DPI bypass does, and what the client does not collect.",
+            "proxy, and what the DPI bypass does.",
         ),
         "body": body,
         "css": ("docs.css",),
         "js": (),
+        # Feed the FAQ into a Schema.org FAQPage so search and AI answer engines
+        # can lift the questions and answers directly — same source as the page.
+        "faq": [(q, a) for _uid, q, a, _open in faq_items(ctx)],
     }

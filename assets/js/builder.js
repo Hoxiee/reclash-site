@@ -192,20 +192,23 @@
     var down = gb('f_down');
     var total = gb('f_total');
     var expire = val('f_expire');
-    if (on('f_userinfo')) {
-      if (clamped) err(s('warnQuotaRange'));
-      var parts = [
-        'upload=' + Math.round(up * GB),
-        'download=' + Math.round(down * GB),
-        'total=' + Math.round(total * GB)
-      ];
-      if (expire) {
-        var ts = Math.floor(new Date(expire + 'T00:00:00Z').getTime() / 1000);
-        if (!isNaN(ts)) parts.push('expire=' + ts);
-      }
-      if (total > 0 && up + down > total) err(s('warnOverQuota'));
-      push('Subscription-Userinfo', parts.join('; '));
+    /* Subscription-Userinfo is per-user, and the panel (Remnawave) or your own
+       backend emits it on every request from the subscriber's real plan — so
+       the builder never writes it as a configured header. These four fields
+       only drive the live preview's subscription card and the commented
+       example the self-host snippets carry. */
+    if (clamped) err(s('warnQuotaRange'));
+    var uparts = [
+      'upload=' + Math.round(up * GB),
+      'download=' + Math.round(down * GB),
+      'total=' + Math.round(total * GB)
+    ];
+    if (expire) {
+      var ts = Math.floor(new Date(expire + 'T00:00:00Z').getTime() / 1000);
+      if (!isNaN(ts)) uparts.push('expire=' + ts);
     }
+    if (total > 0 && up + down > total) err(s('warnOverQuota'));
+    var userinfo = uparts.join('; ');
 
     /* --- identity ------------------------------------------------------ */
     var title = textField('f_title');
@@ -284,6 +287,9 @@
       else push('ReClash-HeroRing', ring.join(';'));
     }
 
+    /* --- hero effect ---------------------------------------------------- */
+    if (on('f_heroeffect')) push('ReClash-HeroEffect', 'aurora');
+
     /* --- proxy view ----------------------------------------------------- */
     if (on('f_view')) {
       var view = [
@@ -357,6 +363,7 @@
     return {
       headers: out,
       warnings: warn,
+      userinfo: userinfo,
       preview: {
         name: val('f_svcname') || s('defService'),
         /* Profile-Title becomes the profile's label, which is the first line
@@ -370,8 +377,12 @@
         buyPlan: val('f_buyplan'),
         buyTraffic: val('f_buytraffic'),
         serverInfo: val('f_serverinfo') || 'Proxy',
+        interval: parseInt(val('f_interval'), 10) || 0,
         up: up, down: down, total: total, expire: expire,
-        userinfo: on('f_userinfo'),
+        /* The panel always emits Subscription-Userinfo, so the subscription
+           card is always part of the preview; the quota/expiry above are the
+           sample it renders. */
+        userinfo: true,
         hex: /^([0-9A-F]{6}|[0-9A-F]{8})$/.test(hexRaw) ? hexRaw : '7C5CFF',
         variant: variant,
         pureblack: on('f_pureblack'),
@@ -379,6 +390,7 @@
         bg: on('f_bg') ? val('f_bgurl') : '',
         bgOpacity: parseInt(val('f_bgop'), 10) || 10,
         ring: on('f_ring') ? ['f_ring1', 'f_ring2', 'f_ring3'].map(function (i) { return val(i); }) : null,
+        heroEffect: on('f_heroeffect'),
         widgets: on('f_widgets') ? chosen : ['networkSpeed', 'outboundModeV2', 'trafficUsage'],
         view: on('f_view') ? {
           type: val('f_view_type'), sort: val('f_view_sort'), layout: val('f_view_layout'),
@@ -390,8 +402,11 @@
 
   /* ---------------------------------------------------------- code output */
 
-  function httpBlock(headers) {
+  function httpBlock(headers, uinfo) {
     var lines = ['HTTP/1.1 200 OK', 'Content-Type: application/yaml; charset=utf-8'];
+    /* Subscription-Userinfo is part of the response the client receives, but
+       the backend fills it per user — it is shown, never configured here. */
+    if (uinfo) lines.push('Subscription-Userinfo: ' + uinfo);
     headers.forEach(function (h) { lines.push(h[0] + ': ' + h[1]); });
     return lines.join('\n');
   }
@@ -406,7 +421,7 @@
     'announce': 1
   };
 
-  function nginxBlock(headers) {
+  function nginxBlock(headers, uinfo) {
     var q = function (v) { return v.replace(/\\/g, '\\\\').replace(/"/g, '\\"'); };
     var hide = headers
       .filter(function (h) { return PANEL_HEADERS[h[0].toLowerCase()]; })
@@ -419,6 +434,8 @@
       (hide.length ? '    # ' + s('sniHide') + '\n' + hide.join('\n') + '\n\n' : '') +
       '    # ' + s('sniAdd') + '\n' +
       add.join('\n') + '\n\n' +
+      '    # ' + s('sniUserinfo') + '\n' +
+      '    # add_header Subscription-Userinfo "' + q(uinfo) + '" always;\n\n' +
       '    # ' + s('sniPort') + '\n' +
       '    proxy_pass http://127.0.0.1:8000;\n' +
       '    proxy_set_header Host $host;\n' +
@@ -427,7 +444,7 @@
       '}';
   }
 
-  function caddyBlock(headers) {
+  function caddyBlock(headers, uinfo) {
     var body = headers.map(function (h) {
       return '        ' + h[0] + ' "' + h[1].replace(/"/g, '\\"') + '"';
     }).join('\n');
@@ -435,35 +452,44 @@
        copy is overwritten and there is nothing to hide. */
     return '# ' + s('sniCaddyPath') + '\n' +
       'handle /sub* {\n    header {\n' + body + '\n    }\n' +
+      '    # ' + s('sniUserinfo') + '\n' +
+      '    # header Subscription-Userinfo "' + uinfo.replace(/"/g, '\\"') + '"\n' +
       '    # ' + s('sniPort') + '\n' +
       '    reverse_proxy 127.0.0.1:8000\n}';
   }
 
-  function phpBlock(headers) {
+  function phpBlock(headers, uinfo) {
     var body = headers.map(function (h) {
       return "header('" + h[0] + ": " + h[1].replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "');";
     }).join('\n');
     return '<?php\n' +
       "header('Content-Type: application/yaml; charset=utf-8');\n" +
       body + '\n\n' +
+      '// ' + s('sniUserinfo') + '\n' +
+      "// header('Subscription-Userinfo: " + uinfo.replace(/'/g, "\\'") + "');\n\n" +
       'readfile(__DIR__ . \'/config.yaml\');';
   }
 
-  function goBlock(headers) {
+  function goBlock(headers, uinfo) {
     var body = headers.map(function (h) {
       return '\th.Set("' + h[0] + '", "' + h[1].replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '")';
     }).join('\n');
     return 'func writeSubscription(w http.ResponseWriter, body []byte) {\n' +
       '\th := w.Header()\n' +
       '\th.Set("Content-Type", "application/yaml; charset=utf-8")\n' +
-      body + '\n\tw.WriteHeader(http.StatusOK)\n\t_, _ = w.Write(body)\n}';
+      body + '\n' +
+      '\t// ' + s('sniUserinfo') + '\n' +
+      '\t// h.Set("Subscription-Userinfo", "' + uinfo.replace(/"/g, '\\"') + '")\n' +
+      '\tw.WriteHeader(http.StatusOK)\n\t_, _ = w.Write(body)\n}';
   }
 
-  function pyBlock(headers) {
+  function pyBlock(headers, uinfo) {
     var body = headers.map(function (h) {
       return '    "' + h[0] + '": "' + h[1].replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '",';
     }).join('\n');
     return 'SUBSCRIPTION_HEADERS = {\n' + body + '\n}\n\n' +
+      '# ' + s('sniUserinfo') + '\n' +
+      '# SUBSCRIPTION_HEADERS["Subscription-Userinfo"] = "' + uinfo.replace(/"/g, '\\"') + '"\n\n' +
       '@app.get("/sub")\n' +
       'def sub() -> Response:\n' +
       '    return Response(\n' +
@@ -958,7 +984,15 @@
     cart: '<circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.4 10.2a1.8 1.8 0 0 0 1.8 1.4h8.3a1.8 1.8 0 0 0 1.8-1.4L21 7.5H6"/>',
     support: '<path d="M5 13.5a7 7 0 0 1 14 0"/><rect x="2.5" y="13" width="4" height="6.5" rx="1.7"/><rect x="17.5" y="13" width="4" height="6.5" rx="1.7"/><path d="M19.5 19.5a3 3 0 0 1-3 3h-2.2"/>',
     pause: '<path d="M9.2 5v14M14.8 5v14"/>',
-    bolt: '<path d="M13.2 2.6 5 13.8h5.9l-.9 7.6 8.2-11.2h-6z"/>'
+    bolt: '<path d="M13.2 2.6 5 13.8h5.9l-.9 7.6 8.2-11.2h-6z"/>',
+    /* The orb speed pair: south for download, north for upload. */
+    sdown: '<path d="M12 4.5v15M6 13.5l6 6 6-6"/>',
+    sup: '<path d="M12 19.5v-15M6 10.5l6-6 6 6"/>',
+    /* The provider card's cloud fallback (no serviceLogo) and the system
+       card's memory section title. */
+    cloud: '<path d="M7 18.5a4 4 0 0 1-.5-7.97 5.5 5.5 0 0 1 10.6-1.03A3.75 3.75 0 0 1 17 18.5z"/>',
+    mem: '<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5" rx="0.6"/>'
+      + '<path d="M9 6V3.5M12 6V3.5M15 6V3.5M9 20.5V18M12 20.5V18M15 20.5V18M6 9H3.5M6 12H3.5M6 15H3.5M20.5 9H18M20.5 12H18M20.5 15H18"/>'
   };
 
   function hIcon(k, cls) {
@@ -978,7 +1012,9 @@
   var HERO_NODE = { ip: '185.146.173.42', delay: 42, stack: 2 };
 
   function heroOrb(p, ring) {
-    return '<div class="horb" style="--r1:' + ring[0] + ';--r2:' + ring[1] + ';--r3:' + ring[2] + '">' +
+    return '<div class="horb' + (p.heroEffect ? ' horb--aurora' : '') +
+      '" style="--r1:' + ring[0] + ';--r2:' + ring[1] + ';--r3:' + ring[2] + '">' +
+      (p.heroEffect ? '<span class="horb__aurora" aria-hidden="true"></span>' : '') +
       '<span class="horb__glow" aria-hidden="true"></span>' +
       '<span class="horb__rim" aria-hidden="true"></span>' +
       /* The client paints mark_mono.png in the core when there is no logo —
@@ -1056,6 +1092,20 @@
     return '<div class="hacts">' + acts + '</div>';
   }
 
+  /* The download/upload readout under the caption once connected — a centred
+     pair of arrow + monospace value + unit, exactly the _SpeedEntry row in
+     hero_connect_orb_slot.dart. */
+  function heroSpeed() {
+    function entry(icon, val) {
+      return '<span class="hspeed__e">' + hIcon(icon) +
+        '<b class="mono">' + esc(val) + '</b>' +
+        '<span class="hspeed__u">' + esc(s('heroSpeedUnit')) + '</span></span>';
+    }
+    return '<div class="hspeed">' +
+      entry('sdown', s('heroDownVal')) + entry('sup', s('heroUpVal')) + '</div>';
+  }
+
+
   function renderHero(p, sc) {
     /* hasSub in hero_connect.dart: no quota and no expiry means there is
        nothing to put in the strip, and an announcement takes its place. */
@@ -1065,6 +1115,7 @@
       '<div class="hcap">' +
       '<p class="hcap__t">' + esc(p.activeText || s('heroProtected')) + '</p>' +
       '<p class="hcap__s">' + esc(s('heroSince').replace('{n}', s('heroDur'))) + '</p>' +
+      heroSpeed() +
       '</div>' +
       heroServer(p, sc) +
       (hasSub
@@ -1219,12 +1270,12 @@
     if (outputs.subpage) outputs.subpage.textContent = subpageBlock(rw, res.preview);
     if (outputs.curl) outputs.curl.textContent = curlBlock(rw);
 
-    if (outputs.http) outputs.http.textContent = httpBlock(h);
-    if (outputs.nginx) outputs.nginx.textContent = h.length ? nginxBlock(h) : '';
-    if (outputs.caddy) outputs.caddy.textContent = h.length ? caddyBlock(h) : '';
-    if (outputs.php) outputs.php.textContent = h.length ? phpBlock(h) : '';
-    if (outputs.go) outputs.go.textContent = h.length ? goBlock(h) : '';
-    if (outputs.py) outputs.py.textContent = h.length ? pyBlock(h) : '';
+    if (outputs.http) outputs.http.textContent = httpBlock(h, res.userinfo);
+    if (outputs.nginx) outputs.nginx.textContent = h.length ? nginxBlock(h, res.userinfo) : '';
+    if (outputs.caddy) outputs.caddy.textContent = h.length ? caddyBlock(h, res.userinfo) : '';
+    if (outputs.php) outputs.php.textContent = h.length ? phpBlock(h, res.userinfo) : '';
+    if (outputs.go) outputs.go.textContent = h.length ? goBlock(h, res.userinfo) : '';
+    if (outputs.py) outputs.py.textContent = h.length ? pyBlock(h, res.userinfo) : '';
 
     if (counter) {
       var size = h.reduce(function (a, x) { return a + x[0].length + x[1].length + 4; }, 0);

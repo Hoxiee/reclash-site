@@ -488,6 +488,23 @@
   padding: 0 var(--step-3) var(--step-3);
 }
 
+/* An informational note at the head of a block — used where a field is shown
+   for the preview but is not the provider's to set (Subscription-Userinfo).
+   A violet edge marks it apart from the field hints without a rounded box. */
+.bnote {
+  margin: 0 0 var(--step-2);
+  padding: 0.6rem 0.8rem;
+  background: var(--ink-2);
+  border-left: 2px solid var(--violet);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+.bnote code {
+  font-size: 0.9em;
+}
+
 /* Without JS nothing toggles data-open, so every block stands open and all its
    controls stay reachable. */
 .no-js .bgroup__reveal {
@@ -1129,6 +1146,26 @@
   background: var(--ink-1);
 }
 
+/* The preview's own controls: the screen tabs, centred above the handset. */
+.pv-controls {
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--step-1);
+  width: 100%;
+}
+
+.pv-controls > .tabs {
+  background: var(--ink-1);
+}
+
+.builder__preview .pv-scaler {
+  z-index: 1;
+  width: 100%;
+}
+
 .builder__preview .phone {
   z-index: 1;
 }
@@ -1357,6 +1394,269 @@
   line-height: 1.55;
 }
 
+/* ------------------------------------------------------------ SHA256 verify */
+
+/* Drives both the release-fetch spinner (.dl-spin) and the verifier's busy
+   pip. Defined here because docs.css is the only sheet the downloads page
+   loads besides the shared base/site pair, and neither of those declares it. */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.verify {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .verify {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.verify__file {
+  display: grid;
+  gap: var(--step-2);
+}
+
+/* the file picker: a big, obvious drop target that is also a real <label>, so
+   a click or Enter opens the native picker and drag-and-drop is wired on top */
+.verify__drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 8.5rem;
+  padding: var(--step-4) var(--step-3);
+  border: 1px dashed var(--line);
+  background: var(--ink-1);
+  color: var(--text-dim);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.16s var(--ease), background 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.verify__drop:hover,
+.verify__drop:focus-visible {
+  border-color: var(--violet);
+  color: var(--text);
+  outline: none;
+}
+
+.verify__drop:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--violet) 28%, transparent);
+}
+
+.verify__drop[data-over='true'] {
+  border-color: var(--cyan);
+  border-style: solid;
+  background: color-mix(in oklab, var(--cyan) 10%, var(--ink-1));
+  color: var(--text);
+}
+
+.verify__drop[data-has-file='true'] {
+  border-style: solid;
+  border-color: var(--line);
+}
+
+.verify__drop__ico {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--violet);
+  flex: none;
+}
+
+.verify__drop[data-over='true'] .verify__drop__ico {
+  color: var(--cyan);
+}
+
+.verify__drop__cap {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  word-break: break-word;
+}
+
+.verify__local {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  line-height: 1.4;
+}
+
+.verify__local__ico {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
+  margin-top: 0.15em;
+  color: var(--cyan);
+}
+
+.verify__cap {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.4rem;
+}
+
+.verify__hash {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line-soft);
+  border-left: 3px solid var(--cyan);
+  background: var(--ink);
+}
+
+.verify__hash[hidden] {
+  display: none;
+}
+
+.verify__hash .verify__cap {
+  color: var(--cyan);
+}
+
+.verify__hash .copy {
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.verify__out {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--cyan);
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.verify__expect {
+  display: block;
+}
+
+.verify__ta {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 0.62rem 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 4.4rem;
+}
+
+.verify__ta::placeholder {
+  color: var(--text-faint);
+}
+
+.verify__ta:focus {
+  border-color: var(--violet);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--violet) 28%, transparent);
+}
+
+.verify__verdict {
+  margin: var(--step-2) 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+  min-height: 1.2em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+/* a state pip so the verdict reads at a glance, not only by colour */
+.verify__verdict::before {
+  content: '';
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--line);
+  transform: translateY(0.05em);
+}
+
+.verify__verdict[data-tone='good'] {
+  color: var(--cyan);
+}
+
+.verify__verdict[data-tone='good']::before {
+  background: var(--cyan);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--cyan) 24%, transparent);
+}
+
+.verify__verdict[data-tone='bad'] {
+  color: var(--magenta);
+}
+
+.verify__verdict[data-tone='bad']::before {
+  background: var(--magenta);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--magenta) 24%, transparent);
+}
+
+.verify__verdict[data-tone='warn'] {
+  color: var(--amber);
+}
+
+.verify__verdict[data-tone='warn']::before {
+  background: var(--amber);
+}
+
+.verify__verdict[data-tone='busy']::before {
+  background: var(--violet);
+  animation: spin 0.8s linear infinite;
+  border-radius: 2px;
+}
+
+/* the terminal fallback, folded under the live tool */
+.verify__cli {
+  margin-top: var(--step-4);
+  border-top: 1px solid var(--line-soft);
+  padding-top: var(--step-3);
+}
+
+.verify__cli > summary {
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.verify__cli > summary::-webkit-details-marker {
+  display: none;
+}
+
+.verify__cli > summary::before {
+  content: '+';
+  font-size: 1rem;
+  color: var(--violet);
+}
+
+.verify__cli[open] > summary::before {
+  content: '−';
+}
+
+.verify__cli > summary:hover {
+  color: var(--text);
+}
+
 /* --------------------------------------------------------------------- FAQ */
 
 .faq {
@@ -1520,3 +1820,357 @@
   }
 }
 
+
+/* ============================================================= catalogue
+   The header reference: a search bar and category chips over a grid of
+   collapsible cards. Native <details>, so every card is open and readable
+   with no JS; core.js only adds the search/filter and single-open polish. */
+
+.catalog {
+  margin-top: var(--step-2);
+}
+
+/* The bar sticks under the masthead so search and filters stay reachable
+   through a long scroll. */
+.catalog__bar {
+  position: sticky;
+  top: 4.2rem;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--step-2) var(--step-3);
+  align-items: center;
+  padding: var(--step-3) 0;
+  margin-bottom: var(--step-3);
+  background: color-mix(in oklab, var(--ink) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.catalog__search {
+  position: relative;
+  flex: 1 1 18rem;
+  display: flex;
+  align-items: center;
+}
+
+.catalog__ico {
+  position: absolute;
+  left: 0.75rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: var(--text-faint);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.catalog__input {
+  width: 100%;
+  background: var(--ink-1);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 0.6rem 0.8rem 0.6rem 2.35rem;
+  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+.catalog__input:focus-visible {
+  outline: none;
+  border-color: color-mix(in oklab, var(--cyan) 55%, var(--line));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--cyan) 16%, transparent);
+}
+
+.catalog__input::placeholder {
+  color: var(--text-faint);
+}
+
+.catalog__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.hfilter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  background: var(--ink-1);
+  border: 1px solid var(--line);
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease),
+    background 0.16s var(--ease);
+}
+
+.hfilter:hover {
+  color: var(--text);
+  border-color: color-mix(in oklab, var(--violet) 50%, var(--line));
+}
+
+.hfilter[aria-pressed='true'] {
+  color: var(--ink);
+  background: linear-gradient(120deg, var(--cyan), var(--blue));
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.hfilter__n {
+  font-size: 0.66rem;
+  color: var(--text-faint);
+  transition: color 0.16s var(--ease);
+}
+
+.hfilter[aria-pressed='true'] .hfilter__n {
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+}
+
+.catalog__empty {
+  text-align: center;
+  color: var(--text-faint);
+  padding: var(--step-5) 0;
+  margin: 0;
+}
+
+/* -------------------------------------------------------------- groups */
+
+.hgroup {
+  margin-bottom: var(--step-5);
+  scroll-margin-top: 8rem;
+}
+
+.hgroup__ttl {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: clamp(1.35rem, 1.1rem + 1.2vw, 1.9rem);
+  letter-spacing: -0.03em;
+  margin-bottom: 0.3rem;
+}
+
+.hgroup__n {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.hgroup__lede {
+  color: var(--text-dim);
+  font-size: 0.94rem;
+  margin: 0 0 var(--step-3);
+  max-width: 68ch;
+}
+
+.hcards {
+  display: grid;
+  gap: 0.6rem;
+}
+
+/* ---------------------------------------------------------------- card */
+
+.hcard {
+  border: 1px solid var(--line);
+  background: var(--ink-1);
+  transition: border-color 0.16s var(--ease), background 0.16s var(--ease);
+}
+
+.hcard[open] {
+  border-color: color-mix(in oklab, var(--violet) 45%, var(--line));
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--violet) 9%, var(--ink-1)),
+    var(--ink-1) 40%
+  );
+}
+
+.hcard__sum {
+  display: grid;
+  grid-template-columns: minmax(11rem, auto) auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.hcard__sum::-webkit-details-marker {
+  display: none;
+}
+
+.hcard__sum:hover {
+  background: color-mix(in oklab, var(--violet) 7%, transparent);
+}
+
+.hcard__sum:focus-visible {
+  outline: var(--focus);
+  outline-offset: -2px;
+}
+
+.hcard__name {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #cbb9ff;
+  word-break: break-word;
+}
+
+.hcard__badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.hcard__cat {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.16rem 0.42rem;
+  border: 1px solid var(--line);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.hcard__cat--reclash {
+  color: #cbb9ff;
+  border-color: color-mix(in oklab, var(--violet) 45%, transparent);
+}
+
+.hcard__cat--common {
+  color: var(--cyan);
+  border-color: color-mix(in oklab, var(--cyan) 42%, transparent);
+}
+
+.hcard__cat--hwid {
+  color: var(--amber);
+  border-color: color-mix(in oklab, var(--amber) 42%, transparent);
+}
+
+.hcard__alias code {
+  font-size: 0.66rem;
+  color: var(--amber);
+  background: color-mix(in oklab, var(--amber) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--amber) 30%, transparent);
+  padding: 0.12rem 0.4rem;
+}
+
+.hcard__lead {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  line-height: 1.35;
+  min-width: 0;
+}
+
+.hcard__lead code {
+  font-size: 0.82em;
+}
+
+.hcard__chev {
+  color: var(--text-faint);
+  display: inline-flex;
+}
+
+.hcard__chev svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s var(--ease);
+}
+
+.hcard[open] .hcard__chev svg {
+  transform: rotate(180deg);
+}
+
+/* On a phone the four-column summary row would crush the lead; drop the
+   lead onto its own line under the name and badges. */
+@media (max-width: 680px) {
+  .hcard__sum {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'name chev'
+      'badges badges'
+      'lead lead';
+    row-gap: 0.4rem;
+  }
+  .hcard__name { grid-area: name; }
+  .hcard__badges { grid-area: badges; }
+  .hcard__lead { grid-area: lead; }
+  .hcard__chev { grid-area: chev; justify-self: end; }
+}
+
+/* -------------------------------------------------------------- panel */
+
+.hcard__panel {
+  padding: 0 0.9rem 0.9rem;
+  border-top: 1px solid var(--line-soft);
+  margin-top: -1px;
+}
+
+.hcard__meta {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.8rem 0;
+  margin-bottom: 0.2rem;
+}
+
+.hcard__row {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: baseline;
+}
+
+.hcard__k {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.hcard__v {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  word-break: break-word;
+}
+
+.hcard__v.mono {
+  font-size: 0.84rem;
+}
+
+.hcard__prose {
+  color: var(--text-dim);
+  font-size: 0.94rem;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+
+.hcard__prose strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.hcard__panel .table-wrap,
+.hcard__panel .codeblock {
+  margin-top: var(--step-2);
+}
+
+@media (max-width: 520px) {
+  .hcard__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
+}

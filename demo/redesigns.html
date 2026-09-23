@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReClash — направления редизайна</title>
+<meta name="description" content="Микро-примеры разных направлений редизайна сайта ReClash: без градиентов, разными способами. Один файл, без сторонних доменов.">
+<style>
+/* Самохостинг шрифтов — те же файлы, что и на сайте. */
+@font-face{font-family:'Unbounded';font-style:normal;font-weight:400 900;font-display:swap;
+  src:url('../assets/fonts/unbounded-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'Unbounded';font-style:normal;font-weight:400 900;font-display:swap;
+  src:url('../assets/fonts/unbounded-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+2000-206F,U+2122;}
+@font-face{font-family:'Onest';font-style:normal;font-weight:300 900;font-display:swap;
+  src:url('../assets/fonts/onest-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'Onest';font-style:normal;font-weight:300 900;font-display:swap;
+  src:url('../assets/fonts/onest-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+2000-206F,U+2122;}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 700;font-display:swap;
+  src:url('../assets/fonts/jbmono-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 700;font-display:swap;
+  src:url('../assets/fonts/jbmono-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+2000-206F,U+2122;}
+
+:root{
+  --display:'Unbounded','Trebuchet MS',system-ui,sans-serif;
+  --body:'Onest',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{color-scheme:dark;-webkit-text-size-adjust:100%;}
+body{
+  margin:0;background:#0a0a0c;color:#e8e8ec;font-family:var(--body);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0;}
+p{margin:0;}
+a{color:inherit;text-decoration:none;}
+img,svg{display:block;max-width:100%;}
+
+/* ----------------- страница-обёртка ----------------- */
+.page{max-width:1180px;margin:0 auto;padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2.5rem) 6rem;}
+.masthead{margin-bottom:3.5rem;}
+.masthead h1{
+  font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,4vw,2.6rem);
+  letter-spacing:-.03em;line-height:1;margin-bottom:.8rem;
+}
+.masthead .sub{color:#9a9aa4;max-width:65ch;font-size:1.02rem;}
+.masthead .sub b{color:#e8e8ec;font-weight:600;}
+.masthead .meta{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:#6d6d78;margin-bottom:1rem;
+}
+
+/* карточка «что сейчас» */
+.now{
+  border:1px solid #232329;border-radius:14px;background:#111114;
+  padding:1.4rem 1.6rem;margin-top:2rem;
+}
+.now h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#8a8a95;margin-bottom:.9rem;}
+.now ul{margin:0;padding-left:1.1rem;color:#b6b6c0;font-size:.95rem;}
+.now li{margin-bottom:.35rem;}
+.now li b{color:#e8e8ec;font-weight:600;}
+
+/* заголовок каждого направления */
+.dir-head{
+  display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;
+  margin:4rem 0 1.2rem;padding-bottom:.7rem;border-bottom:1px solid #232329;
+}
+.dir-head .n{
+  font-family:var(--mono);font-weight:700;font-size:.8rem;color:#0a0a0c;background:#e8e8ec;
+  padding:.15em .5em;border-radius:4px;flex:none;
+}
+.dir-head h2{font-family:var(--display);font-weight:800;font-size:clamp(1.3rem,3vw,1.9rem);letter-spacing:-.02em;}
+.dir-head .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#6d6d78;}
+.dir-note{color:#9a9aa4;font-size:.95rem;max-width:70ch;margin-bottom:1.3rem;}
+.dir-note b{color:#cfcfd6;font-weight:600;}
+
+/* рамка предпросмотра */
+.frame{
+  border:1px solid #232329;border-radius:16px;overflow:hidden;
+  box-shadow:0 1rem 3rem -1rem rgba(0,0,0,.6);
+}
+.frame .label{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;
+  color:#6d6d78;padding:.5rem .9rem;border-bottom:1px solid #232329;background:#0d0d10;
+}
+
+/* общий контейнер мока */
+.demo{padding:clamp(2rem,5vw,3.5rem);}
+.demo .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1rem;}
+.demo h3{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:.98;}
+.demo .lede{margin-top:1.1rem;max-width:44ch;font-size:1.05rem;line-height:1.5;}
+.demo .actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.6rem;}
+.demo .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.2rem;}
+.demo .cards{display:grid;grid-template-columns:1.1fr .9fr;gap:1rem;margin-top:2.4rem;}
+@media(max-width:640px){.demo .cards{grid-template-columns:1fr;}}
+.demo pre{margin:0;font-family:var(--mono);font-size:.8rem;line-height:1.7;overflow-x:auto;}
+.demo .card h4{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;}
+.demo .card p{font-size:.92rem;}
+
+/* ============================================================
+   D1 · Тихая редакция (dark, без градиентов, один флэт-акцент)
+   ============================================================ */
+.d1{
+  --bg:#0d0f10;--panel:#141719;--line:#242a2d;--text:#e9edee;--dim:#9aa4a7;--faint:#6e797c;
+  --accent:#37d3b5;--accent-ink:#04120e;
+  background:var(--bg);color:var(--text);
+}
+.d1 .eyebrow{color:var(--accent);}
+.d1 h3{font-size:clamp(2rem,6vw,3.6rem);color:var(--text);}
+.d1 h3 .k{color:var(--accent);}
+.d1 .lede{color:var(--dim);}
+.d1 .lede b{color:var(--text);font-weight:600;}
+.d1 .btn{
+  display:inline-flex;align-items:center;gap:.5em;padding:.85em 1.5em;border-radius:8px;
+  font-family:var(--display);font-weight:700;font-size:.85rem;border:1px solid transparent;
+  cursor:pointer;transition:transform .12s,background .15s,border-color .15s;
+}
+.d1 .btn--pri{background:var(--accent);color:var(--accent-ink);}
+.d1 .btn--pri:hover{transform:translateY(-2px);}
+.d1 .btn--ghost{background:transparent;color:var(--text);border-color:var(--line);}
+.d1 .btn--ghost:hover{border-color:var(--accent);color:var(--accent);}
+.d1 .chip{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);border:1px solid var(--line);padding:.4em .7em;border-radius:6px;
+}
+.d1 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.4rem;}
+.d1 .card h4{color:var(--accent);}
+.d1 .card p{color:var(--dim);}
+.d1 pre{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.3rem;color:#c9d6d3;}
+.d1 .tok{color:var(--accent);}
+.d1 .com{color:var(--faint);}
+
+/* ============================================================
+   D2 · Терминал (моно-брутализм, phosphor-акцент, без тилта)
+   ============================================================ */
+.d2{
+  --bg:#07080a;--panel:#0c0e11;--line:#1c2733;--text:#d6e2df;--dim:#7f9088;--faint:#4d5a58;
+  --accent:#7de08a;
+  background:
+    linear-gradient(#0e1114 1px,transparent 1px) 0 0/100% 34px,
+    var(--bg);
+  color:var(--text);font-family:var(--mono);
+}
+.d2 .eyebrow{color:var(--accent);}
+.d2 h3{font-family:var(--mono);font-weight:700;font-size:clamp(1.6rem,4.6vw,2.8rem);letter-spacing:-.01em;line-height:1.05;text-transform:none;}
+.d2 h3 .k{color:var(--accent);}
+.d2 .lede{font-family:var(--mono);color:var(--dim);font-size:.98rem;}
+.d2 .lede b{color:var(--text);font-weight:700;}
+.d2 .btn{
+  display:inline-flex;align-items:center;gap:.5em;padding:.7em 1.2em;
+  font-family:var(--mono);font-weight:700;font-size:.82rem;border:1px solid var(--line);
+  background:transparent;color:var(--text);cursor:pointer;transition:background .12s,color .12s;
+}
+.d2 .btn::before{content:'> ';color:var(--accent);}
+.d2 .btn--pri{border-color:var(--accent);color:var(--accent);}
+.d2 .btn--pri:hover{background:var(--accent);color:var(--bg);}
+.d2 .btn--pri:hover::before{color:var(--bg);}
+.d2 .btn--ghost:hover{border-color:var(--text);}
+.d2 .chip{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--dim);border:1px solid var(--line);padding:.35em .6em;
+}
+.d2 .chip::before{content:'[';color:var(--faint);}
+.d2 .chip::after{content:']';color:var(--faint);}
+.d2 .card{background:var(--panel);border:1px solid var(--line);padding:1.2rem 1.3rem;}
+.d2 .card h4{color:var(--accent);}
+.d2 .card p{color:var(--dim);font-size:.88rem;}
+.d2 pre{background:var(--panel);border:1px solid var(--line);padding:1.2rem;color:#b6c9c2;}
+.d2 .tok{color:var(--accent);}
+.d2 .com{color:var(--faint);}
+
+/* ============================================================
+   D3 · Бумага (светлая, тёплый нейтрал, один чернильный акцент)
+   ============================================================ */
+.d3{
+  --bg:#efe9dc;--card:#f7f3ea;--line:#d3cbb9;--ink:#1a1712;--dim:#57503f;--faint:#6b6350;
+  --accent:#0f6f5c;
+  background:var(--bg);color:var(--ink);
+}
+.d3 .eyebrow{color:var(--accent);}
+.d3 h3{font-size:clamp(2rem,6vw,3.4rem);color:var(--ink);}
+.d3 h3 .k{color:var(--accent);}
+.d3 .lede{color:var(--dim);}
+.d3 .lede b{color:var(--ink);font-weight:600;}
+.d3 .btn{
+  display:inline-flex;align-items:center;gap:.5em;padding:.85em 1.5em;border-radius:999px;
+  font-family:var(--display);font-weight:700;font-size:.85rem;border:1px solid transparent;
+  cursor:pointer;transition:transform .12s,box-shadow .15s;
+}
+.d3 .btn--pri{background:var(--ink);color:var(--bg);}
+.d3 .btn--pri:hover{transform:translateY(-2px);box-shadow:0 .6rem 1.2rem -.4rem rgba(0,0,0,.4);}
+.d3 .btn--ghost{background:transparent;color:var(--ink);border-color:var(--line);}
+.d3 .btn--ghost:hover{border-color:var(--ink);}
+.d3 .chip{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);border:1px solid var(--line);padding:.4em .7em;border-radius:999px;
+}
+.d3 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.4rem;}
+.d3 .card h4{color:var(--accent);}
+.d3 .card p{color:var(--dim);}
+.d3 pre{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.3rem;color:#3a3529;}
+.d3 .tok{color:var(--accent);}
+.d3 .com{color:var(--faint);}
+
+/* ============================================================
+   D4 · Эволюция (dark, оставляем тилт как подпись, флэт-акцент,
+        никаких блобов/градиентов)
+   ============================================================ */
+.d4{
+  --bg:#0d090f;--panel:#171119;--line:#332a38;--text:#f1eaf2;--dim:#baaabf;--faint:#8b7c91;
+  --accent:#8a6dff;--amber:#ffd45f;--tilt:-20deg;
+  background:var(--bg);color:var(--text);
+}
+.d4 .eyebrow{display:inline-flex;align-items:center;gap:.55em;color:var(--faint);}
+.d4 .eyebrow i{width:.16em;height:.9em;background:var(--accent);display:inline-block;transform:skewX(var(--tilt));}
+.d4 h3{font-size:clamp(2rem,6.5vw,4rem);text-transform:uppercase;line-height:.9;}
+.d4 h3 .k{color:var(--accent);}
+.d4 h3 .slash{color:var(--amber);}
+.d4 .lede{color:var(--dim);}
+.d4 .lede b{color:var(--text);font-weight:600;}
+.d4 .btn{
+  position:relative;display:inline-flex;align-items:center;gap:.5em;padding:.85em 1.6em;
+  font-family:var(--display);font-weight:700;font-size:.85rem;border:0;cursor:pointer;
+  clip-path:polygon(.7em 0,100% 0,calc(100% - .7em) 100%,0 100%);
+  transition:transform .14s;
+}
+.d4 .btn--pri{background:var(--accent);color:#0a0710;}
+.d4 .btn--pri:hover{transform:translate(2px,-2px);}
+.d4 .btn--ghost{background:rgba(241,234,242,.06);color:var(--text);box-shadow:inset 0 0 0 1px var(--line);}
+.d4 .btn--ghost:hover{box-shadow:inset 0 0 0 1px var(--accent);color:#fff;}
+.d4 .chip{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);border:1px solid var(--line);padding:.4em .7em;
+}
+.d4 .card{background:var(--panel);border:1px solid var(--line);padding:1.3rem 1.4rem;position:relative;}
+.d4 .card::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:var(--accent);}
+.d4 .card h4{color:var(--amber);}
+.d4 .card p{color:var(--dim);}
+.d4 pre{background:var(--panel);border:1px solid var(--line);padding:1.3rem;color:#d7ccef;}
+.d4 .tok{color:var(--accent);}
+.d4 .com{color:var(--faint);}
+
+.foot{margin-top:5rem;padding-top:1.5rem;border-top:1px solid #232329;color:#7d7d88;font-size:.9rem;}
+.foot b{color:#c8c8d0;}
+</style>
+</head>
+
+<div class="page">
+
+  <div class="masthead">
+    <p class="meta">ReClash · направления редизайна · без сторонних доменов</p>
+    <h1>Что делать с градиентами</h1>
+    <p class="sub">Четыре направления. В каждом — один и тот же фрагмент (герой + кнопки + карточка + код),
+    чтобы сравнивать честно. Везде <b>градиенты убраны</b> либо сведены к одному флэт-акценту;
+    отличается философия: насколько далеко уходить от текущего образа.</p>
+
+    <div class="now">
+      <h2>Что делает сайт сейчас</h2>
+      <ul>
+        <li><b>Фон-атмосфера:</b> плывущие цветные блобы (violet/cyan/blue), диагональные лучи под 20°, сетка, зерно, виньетка.</li>
+        <li><b>Бренд-градиент</b> violet→blue→cyan: залит в заголовки (<code>.grad</code>), в кнопки, в hover-кросс-фейд (violet→cyan→magenta).</li>
+        <li><b>Наклон 20°</b> — сквозной мотив из логотипа: заголовок «съезжает» по диагонали, кнопки-параллелограммы, скошенные чипы и тики.</li>
+        <li><b>Amber</b> — акцент для номеров рубрик и слэшей. Шрифты: Unbounded (дисплей), Onest (текст), JetBrains Mono.</li>
+      </ul>
+      <p style="margin-top:.9rem;color:#9a9aa4;font-size:.92rem;">Итог: насыщенный «киберпанк-эдиториал». Сильный, но громкий: градиенты + блобы + наклон тянут внимание одновременно.</p>
+    </div>
+  </div>
+
+  <!-- ================= D1 ================= -->
+  <div class="dir-head">
+    <span class="n">01</span>
+    <h2>Тихая редакция</h2>
+    <span class="tag">dark · без градиентов · один флэт-акцент</span>
+  </div>
+  <p class="dir-note">Оставляем тёмную базу, но <b>выключаем все градиенты и блобы</b>. Один плоский бирюзово-мятный акцент,
+  чёткие рамки 1px, ровная типографика без наклона. Спокойно и «дорого». Ближе всего к «убрать градиенты, сохранив кости».</p>
+  <div class="frame">
+    <div class="label">preview · d1</div>
+    <div class="demo d1">
+      <p class="eyebrow">клиент для mihomo</p>
+      <h3>Управляй <span class="k">трафиком</span>.<br>Без лишнего шума.</h3>
+      <p class="lede">Открытый клиент mihomo: <b>темы провайдера</b>, настраиваемая панель и опциональный обход DPI. Windows, macOS, Linux, Android.</p>
+      <div class="actions">
+        <button class="btn btn--pri">Скачать</button>
+        <button class="btn btn--ghost">Быстрый старт</button>
+      </div>
+      <div class="chips">
+        <span class="chip">● online</span><span class="chip">21 мс</span><span class="chip">MIT</span>
+      </div>
+      <div class="cards">
+        <pre><span class="com"># nginx: заголовок темы</span>
+add_header <span class="tok">ReClash-Theme</span> "aurora";
+add_header <span class="tok">ReClash-Accent</span> "#37d3b5";</pre>
+        <div class="card">
+          <h4>Темы провайдера</h4>
+          <p>Оформление подписки задаётся заголовками ответа — клиент подхватывает на лету.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= D2 ================= -->
+  <div class="dir-head">
+    <span class="n">02</span>
+    <h2>Терминал</h2>
+    <span class="tag">моно-брутализм · phosphor · без тилта</span>
+  </div>
+  <p class="dir-note">Наклоняемся к технической аудитории «под блокировками»: <b>моноширинный</b> во всём, боксы, высокий контраст,
+  один «фосфорный» акцент, тонкая фоновая сетка-строки. Никаких градиентов и наклона. Смелее и нишевее.</p>
+  <div class="frame">
+    <div class="label">preview · d2</div>
+    <div class="demo d2">
+      <p class="eyebrow">// клиент для mihomo</p>
+      <h3>reclash: <span class="k">трафик</span> под контролем,<br>без лишнего шума</h3>
+      <p class="lede">Открытый клиент mihomo: <b>темы провайдера</b>, настраиваемая панель, опциональный обход DPI. win / mac / linux / android.</p>
+      <div class="actions">
+        <button class="btn btn--pri">download</button>
+        <button class="btn btn--ghost">quickstart</button>
+      </div>
+      <div class="chips">
+        <span class="chip">online</span><span class="chip">21ms</span><span class="chip">MIT</span>
+      </div>
+      <div class="cards">
+        <pre><span class="com"># nginx: заголовок темы</span>
+add_header <span class="tok">ReClash-Theme</span> "aurora";
+add_header <span class="tok">ReClash-Accent</span> "#7de08a";</pre>
+        <div class="card">
+          <h4>provider themes</h4>
+          <p>Оформление подписки — в заголовках ответа. Клиент читает и применяет на лету.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= D3 ================= -->
+  <div class="dir-head">
+    <span class="n">03</span>
+    <h2>Бумага</h2>
+    <span class="tag">светлая · тёплый нейтрал · чернильный акцент</span>
+  </div>
+  <p class="dir-note">Разворот на светлую тёплую базу (палитра уже есть в токенах — <code>--paper*</code>), много воздуха, тонкие линии,
+  один зелёный акцент + чёрные пилюли-кнопки. Спокойно, «продуктово», вызывает доверие. Самый большой отход от нынешнего образа.</p>
+  <div class="frame">
+    <div class="label">preview · d3</div>
+    <div class="demo d3">
+      <p class="eyebrow">клиент для mihomo</p>
+      <h3>Управляй <span class="k">трафиком</span>.<br>Спокойно и ясно.</h3>
+      <p class="lede">Открытый клиент mihomo: <b>темы провайдера</b>, настраиваемая панель и опциональный обход DPI. Windows, macOS, Linux, Android.</p>
+      <div class="actions">
+        <button class="btn btn--pri">Скачать</button>
+        <button class="btn btn--ghost">Быстрый старт</button>
+      </div>
+      <div class="chips">
+        <span class="chip">● online</span><span class="chip">21 мс</span><span class="chip">MIT</span>
+      </div>
+      <div class="cards">
+        <pre><span class="com"># nginx: заголовок темы</span>
+add_header <span class="tok">ReClash-Theme</span> "aurora";
+add_header <span class="tok">ReClash-Accent</span> "#0f6f5c";</pre>
+        <div class="card">
+          <h4>Темы провайдера</h4>
+          <p>Оформление подписки задаётся заголовками ответа — клиент подхватывает на лету.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= D4 ================= -->
+  <div class="dir-head">
+    <span class="n">04</span>
+    <h2>Эволюция</h2>
+    <span class="tag">dark · наклон как подпись · флэт-акцент</span>
+  </div>
+  <p class="dir-note">Не выбрасываем ДНК: тёмная база, наклон 20° и amber остаются <b>единственной</b> подписью.
+  Но градиенты, блобы и hover-кросс-фейды уходят — вместо них один плоский фиолетовый акцент. «Тот же сайт, но без крика».</p>
+  <div class="frame">
+    <div class="label">preview · d4</div>
+    <div class="demo d4">
+      <p class="eyebrow"><i></i>клиент для mihomo</p>
+      <h3>Управляй<br><span class="k">трафиком</span><span class="slash">/</span></h3>
+      <p class="lede">Открытый клиент mihomo: <b>темы провайдера</b>, настраиваемая панель и опциональный обход DPI. Windows, macOS, Linux, Android.</p>
+      <div class="actions">
+        <button class="btn btn--pri">Скачать</button>
+        <button class="btn btn--ghost">Быстрый старт</button>
+      </div>
+      <div class="chips">
+        <span class="chip">● online</span><span class="chip">21 мс</span><span class="chip">MIT</span>
+      </div>
+      <div class="cards">
+        <pre><span class="com"># nginx: заголовок темы</span>
+add_header <span class="tok">ReClash-Theme</span> "aurora";
+add_header <span class="tok">ReClash-Accent</span> "#8a6dff";</pre>
+        <div class="card">
+          <h4>Темы провайдера</h4>
+          <p>Оформление подписки задаётся заголовками ответа — клиент подхватывает на лету.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p><b>Как смотреть:</b> открой этот файл дев-сервером (<code>python3 build.py --serve</code> обслуживает и <code>demo/</code>)
+    либо прямо в браузере. Все примеры — один HTML, шрифты берутся из <code>assets/fonts</code>, сторонних доменов нет.</p>
+    <p style="margin-top:.6rem;">Это только герой-фрагмент каждого направления, не весь сайт. Скажи, какое ближе — разверну его на реальные секции (dashboard, рубрики, конструктор заголовков, платформы).</p>
+  </div>
+
+</div>
+</html>

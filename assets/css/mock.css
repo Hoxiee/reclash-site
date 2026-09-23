@@ -1,0 +1,140 @@
+/* Mock subscriptions: a grid of fake-subscription cards + a short how-to.
+
+   Placeholder state — the cards carry invented figures and stand-in URLs. The
+   copy/import actions are wired later; the markup is final. */
+
+.mocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1rem;
+}
+.mock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.15rem 1.15rem 1.25rem;
+  border: 1px solid var(--line-soft);
+  border-radius: 1rem;
+  background: color-mix(in oklab, var(--ink-2) 66%, transparent);
+  /* the accent rail on the left edge; recoloured per tone below */
+  box-shadow: inset 3px 0 0 color-mix(in oklab, var(--blue) 55%, transparent);
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.mock:hover {
+  transform: translateY(-3px);
+  border-color: var(--line);
+}
+.mock--warn {
+  box-shadow: inset 3px 0 0 var(--amber);
+}
+.mock--themed {
+  box-shadow: inset 3px 0 0 var(--violet);
+}
+
+.mock__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.mock__name {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.mock__sub {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-faint);
+  line-height: 1.35;
+}
+
+.mock__facts {
+  margin: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.mock__fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.86rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+.mock__fact:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.mock__fact dt {
+  color: var(--text-faint);
+}
+.mock__fact dd {
+  margin: 0;
+  color: var(--text);
+  text-align: right;
+}
+
+.mock__url {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  background: color-mix(in oklab, var(--ink) 60%, transparent);
+  border: 1px solid var(--line-soft);
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  overflow-wrap: anywhere;
+}
+.mock__acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.mock-how {
+  list-style: none;
+  counter-reset: how;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+.mock-how li {
+  counter-increment: how;
+  position: relative;
+  padding: 0.9rem 1rem 1rem 3rem;
+  border: 1px solid var(--line-soft);
+  border-radius: 0.8rem;
+  background: color-mix(in oklab, var(--ink-2) 55%, transparent);
+}
+.mock-how li::before {
+  content: counter(how);
+  position: absolute;
+  left: 1rem;
+  top: 0.9rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+  border-radius: 999px;
+  background: linear-gradient(100deg, var(--violet), var(--blue) 52%, var(--cyan));
+}
+.mock-how h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.96rem;
+}
+.mock-how p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mock {
+    transition: none;
+  }
+}

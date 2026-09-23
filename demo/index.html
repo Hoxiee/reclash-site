@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReClash — Material Design демо</title>
+<meta name="description" content="Микро-демонстрация сайта ReClash в стиле Material Design 3. Один файл, без сторонних доменов.">
+<style>
+  /* ReClash · Material Design 3 micro-demo — one file, no CDN.
+     Seed — a dusty rose, the muted cousin of the site's brand magenta #f0448c. */
+  :root {
+    color-scheme: light;
+
+    /* Material 3 tonal roles, hand-rolled from the dusty-rose seed */
+    --primary:        #9c4256;
+    --on-primary:     #ffffff;
+    --primary-cont:   #ffd9de;
+    --on-primary-cont:#3f0018;
+    --secondary:      #75565b;
+    --secondary-cont: #ffd9de;
+    --on-secondary-cont:#2b151a;
+    --tertiary:       #785830;
+    --tertiary-cont:  #ffddb3;
+
+    --surface:        #fff8f7;
+    --surface-dim:    #e8d6d6;
+    --surface-1:      #fdf0ef;
+    --surface-2:      #f9e9e9;
+    --surface-3:      #f5e2e3;
+    --surface-4:      #f3dfe0;
+    --surface-5:      #f0dbdc;
+    --on-surface:     #22191a;
+    --on-surface-var: #524345;
+    --outline:        #847375;
+    --outline-var:    #d7c1c3;
+
+    --md-sys-shape:   28px;
+    --easing:         cubic-bezier(.2, 0, 0, 1);
+
+    --sans: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    color: var(--on-surface);
+    background: var(--surface);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  svg { display: block; }
+  .icon { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Top app bar ---------- */
+  .appbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px;
+    background: var(--surface-2);
+    color: var(--on-surface);
+  }
+  .appbar__logo {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: grid; place-items: center; flex: none;
+    background: var(--primary); color: var(--on-primary);
+    font-weight: 700; font-size: 18px;
+  }
+  .appbar__title { font-size: 20px; font-weight: 600; letter-spacing: .1px; }
+  .appbar__title small { display: block; font-size: 12px; font-weight: 500; color: var(--on-surface-var); letter-spacing: .3px; }
+  .appbar__spacer { flex: 1; }
+  .icon-btn {
+    width: 44px; height: 44px; border: 0; border-radius: 999px;
+    display: grid; place-items: center; cursor: pointer;
+    background: transparent; color: var(--on-surface-var);
+    transition: background .15s var(--easing);
+  }
+  .icon-btn:hover { background: color-mix(in srgb, var(--on-surface) 8%, transparent); }
+  .icon-btn:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+  /* ---------- Layout ---------- */
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  section { padding: 40px 0; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase;
+    color: var(--primary); margin: 0 0 12px;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 2px; background: var(--primary); border-radius: 2px; }
+  h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.2px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    margin-top: 12px;
+    border-radius: var(--md-sys-shape);
+    background:
+      radial-gradient(120% 140% at 100% 0%, var(--primary-cont) 0%, transparent 60%),
+      var(--surface-2);
+    padding: 48px 32px;
+    overflow: hidden;
+  }
+  .hero h1 { font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.05; }
+  .hero .grad { color: var(--primary); }
+  .hero p { max-width: 52ch; color: var(--on-surface-var); font-size: 1.05rem; margin: 18px 0 0; }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+
+  /* ---------- Material buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 48px; padding: 0 24px; border-radius: 999px; border: 0;
+    font: inherit; font-weight: 600; font-size: 15px; cursor: pointer;
+    text-decoration: none; transition: box-shadow .15s var(--easing), background .15s var(--easing);
+  }
+  .btn .icon { width: 20px; height: 20px; }
+  .btn--filled { background: var(--primary); color: var(--on-primary); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .btn--filled:hover { box-shadow: 0 2px 6px rgba(0,0,0,.28); background: color-mix(in srgb, var(--primary) 92%, #fff); }
+  .btn--tonal { background: var(--secondary-cont); color: var(--on-secondary-cont); }
+  .btn--tonal:hover { background: color-mix(in srgb, var(--secondary-cont) 88%, var(--on-secondary-cont)); }
+  .btn--outlined { background: transparent; color: var(--primary); border: 1px solid var(--outline); }
+  .btn--outlined:hover { background: color-mix(in srgb, var(--primary) 8%, transparent); }
+  .btn:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 32px; padding: 0 14px; border-radius: 8px;
+    border: 1px solid var(--outline-var); background: var(--surface-1);
+    color: var(--on-surface-var); font-size: 13px; font-weight: 500;
+  }
+  .chip--accent { border-color: transparent; background: var(--primary-cont); color: var(--on-primary-cont); }
+  .chip .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--primary); }
+
+  /* ---------- Feature cards ---------- */
+  .grid {
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  }
+  .card {
+    background: var(--surface-1); border-radius: 20px; padding: 24px;
+    border: 1px solid var(--outline-var);
+    transition: box-shadow .18s var(--easing), transform .18s var(--easing), background .18s var(--easing);
+  }
+  .card:hover { box-shadow: 0 6px 20px rgba(60,0,24,.10); transform: translateY(-2px); background: var(--surface-2); }
+  .card__icon {
+    width: 48px; height: 48px; border-radius: 14px; margin-bottom: 16px;
+    display: grid; place-items: center;
+    background: var(--primary-cont); color: var(--on-primary-cont);
+  }
+  .card__icon .icon { width: 26px; height: 26px; }
+  .card h3 { font-size: 1.12rem; margin-bottom: 8px; }
+  .card p { margin: 0; color: var(--on-surface-var); font-size: .95rem; }
+
+  /* ---------- Steps ---------- */
+  .steps { counter-reset: step; display: grid; gap: 12px; }
+  .step {
+    display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start;
+    background: var(--surface-1); border-radius: 16px; padding: 18px 20px;
+    border: 1px solid var(--outline-var);
+  }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    width: 40px; height: 40px; border-radius: 999px;
+    display: grid; place-items: center;
+    background: var(--primary); color: var(--on-primary); font-weight: 700;
+  }
+  .step h3 { font-size: 1.02rem; margin-bottom: 4px; }
+  .step p { margin: 0; color: var(--on-surface-var); font-size: .95rem; }
+
+  /* ---------- CTA banner ---------- */
+  .cta {
+    border-radius: var(--md-sys-shape);
+    background: var(--primary); color: var(--on-primary);
+    padding: 40px 32px; text-align: center;
+  }
+  .cta h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); }
+  .cta p { max-width: 46ch; margin: 12px auto 24px; color: color-mix(in srgb, var(--on-primary) 82%, var(--primary)); }
+  .cta .btn--filled { background: var(--on-primary); color: var(--primary); }
+  .cta .btn--outlined { color: var(--on-primary); border-color: color-mix(in srgb, var(--on-primary) 60%, transparent); }
+  .cta .btn--outlined:hover { background: color-mix(in srgb, var(--on-primary) 12%, transparent); }
+
+  /* ---------- Footer ---------- */
+  footer { padding: 32px 0 120px; color: var(--on-surface-var); font-size: .9rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; }
+
+  /* ---------- FAB ---------- */
+  .fab {
+    position: fixed; right: 20px; bottom: 20px; z-index: 30;
+    display: inline-flex; align-items: center; gap: 10px;
+    height: 56px; padding: 0 20px; border: 0; border-radius: 18px;
+    background: var(--tertiary-cont); color: var(--tertiary);
+    font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+    box-shadow: 0 4px 12px rgba(60,0,24,.22);
+    transition: box-shadow .15s var(--easing), transform .15s var(--easing);
+  }
+  .fab:hover { box-shadow: 0 8px 20px rgba(60,0,24,.3); transform: translateY(-1px); }
+  .fab:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+
+  .demo-note {
+    max-width: 1080px; margin: 20px auto 0; padding: 0 16px;
+  }
+  .demo-note span {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; color: var(--on-surface-var);
+    background: var(--surface-3); border-radius: 999px; padding: 6px 14px;
+  }
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="appbar__logo">R</div>
+  <div class="appbar__title">ReClash<small>Material Design демо</small></div>
+  <div class="appbar__spacer"></div>
+  <button class="icon-btn" aria-label="Открытый код на GitHub" title="GitHub">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+  </button>
+  <button class="icon-btn" aria-label="Переключить язык" title="Язык">
+    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+  </button>
+</header>
+
+<div class="demo-note">
+  <span>
+    <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    Микро-демо в Material Design 3 · один HTML-файл · без сторонних доменов
+  </span>
+</div>
+
+<main class="wrap">
+
+  <!-- Hero -->
+  <section class="hero">
+    <p class="eyebrow">Форк FlClash · ядро mihomo · GPL-3.0</p>
+    <h1>Ваш трафик — <span class="grad">ваши правила</span></h1>
+    <p>ReClash — открытый клиент для mihomo с понятной панелью, живой темой от провайдера и настройками, которые не приходится искать. Свои серверы, свои правила, свой трафик.</p>
+    <div class="hero__actions">
+      <a class="btn btn--filled" href="#download">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Скачать клиент
+      </a>
+      <a class="btn btn--tonal" href="#start">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Быстрый старт
+      </a>
+    </div>
+    <div class="chips">
+      <span class="chip">Windows</span>
+      <span class="chip">macOS</span>
+      <span class="chip">Linux</span>
+      <span class="chip">Android</span>
+      <span class="chip chip--accent"><span class="dot"></span>открытый код</span>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <p class="eyebrow">Что внутри</p>
+    <h2 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:24px">Возможности, а не обещания</h2>
+    <div class="grid">
+      <article class="card">
+        <span class="card__icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg></span>
+        <h3>Ядро mihomo целиком</h3>
+        <p>Правила, группы, провайдеры прокси, GeoIP и GeoSite, fake-ip, внешние контроллеры — всё, к чему вы привыкли в Clash.Meta.</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2a10 10 0 1 0 0 20 2.5 2.5 0 0 0 2-4 2.5 2.5 0 0 1 2-4h1a3 3 0 0 0 3-3 9 9 0 0 0-8-9z"/></svg></span>
+        <h3>Тема, которую задаёт провайдер</h3>
+        <p>Один заголовок в ответе подписки — и приложение перекрашивается под бренд: цвет, фон, кольцо подключения, логотип, набор виджетов.</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+        <h3>Панель, которую можно собрать</h3>
+        <p>Пятнадцать виджетов: скорость, расход трафика, режим, определение сети, TUN, системный прокси, объявление, карточка сервиса.</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+        <h3>Обход DPI — когда он нужен</h3>
+        <p>Если сеть фильтрует соединение по сигнатуре, ByeDPI включается одним переключателем. В обычной сети его можно не трогать.</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg></span>
+        <h3>Четыре платформы</h3>
+        <p>Windows, macOS, Linux и Android из одной кодовой базы на Flutter. Одинаковые настройки, одинаковые профили.</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+        <h3>Открытый код и никакой телеметрии</h3>
+        <p>GPL-3.0, исходники на GitHub. Клиент не отправляет статистику и не знает ничего, кроме вашей подписки.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Steps -->
+  <section id="start">
+    <p class="eyebrow">Первый запуск</p>
+    <h2 style="font-size:clamp(1.6rem,4vw,2.2rem);margin-bottom:24px">Три шага до подключения</h2>
+    <div class="steps">
+      <div class="step">
+        <div>
+          <h3>Поставьте клиент</h3>
+          <p>Windows, macOS, Linux или Android. Установщик или портативная сборка — ни аккаунта, ни регистрации, ни почты.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>Добавьте подписку одной ссылкой</h3>
+          <p>Ссылка от провайдера приносит профиль, серверы и правила разом. Заполнять руками нечего.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h3>Подключитесь</h3>
+          <p>Выберите TUN для всего устройства или системный прокси для приложений — и всё.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="download">
+    <div class="cta">
+      <h2>Готовы попробовать?</h2>
+      <p>Скачайте сборку под свою платформу и импортируйте подписку одной ссылкой. Регистрация не нужна.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
+        <a class="btn btn--filled" href="#">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Скачать ReClash
+        </a>
+        <a class="btn btn--outlined" href="#features">Посмотреть возможности</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>ReClash · демонстрация в Material Design</span>
+    <span>GPL-3.0 · без телеметрии</span>
+  </div>
+</footer>
+
+<a class="fab" href="#download">
+  <svg class="icon" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+  Скачать
+</a>
+
+</body>
+</html>

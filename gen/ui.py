@@ -19,7 +19,12 @@ UPSTREAM_BYEDPI = "https://github.com/hufrea/byedpi"
 LICENSE_URL = GITHUB + "/blob/main/LICENSE"
 HEADERS_SRC = GITHUB + "/blob/main/PROVIDER_HEADERS.md"
 
-PAGES = ("index", "headers", "download", "start")
+PAGES = ("index", "gallery", "docs", "headers", "reference", "download", "start", "mock")
+
+# Rendered and reachable, but kept out of the sitemap and marked noindex:
+# the mock-subscriptions page is test scaffolding, not something to surface
+# in search.
+NOINDEX = ("mock",)
 
 
 def esc(text):

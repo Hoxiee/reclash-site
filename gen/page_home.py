@@ -6,16 +6,6 @@ from .ui import esc, icon, brand_icon, mark, ticks, rubric, chip, btn
 
 def hero(ctx):
     t = ctx.t
-    lines = t(
-        ["ВАШ ТРАФИК", "— ВАШИ", "ПРАВИЛА"],
-        ["YOUR TRAFFIC", "IS YOURS", "TO ROUTE"],
-    )
-    head = "".join(
-        '<span class="hl enter%s" style="--i:%d;--d:%.2fs">%s</span>'
-        % (" grad" if i == 2 else "", i, 0.14 + i * 0.1, esc(line))
-        for i, line in enumerate(lines)
-    )
-
     return "".join([
         '<section class="hero">',
         '<canvas class="hero__canvas" aria-hidden="true"></canvas>',
@@ -26,26 +16,30 @@ def hero(ctx):
         '<p class="hero__meta enter" style="--d:.05s">',
         ticks(),
         "<span>",
-        esc(t("Форк FlClash", "A fork of FlClash")),
+        esc(t("форк FlClash", "a fork of FlClash")),
         "</span><span>",
         esc(t("ядро mihomo", "mihomo core")),
         "</span><span>GPL-3.0</span></p>",
-        '<h1 class="hero__title">', head, "</h1>",
-        '<p class="hero__lede enter" style="--d:.5s">',
+        '<h1 class="hero__title enter" style="--d:.16s">',
+        esc(t("Свобода,", "Freedom")),
+        '<span class="hero__title__sub">%s</span>'
+        % esc(t("которую нельзя отобрать.", "no one can take away.")),
+        "</h1>",
+        '<p class="hero__lede enter" style="--d:.3s">',
         t(
-            "ReClash — открытый клиент для <strong>mihomo</strong> с понятной панелью, "
-            "живой темой от провайдера и настройками, которые не приходится искать. "
-            "Свои серверы, свои правила, свой трафик.",
-            "ReClash is an open-source <strong>mihomo</strong> client with a clear dashboard, "
-            "a live provider theme and settings you do not have to hunt for. "
-            "Your own servers, your own rules, your own traffic.",
+            "Полное ядро mihomo и режим «Авто»: клиент сам держит рабочий узел под "
+            "вашу сеть и переключается, когда она меняется. Открытый код на Windows, "
+            "macOS, Linux и Android.",
+            "The full mihomo core, plus Auto: it keeps a working node for your network "
+            "and switches when the network changes. Open source on Windows, macOS, "
+            "Linux and Android.",
         ),
         "</p>",
-        '<div class="hero__actions enter" style="--d:.62s">',
-        btn(ctx.page("download"), t("Скачать клиент", "Download the client"), "", "download"),
-        btn("#get-started", t("Быстрый старт", "Quick start"), "btn--ghost", "bolt"),
+        '<div class="hero__actions enter" style="--d:.42s">',
+        btn(ctx.page("download"), t("Скачать", "Download"), "", "download"),
+        btn("#get-started", t("Как это работает", "How it works"), "btn--ghost", "bolt"),
         "</div>",
-        '<div class="hero__chips enter" style="--d:.72s">',
+        '<div class="hero__chips enter" style="--d:.52s">',
         chip("Windows"), chip("macOS"), chip("Linux"), chip("Android"),
         chip(t("открытый код", "open source"), True),
         "</div>",
@@ -60,43 +54,122 @@ def hero(ctx):
         '<span class="hero__mark__hint">%s</span>'
         % esc(t("наведите · кликните", "hover · click")),
         "</div>",
-        # Floating telemetry: the numbers tick on their own (home.js), so the
-        # mark sits inside a small live readout rather than a still picture.
-        '<div class="hero__chip hero__chip--a" aria-hidden="true">'
-        '<span class="hero__chip__k">%s</span>'
-        '<b><span data-tele="delay">32</span><i>ms</i></b></div>'
-        % esc(t("задержка", "delay")),
-        '<div class="hero__chip hero__chip--b" aria-hidden="true">'
-        '<span class="hero__chip__k">%s</span>'
-        '<b><span data-tele="down">6.4</span><i>MB/s</i></b></div>'
-        % esc(t("скорость", "down")),
         "</div>",
         "</div></section>",
     ])
 
 
-def marquee(ctx):
+def section_why(ctx):
+    """Positioning, placed before the audience fork.
+
+    The old page split by audience straight after the hero, so a first-time
+    reader had to pick a track before learning what ReClash even is. This block
+    answers that first: the same mihomo core as Clash.Meta, what ReClash adds on
+    top, and what it refuses to take in return. The lineage on the right names
+    the three projects so the "fork of a fork" question is settled here rather
+    than left for the FAQ."""
     t = ctx.t
-    words = t(
-        [
-            "mihomo под капотом", "профиль одной ссылкой", "темы от провайдера",
-            "виджеты панели", "TUN и системный прокси", "правила и группы",
-            "GeoIP и GeoSite", "без телеметрии", "GPL-3.0",
-        ],
-        [
-            "mihomo under the hood", "one-link profile", "provider themes",
-            "dashboard widgets", "TUN and system proxy", "rules and groups",
-            "GeoIP and GeoSite", "no telemetry", "GPL-3.0",
-        ],
+    chain = [
+        ("mihomo", t("ядро маршрутизации: правила, группы, GeoIP, fake-ip",
+                     "the routing core: rules, groups, GeoIP, fake-ip"), False),
+        ("FlClash", t("кроссплатформенная база на Flutter",
+                      "the cross-platform Flutter base"), False),
+        ("ReClash", t("темы провайдера, умная маршрутизация, обход DPI, панель заново",
+                      "provider themes, smart routing, DPI bypass, a dashboard rebuilt"), True),
+    ]
+    rows = "".join(
+        '<li class="lineage__row%s"><span class="lineage__name">%s</span>'
+        '<span class="lineage__what">%s</span></li>'
+        % (" lineage__row--this" if this else "", esc(name), esc(what))
+        for name, what, this in chain
     )
-    run = "".join("<span>%s</span>" % esc(w) for w in words)
+    return "".join([
+        '<section class="section section--tight" id="why"><div class="shell">',
+        rubric("01", t("что это", "what it is")),
+        '<div class="split">',
+        "<div>",
+        '<h2 class="statement">%s</h2>' % t(
+            "Форк <em>FlClash</em> на ядре mihomo.",
+            "A fork of <em>FlClash</em> on the mihomo core.",
+        ),
+        '<p class="lede" style="margin-top:var(--step-3)">%s</p>' % t(
+            "Маршрутизацию делает то же ядро <strong>mihomo</strong>, что и в Clash.Meta. "
+            "ReClash добавляет сверху то, чего не хватало: оформление и виджеты от провайдера, "
+            "умную маршрутизацию, встроенный обход DPI и панель, собранную заново.",
+            "Routing runs on the same <strong>mihomo</strong> core as Clash.Meta. ReClash adds "
+            "what was missing on top: provider theming and widgets, smart routing, a built-in "
+            "DPI bypass, and a dashboard rebuilt from scratch.",
+        ),
+        '<p class="row gap-2" style="margin-top:var(--step-4)">%s%s</p>' % (
+            chip(t("открытый код", "open source"), True),
+            chip(t("ядро mihomo", "mihomo core")),
+        ),
+        '<p class="muted" style="margin-top:var(--step-3);font-size:.92rem">%s</p>' % t(
+            "Проект не аффилирован с FlClash, mihomo или FlClashX. "
+            "<a class=\"link link--cyan\" href=\"%s\">Чем отличается от FlClash</a>."
+            % (ctx.page("start") + "#faq-flclash"),
+            "The project is not affiliated with FlClash, mihomo or FlClashX. "
+            "<a class=\"link link--cyan\" href=\"%s\">How it differs from FlClash</a>."
+            % (ctx.page("start") + "#faq-flclash"),
+        ),
+        "</div>",
+        '<div><p class="eyebrow" style="margin-bottom:var(--step-2)">%s</p>'
+        '<ul class="lineage">%s</ul></div>' % (
+            esc(t("родословная", "lineage")), rows),
+        "</div>",
+        "</div></section>",
+    ])
+
+
+def section_paths(ctx):
+    """The closing fork: two doors, one per audience.
+
+    It is the last thing on the page on purpose. By the time the reader reaches
+    it they have seen what ReClash is, the two chapters (01 for users, 02 for
+    providers), the platforms and the honest box — so this is not a mid-page
+    reader-ejector but the natural exit, and each card links straight to where
+    that audience actually goes next.
+    """
+    t = ctx.t
+    cards = [
+        (ctx.page("download"), "download", "user",
+         t("у вас есть ссылка", "you have a link"),
+         t("Вставьте ссылку и подключитесь", "Paste the link and connect"),
+         t("ReClash откроет ссылку провайдера, покажет остаток трафика и подключит — "
+           "без аккаунта, регистрации и почты.",
+           "ReClash opens your provider's link, shows the traffic you have left and "
+           "connects — no account, no sign-up, no email."),
+         t("Скачать ReClash", "Download ReClash")),
+        (ctx.page("headers") + "#builder", "palette", "provider",
+         t("вы продаёте доступ", "you sell access"),
+         t("Сделайте клиент своим", "Make the client yours"),
+         t("Несколько заголовков в ответе подписки — и приложение носит ваш логотип, "
+           "цвет и кнопку продления. Своего приложения не нужно.",
+           "A few headers in the subscription response and the app wears your logo, "
+           "your colour and your renew button. No app of your own needed."),
+         t("Собрать заголовки", "Build the headers")),
+    ]
+    figs = "".join(
+        '<a class="path path--%s reveal" href="%s" data-delay="%s">'
+        '<span class="path__icon">%s</span>'
+        '<p class="eyebrow">%s</p><h2>%s</h2><p>%s</p>'
+        '<span class="path__go">%s<i aria-hidden="true">&#8594;</i></span></a>'
+        % (kind, href, round(i * 0.08, 2), icon(ic), esc(eyebrow),
+           esc(title), esc(body), esc(go))
+        for i, (href, ic, kind, eyebrow, title, body, go) in enumerate(cards)
+    )
     return (
-        '<div class="marquee" aria-hidden="true"><div class="marquee__track">%s%s</div></div>'
-        % (run, run)
+        '<section class="section section--tight" id="paths"><div class="shell">'
+        '<p class="eyebrow center">%s</p>'
+        '<h2 class="statement center" style="margin-bottom:var(--step-5)">%s</h2>'
+        '<div class="paths">%s</div></div></section>'
+        % (esc(t("что дальше", "what's next")),
+           t("Дальше зависит от того, <em>кто вы</em>.",
+             "What comes next depends on <em>who you are</em>."), figs)
     )
 
 
-# ------------------------------------------------------------- app mockup
+# ----------------------------------------------------------- users (01)
 
 
 def section_launch(ctx):
@@ -160,18 +233,16 @@ def section_launch(ctx):
     return "".join([
         '<section class="section" id="get-started">',
         '<div class="shell">',
-        rubric("01", t("первый запуск", "first run")),
+        rubric("03", t("пользователям", "for users")),
         '<div class="split" style="margin-bottom:var(--step-4)">',
         '<h2 class="statement">%s</h2>' % t(
-            "Установка — это <em>одна ссылка</em>, а не вечер с документацией.",
-            "Setting it up is <em>one link</em>, not an evening with the docs.",
+            "Настройка — это <em>одна ссылка</em> и три шага.",
+            "Setup is <em>one link</em> and three steps.",
         ),
         "<div><p class=\"lede\">%s</p>%s</div>" % (
             esc(t(
-                "ReClash не продаёт доступ и ничего о вас не знает: подписку вы "
-                "приносите свою. Всё, что нужно сделать, — ниже.",
-                "ReClash sells no access and knows nothing about you — the subscription "
-                "is yours to bring. Everything you have to do is below.",
+                "Подписку вы приносите свою. Всё, что нужно сделать, — ниже.",
+                "The subscription is yours to bring — everything you have to do is below.",
             )),
             '<p class="row gap-2" style="margin-top:var(--step-3)">%s%s</p>' % (
                 chip(t("без аккаунта", "no account"), True),
@@ -196,159 +267,65 @@ def section_features(ctx):
            "внешние контроллеры — всё, к чему вы привыкли в Clash.Meta.",
            "Rules, groups, proxy providers, GeoIP and GeoSite, fake-ip, external "
            "controllers — everything you expect from Clash.Meta.")),
+        ("bolt",
+         t("Умная маршрутизация", "Smart routing"),
+         t("Режим «Авто» сам держит рабочий узел под текущую сеть и переключается, "
+           "когда она меняется, — начиная с регионального пресета.",
+           "The “Auto” mode keeps a working node for the current network and switches "
+           "when the network changes — starting from a region preset.")),
         ("palette",
-         t("Тема, которую задаёт провайдер", "A theme your provider sets"),
+         t("Вид задаёт провайдер", "The look comes from the provider"),
          t("Один заголовок в ответе подписки — и приложение перекрашивается под бренд: "
            "цвет, фон, кольцо подключения, логотип, набор виджетов.",
            "A single response header repaints the app in your brand: colour, background, "
            "connection ring, logo and the widget set.")),
         ("layers",
-         t("Панель, которую можно собрать", "A dashboard you can assemble"),
+         t("Панель из виджетов", "A dashboard of widgets"),
          t("Пятнадцать виджетов: скорость, расход трафика, режим, определение сети, "
            "TUN, системный прокси, объявление, карточка сервиса.",
            "Fifteen widgets: speed, traffic usage, mode, network detection, TUN, "
            "system proxy, announcement, service card.")),
-        ("shield",
-         t("Обход DPI — когда он нужен", "DPI bypass — when you need it"),
-         t("Если сеть фильтрует соединение по сигнатуре, ByeDPI включается одним "
-           "переключателем. В обычной сети его можно не трогать.",
-           "If the network filters the connection by signature, ByeDPI is one switch "
-           "away. On a regular network you can leave it off.")),
-        ("globe",
-         t("Четыре платформы", "Four platforms"),
-         t("Windows, macOS, Linux и Android из одной кодовой базы на Flutter. "
-           "Одинаковые настройки, одинаковые профили.",
-           "Windows, macOS, Linux and Android from one Flutter codebase. "
-           "Same settings, same profiles.")),
-        ("lock",
-         t("Открытый код и никакой телеметрии", "Open source, zero telemetry"),
-         t("GPL-3.0, исходники на GitHub. Клиент не отправляет статистику "
-           "и не знает ничего, кроме вашей подписки.",
-           "GPL-3.0, sources on GitHub. The client sends no analytics and knows "
-           "nothing beyond your subscription.")),
+        ("split",
+         t("Весь трафик или только приложения", "Whole device or just apps"),
+         t("Режим TUN заворачивает всю систему, системный прокси — только "
+           "приложения, которые его поддерживают. Переключается на главном экране.",
+           "TUN mode captures the whole system; the system proxy covers only the apps "
+           "that support it. Switch it from the main screen.")),
+        ("gauge",
+         t("Трафик и срок — на виду", "Traffic and expiry, at a glance"),
+         t("Клиент читает остаток трафика и дату окончания прямо из подписки и держит "
+           "их на главном экране — без захода в личный кабинет.",
+           "The client reads your remaining traffic and expiry straight from the "
+           "subscription and keeps them on the main screen — no dashboard visit needed.")),
     ]
+    def card_link(ic):
+        if ic == "palette":
+            return ('<a class="link link--cyan" href="#providers">%s</a>'
+                    % esc(t("Как это работает", "See how it works")))
+        if ic == "bolt":
+            return ('<a class="link link--cyan" href="%s">%s</a>'
+                    % (ctx.page("start") + "#faq-smart",
+                       esc(t("Как работает «Авто»", "How “Auto” works"))))
+        return ""
+
     cards = "".join(
         '<article class="card reveal" data-glow data-delay="%s">'
         '<span class="card__icon">%s</span>'
         '<span class="card__num">%02d</span>'
         "<h3>%s</h3><p>%s</p>%s</article>"
-        % (round(i * 0.06, 2), icon(ic), i + 1, esc(title), esc(text),
-           ('<a class="link link--cyan" href="%s">%s</a>' %
-            (ctx.page("start") + "#faq-dpi", esc(t("Когда включать DPI", "When to enable DPI"))))
-           if ic == "shield" else "")
+        % (round(i * 0.06, 2), icon(ic), i + 1, esc(title), esc(text), card_link(ic))
         for i, (ic, title, text) in enumerate(items)
     )
     return "".join([
         '<section class="section section--tight" id="features">',
         '<div class="shell">',
-        rubric("02", t("что внутри", "what is inside")),
+        rubric("02", t("что умеет", "what it does")),
+        '<h2 class="statement" style="margin-bottom:var(--step-4)">%s</h2>' % t(
+            "Что <em>умеет</em> ReClash.",
+            "What ReClash <em>does</em>.",
+        ),
         '<div class="feature-grid">%s</div>' % cards,
         "</div></section>",
-    ])
-
-
-# ---------------------------------------------------------- live dashboard
-
-
-def _demo_widget(title, value, detail="", kind="", wide=False):
-    return (
-        '<div class="live-panel__widget%s" data-widget="%s">'
-        '<span class="live-panel__widget-title">%s</span>'
-        '<strong>%s</strong>%s</div>'
-    ) % (
-        " live-panel__widget--wide" if wide else "",
-        esc(kind), esc(title), value,
-        '<span class="live-panel__widget-detail">%s</span>' % detail if detail else "",
-    )
-
-
-def _demo_panel(ctx, key, name, initial, theme, widgets, label, hidden=False):
-    style = ";".join("%s:%s" % pair for pair in theme.items())
-    return "".join([
-        '<div class="live-panel__screen" data-demo-panel="%s" data-demo-label="%s" '
-        'style="%s"%s aria-hidden="true">' %
-        (esc(key), esc(label), esc(style), " hidden" if hidden else ""),
-        '<div class="live-panel__top"><span class="live-panel__logo">%s</span>' % esc(initial),
-        '<span class="live-panel__service" data-demo-service>%s</span>' % esc(name),
-        '<span class="live-panel__state">%s</span></div>' % esc(ctx.t("подключено", "connected")),
-        '<div class="live-panel__body"><div class="live-panel__ring">'
-        '<span><b>%s</b><small>%s</small></span></div>' %
-        (esc(ctx.t("Защищено", "Protected")), esc(ctx.t("соединение активно", "connection active"))),
-        '<div class="live-panel__widgets">%s</div></div></div>' % "".join(widgets),
-    ])
-
-
-def section_live_dashboard(ctx):
-    t = ctx.t
-    speed = lambda rate: _demo_widget(
-        t("Скорость сети", "Network speed"),
-        '<span class="live-panel__metric">%s</span>' % esc(rate),
-        '<span class="live-panel__spark" aria-hidden="true"></span>', "networkSpeed", True)
-    presets = [
-        ("default", "ReClash", "R", {
-            "--demo-accent": "#7c5cff", "--demo-bg": "#11101a", "--demo-surface": "#1a1826",
-            "--demo-text": "#f1eaf2", "--demo-ring-a": "#7c5cff", "--demo-ring-b": "#3686ed",
-            "--demo-ring-c": "#2fd3b6",
-        }, [
-            speed("18.4 MB/s"),
-            _demo_widget(t("Режим", "Mode"), t("Правила", "Rule"), "mihomo", "outboundModeV2"),
-            _demo_widget(t("Трафик", "Traffic"), "42.8 GB", "↑ 4.7 · ↓ 38.1", "trafficUsage"),
-        ]),
-        ("nebula", "Nebula VPN", "N", {
-            "--demo-accent": "#2fd3b6", "--demo-bg": "#071b1d", "--demo-surface": "#102b2d",
-            "--demo-text": "#e9fffb", "--demo-ring-a": "#2fd3b6", "--demo-ring-b": "#58a6ff",
-            "--demo-ring-c": "#b6f36b",
-        }, [
-            _demo_widget(t("Сервис", "Service"), "Nebula VPN", "user-4821", "serviceInfo", True),
-            speed("24.1 MB/s"),
-            _demo_widget(t("Подписка", "Subscription"), "68%", t("24 дня", "24 days"), "metaInfo"),
-            _demo_widget(t("Состояние сети", "Network status"), t("Доступна", "Available"), "185.22.17.4", "networkDetection"),
-        ]),
-        ("mono", "Northline", "N", {
-            "--demo-accent": "#f2f0ea", "--demo-bg": "#111111", "--demo-surface": "#202020",
-            "--demo-text": "#f2f0ea", "--demo-ring-a": "#f2f0ea", "--demo-ring-b": "#969696",
-            "--demo-ring-c": "#4a4a4a",
-        }, [
-            _demo_widget(t("Сервис", "Service"), "Northline", "member-08", "serviceInfo", True),
-            _demo_widget(t("Маршрутизация", "Routing"), t("Глобально", "Global"), "mihomo", "outboundModeV2"),
-            _demo_widget(t("Состояние сети", "Network status"), t("В норме", "Healthy"), "91.204.12.8", "networkDetection"),
-        ]),
-    ]
-    names = {"default": "ReClash", "nebula": "Nebula VPN", "mono": t("Моно", "Mono")}
-    labels = {
-        key: t("Панель %s: тема, кольцо подключения и виджеты" % name,
-               "%s dashboard: theme, connection ring and widgets" % name)
-        for key, name, _, _, _ in presets
-    }
-    buttons = "".join(
-        '<button type="button" data-demo-preset="%s" aria-pressed="%s">%s</button>' %
-        (key, "true" if i == 0 else "false", esc(names[key]))
-        for i, (key, _, _, _, _) in enumerate(presets)
-    )
-    panels = "".join(
-        _demo_panel(ctx, key, name, initial, theme, widgets, labels[key], i > 0)
-        for i, (key, name, initial, theme, widgets) in enumerate(presets)
-    )
-    return "".join([
-        '<section class="section" id="dashboard">',
-        '<div class="shell">', rubric("03", t("живая панель", "live dashboard")),
-        '<div class="live-panel" data-dashboard-demo>',
-        '<div class="live-panel__copy"><h2 class="statement">%s</h2>' % t(
-            "Провайдер задаёт <em>характер</em>. Вы решаете, что оставить на панели.",
-            "Your provider sets the <em>character</em>. You choose what stays on the dashboard."),
-        '<p class="lede">%s</p>' % esc(t(
-            "Попробуйте три готовых варианта. Заголовки подписки могут менять бренд, палитру, "
-            "кольцо подключения и порядок виджетов — без отдельной сборки приложения.",
-            "Try three ready-made variants. Subscription headers can change the brand, palette, "
-            "connection ring and widget order — without a custom app build.")),
-        '<div class="live-panel__presets" role="group" aria-label="%s">%s</div>' %
-        (esc(t("Вариант панели", "Dashboard preset")), buttons),
-        '<div class="live-panel__action">%s</div></div>' % btn(
-            ctx.page("headers") + "#builder", t("Собрать свою панель", "Build your dashboard"), "btn--ghost", "wrench"),
-        '<div class="live-panel__viewport" role="img" aria-label="%s">%s</div>' %
-        (esc(labels["default"]), panels),
-        '<p class="visually-hidden" data-demo-status role="status" aria-live="polite"></p>',
-        '</div></div></section>',
     ])
 
 
@@ -356,28 +333,120 @@ def section_live_dashboard(ctx):
 
 
 def section_providers(ctx):
+    """Slot 04. The branding story, shown as cause and effect.
+
+    The reader sees the mechanism itself: on the left, the raw HTTP response a
+    subscription returns; on the right, the flat app surface those headers
+    paint — logo tile, name, renew button, announcement, traffic meter. Flip
+    between provider presets and the changed header lines flash while the whole
+    right panel re-tints, because everything there reads var(--accent) and the
+    property is registered and transitioned. It cycles on its own and stops the
+    moment the reader takes over; with no JS it is one finished, honest frame.
+    The paper insert the reader liked stays, with the header reference below."""
     t = ctx.t
-    rows = [
-        ("reclash-servicename", t("имя сервиса на панели", "service name in the dashboard")),
-        ("reclash-hex", t("цвет темы и вариант палитры", "theme colour and palette variant")),
-        ("reclash-widgets", t("набор и порядок виджетов", "widget set and order")),
-        ("reclash-announce", t("объявление для пользователей", "announcement for users")),
-        ("reclash-buyplan", t("кнопка продления подписки", "renew-subscription action")),
-        ("reclash-fallbackhosts", t("запасные хосты подписки", "subscription fallback hosts")),
+
+    # Each preset is the same payload a set of response headers carries: a name,
+    # two accent colours, a node, an announcement and an optional renew action
+    # (empty for the default, unbranded ReClash).
+    brands = [
+        {"id": "reclash", "name": "ReClash",
+         "accent": "#7c5cff", "accent2": "#2fd3b6",
+         "node": t("Амстердам · 24 мс", "Amsterdam · 24 ms"),
+         "announce": t("Профиль импортирован по ссылке.", "Profile imported from a link."),
+         "renew": "", "tag": t("по умолчанию", "default")},
+        {"id": "aurora", "name": "Aurora VPN",
+         "accent": "#2fd3b6", "accent2": "#22d3ee",
+         "node": t("Хельсинки · 18 мс", "Helsinki · 18 ms"),
+         "announce": t("Новый узел в Осло уже в списке.", "A new Oslo node is in your list."),
+         "renew": t("Продлить", "Renew"), "tag": t("тема провайдера", "provider theme")},
+        {"id": "brand", "name": t("Ваш бренд", "Your brand"),
+         "accent": "#ffd45f", "accent2": "#ff9f68",
+         "node": t("Стокгольм · 21 мс", "Stockholm · 21 ms"),
+         "announce": t("Оплачено до 14 октября.", "Paid through 14 October."),
+         "renew": t("Личный кабинет", "My account"),
+         "tag": t("бренд провайдера", "provider brand")},
     ]
-    li = "".join(
-        '<div><dt>%s</dt><dd>%s</dd></div>' % (esc(name), esc(desc))
-        for name, desc in rows
+    first = brands[0]
+
+    def hexv(c):
+        return c.lstrip("#").upper()
+
+    # The provider tabs. Each button carries the whole preset as data-* so the
+    # JS can repaint both panels; with no JS the first is simply the one shown.
+    tabs = "".join(
+        '<button class="hdemo__tab%s" type="button" style="--pdot:%s" '
+        'data-brand="%s" data-accent="%s" data-accent2="%s" data-name="%s" '
+        'data-hex="%s" data-node="%s" data-announce="%s" data-renew="%s" '
+        'aria-pressed="%s">'
+        '<span class="hdemo__dot" aria-hidden="true"></span>%s</button>'
+        % (" is-on" if i == 0 else "", b["accent"], b["id"], b["accent"],
+           b["accent2"], esc(b["name"]), hexv(b["accent"]), esc(b["node"]),
+           esc(b["announce"]), esc(b["renew"]), "true" if i == 0 else "false",
+           esc(b["tag"]))
+        for i, b in enumerate(brands)
     )
-    return "".join([
-        '<section class="section paper cut-top" id="providers">',
-        '<div class="shell">',
-        rubric("04", t("для провайдеров", "for providers")),
-        '<div class="split">',
-        "<div>",
+
+    # Left: the raw response. The dim first line is fixed; the four reclash-*
+    # lines below carry data-f keys so the JS updates their values and flashes
+    # whichever ones changed.
+    def ln(field, key, val, dim=False):
+        return ('<span class="hdemo__ln%s"%s>'
+                '<span class="hdemo__k">%s</span> '
+                '<span class="hdemo__v">%s</span></span>'
+                % (" hdemo__ln--dim" if dim else "",
+                   ' data-f="%s"' % field if field else "",
+                   esc(key), esc(val)))
+
+    code = "".join([
+        '<div class="hdemo__panel">',
+        '<span class="hdemo__cap">%s</span>' % esc(t("ответ подписки", "subscription response")),
+        '<pre class="hdemo__code"><code>',
+        ln("", "HTTP/2 200", "", dim=True).replace('<span class="hdemo__v"></span>', ""),
+        ln("", "content-type:", "application/json", dim=True),
+        ln("servicename", "reclash-servicename:", first["name"]),
+        ln("hex", "reclash-hex:", hexv(first["accent"])),
+        ln("announce", "reclash-announce:", first["announce"]),
+        ln("buyplan", "reclash-buyplan:", first["renew"] or "—"),
+        "</code></pre></div>",
+    ])
+
+    # Right: the surface those headers paint. Everything reads var(--accent),
+    # but as tints and fills, never as text on the cream — contrast stays safe
+    # whatever colour the provider ships.
+    out = "".join([
+        '<div class="hdemo__panel">',
+        '<span class="hdemo__cap">%s</span>' % esc(t("что видит пользователь", "what the user sees")),
+        '<div class="hdemo__out">',
+        '<div class="hdemo__head">',
+        '<span class="hdemo__logo" aria-hidden="true">%s</span>' % icon("sparkle"),
+        '<span class="hdemo__name">%s</span>' % esc(first["name"]),
+        '<span class="hdemo__renew"%s>%s</span>'
+        % ("" if first["renew"] else " hidden", esc(first["renew"] or "")),
+        "</div>",
+        '<div class="hdemo__announce">%s</div>' % esc(first["announce"]),
+        '<div class="hdemo__meter"><span class="hdemo__meter__k">%s</span>'
+        '<span class="hdemo__track"><i></i></span>'
+        '<span class="hdemo__meter__v">62 / 200 %s</span></div>'
+        % (esc(t("Трафик", "Traffic")), esc(t("ГБ", "GB"))),
+        '<div class="hdemo__note">%s</div>' % esc(first["node"]),
+        "</div></div>",
+    ])
+
+    hdemo = "".join([
+        '<div class="hdemo" data-brand="%s">' % first["id"],
+        '<div class="hdemo__switch" role="group" aria-label="%s">'
+        '<span class="hdemo__switch__lab">%s</span>%s</div>'
+        % (esc(t("Тема провайдера", "Provider theme")),
+           esc(t("Смените бренд", "Switch the brand")), tabs),
+        '<div class="hdemo__grid">%s%s</div>' % (code, out),
+        "</div>",
+    ])
+
+    intro = "".join([
+        '<div class="providers__intro">',
         '<h2 class="statement">%s</h2>' % t(
-            "Ваша подписка отдаёт <em>заголовки</em>. ReClash их читает и перекрашивается.",
-            "Your subscription returns <em>headers</em>. ReClash reads them and repaints itself.",
+            "Ваше приложение. Только <em>писать</em> его не нужно.",
+            "Your app. You just <em>don't build</em> it.",
         ),
         '<p class="lede" style="margin-top:var(--step-3)">%s</p>' % esc(t(
             "Никаких SDK, плагинов и договорённостей. Достаточно добавить несколько "
@@ -388,21 +457,43 @@ def section_providers(ctx):
             "traffic and your renewal button.",
         )),
         '<div class="row gap-2" style="margin-top:var(--step-4)">%s%s</div>' % (
-            btn(ctx.page("headers"), t("Открыть документацию", "Open the reference"), "btn--paper", "book"),
+            btn(ctx.page("docs"), t("Открыть документацию", "Open the docs"), "btn--paper", "book"),
             btn(ctx.page("headers") + "#builder",
                 t("Собрать заголовки", "Build the headers"), "btn--amber", "wrench"),
         ),
+        '<p class="muted" style="margin-top:var(--step-3);font-size:.92rem">%s</p>' % t(
+            "Конструктор сразу отдаёт готовые артефакты для панели <strong>Remnawave</strong>, "
+            "рядом — <a class=\"link link--cyan\" href=\"%s\">мок-подписки</a> для проверки."
+            % ctx.page("mock"),
+            "The builder emits ready-made artefacts for the <strong>Remnawave</strong> panel; "
+            "next to it are <a class=\"link link--cyan\" href=\"%s\">mock subscriptions</a> to test against."
+            % ctx.page("mock"),
+        ),
         "</div>",
-        '<div><dl class="deflist">%s</dl>'
-        '<p class="mono-note" style="margin-top:var(--step-3)">%s</p></div>'
-        % (li, esc(t(
-            "Полный список — 17 заголовков ReClash, 6 общих и 11 псевдонимов FlClashX.",
-            "The full list: 17 ReClash headers, 6 common ones and 11 FlClashX aliases.",
-        ))),
-        "</div>",
-        "</div></section>",
     ])
 
+    return "".join([
+        '<section class="section paper cut-top" id="providers">',
+        '<div class="shell">',
+        rubric("04", t("провайдерам", "for providers")),
+        intro,
+        hdemo,
+        '<p class="providers__more">%s</p>' % t(
+            "Заголовки настраивают всё оформление клиента — имя сервиса, цвет и палитру, "
+            "hero-кольцо и эффект, набор виджетов, объявление, кнопки продления, "
+            "запасные хосты и другое. Всего <b>19 заголовков reclash-*</b>; клиент также "
+            "читает стандартные заголовки подписки, а часть имён FlClashX понимает как "
+            "псевдонимы — <a class=\"link link--cyan\" href=\"%s\">полный справочник</a>."
+            % ctx.page("reference"),
+            "The headers configure the whole look of the client — service name, colour and "
+            "palette, hero ring and effect, widget set, announcement, renew buttons, "
+            "fallback hosts and more. <b>19 reclash-* headers</b> in all; the client also "
+            "reads standard subscription headers and understands a subset of FlClashX names "
+            "as aliases — <a class=\"link link--cyan\" href=\"%s\">the full reference</a>."
+            % ctx.page("reference"),
+        ),
+        "</div></section>",
+    ])
 
 # ------------------------------------------------------------- platforms
 
@@ -437,9 +528,13 @@ def section_platforms(ctx):
         for key, name, bullets in plats
     )
     return "".join([
-        '<section class="section" id="platforms">',
+        '<section class="section section--tight" id="platforms">',
         '<div class="shell">',
         rubric("05", t("платформы", "platforms")),
+        '<h2 class="statement" style="margin-bottom:var(--step-4)">%s</h2>' % t(
+            "Работает на <em>четырёх</em> платформах.",
+            "Runs on <em>four</em> platforms.",
+        ),
         '<div class="platforms">%s</div>' % cards,
         '<p class="muted" style="margin-top:var(--step-3);font-size:.92rem">%s</p>'
         % t(
@@ -456,89 +551,69 @@ def section_platforms(ctx):
 
 
 def section_honest(ctx):
+    """Closing honesty beat before the download CTA.
+
+    The old two-column does/doesn't list read as generic and half-repeated the
+    trust facts from the stat band and section 01. This replaces it with a
+    single positioning line: nothing locks the user in — ReClash is a client,
+    the subscription is a plain Clash config that travels, and the code is open.
+    Deliberately minimal: a breather between the dense sections and the CTA."""
     t = ctx.t
-    yes = t(
-        [
-            "Подключает вас к серверам, которые вы сами добавили",
-            "Обходит фильтрацию по сигнатурам протокола",
-            "Показывает остаток трафика и срок подписки",
-            "Работает без аккаунта и без регистрации",
-            "Открыт целиком: код, сборка, лицензия",
-        ],
-        [
-            "Connects you to servers you added yourself",
-            "Gets past protocol-signature filtering",
-            "Shows remaining traffic and subscription expiry",
-            "Works with no account and no sign-up",
-            "Is fully open: code, build, licence",
-        ],
-    )
-    no = t(
-        [
-            "Не продаёт доступ и не выдаёт подписки",
-            "Не делает вас анонимным",
-            "Не защищает от целевого наблюдения",
-            "Не гарантирует обход в любой сети",
-            "Не собирает статистику и не «улучшает продукт»",
-        ],
-        [
-            "Does not sell access or issue subscriptions",
-            "Does not make you anonymous",
-            "Does not protect you from targeted surveillance",
-            "Does not guarantee a bypass on every network",
-            "Does not collect analytics or “improve the product”",
-        ],
-    )
-
-    def col(cls, title, glyph, items):
-        li = "".join('<li data-glyph="%s">%s</li>' % (glyph, esc(x)) for x in items)
-        return '<div class="honest__col %s"><h3>%s</h3><ul>%s</ul></div>' % (cls, esc(title), li)
-
     return "".join([
-        '<section class="section section--tight" id="honest">',
-        '<div class="shell">',
-        rubric("06", t("без маркетинга", "no marketing")),
-        '<div class="honest">',
-        col("", t("Что ReClash делает", "What ReClash does"), "+", yes),
-        col("honest__col--no", t("Чего ReClash не делает", "What ReClash does not do"), "−", no),
-        "</div>",
+        '<section class="section section--tight" id="honest"><div class="shell">',
+        rubric("06", t("честно", "the honest bit")),
+        '<h2 class="statement" style="max-width:14ch">%s</h2>' % t(
+            "Уйти можно <em>когда угодно</em>.",
+            "Leave <em>whenever</em> you want.",
+        ),
+        '<p class="lede" style="margin-top:var(--step-3);max-width:62ch">%s</p>' % t(
+            "Ни аккаунта, ни привязки. Серверы и профили — ваши, а подписка в обычном "
+            "формате Clash уносится в любой совместимый клиент. ReClash открыт целиком "
+            "и ничего не продаёт: платного «доступа», который можно было бы отнять, здесь просто нет.",
+            "No account, no lock-in. Your servers and profiles are yours, and a subscription "
+            "in the plain Clash format moves to any compatible client. ReClash is fully open "
+            "and sells nothing — there is no paid “access” here that could ever be taken away.",
+        ),
         "</div></section>",
     ])
 
 
-def section_cta(ctx):
+# ------------------------------------------------------ proof / stat band
+
+
+def section_stats(ctx):
+    """A thin band of facts under the hero, so the project reads as real before
+    the first feature. Every figure is checkable elsewhere on the site."""
     t = ctx.t
-    return "".join([
-        '<section class="section section--tight">',
-        '<div class="shell"><div class="cta">',
-        '<p class="eyebrow">%s</p>' % esc(t("Дальше — просто", "It is simple from here")),
-        "<h2>%s</h2>" % esc(t("Поставьте и подключитесь", "Install it and connect")),
-        '<p class="lede" style="margin:var(--step-3) auto 0">%s</p>' % esc(t(
-            "Скачайте сборку для своей системы, добавьте подписку по ссылке — "
-            "и всё. Если что-то пойдёт не так, есть быстрый старт и FAQ.",
-            "Grab the build for your system, add your subscription by link — that is it. "
-            "If something goes sideways, there is a quick start and a FAQ.",
-        )),
-        '<div class="hero__actions">%s%s</div>' % (
-            btn(ctx.page("download"), t("Скачать", "Download"), "", "download"),
-            btn(ctx.page("start"), t("Быстрый старт", "Quick start"), "btn--ghost", "bolt"),
-        ),
-        "</div></div></section>",
-    ])
+    stats = [
+        ("4", t("платформы", "platforms")),
+        ("15", t("виджетов", "widgets")),
+        ("19", t("заголовков бренда", "brand headers")),
+        ("GPL-3.0", t("открытый код", "open source")),
+    ]
+    cells = "".join(
+        '<div class="stat"><span class="stat__num">%s</span>'
+        '<span class="stat__label">%s</span></div>' % (esc(num), esc(label))
+        for num, label in stats
+    )
+    return (
+        '<section class="statband"><div class="shell">'
+        '<div class="statband__grid">%s</div></div></section>' % cells
+    )
 
 
 def render(ctx):
     t = ctx.t
     body = "".join([
         hero(ctx),
-        marquee(ctx),
-        section_launch(ctx),
+        section_stats(ctx),
+        section_why(ctx),
         section_features(ctx),
-        section_live_dashboard(ctx),
+        section_launch(ctx),
         section_providers(ctx),
         section_platforms(ctx),
         section_honest(ctx),
-        section_cta(ctx),
+        section_paths(ctx),
     ])
     return {
         "active": "index",

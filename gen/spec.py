@@ -143,6 +143,11 @@ RECLASH_HEADERS = [
     ("reclash-heroring", "Ровно три цвета", "Exactly three colours",
      "Градиент кольца в подключённом состоянии.",
      "Sets the connected-state hero-ring gradient."),
+    ("reclash-heroeffect", "<code>aurora</code> или пусто", "<code>aurora</code> or empty",
+     "Живой эффект за кольцом подключения. Пока поддерживается только <code>aurora</code>; "
+     "любое другое значение выключает эффект.",
+     "A living effect behind the connection ring. Only <code>aurora</code> is supported for now; "
+     "any other value turns the effect off."),
     ("reclash-widgets", "Имена виджетов через запятую", "Comma-separated widget names",
      "Предлагает набор и порядок виджетов панели.",
      "Suggests dashboard widgets and their order."),

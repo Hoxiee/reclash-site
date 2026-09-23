@@ -133,8 +133,9 @@ def builder_strings(ctx):
         "f_view_type": "tab", "f_view_sort": "default", "f_view_layout": "standard",
         "f_view_icon": "standard", "f_view_card": "expand",
         "f_custom": "", "f_newdomain": "", "f_fallback": "",
-        "f_userinfo": 0, "f_svcname_b64": 0, "f_announce_b64": 0,
-        "f_theme": 0, "f_pureblack": 0, "f_bg": 0, "f_ring": 0, "f_view": 0,
+        "f_svcname_b64": 0, "f_announce_b64": 0,
+        "f_theme": 0, "f_pureblack": 0, "f_bg": 0, "f_ring": 0, "f_heroeffect": 0,
+        "f_view": 0,
         "f_widgets": 0, "f_settings": 0, "f_aliases": 0,
     }
 
@@ -144,13 +145,11 @@ def builder_strings(ctx):
         return d
 
     minimal = preset(
-        f_userinfo=1,
         f_title=t("Тариф «Орбита»", "Orbit plan"),
         f_svcname="Nebula VPN",
         f_support="https://nebula.example/help",
     )
     brand = preset(
-        f_userinfo=1,
         f_title=t("Тариф «Орбита»", "Orbit plan"),
         f_svcname="Nebula VPN",
         f_activetext=t("Nebula на связи", "Nebula has you covered"),
@@ -166,7 +165,6 @@ def builder_strings(ctx):
                  "outboundModeV2", "changeServerButton"],
     )
     full = preset(
-        f_userinfo=1,
         f_title=t("Тариф «Орбита»", "Orbit plan"),
         f_svcname="Nebula VPN",
         f_activetext=t("Nebula на связи", "Nebula has you covered"),
@@ -182,7 +180,7 @@ def builder_strings(ctx):
         f_interval="60",
         f_theme=1, f_hex="7C5CFF", f_variant="expressive", f_pureblack=1,
         f_bg=1, f_bgurl="https://nebula.example/bg.webp", f_bgop="14",
-        f_ring=1,
+        f_ring=1, f_heroeffect=1,
         f_view=1, f_view_sort="delay", f_view_layout="tight", f_view_card="shrink",
         f_widgets=1, f_custom="update",
         f_settings=1,
@@ -244,6 +242,13 @@ def builder_strings(ctx):
         "heroTopUp": t("Докупить трафик", "Top up traffic"),
         "heroUnlimited": t("без ограничений", "unlimited"),
         "heroUpdate": t("Обновить", "Update"),
+        # The download/upload pair the orb shows once connected
+        # (hero_connect_orb_slot.dart). A preview has no live throughput, so it
+        # stands in with one plausible sample; the unit stays as the client
+        # prints it — "${unit}/s" — rather than being localised.
+        "heroDownVal": "8.4",
+        "heroUpVal": "1.2",
+        "heroSpeedUnit": t("МБ/с", "MB/s"),
         # meta_info.dart: the subscription tile's status line. {n} is the
         # number of days and {D} its noun — daysLeft() in the client is an
         # ICU plural, and plural() here is the same rule spelled out.
@@ -302,6 +307,14 @@ def builder_strings(ctx):
             "header в Caddy заменяет значение, дублей не будет.",
             "The subscription path prefix — /sub* also catches /sub/<token>. "
             "Caddy's header directive replaces, so nothing is duplicated.",
+        ),
+        "sniUserinfo": t(
+            "subscription-userinfo эмитит панель или ваш бэкенд — свой для "
+            "каждого пользователя. Ниже только пример формата: не прописывайте "
+            "его статикой, иначе всем выдадите одну квоту.",
+            "subscription-userinfo is emitted by the panel or your backend, one "
+            "per user. The line below is only the format example — do not "
+            "hardcode it, or every user gets the same quota.",
         ),
         "warnAnnounceLong": t(
             "Объявление длиннее 180 символов — на телефоне его обрежет.",
@@ -390,9 +403,22 @@ def builder_form(ctx):
     L = 0 if ctx.lang == "ru" else 1
 
     # --- 01 subscription --------------------------------------------------
+    # Subscription-Userinfo is not a header the provider sets here: the panel
+    # (Remnawave) or the provider's own backend emits it per user from the real
+    # plan. So the block opens with a note saying so, and the quota fields below
+    # only feed the live preview's subscription card and the commented example
+    # in the self-host snippets.
     g_sub = (
-        chk("f_userinfo", t("Отдавать <code>subscription-userinfo</code>",
-                            "Send <code>subscription-userinfo</code>"), True)
+        '<p class="bnote">'
+        + t("<code>subscription-userinfo</code> панель отдаёт сама — "
+            "Remnawave и другие бэкенды считают трафик и срок для каждого "
+            "пользователя. Здесь эти цифры только рисуют карточку подписки в "
+            "превью; в реальный заголовок их подставит панель.",
+            "<code>subscription-userinfo</code> is emitted by the panel itself "
+            "— Remnawave and other backends compute traffic and expiry per "
+            "user. Here these numbers only draw the subscription card in the "
+            "preview; the panel fills the real header.")
+        + "</p>"
         + grid(
             fld("f_up", esc(t("Отдано, ГБ", "Uploaded, GB")),
                 txt("f_up", "12.5", "number",
@@ -484,6 +510,8 @@ def builder_form(ctx):
             fld("f_ring3", esc(t("Стоп 3", "Stop 3")),
                 txt("f_ring3", "2FD3B6", "text", 'value="2FD3B6" maxlength="9"')),
         )
+        + chk("f_heroeffect", esc(t("Живой эффект за кольцом — aurora",
+                                    "Living effect behind the ring — aurora")))
         + '<p class="preview-note preview-note--left">' + esc(t(
             "Превью — приближение схемы Material: точные оттенки считает само приложение.",
             "The preview approximates the Material scheme — exact tones are computed by the app.",
@@ -604,13 +632,13 @@ def builder_form(ctx):
     # it emits, so a shut one still says what is inside it.
     groups = [
         ("01", t("Подписка и трафик", "Subscription and traffic"),
-         "Subscription-Userinfo · ReClash-AutoUpdateInterval", g_sub, True),
+         "ReClash-AutoUpdateInterval", g_sub, True),
         ("02", t("Сервис", "Service"),
          "ReClash-ServiceName · ActiveText · ServiceLogo · ServerInfo", g_service, False),
         ("03", t("Ссылки и объявление", "Links and announcement"),
          "ReClash-SupportURL · BuyPlan · BuyTraffic · Announce", g_links, False),
         ("04", t("Тема и кольцо", "Theme and ring"),
-         "ReClash-Hex · ReClash-HeroRing", g_theme, False),
+         "ReClash-Hex · HeroRing · HeroEffect", g_theme, False),
         ("05", t("Фон панели", "Dashboard background"),
          "ReClash-Background", g_bg, False),
         ("06", t("Виджеты панели", "Dashboard widgets"),
@@ -754,18 +782,40 @@ def builder_foot(ctx):
     )
 
 
-# The four bottom-bar destinations, in the application's own order.
+# The Material icons the client actually names, drawn rather than fetched.
+# Keyed so the mobile bottom bar reads from one place.
+NAV_ICONS = {
+    # Icons.space_dashboard — four rounded panels, one of them wider.
+    "dashboard": '<path d="M4 4h6v7H4z"/><path d="M14 4h6v4h-6z"/>'
+                 '<path d="M14 12h6v8h-6z"/><path d="M4 15h6v5H4z"/>',
+    # Icons.article — a sheet with three text rules.
+    "proxies": '<rect x="4" y="4" width="16" height="16" rx="2"/>'
+               '<path d="M8 9h8M8 13h8M8 17h4"/>',
+    # Icons.folder.
+    "profiles": '<path d="M3.5 7a2 2 0 0 1 2-2h3.6l2 2.4H18.5a2 2 0 0 1 2 2V17'
+                'a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>',
+    # Icons.view_timeline — stacked pill bars offset along a rail.
+    "requests": '<path d="M4 6.5h9M7 12h11M4 17.5h7"/>',
+    # Icons.ballot — a card with two checkbox rows.
+    "connections": '<rect x="4" y="4" width="16" height="16" rx="2"/>'
+                   '<rect x="7" y="8" width="3" height="3" rx="0.6"/>'
+                   '<rect x="7" y="14" width="3" height="3" rx="0.6"/>'
+                   '<path d="M12.5 9.5h5M12.5 15.5h5"/>',
+    # Icons.construction — a wrench crossed with a flat blade.
+    "tools": '<path d="M14 6.5a3.4 3.4 0 0 0 4.4 4.4l-8.9 8.9-4.4-4.4z"/>'
+             '<path d="m8.5 10-4-4a2 2 0 0 1 2.8-2.8l4 4"/>',
+    # Icons.info_outline.
+    "about": '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/>'
+             '<circle cx="12" cy="8" r="0.6"/>',
+}
+
+# The mobile bottom bar, in the application's own order: the four destinations
+# whose NavigationItem carries NavigationItemMode.mobile (settings/navigation.dart).
 NAV = [
-    ("Панель", "Dashboard",
-     '<path d="M4 18a9 9 0 1 1 16 0"/><path d="m12 14 4-4"/>'),
-    ("Прокси", "Proxies",
-     '<circle cx="6" cy="4.5" r="2"/><circle cx="18" cy="19.5" r="2"/>'
-     '<path d="M6 6.5v5a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v.5"/>'),
-    ("Правила", "Rules",
-     '<path d="M4 12h5l3-5h8"/><path d="M12 17h8"/><circle cx="9" cy="12" r="1.4"/>'),
-    ("Ещё", "More",
-     '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/>'
-     '<circle cx="19" cy="12" r="1.6"/>'),
+    ("Панель", "Dashboard", NAV_ICONS["dashboard"]),
+    ("Прокси", "Proxies", NAV_ICONS["proxies"]),
+    ("Профили", "Profiles", NAV_ICONS["profiles"]),
+    ("Инструменты", "Tools", NAV_ICONS["tools"]),
 ]
 
 
@@ -777,6 +827,7 @@ def builder_preview(ctx):
         % (' data-on="true"' if i == 0 else "", path, esc(t(ru, en)))
         for i, (ru, en, path) in enumerate(NAV)
     )
+
     screens = [
         ("hero", t("Подключение", "Connect")),
         ("dash", t("Виджеты", "Widgets")),
@@ -789,11 +840,14 @@ def builder_preview(ctx):
     )
     return (
         '<div class="builder__preview">'
+        '<div class="pv-controls">'
         '<div class="tabs" role="tablist" aria-label="'
         + esc(t("Экран превью", "Preview screen")) + '">' + tabs + "</div>"
+        "</div>"
         # data-screen carries the active screen to CSS: the connect screen owns
         # its own ring, so the widget screen's floating button has to go away
         # rather than float over the orb.
+        '<div class="pv-scaler">'
         '<div class="phone" id="pv-phone" data-screen="hero">'
         '<div class="phone__screen">'
         '<div class="phone__bgimg" id="pv-bg"></div>'
@@ -807,7 +861,7 @@ def builder_preview(ctx):
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>'
         "</div>"
         '<div class="phone__nav">' + nav + "</div>"
-        "</div></div>"
+        "</div></div></div>"
         '<p class="preview-note">' + esc(t(
             "Живое превью экрана подключения: оно обновляется на каждое нажатие клавиши.",
             "A live preview of the connection screen — it updates on every keystroke.",
@@ -845,15 +899,19 @@ def section_builder(ctx):
         + esc(t("Вернуть как было", "Undo")) + "</button>"
         "</div>"
     )
+    # The builder is a page of its own now, so its section carries the page
+    # header directly — eyebrow, an <h1> statement, the lede and the scope chips
+    # that used to live in a separate pagehead above. No "01" rubric: a single
+    # tool page has nothing to number against.
     return (
         '<section class="section section--tight" id="tool">'
         '<div class="shell">'
-        + rubric("01", t("конструктор", "the builder"))
-        + '<div class="split" style="margin-bottom:var(--step-4)">'
-        + '<h2 class="statement">'
+        + '<p class="eyebrow">' + esc(t("Для провайдеров", "For providers")) + "</p>"
+        + '<div class="split builder-head">'
+        + '<h1 class="statement">'
         + t("Соберите заголовки <em>здесь</em> — и сразу посмотрите, что увидит пользователь.",
             "Assemble the headers <em>here</em> — and watch what the user will see.")
-        + "</h2>"
+        + "</h1>"
         + '<div><p class="lede">' + esc(t(
             "Форма проверяет значения по тем же правилам, что и клиент: HTTPS, "
             "диапазоны, длину объявления, порты в запасных хостах. Справа — готовые "
@@ -863,7 +921,13 @@ def section_builder(ctx):
             "announcement length, ports in fallback hosts. On the right — ready-made "
             "artefacts for the Remnawave panel and snippets for nginx, Caddy, PHP, Go "
             "or Python.",
-        )) + "</p></div></div>"
+        )) + "</p>"
+        + '<p class="row gap-2 builder-head__meta">'
+        + chip("19 reclash-*") + chip(t("6 общих", "6 common"))
+        + chip(t("11 псевдонимов", "11 aliases")) + chip("HWID")
+        + '<a class="chip chip--link" href="' + ctx.page("reference") + '">'
+        + esc(t("Заголовки →", "Headers →")) + "</a>"
+        + "</p></div></div>"
         + presets
         + '<div class="builder">'
         + builder_form(ctx)
@@ -877,454 +941,476 @@ def section_builder(ctx):
         + "</section>"
     )
 
-
-# --------------------------------------------------------------- reference
-
-
-TOC = [
-    ("tool", "Конструктор", "The builder", "builder generator форма"),
-    ("overview", "Как это работает", "How it works", "overview обзор"),
-    ("rules", "Правила разбора", "Parsing rules", "case base64 приоритет priority"),
-    ("common", "Общие заголовки", "Common headers",
-     "subscription-userinfo profile-title content-disposition support-url announce"),
-    ("reclash", "Заголовки ReClash", "ReClash headers", "reclash-* список list"),
-    ("theme", "Тема и оформление", "Theme and looks",
-     "reclash-hex background heroring pureblack цвет colour"),
-    ("view", "Страница прокси", "Proxy page", "reclash-view type sort layout icon card"),
-    ("widgets", "Виджеты панели", "Dashboard widgets", "reclash-widgets custom"),
-    ("settings", "Настройки по умолчанию", "Default settings", "reclash-settings autorun"),
-    ("migration", "Смена домена", "Domain migration", "reclash-newdomain fallbackhosts"),
-    ("aliases", "Совместимость", "Compatibility", "flclashx алиасы aliases приоритет"),
-    ("hwid", "Устройства и HWID", "Devices and HWID", "x-hwid x-device-os лимит limit"),
-    ("checklist", "Чеклист внедрения", "Rollout checklist", "checklist проверка testing"),
-]
-
-
-def toc(ctx):
-    t = ctx.t
-    items = "".join(
-        '<li data-keys="%s"><a href="#%s">%s</a></li>'
-        % (esc(keys), key, esc(t(ru, en)))
-        for key, ru, en, keys in TOC
-    )
-    return (
-        '<nav class="toc" aria-label="' + esc(t("Содержание", "Contents")) + '">'
-        "<h2>" + esc(t("Содержание", "Contents")) + "</h2>"
-        '<input class="toc__search" type="search" placeholder="'
-        + esc(t("фильтр…", "filter…")) + '" aria-label="'
-        + esc(t("Фильтр по разделам", "Filter sections")) + '">'
-        "<ol>" + items + "</ol></nav>"
-    )
-
-
-def sec(key, title, body):
-    return '<section id="%s"><h2>%s</h2>%s</section>' % (key, esc(title), body)
-
-
-def doc_body(ctx):
-    t = ctx.t
-    L = 0 if ctx.lang == "ru" else 1
-    out = []
-
-    # -- overview ---------------------------------------------------------
-    example = (
-        "HTTP/1.1 200 OK\n"
-        "Content-Type: application/yaml; charset=utf-8\n"
-        "Subscription-Userinfo: upload=13421772800; download=83994443776; "
-        "total=214748364800; expire=1798761600\n"
-        "Profile-Title: Nebula VPN\n"
-        "ReClash-ServiceName: Nebula VPN\n"
-        "ReClash-Hex: 2FD3B6:vibrant\n"
-        "ReClash-SupportURL: https://nebula.example/help\n"
-    )
-    out.append(sec("overview", t("Как это работает", "How it works"),
-        "<p>" + t(
-            "Клиент забирает подписку обычным HTTP-запросом. Тело ответа — конфиг "
-            "mihomo, а заголовки ответа — всё остальное: имя сервиса, остаток трафика, "
-            "тема, набор виджетов, ссылки на биллинг. Ни SDK, ни плагина, ни "
-            "договорённости с нами не требуется.",
-            "The client fetches the subscription with a plain HTTP request. The body is "
-            "a mihomo config; the response headers carry everything else: service name, "
-            "remaining traffic, theme, widget set, billing links. No SDK, no plugin and "
-            "no agreement with us is required.",
-        ) + "</p>"
-        + "<p>" + t(
-            "Заголовки перечитываются при каждом обновлении профиля — по кнопке или по "
-            "интервалу. Значения привязаны к профилю, а не к приложению: тему задаёт тот "
-            "профиль, который сейчас активен.",
-            "Headers are re-read on every profile update — manual or scheduled. Values "
-            "belong to the profile, not to the application: the theme comes from whichever "
-            "profile is currently active.",
-        ) + "</p>"
-        + codeblock(example, t("копировать", "copy"), t("готово", "copied"))
-        + notice(
-            "<span>" + t(
-                "Заголовки — это подсказки оформления, а не механизм доверия. "
-                "Пользователь может переопределить почти всё, что вы прислали.",
-                "Headers are presentation hints, not a trust mechanism. The user can "
-                "override nearly everything you send.",
-            ) + "</span>", "notice--info")
-    ))
-
-    # -- rules ------------------------------------------------------------
-    rules = [
-        (t("Регистр не важен", "Case does not matter"),
-         t("Имена заголовков сравниваются без учёта регистра: <code>ReClash-Hex</code>, "
-           "<code>reclash-hex</code> и <code>RECLASH-HEX</code> — одно и то же.",
-           "Header names are compared case-insensitively: <code>ReClash-Hex</code>, "
-           "<code>reclash-hex</code> and <code>RECLASH-HEX</code> are the same header.")),
-        (t("Приоритет у reclash-*", "reclash-* wins"),
-         t("Если пришли и <code>reclash-*</code>, и псевдоним, и общий заголовок — "
-           "побеждает <code>reclash-*</code>.",
-           "When <code>reclash-*</code>, an alias and a common header all arrive, "
-           "<code>reclash-*</code> wins.")),
-        (t("Повторы склеиваются", "Repeats are joined"),
-         t("Несколько одинаковых заголовков соединяются через запятую — так же, как это "
-           "делает HTTP.",
-           "Several identical headers are joined with commas, exactly as HTTP does.")),
-        (t("Пустое игнорируется", "Empty is ignored"),
-         t("Пустые значения и неизвестные токены просто отбрасываются: сломать "
-           "приложение опечаткой нельзя.",
-           "Empty values and unknown tokens are dropped: a typo cannot break the app.")),
-        (t("Base64 для не-ASCII", "Base64 for non-ASCII"),
-         t("Текстовые заголовки принимают префикс <code>base64:</code> или "
-           "<code>base64,</code>. Для кириллицы и эмодзи это обязательно — "
-           "в HTTP-заголовке им не место.",
-           "Text headers accept a <code>base64:</code> or <code>base64,</code> prefix. "
-           "For Cyrillic and emoji it is mandatory — an HTTP header is no place for them.")),
-        (t("Только HTTPS в ссылках", "HTTPS only in links"),
-         t("Все URL — абсолютные и по HTTPS. Исключение — фон, который допускает "
-           "и <code>http</code>. Логин и пароль в URL запрещены.",
-           "All URLs are absolute and HTTPS. The one exception is the background, which "
-           "also accepts <code>http</code>. Credentials in URLs are rejected.")),
-    ]
-    out.append(sec("rules", t("Правила разбора", "Parsing rules"),
-        '<dl class="deflist">'
-        + "".join("<div><dt>" + esc(a) + "</dt><dd>" + b + "</dd></div>" for a, b in rules)
-        + "</dl>"))
-
-    # -- common -----------------------------------------------------------
-    rows = [
-        ["<code>" + esc(name) + "</code>",
-         '<span class="mono faint">' + (ru_v if L == 0 else en_v) + "</span>",
-         ru_b if L == 0 else en_b]
-        for name, ru_v, en_v, ru_b, en_b in spec.COMMON_HEADERS
-    ]
-    out.append(sec("common", t("Общие заголовки", "Common headers"),
-        "<p>" + t(
-            "Эти заголовки понимают многие клиенты Clash. Если вы их уже отдаёте — "
-            "ReClash подхватит их без изменений на вашей стороне.",
-            "Many Clash clients understand these. If you already send them, ReClash picks "
-            "them up with no change on your side.",
-        ) + "</p>"
-        + table([t("Заголовок", "Header"), t("Значение", "Value"), t("Что делает", "What it does")], rows)))
-
-    # -- reclash ----------------------------------------------------------
-    rows = [
-        ["<code>" + esc(name) + "</code>",
-         '<span class="mono faint">' + (ru_v if L == 0 else en_v) + "</span>",
-         ru_p if L == 0 else en_p]
-        for name, ru_v, en_v, ru_p, en_p in spec.RECLASH_HEADERS
-    ]
-    out.append(sec("reclash", t("Заголовки ReClash", "ReClash headers"),
-        "<p>" + t(
-            "Восемнадцать заголовков, которые понимает только ReClash. Все они "
-            "необязательны — берите ровно те, которые вам нужны.",
-            "Eighteen headers only ReClash understands. Every one is optional — take "
-            "exactly the ones you need.",
-        ) + "</p>"
-        + table([t("Заголовок", "Header"), t("Значение", "Value"), t("Назначение", "Purpose")], rows)))
-
-    # -- theme ------------------------------------------------------------
-    var_rows = [
-        ["<code>" + v + "</code>", ru if L == 0 else en]
-        for v, ru, en in spec.THEME_VARIANTS
-    ]
-    out.append(sec("theme", t("Тема и оформление", "Theme and looks"),
-        sig("reclash-hex", (t("псевдоним flclashx-hex", "alias flclashx-hex"), True))
-        + "<p>" + t(
-            "Значение — цвет <code>RRGGBB</code> или <code>AARRGGBB</code>, за ним "
-            "необязательный вариант палитры и необязательный <code>pureblack</code>. "
-            "Разделители — <code>:</code>, <code>;</code> или <code>,</code>.",
-            "The value is an <code>RRGGBB</code> or <code>AARRGGBB</code> colour, followed "
-            "by an optional palette variant and an optional <code>pureblack</code>. "
-            "Separators are <code>:</code>, <code>;</code> or <code>,</code>.",
-        ) + "</p>"
-        + codeblock("ReClash-Hex: 2FD3B6\nReClash-Hex: 2FD3B6:vibrant\n"
-                    "ReClash-Hex: FF7C5CFF;expressive;pureblack",
-                    t("копировать", "copy"), t("готово", "copied"))
-        + table([t("Вариант", "Variant"), t("Что даёт", "What it does")], var_rows)
-        + "<h3>" + esc(t("Фон панели", "Dashboard background")) + "</h3>"
-        + sig("reclash-background", (t("псевдоним flclashx-background", "alias flclashx-background"), True))
-        + "<p>" + t(
-            "Абсолютный <code>http</code>- или <code>https</code>-адрес картинки и "
-            "необязательная непрозрачность 1–100. По умолчанию 10 — фон должен "
-            "оставаться фоном.",
-            "An absolute <code>http</code> or <code>https</code> image URL and an optional "
-            "opacity from 1 to 100. The default is 10 — a background should stay a background.",
-        ) + "</p>"
-        + codeblock("ReClash-Background: https://nebula.example/bg.webp,14",
-                    t("копировать", "copy"), t("готово", "copied"))
-        + "<h3>" + esc(t("Кольцо подключения", "Connection ring")) + "</h3>"
-        + sig("reclash-heroring")
-        + "<p>" + t(
-            "Ровно три цвета — градиент кольца вокруг кнопки подключения. Меньше или "
-            "больше трёх значений игнорируется целиком. Псевдонима у этого заголовка нет.",
-            "Exactly three colours — the gradient of the ring around the connect button. "
-            "Fewer or more than three values are ignored entirely. This header has no alias.",
-        ) + "</p>"
-        + codeblock("ReClash-HeroRing: 7C5CFF;3686ED;2FD3B6",
-                    t("копировать", "copy"), t("готово", "copied"))
-        + "<h3>" + esc(t("Логотип", "Logo")) + "</h3>"
-        + sig("reclash-servicelogo", (t("псевдоним flclashx-servicelogo", "alias flclashx-servicelogo"), True))
-        + "<ul>"
-        + "".join("<li>" + x + "</li>" for x in t(
-            ["Абсолютный HTTPS-адрес, PNG или SVG.",
-             "Квадрат, 256–512 px по стороне.",
-             "Прозрачный фон — логотип ложится на тему пользователя.",
-             "Значимая часть — в центральных 80 %: края обрезаются под скругление."],
-            ["An absolute HTTPS URL, PNG or SVG.",
-             "Square, 256–512 px per side.",
-             "Transparent background — the logo sits on the user's theme.",
-             "Keep the meaningful part inside the central 80 %: edges get rounded off."],
-        )) + "</ul>"))
-
-    # -- view -------------------------------------------------------------
-    view_rows = []
-    for name, values, ru, en in spec.VIEW_TOKENS:
-        view_rows.append([
-            "<code>" + name + "</code>",
-            " ".join("<code>" + v + "</code>" for v in values),
-            esc(ru if L == 0 else en),
-        ])
-    out.append(sec("view", t("Страница прокси", "Proxy page"),
-        sig("reclash-view", (t("псевдоним flclashx-view", "alias flclashx-view"), True))
-        + "<p>" + t(
-            "Токены вида <code>ключ:значение</code> через запятую или точку с запятой. "
-            "Неизвестные ключи и значения отбрасываются, остальные применяются. "
-            "Это предложение, а не приказ: пользователь может переключить вид сам.",
-            "Tokens of the form <code>key:value</code>, comma- or semicolon-separated. "
-            "Unknown keys and values are dropped, the rest apply. It is a suggestion, not "
-            "an order: the user can switch the view back.",
-        ) + "</p>"
-        + table([t("Ключ", "Key"), t("Значения", "Values"), t("Что задаёт", "What it sets")], view_rows)
-        + codeblock("ReClash-View: type:tab; sort:delay; layout:tight; icon:standard; card:shrink",
-                    t("копировать", "copy"), t("готово", "copied"))))
-
-    # -- widgets ----------------------------------------------------------
-    w_rows = [
-        ["<code>" + wid + "</code>",
-         esc(ru if L == 0 else en),
-         '<span class="faint">' + esc(spec.PLATFORM_LABEL[plat][L]) + "</span>"]
-        for wid, plat, ru, en, _ in spec.WIDGETS
-    ]
-    out.append(sec("widgets", t("Виджеты панели", "Dashboard widgets"),
-        sig("reclash-widgets")
-        + "<p>" + t(
-            "Имена виджетов через запятую — порядок в списке становится порядком на "
-            "панели. Виджеты, недоступные на платформе, просто не появятся.",
-            "Comma-separated widget names — their order becomes the order on the dashboard. "
-            "Widgets unavailable on a platform simply do not appear.",
-        ) + "</p>"
-        + table([t("Имя", "Name"), t("Виджет", "Widget"), t("Доступен", "Available on")], w_rows)
-        + '<p class="faint">' + t(
-            "Имена <code>desyncStrategy</code>, <code>desyncTest</code> и "
-            "<code>desyncEngine</code> клиент распознаёт, но они относятся только к "
-            "режиму ByeDPI. Профиль панели работает в VPN-режиме, поэтому такими "
-            "заголовками эти карточки показать нельзя.",
-            "The client recognises <code>desyncStrategy</code>, <code>desyncTest</code> "
-            "and <code>desyncEngine</code>, but they belong to ByeDPI mode only. A panel "
-            "profile runs in VPN mode, so its headers cannot make those cards appear.",
-        ) + "</p>"
-        + "<h3><code>reclash-custom</code></h3>"
-        + "<p>" + t(
-            "Управляет тем, как ваш список сливается с уже собранным пользователем: "
-            "<code>add</code> добавляет недостающие виджеты в конец, <code>update</code> "
-            "заменяет набор целиком. Без этого заголовка набор предлагается только при "
-            "первом добавлении профиля.",
-            "Controls how your list merges with the one the user already assembled: "
-            "<code>add</code> appends the missing widgets, <code>update</code> replaces the "
-            "whole set. Without this header the set is suggested only when the profile is "
-            "first added.",
-        ) + "</p>"
-        + codeblock("ReClash-Widgets: serviceInfo,networkSpeed,trafficUsage,outboundModeV2\n"
-                    "ReClash-Custom: update",
-                    t("копировать", "copy"), t("готово", "copied"))))
-
-    # -- settings ---------------------------------------------------------
-    s_rows = [["<code>" + tok + "</code>", esc(ru if L == 0 else en)]
-              for tok, ru, en in spec.SETTINGS_TOKENS]
-    out.append(sec("settings", t("Настройки по умолчанию", "Default settings"),
-        sig("reclash-settings")
-        + "<p>" + t(
-            "Токены через запятую. Предлагаются <strong>один раз</strong> — при первом "
-            "добавлении профиля: ReClash покажет запрошенные изменения и применит их "
-            "только после подтверждения. Не перечисленные настройки остаются как есть, "
-            "а дальше настройками владеет пользователь — повторная отправка ничего не изменит.",
-            "Comma-separated tokens. They are offered <strong>once</strong> — when the "
-            "profile is first added: ReClash shows the requested changes and applies them "
-            "only after the user confirms. Unlisted settings keep their current values, and "
-            "after that the settings belong to the user — re-sending the header changes nothing.",
-        ) + "</p>"
-        + table([t("Токен", "Token"), t("Что включает", "What it turns on")], s_rows)
-        + notice("<span>" + t(
-            "Не включайте всё подряд. Автозапуск и автоподключение — это решение "
-            "пользователя, а не ваше.",
-            "Do not switch everything on. Autostart and auto-connect are the user's "
-            "decision, not yours.",
-        ) + "</span>", "notice--warn")))
-
-    # -- migration --------------------------------------------------------
-    out.append(sec("migration", t("Смена домена", "Domain migration"),
-        sig("reclash-newdomain", (t("псевдоним flclashx-newdomain", "alias flclashx-newdomain"), True))
-        + "<p>" + t(
-            "Только имя хоста и необязательный порт — без схемы, пути и параметров. "
-            "Клиент не переключается вслепую: он проверяет, что новый адрес действительно "
-            "отдаёт вашу подписку, и только потом переносит профиль.",
-            "A hostname and an optional port only — no scheme, path or query. The client "
-            "does not switch blindly: it verifies that the new address really serves your "
-            "subscription, and only then migrates the profile.",
-        ) + "</p>"
-        + codeblock("ReClash-NewDomain: sub.nebula.example\n"
-                    "ReClash-NewDomain: sub.nebula.example:8443",
-                    t("копировать", "copy"), t("готово", "copied"))
-        + "<h3>" + esc(t("Запасные хосты", "Fallback hosts")) + "</h3>"
-        + sig("reclash-fallbackhosts")
-        + "<p>" + t(
-            "До четырёх имён хостов через запятую — без портов и без схемы. Имена "
-            "приводятся к нижнему регистру, дубликаты убираются, лишнее отбрасывается. "
-            "Клиент идёт к ним, когда основной адрес временно недоступен. "
-            "Псевдонима у этого заголовка нет.",
-            "Up to four comma-separated hostnames — no ports, no scheme. Names are "
-            "lowercased, duplicates removed, the excess dropped. The client falls back to "
-            "them when the main address is temporarily unreachable. This header has no alias.",
-        ) + "</p>"
-        + codeblock("ReClash-FallbackHosts: sub2.nebula.example,sub3.nebula.example",
-                    t("копировать", "copy"), t("готово", "copied"))))
-
-    # -- aliases ----------------------------------------------------------
-    a_rows = []
-    for ru, en, chain in spec.ALIASES:
-        unit = lambda x: (x.replace("{m}", t("мин.", "min"))
-                           .replace("{h}", t("ч.", "h")))
-        cells = " <span class=\"faint\">&rarr;</span> ".join(
-            "<code>" + esc(unit(x)) + "</code>" for x in chain
-        )
-        a_rows.append([esc(ru if L == 0 else en), cells])
-    out.append(sec("aliases", t("Совместимость", "Compatibility"),
-        "<p>" + t(
-            "ReClash читает часть заголовков FlClashX, чтобы провайдерам не пришлось "
-            "ничего переделывать. Порядок в таблице — порядок приоритета: побеждает "
-            "первый непустой.",
-            "ReClash reads some FlClashX headers so providers do not have to redo anything. "
-            "The order in the table is the priority order: the first non-empty value wins.",
-        ) + "</p>"
-        + table([t("Что задаётся", "What it sets"), t("Приоритет", "Priority")], a_rows)
-        + notice("<span>" + t(
-            "У надписи подключения, кольца, виджетов, <code>reclash-custom</code>, "
-            "<code>reclash-settings</code> и запасных хостов псевдонимов нет — это возможности ReClash.",
-            "The active-protection text, hero ring, widgets, <code>reclash-custom</code>, "
-            "<code>reclash-settings</code> and fallback hosts have no aliases — they are ReClash features.",
-        ) + "</span>", "notice--info")))
-
-    # -- hwid -------------------------------------------------------------
-    req_rows = [["<code>" + esc(n) + "</code>", esc(ru if L == 0 else en)]
-                for n, ru, en in spec.HWID_REQUEST]
-    res_rows = [["<code>" + esc(n) + "</code>", ru if L == 0 else en]
-                for n, ru, en in spec.HWID_RESPONSE]
-    out.append(sec("hwid", t("Устройства и HWID", "Devices and HWID"),
-        "<p>" + t(
-            "Если пользователь включил передачу идентификатора устройства, запрос "
-            "подписки несёт несколько дополнительных заголовков. Они нужны, чтобы вы "
-            "могли показать понятный список устройств и лимит по тарифу.",
-            "When the user enables device-identifier sharing, the subscription request "
-            "carries a few extra headers. They exist so you can show a sensible device "
-            "list and a plan device limit.",
-        ) + "</p>"
-        + table([t("Заголовок запроса", "Request header"), t("Значение", "Value")], req_rows)
-        + "<h3>" + esc(t("Ответ клиенту", "Responding to the client")) + "</h3>"
-        + table([t("Заголовок ответа", "Response header"), t("Что покажет клиент", "What the client shows")], res_rows)
-        + notice("<strong>" + esc(t("Важно.", "Important.")) + "</strong> <span>" + t(
-            "Не используйте эти заголовки как границу аутентификации. Они приходят от "
-            "клиента, их можно подделать, и они предназначены для удобства, а не для "
-            "контроля доступа.",
-            "Do not use these headers as an authentication boundary. They come from the "
-            "client, they can be forged, and they exist for convenience rather than access "
-            "control.",
-        ) + "</span>", "notice--warn")))
-
-    # -- checklist --------------------------------------------------------
-    steps = t(
-        [
-            "Отдавайте <code>subscription-userinfo</code> — это самое заметное для пользователя.",
-            "Добавьте <code>reclash-servicename</code> и логотип: панель перестаёт быть безымянной.",
-            "Поставьте <code>reclash-supporturl</code> — меньше писем «куда писать».",
-            "Выберите цвет через <code>reclash-hex</code> и проверьте его в превью выше.",
-            "Проверьте ответ курлом: <code>curl -sI 'https://…/sub' | grep -i reclash</code>.",
-            "Убедитесь, что заголовки доживают до клиента через ваш прокси и CDN.",
-            "Не отправляйте <code>reclash-settings</code> без причины.",
-            "Не полагайтесь на HWID для контроля доступа.",
-        ],
-        [
-            "Send <code>subscription-userinfo</code> — it is the most visible thing to the user.",
-            "Add <code>reclash-servicename</code> and a logo: the dashboard stops being nameless.",
-            "Set <code>reclash-supporturl</code> — fewer “where do I write?” messages.",
-            "Pick a colour via <code>reclash-hex</code> and check it in the preview above.",
-            "Verify with curl: <code>curl -sI 'https://…/sub' | grep -i reclash</code>.",
-            "Make sure the headers survive your reverse proxy and CDN.",
-            "Do not send <code>reclash-settings</code> without a reason.",
-            "Do not rely on HWID for access control.",
-        ],
-    )
-    out.append(sec("checklist", t("Чеклист внедрения", "Rollout checklist"),
-        "<ol>" + "".join("<li>" + x + "</li>" for x in steps) + "</ol>"
-        + '<p style="margin-top:var(--step-4)">' + t(
-            'Первоисточник этой страницы — <a class="link link--cyan" href="%s" '
-            'target="_blank" rel="noopener">PROVIDER_HEADERS.md</a> в репозитории. '
-            "Если он разойдётся с этой страницей — прав репозиторий." % ui.HEADERS_SRC,
-            'The source of truth for this page is <a class="link link--cyan" href="%s" '
-            'target="_blank" rel="noopener">PROVIDER_HEADERS.md</a> in the repository. '
-            "If the two ever disagree, the repository is right." % ui.HEADERS_SRC,
-        ) + "</p>"))
-
-    return '<div class="doc__body">' + "".join(out) + "</div>"
-
-
 def render(ctx):
+    """The builder page (headers.html) — the heavy, interactive one. Carries
+    builder.js and the phone-preview styles. The full spec lives on its own
+    lighter page (reference.html), one click away in the header and here."""
     t = ctx.t
-    body = "".join([
-        '<section class="pagehead"><div class="shell">',
-        '<p class="eyebrow">' + esc(t("Для провайдеров", "For providers")) + "</p>",
-        "<h1>" + t("Заголовки <span class=\"grad\">подписки</span>",
-                   "Subscription <span class=\"grad\">headers</span>") + "</h1>",
-        '<p class="lede">' + esc(t(
-            "Полный справочник по заголовкам ответа, которые читает ReClash, "
-            "и конструктор, который соберёт их за вас — с живым превью приложения.",
-            "The complete reference for the response headers ReClash reads, plus a builder "
-            "that assembles them for you — with a live preview of the app.",
-        )) + "</p>",
-        '<p class="pagehead__meta">',
-        chip("18 reclash-*"), chip(t("6 общих", "6 common")),
-        chip(t("12 псевдонимов", "12 aliases")), chip("HWID"),
-        "</p></div></section>",
-        section_builder(ctx),
-        '<section class="section"><div class="shell">',
-        rubric("02", t("справочник", "the reference")),
-        '<div class="doc">' + toc(ctx) + doc_body(ctx) + "</div>",
-        "</div></section>",
-    ])
+    # The builder is self-sufficient: its own section carries the page header,
+    # so there is no separate pagehead above it (that only duplicated the
+    # section's statement and lede).
+    body = section_builder(ctx)
     return {
         "active": "headers",
-        "title": t("Заголовки подписки для провайдеров",
-                   "Subscription headers for providers"),
+        "title": t("Конструктор заголовков подписки",
+                   "Subscription header builder"),
         "description": t(
-            "Справочник по заголовкам ответа подписки для ReClash: тема, виджеты, "
-            "объявления, лимиты трафика, HWID — и конструктор с живым превью.",
-            "Reference for ReClash subscription response headers: theme, widgets, "
-            "announcements, traffic limits, HWID — plus a builder with a live preview.",
+            "Конструктор заголовков ответа подписки для ReClash с живым превью "
+            "приложения и артефактами для Remnawave, nginx, Caddy, PHP, Go и Python.",
+            "A builder for ReClash subscription response headers with a live app "
+            "preview and artefacts for Remnawave, nginx, Caddy, PHP, Go and Python.",
         ),
         "body": body,
         "css": ("docs.css",),
         "css_defer": ("preview.css",),
         "js": ("builder.js",),
+    }
+
+
+# --------------------------------------------------------------- reference
+#
+# The catalogue: one card per header, collapsed to a name + category + alias +
+# one-line summary, expanded to the full format, description, an example and,
+# where the value is structured, a token table. A search box and category chips
+# on top (core.js drives them; with no JS every card is just open markup). The
+# narrative guide — how it all works, parsing rules, delivery — is a separate,
+# lighter page (docs.html, page_docs.render).
+
+# reclash-* header -> its flclashx-* alias badges, derived from spec.ALIASES so
+# the catalogue can never claim an alias the reference table does not list.
+def _alias_map():
+    m = {}
+    for _ru, _en, chain in spec.ALIASES:
+        names = [x.split(" ")[0] for x in chain]
+        prim = next((n for n in names if n.startswith("reclash-")), None)
+        if not prim:
+            continue
+        m[prim] = [n for n in names if n.startswith("flclashx-")]
+    return m
+
+
+CAT_LABEL = {
+    "common": ("Общий", "Common"),
+    "reclash": ("ReClash", "ReClash"),
+    "hwid": ("Устройство", "Device"),
+}
+
+
+def hcard(ctx, name, cat, summary, fmt, body, example="", extra="", keys=""):
+    """One catalogue entry. `summary` shows collapsed; everything else unfolds.
+    The id is language-neutral (h-<name>) so the two language builds stay in
+    id-parity; `keys` carries both-language search terms (core.js reads them,
+    verify.py strips them before its Cyrillic check)."""
+    t = ctx.t
+    slug = "h-" + name
+    cat_ru, cat_en = CAT_LABEL[cat]
+    aliases = _alias_map().get(name, []) if cat == "reclash" else []
+    badges = ['<span class="hcard__cat hcard__cat--%s">%s</span>'
+              % (cat, esc(t(cat_ru, cat_en)))]
+    for a in aliases:
+        badges.append('<span class="hcard__alias" title="%s"><code>%s</code></span>'
+                      % (esc(t("псевдоним", "alias")), esc(a)))
+    meta = (
+        '<div class="hcard__meta"><div class="hcard__row">'
+        '<span class="hcard__k">' + esc(t("Формат", "Format")) + "</span>"
+        '<span class="hcard__v mono">' + fmt + "</span></div>"
+        + ("".join(
+            '<div class="hcard__row"><span class="hcard__k">%s</span>'
+            '<span class="hcard__v"><code>%s</code></span></div>'
+            % (esc(t("Псевдоним", "Alias")), esc(a)) for a in aliases)
+           if aliases else "")
+        + "</div>"
+    )
+    ex = (codeblock(example, t("копировать", "copy"), t("готово", "copied"))
+          if example else "")
+    dk = " ".join([name] + aliases + [keys]).strip()
+    return (
+        # `open` in the markup so the catalogue reads with no JS; core.js closes
+        # every card on load and drives expand/collapse from there.
+        '<details class="hcard" open id="' + slug + '" data-cat="' + cat + '"'
+        ' data-name="' + esc(name) + '" data-keys="' + esc(dk) + '">'
+        '<summary class="hcard__sum">'
+        '<code class="hcard__name">' + esc(name) + "</code>"
+        '<span class="hcard__badges">' + "".join(badges) + "</span>"
+        '<span class="hcard__lead">' + summary + "</span>"
+        '<span class="hcard__chev" aria-hidden="true">'
+        '<svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></span>'
+        "</summary>"
+        '<div class="hcard__panel">' + meta
+        + '<div class="hcard__prose">' + body + "</div>"
+        + extra + ex + "</div></details>"
+    )
+
+
+def catalog(ctx):
+    t = ctx.t
+    L = 0 if ctx.lang == "ru" else 1
+    cards = {"common": [], "reclash": [], "hwid": []}
+
+    # -- extended detail, examples and token tables, keyed by header name -----
+    # Only the headers that need more than their one-line purpose carry an entry
+    # here; the rest fall back to the spec purpose alone.
+    def var_table():
+        rows = [["<code>" + v + "</code>", ru if L == 0 else en]
+                for v, ru, en in spec.THEME_VARIANTS]
+        return table([t("Вариант", "Variant"), t("Что даёт", "What it does")], rows)
+
+    def view_table():
+        rows = [["<code>" + n + "</code>",
+                 " ".join("<code>" + v + "</code>" for v in vals),
+                 esc(ru if L == 0 else en)]
+                for n, vals, ru, en in spec.VIEW_TOKENS]
+        return table([t("Ключ", "Key"), t("Значения", "Values"), t("Что задаёт", "What it sets")], rows)
+
+    def widget_table():
+        rows = [["<code>" + wid + "</code>", esc(ru if L == 0 else en),
+                 '<span class="faint">' + esc(spec.PLATFORM_LABEL[plat][L]) + "</span>"]
+                for wid, plat, ru, en, _ in spec.WIDGETS]
+        return table([t("Имя", "Name"), t("Виджет", "Widget"), t("Доступен", "Available on")], rows)
+
+    def settings_table():
+        rows = [["<code>" + tok + "</code>", esc(ru if L == 0 else en)]
+                for tok, ru, en in spec.SETTINGS_TOKENS]
+        return table([t("Токен", "Token"), t("Что включает", "What it turns on")], rows)
+
+    # name -> dict(fmt=(ru,en) or str, body=(ru,en), example=str, extra=callable|str, keys=(ru,en))
+    D = {
+        # ---- common --------------------------------------------------------
+        "subscription-userinfo": dict(
+            fmt="upload=&lt;%s&gt;; download=&lt;%s&gt;; total=&lt;%s&gt;; expire=&lt;%s&gt;"
+                % (t("байты", "bytes"), t("байты", "bytes"), t("байты", "bytes"),
+                   t("unix-секунды", "unix-seconds")),
+            body=t(
+                "Расход и лимит трафика в байтах и дата окончания в unix-секундах. "
+                "<code>total=0</code> — безлимит, <code>expire=0</code> — бессрочно. "
+                "Клиент показывает остаток, полосу расхода и число дней до конца.",
+                "Traffic usage and quota in bytes, plus the expiry as unix-seconds. "
+                "<code>total=0</code> means unlimited, <code>expire=0</code> perpetual. "
+                "The client shows the remaining amount, a usage bar and days left."),
+            example="Subscription-Userinfo: upload=13421772800; download=83994443776; "
+                    "total=214748364800; expire=1798761600",
+            keys=("трафик остаток квота срок лимит байты",
+                  "traffic quota remaining expiry limit bytes")),
+        "profile-title": dict(
+            example="Profile-Title: Nebula VPN\nProfile-Title: base64:0J3QtdCx0YPQu9CwIFZQTg==",
+            keys=("имя профиля название", "profile name title")),
+        "content-disposition": dict(
+            example='Content-Disposition: attachment; filename="nebula.yaml"',
+            keys=("имя файла", "filename")),
+        "profile-update-interval": dict(
+            example="Profile-Update-Interval: 24",
+            keys=("интервал обновления часы", "update interval hours")),
+        "support-url": dict(
+            example="Support-Url: https://nebula.example/help",
+            keys=("поддержка ссылка", "support link")),
+        "announce": dict(
+            example="Announce: base64:0J/RgNC+0YTQuNC70LDQutGC0LjQutCw",
+            keys=("объявление новость", "announcement news")),
+        # ---- reclash -------------------------------------------------------
+        "reclash-announce": dict(
+            example="ReClash-Announce: base64:0J/RgNC+0YTQuNC70LDQutGC0LjQutCw 14.04",
+            keys=("объявление баннер", "announcement banner")),
+        "reclash-supporturl": dict(
+            example="ReClash-SupportURL: https://nebula.example/help",
+            keys=("поддержка помощь", "support help")),
+        "reclash-autoupdateinterval": dict(
+            example="ReClash-AutoUpdateInterval: 60",
+            keys=("интервал обновления минуты", "update interval minutes")),
+        "reclash-servicename": dict(
+            example="ReClash-ServiceName: Nebula VPN",
+            keys=("имя сервиса бренд", "service name brand")),
+        "reclash-activetext": dict(
+            body=t(
+                "Надпись под кольцом подключения и в уведомлении Android — вместо "
+                "стандартного «Вы защищены». Для не-ASCII используйте <code>base64:</code>.",
+                "The caption under the connection ring and in the Android notification — "
+                "in place of the default “You are protected”. Use <code>base64:</code> "
+                "for non-ASCII."),
+            example="ReClash-ActiveText: Nebula has you covered",
+            keys=("надпись подключение защита", "caption connected protected")),
+        "reclash-servicelogo": dict(
+            body=t(
+                "Логотип на панели и в контроле подключения. Абсолютный HTTPS-адрес, "
+                "PNG или SVG, квадрат 256–512 px, прозрачный фон; значимую часть держите "
+                "в центральных 80 % — края обрезаются под скругление.",
+                "The logo on the dashboard and connection control. An absolute HTTPS URL, "
+                "PNG or SVG, square 256–512 px, transparent background; keep the meaningful "
+                "part inside the central 80 % — edges get rounded off."),
+            example="ReClash-ServiceLogo: https://nebula.example/logo-512.png",
+            keys=("логотип картинка бренд", "logo image brand")),
+        "reclash-serverinfo": dict(
+            example="ReClash-ServerInfo: Auto",
+            keys=("группа сервер активный", "group server active")),
+        "reclash-buyplan": dict(
+            example="ReClash-BuyPlan: https://nebula.example/billing",
+            keys=("тариф продление оплата биллинг", "plan renew billing purchase")),
+        "reclash-buytraffic": dict(
+            example="ReClash-BuyTraffic: https://nebula.example/billing/traffic",
+            keys=("трафик докупить оплата", "traffic top up purchase")),
+        "reclash-view": dict(
+            fmt="type:… sort:… layout:… icon:… card:…",
+            body=t(
+                "Токены вида <code>ключ:значение</code> через запятую или точку с запятой. "
+                "Неизвестные ключи и значения отбрасываются, остальные применяются. Это "
+                "предложение, а не приказ: пользователь может переключить вид сам.",
+                "Tokens of the form <code>key:value</code>, comma- or semicolon-separated. "
+                "Unknown keys and values are dropped, the rest apply. It is a suggestion, "
+                "not an order: the user can switch the view back."),
+            extra=view_table,
+            example="ReClash-View: type:tab; sort:delay; layout:tight; icon:standard; card:shrink",
+            keys=("вид страница прокси сортировка сетка", "view proxy page sort grid layout")),
+        "reclash-hex": dict(
+            fmt="RRGGBB[:variant][:pureblack]",
+            body=t(
+                "Цвет <code>RRGGBB</code> или <code>AARRGGBB</code>, за ним необязательный "
+                "вариант палитры и необязательный <code>pureblack</code> (чёрный AMOLED-фон). "
+                "Разделители — <code>:</code>, <code>;</code> или <code>,</code>. Тема "
+                "действует, пока профиль активен.",
+                "An <code>RRGGBB</code> or <code>AARRGGBB</code> colour, then an optional "
+                "palette variant and an optional <code>pureblack</code> (an AMOLED black "
+                "background). Separators are <code>:</code>, <code>;</code> or <code>,</code>. "
+                "The theme applies while the profile is active."),
+            extra=var_table,
+            example="ReClash-Hex: 2FD3B6\nReClash-Hex: 2FD3B6:vibrant\n"
+                    "ReClash-Hex: FF7C5CFF;expressive;pureblack",
+            keys=("тема цвет палитра pureblack amoled", "theme colour palette pureblack amoled")),
+        "reclash-background": dict(
+            fmt="url[,opacity]",
+            body=t(
+                "Абсолютный <code>http</code>- или <code>https</code>-адрес картинки и "
+                "необязательная непрозрачность 1–100. По умолчанию 10 — фон должен "
+                "оставаться фоном. Действует, пока профиль активен.",
+                "An absolute <code>http</code> or <code>https</code> image URL and an "
+                "optional opacity from 1 to 100. The default is 10 — a background should "
+                "stay a background. Applies while the profile is active."),
+            example="ReClash-Background: https://nebula.example/bg.webp,14",
+            keys=("фон картинка обои прозрачность", "background image wallpaper opacity")),
+        "reclash-heroring": dict(
+            fmt="c1;c2;c3",
+            body=t(
+                "Ровно три цвета — градиент кольца вокруг кнопки подключения. Меньше или "
+                "больше трёх значений игнорируется целиком. Псевдонима у этого заголовка нет.",
+                "Exactly three colours — the gradient of the ring around the connect button. "
+                "Fewer or more than three values are ignored entirely. This header has no alias."),
+            example="ReClash-HeroRing: 7C5CFF;3686ED;2FD3B6",
+            keys=("кольцо градиент подключение", "ring gradient hero connection")),
+        "reclash-heroeffect": dict(
+            fmt="aurora",
+            body=t(
+                "Живой эффект за кольцом подключения. Пока поддерживается только "
+                "<code>aurora</code> — мягкое северное сияние; любое другое значение "
+                "выключает эффект. Псевдонима у этого заголовка нет.",
+                "A living effect behind the connection ring. Only <code>aurora</code> — a "
+                "soft aurora glow — is supported for now; any other value turns the effect "
+                "off. This header has no alias."),
+            example="ReClash-HeroEffect: aurora",
+            keys=("эффект сияние aurora кольцо анимация", "effect aurora glow ring animation")),
+        "reclash-widgets": dict(
+            fmt=t("имена через запятую", "comma-separated names"),
+            body=t(
+                "Имена виджетов через запятую — порядок в списке становится порядком на "
+                "панели. Виджеты, недоступные на платформе, просто не появятся. "
+                "<code>reclash-custom</code> управляет тем, как список сливается с "
+                "пользовательским.",
+                "Comma-separated widget names — their order becomes the order on the "
+                "dashboard. Widgets unavailable on a platform simply do not appear. "
+                "<code>reclash-custom</code> controls how the list merges with the "
+                "user's own."),
+            extra=widget_table,
+            example="ReClash-Widgets: serviceInfo,networkSpeed,trafficUsage,outboundModeV2",
+            keys=("виджеты панель карточки порядок", "widgets dashboard cards order")),
+        "reclash-custom": dict(
+            fmt="add | update",
+            body=t(
+                "Как <code>reclash-widgets</code> сливается с уже собранным пользователем "
+                "набором: <code>add</code> добавляет недостающие виджеты в конец, "
+                "<code>update</code> заменяет набор целиком. Без этого заголовка набор "
+                "предлагается только при первом добавлении профиля.",
+                "How <code>reclash-widgets</code> merges with the set the user already "
+                "assembled: <code>add</code> appends the missing widgets, <code>update</code> "
+                "replaces the whole set. Without this header the set is suggested only when "
+                "the profile is first added."),
+            example="ReClash-Widgets: serviceInfo,networkSpeed,trafficUsage,outboundModeV2\n"
+                    "ReClash-Custom: update",
+            keys=("слияние виджеты добавить заменить", "merge widgets add update replace")),
+        "reclash-settings": dict(
+            fmt=t("токены через запятую", "comma-separated tokens"),
+            body=t(
+                "Настройки по умолчанию. Предлагаются <strong>один раз</strong> — при первом "
+                "добавлении профиля: ReClash покажет запрошенные изменения и применит их "
+                "только после подтверждения. Не перечисленные настройки остаются как есть, "
+                "дальше настройками владеет пользователь.",
+                "Application defaults. Offered <strong>once</strong> — when the profile is "
+                "first added: ReClash shows the requested changes and applies them only after "
+                "the user confirms. Unlisted settings keep their values; after that the "
+                "settings belong to the user."),
+            extra=settings_table,
+            example="ReClash-Settings: minimize,autoupdate",
+            keys=("настройки умолчания автозапуск", "settings defaults autostart autorun")),
+        "reclash-newdomain": dict(
+            fmt=t("хост[:порт]", "host[:port]"),
+            body=t(
+                "Только имя хоста и необязательный порт — без схемы, пути и параметров. "
+                "Клиент не переключается вслепую: он проверяет, что новый адрес действительно "
+                "отдаёт вашу подписку, и только потом переносит профиль.",
+                "A hostname and an optional port only — no scheme, path or query. The client "
+                "does not switch blindly: it verifies that the new address really serves your "
+                "subscription, and only then migrates the profile."),
+            example="ReClash-NewDomain: sub.nebula.example\n"
+                    "ReClash-NewDomain: sub.nebula.example:8443",
+            keys=("смена домен миграция переезд", "domain migration move switch")),
+        "reclash-fallbackhosts": dict(
+            fmt=t("до 4 хостов через запятую", "up to 4 comma-separated hosts"),
+            body=t(
+                "До четырёх имён хостов через запятую — без портов и схемы. Имена приводятся "
+                "к нижнему регистру, дубликаты убираются, лишнее отбрасывается. Клиент идёт к "
+                "ним, когда основной адрес временно недоступен. Псевдонима нет.",
+                "Up to four comma-separated hostnames — no ports, no scheme. Names are "
+                "lowercased, duplicates removed, the excess dropped. The client falls back to "
+                "them when the main address is temporarily unreachable. No alias."),
+            example="ReClash-FallbackHosts: sub2.nebula.example,sub3.nebula.example",
+            keys=("запасные хосты резерв отказоустойчивость", "fallback hosts backup failover")),
+        # ---- hwid ----------------------------------------------------------
+        "x-hwid": dict(example="X-HWID: 3f7a9c2e5b1d8046",
+                       keys=("устройство хеш идентификатор", "device hash identifier")),
+        "x-device-os": dict(example="X-Device-OS: Android",
+                            keys=("ос платформа", "os platform")),
+        "x-ver-os": dict(example="X-Ver-OS: 14",
+                         keys=("версия ос", "os version")),
+        "x-device-model": dict(example="X-Device-Model: Pixel 8",
+                               keys=("модель устройство хост", "model device host")),
+        "x-hwid-max-devices-reached": dict(
+            fmt="true", example="X-HWID-Max-Devices-Reached: true",
+            keys=("лимит устройств превышен", "device limit reached")),
+        "x-hwid-not-supported": dict(
+            fmt="true", example="X-HWID-Not-Supported: true",
+            keys=("режим не поддерживается", "mode unsupported")),
+    }
+
+    def emit(name, cat, summary, default_fmt):
+        d = D.get(name, {})
+        fmt = d.get("fmt", default_fmt)
+        body = d.get("body", summary)
+        ex = d.get("example", "")
+        extra = d.get("extra", "")
+        if callable(extra):
+            extra = extra()
+        kw = d.get("keys", ("", ""))
+        # Both languages in the search index on purpose — the reader finds a
+        # header whichever language they type; verify.py strips data-keys before
+        # its Cyrillic check, so the RU terms never count as a leak on the EN page.
+        cards[cat].append(hcard(ctx, name, cat, summary, fmt, body, ex, extra,
+                                keys=(kw[0] + " " + kw[1]).strip()))
+
+    # common headers
+    for name, ru_v, en_v, ru_b, en_b in spec.COMMON_HEADERS:
+        emit(name, "common", ru_b if L == 0 else en_b,
+             '<span class="mono faint">' + (ru_v if L == 0 else en_v) + "</span>")
+    # reclash headers
+    for name, ru_v, en_v, ru_p, en_p in spec.RECLASH_HEADERS:
+        emit(name, "reclash", ru_p if L == 0 else en_p,
+             '<span class="mono faint">' + (ru_v if L == 0 else en_v) + "</span>")
+    # hwid — request then response
+    for name, ru, en in spec.HWID_REQUEST:
+        emit(name, "hwid", esc(ru if L == 0 else en), "&mdash;")
+    for name, ru, en in spec.HWID_RESPONSE:
+        emit(name, "hwid", ru if L == 0 else en, "true")
+
+    groups = [
+        ("common", t("Общие заголовки", "Common headers"),
+         t("Стандартные заголовки Clash. Отдаёте их уже — ReClash подхватит без изменений.",
+           "Standard Clash headers. If you already send them, ReClash picks them up unchanged.")),
+        ("reclash", t("Заголовки ReClash", "ReClash headers"),
+         t("Девятнадцать заголовков, которые понимает только ReClash. Все необязательны.",
+           "Nineteen headers only ReClash understands. Every one is optional.")),
+        ("hwid", t("Устройства и HWID", "Devices and HWID"),
+         t("Заголовки запроса от клиента и ответы на них.",
+           "Request headers from the client and the responses to them.")),
+    ]
+
+    chips = [("all", t("Все", "All"), sum(len(cards[c]) for c in cards))]
+    for key, _, _ in groups:
+        chips.append((key, t(*CAT_LABEL[key]), len(cards[key])))
+    filt = "".join(
+        '<button class="hfilter" type="button" data-cat="%s"%s>%s'
+        '<span class="hfilter__n">%d</span></button>'
+        % (key, ' aria-pressed="true"' if key == "all" else ' aria-pressed="false"',
+           esc(label), n)
+        for key, label, n in chips
+    )
+
+    sections = []
+    for key, title, lede in groups:
+        sections.append(
+            '<section class="hgroup" id="cat-%s" data-cat="%s">'
+            '<h2 class="hgroup__ttl">%s <span class="hgroup__n mono">%d</span></h2>'
+            '<p class="hgroup__lede">%s</p>'
+            '<div class="hcards">%s</div></section>'
+            % (key, key, esc(title), len(cards[key]), esc(lede), "".join(cards[key]))
+        )
+
+    return (
+        '<div class="catalog" data-catalog>'
+        '<div class="catalog__bar">'
+        '<div class="catalog__search"><svg class="catalog__ico" viewBox="0 0 24 24" '
+        'aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>'
+        '<input type="search" class="catalog__input" '
+        'placeholder="' + esc(t("Поиск по имени или описанию…", "Search by name or description…")) + '" '
+        'aria-label="' + esc(t("Поиск заголовков", "Search headers")) + '">'
+        "</div>"
+        '<div class="catalog__filters" role="group" aria-label="'
+        + esc(t("Фильтр по категориям", "Filter by category")) + '">' + filt + "</div>"
+        "</div>"
+        '<p class="catalog__empty" hidden>' + esc(t(
+            "Ничего не нашлось. Сбросьте фильтр или измените запрос.",
+            "Nothing matches. Clear the filter or change the query.")) + "</p>"
+        + "".join(sections)
+        + "</div>"
+    )
+
+
+def render_reference(ctx):
+    """The reference page (reference.html) — the header catalogue. Light: just
+    docs.css and the shared core.js (search + category filter). No builder.js,
+    no phone-preview styles. The narrative guide is docs.html; the builder that
+    assembles these headers is headers.html."""
+    t = ctx.t
+    body = "".join([
+        '<section class="pagehead"><div class="shell">',
+        '<p class="eyebrow">' + esc(t("Для провайдеров", "For providers")) + "</p>",
+        "<h1>" + t("Справочник по <span class=\"grad\">заголовкам</span>",
+                   "The header <span class=\"grad\">reference</span>") + "</h1>",
+        '<p class="lede">' + esc(t(
+            "Каждый заголовок ответа, который читает ReClash: имя, формат, псевдонимы, "
+            "что делает и пример. Ищите по имени или описанию, фильтруйте по категории. "
+            "Как всё это работает целиком — в документации.",
+            "Every response header ReClash reads: name, format, aliases, what it does and "
+            "an example. Search by name or description, filter by category. How it all fits "
+            "together is in the documentation.",
+        )) + "</p>",
+        '<p class="pagehead__meta">',
+        chip("19 reclash-*"), chip(t("6 общих", "6 common")),
+        chip("HWID"),
+        '<a class="chip chip--link" href="' + ctx.page("docs") + '">'
+        + esc(t("Документация →", "Documentation →")) + "</a>",
+        '<a class="chip chip--link" href="' + ctx.page("headers") + '">'
+        + esc(t("Конструктор →", "Builder →")) + "</a>",
+        "</p></div></section>",
+        '<section class="section"><div class="shell">',
+        rubric("01", t("справочник", "the reference")),
+        catalog(ctx),
+        "</div></section>",
+    ])
+    return {
+        "active": "reference",
+        "title": t("Справочник по заголовкам подписки",
+                   "Subscription header reference"),
+        "description": t(
+            "Справочник по заголовкам ответа подписки для ReClash: имя, формат, "
+            "псевдонимы, назначение и пример каждого. Поиск и фильтр по категориям.",
+            "Reference for ReClash subscription response headers: name, format, aliases, "
+            "purpose and an example for each. Searchable and filterable by category.",
+        ),
+        "body": body,
+        "css": ("docs.css",),
     }

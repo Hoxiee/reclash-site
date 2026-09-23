@@ -15,7 +15,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from gen import layout, ui  # noqa: E402
 from gen.layout import Ctx  # noqa: E402
-from gen import page_home, page_headers, page_downloads, page_start  # noqa: E402
+from gen import (  # noqa: E402
+    page_home, page_docs, page_headers, page_downloads, page_start,
+    page_gallery, page_mocksubs, mocks,
+)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(ROOT, "dist")
@@ -25,9 +28,13 @@ DEFAULT_BASE_URL = "https://hoxiee.github.io/ReClash-site"
 
 RENDERERS = {
     "index": page_home.render,
+    "gallery": page_gallery.render,
+    "docs": page_docs.render,
     "headers": page_headers.render,
+    "reference": page_headers.render_reference,
     "download": page_downloads.render,
     "start": page_start.render,
+    "mock": page_mocksubs.render,
 }
 
 
@@ -192,6 +199,8 @@ def sitemap(base_url):
     for lang in LANGS:
         other = "en" if lang == "ru" else "ru"
         for key in ui.PAGES:
+            if key in ui.NOINDEX:
+                continue
             f = layout.FILE[key]
             urls.append(
                 "  <url>\n"
@@ -217,7 +226,154 @@ def sitemap(base_url):
 
 
 def robots(base_url):
-    return "User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n" % base_url
+    # Everything is public and meant to be found. We name the search-generative
+    # and AI-assistant crawlers explicitly so it is unambiguous they may read
+    # and cite the site (Google-Extended / Applebot-Extended gate AI use even
+    # when the normal bot is allowed). All resolve to the same allow-all.
+    ai_agents = (
+        "Googlebot", "Google-Extended", "Bingbot", "Applebot", "Applebot-Extended",
+        "GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-Web",
+        "anthropic-ai", "PerplexityBot", "Perplexity-User", "CCBot",
+    )
+    blocks = ["User-agent: *\nAllow: /\n"]
+    for a in ai_agents:
+        blocks.append("User-agent: %s\nAllow: /\n" % a)
+    return "\n".join(blocks) + "\nSitemap: %s/sitemap.xml\n" % base_url
+
+
+def webmanifest(base_url):
+    """A minimal web app manifest so mobile search and PWA-aware crawlers can
+    read the app's name, colours and icons. Icon/URL fields are absolute so the
+    manifest is correct regardless of the hosting sub-path (GitHub project
+    pages serve the site under /ReClash-site, not the domain root)."""
+    data = {
+        "name": "ReClash",
+        "short_name": "ReClash",
+        "description": ("An open-source mihomo client with rule-based routing, "
+                        "an Auto mode, a DPI bypass and provider theming."),
+        "id": base_url + "/",
+        "start_url": base_url + "/",
+        "scope": base_url + "/",
+        "display": "standalone",
+        "background_color": "#07060b",
+        "theme_color": "#07060b",
+        "categories": ["utilities", "productivity", "security"],
+        "icons": [
+            {"src": base_url + "/assets/img/icon-192.png",
+             "sizes": "192x192", "type": "image/png", "purpose": "any"},
+            {"src": base_url + "/assets/img/icon-512.png",
+             "sizes": "512x512", "type": "image/png", "purpose": "any"},
+        ],
+    }
+    return _json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+
+
+# --------------------------------------------------------------- mock subs
+#
+# A mock subscription is an HTTP response the ReClash app fetches: the body is
+# a mihomo profile, the ReClash-* response headers carry the metadata (title,
+# quota, theme, logo, background, announce). GitHub Pages cannot set custom
+# headers, so the generated `dist/_headers` is meant for Cloudflare Pages /
+# Netlify, and `dist/mock/_headers.json` feeds the local --serve so the same
+# response can be tested without a deploy. `{BASE}` in a value is the site
+# origin; both consumers substitute it (the origin for _headers, the live
+# request origin for --serve). Media (logo/background) are absolute URLs, as a
+# real provider would send.
+
+import base64 as _b64  # noqa: E402
+import json as _json  # noqa: E402
+
+
+def _hval(text):
+    """A header value: plain ASCII as-is, anything else as base64:<...> — the
+    same rule the headers builder applies to non-ASCII fields."""
+    if text is None:
+        return None
+    if all(0x20 <= ord(c) <= 0x7e for c in text):
+        return text
+    return "base64:" + _b64.b64encode(text.encode("utf-8")).decode("ascii")
+
+
+def mock_body(m):
+    """A minimal, valid mihomo profile with fake nodes — enough to import and
+    exercise the UI; the nodes do not route anywhere."""
+    group = m["servicename"]
+    n = m.get("nodes", 3)
+    nodes = "\n".join(
+        '  - {name: "%s %02d", type: ss, server: 127.0.0.1, port: %d, '
+        'cipher: aes-256-gcm, password: mock}' % (group, i + 1, 8388 + i)
+        for i in range(n)
+    )
+    names = ", ".join('"%s %02d"' % (group, i + 1) for i in range(n))
+    return (
+        "# Mock subscription: %s. Fake nodes, for testing ReClash only.\n"
+        "mixed-port: 7890\n"
+        "mode: rule\n"
+        "proxies:\n%s\n"
+        'proxy-groups:\n  - {name: "%s", type: select, proxies: [%s, DIRECT]}\n'
+        "rules:\n  - MATCH,%s\n"
+        % (m["key"], nodes, group, names, group)
+    )
+
+
+def mock_headers(m):
+    """Ordered (name, value) header pairs for one subscription. Values may
+    carry the {BASE} origin token; the caller substitutes it."""
+    h = [
+        ("Content-Type", "text/yaml; charset=utf-8"),
+        ("Content-Disposition", 'attachment; filename="%s.yaml"' % m["key"]),
+        ("Profile-Title", _hval(m.get("title"))),
+        ("ReClash-ServiceName", _hval(m.get("servicename"))),
+        ("ReClash-ActiveText", _hval(m.get("activetext"))),
+        ("ReClash-Hex", m.get("hex")),
+        ("ReClash-HeroRing", ";".join(m["heroring"]) if m.get("heroring") else None),
+        ("ReClash-HeroEffect", m.get("heroeffect")),
+        ("ReClash-ServiceLogo",
+         "{BASE}/assets/mock/%s" % m["logo"] if m.get("logo") else None),
+        ("ReClash-Background",
+         "{BASE}/assets/mock/%s,%d" % (m["bg"][0], m["bg"][1]) if m.get("bg") else None),
+        ("ReClash-Widgets", m.get("widgets")),
+        ("ReClash-View", m.get("view")),
+        ("ReClash-SupportURL", m.get("support")),
+        ("ReClash-BuyPlan", m.get("buyplan")),
+        ("ReClash-BuyTraffic", m.get("buytraffic")),
+        ("ReClash-Announce", _hval(m["announce"][0]) if m.get("announce") else None),
+        ("ReClash-AutoUpdateInterval",
+         str(m["update_min"]) if m.get("update_min") else None),
+    ]
+    q = m.get("quota")
+    if q:
+        now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+        expire = now + q["expire_days"] * 86400
+        h.append(("Subscription-Userinfo",
+                  "upload=%d; download=%d; total=%d; expire=%d"
+                  % (q["up_gb"] * mocks.GB, q["down_gb"] * mocks.GB,
+                     q["total_gb"] * mocks.GB, expire)))
+    return [(k, v) for k, v in h if v is not None]
+
+
+def build_mocks(base_url):
+    """Write each profile body to dist/mock/<key>, the Cloudflare/Netlify
+    `dist/_headers`, and the `dist/mock/_headers.json` manifest for --serve."""
+    manifest = {}
+    lines = [
+        "# Generated by build.py — do not edit. Response headers for the mock",
+        "# subscriptions, in Cloudflare Pages / Netlify _headers format.",
+        "",
+    ]
+    for m in mocks.MOCKS:
+        path = "/mock/%s" % m["key"]
+        write(os.path.join(DIST, "mock", m["key"]), mock_body(m))
+        pairs = mock_headers(m)
+        manifest[path] = {k: v for k, v in pairs}
+        lines.append(path)
+        for k, v in pairs:
+            lines.append("  %s: %s" % (k, v.replace("{BASE}", base_url)))
+        lines.append("")
+    write(os.path.join(DIST, "_headers"), "\n".join(lines))
+    write(os.path.join(DIST, "mock", "_headers.json"),
+          _json.dumps(manifest, ensure_ascii=False, indent=0))
+    return len(mocks.MOCKS)
 
 
 def build(base_url, version_note=""):
@@ -239,7 +395,9 @@ def build(base_url, version_note=""):
                 body=data["body"],
                 css=data.get("css", ()),
                 js=data.get("js", ()),
+                css_defer=data.get("css_defer", ()),
                 head_extra=data.get("head_extra", ""),
+                faq=data.get("faq"),
             )
             size = write(os.path.join(DIST, lang, layout.FILE[key]), html)
             print("  %s/%-14s %6.1f KB" % (lang, layout.FILE[key], size / 1024))
@@ -250,7 +408,11 @@ def build(base_url, version_note=""):
     write(os.path.join(DIST, "404.html"), not_found(base_url))
     write(os.path.join(DIST, "robots.txt"), robots(base_url))
     write(os.path.join(DIST, "sitemap.xml"), sitemap(base_url))
+    write(os.path.join(DIST, "site.webmanifest"), webmanifest(base_url))
     open(os.path.join(DIST, ".nojekyll"), "w").close()
+
+    n_mocks = build_mocks(base_url)
+    print("  %d mock subscriptions -> /mock/ + dist/_headers" % n_mocks)
 
     assets = copy_assets()
     print("\n  %d pages, %.1f KB html, %.1f KB assets" % (pages, total / 1024, assets / 1024))
@@ -272,7 +434,38 @@ def main():
 
         os.chdir(DIST)
 
+        # The mock subscriptions carry ReClash-* response headers that a static
+        # host would set from dist/_headers. SimpleHTTPRequestHandler cannot, so
+        # for local testing we serve those paths by hand from the manifest and
+        # substitute the live origin into {BASE} — the app can then import
+        # http://<this-host>:8000/mock/<key> and see real headers.
+        import json as _json
+        try:
+            with open(os.path.join(DIST, "mock", "_headers.json"), encoding="utf-8") as _fh:
+                MOCK_HEADERS = _json.load(_fh)
+        except OSError:
+            MOCK_HEADERS = {}
+
         class Handler(http.server.SimpleHTTPRequestHandler):
+            def do_GET(self):
+                p = self.path.split("?", 1)[0].rstrip("/")
+                hdrs = MOCK_HEADERS.get(p)
+                if hdrs is None:
+                    return super().do_GET()
+                try:
+                    with open(os.path.join(DIST, p.lstrip("/")), "rb") as fh:
+                        body = fh.read()
+                except OSError:
+                    self.send_error(404)
+                    return
+                origin = "http://" + (self.headers.get("Host") or "127.0.0.1:8000")
+                self.send_response(200)
+                for k, v in hdrs.items():
+                    self.send_header(k, v.replace("{BASE}", origin))
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
             # A browser that navigates away mid-response drops the connection,
             # and SimpleHTTPRequestHandler lets the resulting BrokenPipeError
             # bubble up as a scary traceback. It is expected and harmless, so

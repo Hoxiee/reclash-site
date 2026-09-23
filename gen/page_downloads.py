@@ -21,7 +21,7 @@ PLATFORMS = [
       "The build is not App Store signed: on first launch open it from the "
       "context menu → “Open”.")),
     ("linux", "linux", "Linux", "Linux",
-     ("AppImage, DEB, RPM", "AppImage, DEB, RPM"),
+     ("AppImage (x64), DEB, RPM", "AppImage (x64), DEB, RPM"),
      ["x64", "ARM64"],
      ("AppImage запускается без установки — не забудьте <code>chmod +x</code>. "
       "DEB и RPM ставят службу TUN сами.",
@@ -50,6 +50,38 @@ def dl_strings(ctx):
         "os_other": t("Прочее", "Other"),
         "files": t("файлов", "files"),
         "onGithub": t("Смотреть на GitHub", "View on GitHub"),
+        # SHA256 verifier. The file never leaves the browser; the hash is
+        # computed locally with the Web Crypto API and compared against a
+        # value the visitor pastes from the release.
+        "v_drop": t("Перетащите файл сюда или выберите",
+                    "Drop a file here or choose one"),
+        "v_local": t("Файл никуда не загружается — хеш считается прямо в браузере.",
+                     "The file is not uploaded anywhere — the hash is computed right in your browser."),
+        "v_computing": t("Считаю SHA256…", "Computing SHA256…"),
+        "v_hash_cap": t("SHA256 файла", "File SHA256"),
+        "v_expect_cap": t("Ожидаемый хеш или содержимое SHA256SUMS",
+                          "Expected hash or SHA256SUMS contents"),
+        "v_expect_ph": t("Вставьте хеш из релиза или весь SHA256SUMS…",
+                         "Paste the hash from the release, or the whole SHA256SUMS…"),
+        "v_hint": t("Выберите файл, чтобы посчитать его хеш.",
+                    "Choose a file to compute its hash."),
+        "v_needfile": t("Сначала выберите файл — его хеш сравним с этим.",
+                        "Choose a file first — its hash will be compared to this."),
+        "v_needexp": t("Вставьте ожидаемый хеш, чтобы сравнить.",
+                       "Paste the expected hash to compare."),
+        "v_match": t("Совпадает — файл тот самый.",
+                     "Match — this is the right file."),
+        "v_mismatch": t("Не совпадает. Не запускайте этот файл.",
+                        "No match. Do not run this file."),
+        "v_notfound": t("В SHA256SUMS нет строки для этого файла.",
+                        "No line for this file in the SHA256SUMS."),
+        "v_unsupported": t("Этот браузер не умеет считать хеш здесь. Проверьте в терминале — команды ниже.",
+                           "This browser cannot hash here. Verify in a terminal — the commands are below."),
+        "v_error": t("Не удалось прочитать файл. Попробуйте ещё раз.",
+                     "Could not read the file. Try again."),
+        "v_copy": t("копировать", "copy"),
+        "v_copied": t("готово", "copied"),
+        "v_cli": t("…или проверьте в терминале", "…or verify in a terminal"),
     }
 
 
@@ -81,7 +113,7 @@ def section_hero(ctx):
             "If there is no release yet the page says so instead of handing you a dead link.",
         )) + "</p>"
         '<p class="pagehead__meta">'
-        + chip("GPL-3.0") + chip(t("Без телеметрии", "No telemetry"))
+        + chip("GPL-3.0")
         + chip(t("4 платформы", "4 platforms")) + chip("SHA256")
         + "</p></div></section>"
     )
@@ -178,10 +210,57 @@ def section_platforms(ctx):
     )
 
 
+def verify_tool(ctx):
+    """A live SHA256 checker. The file is read and hashed in the browser with
+    the Web Crypto API — nothing is uploaded — and compared against a hash the
+    visitor pastes from the release (a single digest or a whole SHA256SUMS)."""
+    t = ctx.t
+    return (
+        '<div class="verify" data-verify>'
+        # left: pick/drop a file, see its hash
+        '<div class="verify__file">'
+        '<label class="verify__drop" data-drop tabindex="0" role="button">'
+        + icon("shield", "verify__drop__ico")
+        + '<span class="verify__drop__cap" data-drop-cap>'
+        + esc(t("Перетащите файл сюда или выберите",
+                "Drop a file here or choose one")) + "</span>"
+        '<input type="file" class="visually-hidden" data-file>'
+        "</label>"
+        '<p class="verify__local">' + icon("lock", "verify__local__ico")
+        + "<span>" + esc(t(
+            "Файл никуда не загружается — хеш считается прямо в браузере.",
+            "The file is not uploaded anywhere — the hash is computed right in your browser.",
+        )) + "</span></p>"
+        '<div class="verify__hash codeblock" data-hash-box hidden>'
+        '<span class="verify__cap">' + esc(t("SHA256 файла", "File SHA256")) + "</span>"
+        '<button class="copy" type="button" data-copy="[data-hash]" '
+        'data-done-label="%s">%s</button>' % (
+            esc(t("готово", "copied")), esc(t("копировать", "copy")))
+        + '<code class="verify__out" data-hash></code>'
+        "</div>"
+        "</div>"
+        # right: paste the expected value, get a verdict
+        '<div class="verify__expect">'
+        '<span class="verify__cap">'
+        + esc(t("Ожидаемый хеш или содержимое SHA256SUMS",
+                "Expected hash or SHA256SUMS contents")) + "</span>"
+        '<textarea class="verify__ta" data-expect spellcheck="false" '
+        'autocomplete="off" rows="3" aria-label="%s" placeholder="%s"></textarea>' % (
+            esc(t("Ожидаемый хеш", "Expected hash")),
+            esc(t("Вставьте хеш из релиза или весь SHA256SUMS…",
+                  "Paste the hash from the release, or the whole SHA256SUMS…")))
+        + '<p class="verify__verdict" data-verdict data-tone="idle" role="status">'
+        + esc(t("Выберите файл, чтобы посчитать его хеш.",
+                "Choose a file to compute its hash.")) + "</p>"
+        "</div>"
+        "</div>"
+    )
+
+
 def section_verify(ctx):
     t = ctx.t
     return (
-        '<section class="section section--tight"><div class="shell">'
+        '<section class="section section--tight" id="verify"><div class="shell">'
         + rubric("03", t("проверка", "verification"))
         + '<div class="split">'
         + "<div><h2 class=\"statement\">"
@@ -195,7 +274,21 @@ def section_verify(ctx):
             "worth it: a tampered VPN client is the worst thing that can happen to "
             "your traffic.",
         )) + "</p></div></div>"
-        + '<div class="doc__cols" style="margin-top:var(--step-4)">'
+        + '<div style="margin-top:var(--step-4)">' + verify_tool(ctx) + "</div>"
+        + notice("<span>" + t(
+            "Совпал хеш — файл тот самый. Не совпал — не запускайте и "
+            "напишите в <a class=\"link link--cyan\" href=\"%s\" target=\"_blank\" "
+            "rel=\"noopener\">issues</a>." % ui.GITHUB_ISSUES,
+            "If the hash matches, the file is the right one. If it does not — do not "
+            "run it, and report it in <a class=\"link link--cyan\" href=\"%s\" "
+            "target=\"_blank\" rel=\"noopener\">issues</a>." % ui.GITHUB_ISSUES,
+        ) + "</span>", "notice--info")
+        # The terminal route stays for those who prefer it, folded away so the
+        # live tool is the first thing offered.
+        + '<details class="verify__cli">'
+        + '<summary>' + esc(t("…или проверьте в терминале",
+                              "…or verify in a terminal")) + "</summary>"
+        + '<div class="doc__cols" style="margin-top:var(--step-3)">'
         + "<div><h3>Linux / macOS</h3>"
         + codeblock("sha256sum -c SHA256SUMS --ignore-missing",
                     t("копировать", "copy"), t("готово", "copied"))
@@ -203,15 +296,7 @@ def section_verify(ctx):
         + "<div><h3>Windows (PowerShell)</h3>"
         + codeblock("Get-FileHash .\\ReClash-setup.exe -Algorithm SHA256",
                     t("копировать", "copy"), t("готово", "copied"))
-        + "</div></div>"
-        + notice("<span>" + t(
-            "Совпала строка — файл тот самый. Не совпала — не запускайте и "
-            "напишите в <a class=\"link link--cyan\" href=\"%s\" target=\"_blank\" "
-            "rel=\"noopener\">issues</a>." % ui.GITHUB_ISSUES,
-            "If the line matches, the file is the right one. If it does not — do not "
-            "run it, and report it in <a class=\"link link--cyan\" href=\"%s\" "
-            "target=\"_blank\" rel=\"noopener\">issues</a>." % ui.GITHUB_ISSUES,
-        ) + "</span>", "notice--info")
+        + "</div></div></details>"
         + "</div></section>"
     )
 
@@ -275,7 +360,7 @@ def section_after(ctx):
         + '<div class="row gap-2" style="flex-wrap:wrap;margin-top:var(--step-3)">'
         + btn(ctx.page("start"), t("Быстрый старт и FAQ", "Quick start & FAQ"),
               "btn--lg", "bolt")
-        + btn(ctx.page("headers"), t("Заголовки для провайдеров", "Provider headers"),
+        + btn(ctx.page("docs"), t("Заголовки для провайдеров", "Provider headers"),
               "btn--lg btn--ghost", "book")
         + "</div></div></section>"
     )

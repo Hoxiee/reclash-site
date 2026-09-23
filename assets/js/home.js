@@ -1,4 +1,4 @@
-/* Landing page: the diagonal hero field, the living mark, the dashboard demo. */
+/* Landing page: the diagonal hero field and the living mark. */
 (function () {
   'use strict';
 
@@ -180,51 +180,97 @@
     });
   }
 
-  /* ===================================================== hero telemetry
-     The two chips flanking the mark tick through plausible values so the hero
-     reads as a live readout. Decorative and aria-hidden; frozen when the
-     visitor asked for less motion. */
+})();
 
-  var teleDelay = $('[data-tele="delay"]');
-  var teleDown = $('[data-tele="down"]');
-  if ((teleDelay || teleDown) && !RC.reduced) {
-    var tick = function () {
-      if (teleDelay) teleDelay.textContent = (18 + Math.round(Math.random() * 78));
-      if (teleDown) teleDown.textContent = (1.2 + Math.random() * 8.2).toFixed(1);
-    };
-    setInterval(tick, 1700);
-  }
+/* ===================================== providers: headers → result diptych */
+/* One dark response panel, one flat app surface. Each tab carries a provider
+   preset in its data-* attributes; picking (or the idle carousel) rewrites the
+   header values on the left, flashes the lines that changed, and repaints the
+   right panel — the two accent custom properties morph in CSS because both are
+   @property-registered and transitioned. With no JS the first preset is simply
+   the one already rendered. */
+(function () {
+  var $ = RC.$, $$ = RC.$$;
+  var demo = $('.hdemo');
+  if (!demo) return;
+  var tabs = $$('.hdemo__tab', demo);
+  if (!tabs.length) return;
 
-  /* ======================================================= dashboard demo */
+  var nameEl = $('.hdemo__name', demo);
+  var renewEl = $('.hdemo__renew', demo);
+  var announceEl = $('.hdemo__announce', demo);
+  var noteEl = $('.hdemo__note', demo);
 
-  var demo = $('[data-dashboard-demo]');
-  if (demo) {
-    var presetButtons = $$('[data-demo-preset]', demo);
-    var presetPanels = $$('[data-demo-panel]', demo);
-    var viewport = $('.live-panel__viewport', demo);
-    var status = $('[data-demo-status]', demo);
+  /* header value lines, keyed by data-f */
+  var lines = {};
+  $$('.hdemo__ln[data-f]', demo).forEach(function (el) {
+    lines[el.getAttribute('data-f')] = el.querySelector('.hdemo__v');
+  });
 
-    function selectPreset(key, announce) {
-      var active = null;
-      presetButtons.forEach(function (button) {
-        var selected = button.getAttribute('data-demo-preset') === key;
-        button.setAttribute('aria-pressed', selected ? 'true' : 'false');
-      });
-      presetPanels.forEach(function (panel) {
-        var selected = panel.getAttribute('data-demo-panel') === key;
-        panel.hidden = !selected;
-        if (selected) active = panel;
-      });
-      if (!active) return;
-      var label = active.getAttribute('data-demo-label') || '';
-      if (viewport) viewport.setAttribute('aria-label', label);
-      if (announce && status) status.textContent = label;
+  function setLine(field, value, flash) {
+    var v = lines[field];
+    if (!v) return;
+    if (v.textContent !== value) {
+      v.textContent = value;
+      if (flash) {
+        var ln = v.closest('.hdemo__ln');
+        ln.classList.remove('is-diff');
+        void ln.offsetWidth; /* restart the diff flash */
+        ln.classList.add('is-diff');
+      }
     }
-
-    presetButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        selectPreset(button.getAttribute('data-demo-preset'), true);
-      });
-    });
   }
+
+  function apply(tab, flash) {
+    var d = tab.dataset;
+    demo.dataset.brand = d.brand;
+    demo.style.setProperty('--accent', d.accent);
+    demo.style.setProperty('--accent2', d.accent2);
+
+    setLine('servicename', d.name, flash);
+    setLine('hex', d.hex, flash);
+    setLine('announce', d.announce, flash);
+    setLine('buyplan', d.renew || '—', flash);
+
+    if (nameEl) nameEl.textContent = d.name;
+    if (announceEl) announceEl.textContent = d.announce;
+    if (noteEl) noteEl.textContent = d.node;
+    if (renewEl) { renewEl.textContent = d.renew || ''; renewEl.hidden = !d.renew; }
+
+    tabs.forEach(function (b) {
+      var on = b === tab;
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.classList.toggle('is-on', on);
+    });
+
+    demo.classList.remove('is-morph');
+    void demo.offsetWidth; /* restart the panel flash */
+    demo.classList.add('is-morph');
+  }
+
+  var idx = 0, timer = null, manual = false;
+
+  function advance() {
+    if (manual) return;
+    idx = (idx + 1) % tabs.length;
+    apply(tabs[idx], true);
+  }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+  function start() {
+    if (RC.reduced || manual) return;
+    stop();
+    timer = setInterval(advance, 3600);
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () {
+      manual = true; stop(); idx = i; apply(tab, true);
+    });
+  });
+
+  demo.addEventListener('pointerenter', stop);
+  demo.addEventListener('pointerleave', start);
+  demo.addEventListener('focusin', stop);
+
+  start();
 })();

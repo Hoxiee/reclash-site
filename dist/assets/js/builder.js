@@ -7,9 +7,10 @@
   if (!form) return;
 
   var $ = RC.$, $$ = RC.$$;
-  var S = {}, WIDGETS = [];
+  var S = {}, WIDGETS = [], RWTPL = null;
   try { S = JSON.parse(document.getElementById('builder-strings').textContent); } catch (e) {}
   try { WIDGETS = JSON.parse(document.getElementById('widget-spec').textContent); } catch (e) {}
+  try { RWTPL = JSON.parse(document.getElementById('remnawave-template').textContent); } catch (e) {}
   function s(k) { return S[k] !== undefined ? S[k] : k; }
 
   /* "4 заголовков" is wrong. Russian picks the form from the last digits and
@@ -38,6 +39,16 @@
     return btoa(bin);
   }
   function isAscii(str) { return /^[\x20-\x7e]*$/.test(str); }
+  /* Inverse of b64() — used to turn a collect()ed `base64:<payload>` value
+     back into text for the global-headers `rwEncodeBase64:` transform. */
+  function b64decode(str) {
+    try {
+      var bin = atob(str);
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new TextDecoder().decode(bytes);
+    } catch (e) { return str; }
+  }
 
   /* ---------------------------------------------------- colour utilities */
 
@@ -181,20 +192,23 @@
     var down = gb('f_down');
     var total = gb('f_total');
     var expire = val('f_expire');
-    if (on('f_userinfo')) {
-      if (clamped) err(s('warnQuotaRange'));
-      var parts = [
-        'upload=' + Math.round(up * GB),
-        'download=' + Math.round(down * GB),
-        'total=' + Math.round(total * GB)
-      ];
-      if (expire) {
-        var ts = Math.floor(new Date(expire + 'T00:00:00Z').getTime() / 1000);
-        if (!isNaN(ts)) parts.push('expire=' + ts);
-      }
-      if (total > 0 && up + down > total) err(s('warnOverQuota'));
-      push('Subscription-Userinfo', parts.join('; '));
+    /* Subscription-Userinfo is per-user, and the panel (Remnawave) or your own
+       backend emits it on every request from the subscriber's real plan — so
+       the builder never writes it as a configured header. These four fields
+       only drive the live preview's subscription card and the commented
+       example the self-host snippets carry. */
+    if (clamped) err(s('warnQuotaRange'));
+    var uparts = [
+      'upload=' + Math.round(up * GB),
+      'download=' + Math.round(down * GB),
+      'total=' + Math.round(total * GB)
+    ];
+    if (expire) {
+      var ts = Math.floor(new Date(expire + 'T00:00:00Z').getTime() / 1000);
+      if (!isNaN(ts)) uparts.push('expire=' + ts);
     }
+    if (total > 0 && up + down > total) err(s('warnOverQuota'));
+    var userinfo = uparts.join('; ');
 
     /* --- identity ------------------------------------------------------ */
     var title = textField('f_title');
@@ -273,6 +287,9 @@
       else push('ReClash-HeroRing', ring.join(';'));
     }
 
+    /* --- hero effect ---------------------------------------------------- */
+    if (on('f_heroeffect')) push('ReClash-HeroEffect', 'aurora');
+
     /* --- proxy view ----------------------------------------------------- */
     if (on('f_view')) {
       var view = [
@@ -346,6 +363,7 @@
     return {
       headers: out,
       warnings: warn,
+      userinfo: userinfo,
       preview: {
         name: val('f_svcname') || s('defService'),
         /* Profile-Title becomes the profile's label, which is the first line
@@ -359,8 +377,12 @@
         buyPlan: val('f_buyplan'),
         buyTraffic: val('f_buytraffic'),
         serverInfo: val('f_serverinfo') || 'Proxy',
+        interval: parseInt(val('f_interval'), 10) || 0,
         up: up, down: down, total: total, expire: expire,
-        userinfo: on('f_userinfo'),
+        /* The panel always emits Subscription-Userinfo, so the subscription
+           card is always part of the preview; the quota/expiry above are the
+           sample it renders. */
+        userinfo: true,
         hex: /^([0-9A-F]{6}|[0-9A-F]{8})$/.test(hexRaw) ? hexRaw : '7C5CFF',
         variant: variant,
         pureblack: on('f_pureblack'),
@@ -368,6 +390,7 @@
         bg: on('f_bg') ? val('f_bgurl') : '',
         bgOpacity: parseInt(val('f_bgop'), 10) || 10,
         ring: on('f_ring') ? ['f_ring1', 'f_ring2', 'f_ring3'].map(function (i) { return val(i); }) : null,
+        heroEffect: on('f_heroeffect'),
         widgets: on('f_widgets') ? chosen : ['networkSpeed', 'outboundModeV2', 'trafficUsage'],
         view: on('f_view') ? {
           type: val('f_view_type'), sort: val('f_view_sort'), layout: val('f_view_layout'),
@@ -379,8 +402,11 @@
 
   /* ---------------------------------------------------------- code output */
 
-  function httpBlock(headers) {
+  function httpBlock(headers, uinfo) {
     var lines = ['HTTP/1.1 200 OK', 'Content-Type: application/yaml; charset=utf-8'];
+    /* Subscription-Userinfo is part of the response the client receives, but
+       the backend fills it per user — it is shown, never configured here. */
+    if (uinfo) lines.push('Subscription-Userinfo: ' + uinfo);
     headers.forEach(function (h) { lines.push(h[0] + ': ' + h[1]); });
     return lines.join('\n');
   }
@@ -395,7 +421,7 @@
     'announce': 1
   };
 
-  function nginxBlock(headers) {
+  function nginxBlock(headers, uinfo) {
     var q = function (v) { return v.replace(/\\/g, '\\\\').replace(/"/g, '\\"'); };
     var hide = headers
       .filter(function (h) { return PANEL_HEADERS[h[0].toLowerCase()]; })
@@ -408,6 +434,8 @@
       (hide.length ? '    # ' + s('sniHide') + '\n' + hide.join('\n') + '\n\n' : '') +
       '    # ' + s('sniAdd') + '\n' +
       add.join('\n') + '\n\n' +
+      '    # ' + s('sniUserinfo') + '\n' +
+      '    # add_header Subscription-Userinfo "' + q(uinfo) + '" always;\n\n' +
       '    # ' + s('sniPort') + '\n' +
       '    proxy_pass http://127.0.0.1:8000;\n' +
       '    proxy_set_header Host $host;\n' +
@@ -416,7 +444,7 @@
       '}';
   }
 
-  function caddyBlock(headers) {
+  function caddyBlock(headers, uinfo) {
     var body = headers.map(function (h) {
       return '        ' + h[0] + ' "' + h[1].replace(/"/g, '\\"') + '"';
     }).join('\n');
@@ -424,35 +452,44 @@
        copy is overwritten and there is nothing to hide. */
     return '# ' + s('sniCaddyPath') + '\n' +
       'handle /sub* {\n    header {\n' + body + '\n    }\n' +
+      '    # ' + s('sniUserinfo') + '\n' +
+      '    # header Subscription-Userinfo "' + uinfo.replace(/"/g, '\\"') + '"\n' +
       '    # ' + s('sniPort') + '\n' +
       '    reverse_proxy 127.0.0.1:8000\n}';
   }
 
-  function phpBlock(headers) {
+  function phpBlock(headers, uinfo) {
     var body = headers.map(function (h) {
       return "header('" + h[0] + ": " + h[1].replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "');";
     }).join('\n');
     return '<?php\n' +
       "header('Content-Type: application/yaml; charset=utf-8');\n" +
       body + '\n\n' +
+      '// ' + s('sniUserinfo') + '\n' +
+      "// header('Subscription-Userinfo: " + uinfo.replace(/'/g, "\\'") + "');\n\n" +
       'readfile(__DIR__ . \'/config.yaml\');';
   }
 
-  function goBlock(headers) {
+  function goBlock(headers, uinfo) {
     var body = headers.map(function (h) {
       return '\th.Set("' + h[0] + '", "' + h[1].replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '")';
     }).join('\n');
     return 'func writeSubscription(w http.ResponseWriter, body []byte) {\n' +
       '\th := w.Header()\n' +
       '\th.Set("Content-Type", "application/yaml; charset=utf-8")\n' +
-      body + '\n\tw.WriteHeader(http.StatusOK)\n\t_, _ = w.Write(body)\n}';
+      body + '\n' +
+      '\t// ' + s('sniUserinfo') + '\n' +
+      '\t// h.Set("Subscription-Userinfo", "' + uinfo.replace(/"/g, '\\"') + '")\n' +
+      '\tw.WriteHeader(http.StatusOK)\n\t_, _ = w.Write(body)\n}';
   }
 
-  function pyBlock(headers) {
+  function pyBlock(headers, uinfo) {
     var body = headers.map(function (h) {
       return '    "' + h[0] + '": "' + h[1].replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '",';
     }).join('\n');
     return 'SUBSCRIPTION_HEADERS = {\n' + body + '\n}\n\n' +
+      '# ' + s('sniUserinfo') + '\n' +
+      '# SUBSCRIPTION_HEADERS["Subscription-Userinfo"] = "' + uinfo.replace(/"/g, '\\"') + '"\n\n' +
       '@app.get("/sub")\n' +
       'def sub() -> Response:\n' +
       '    return Response(\n' +
@@ -460,6 +497,134 @@
       '        media_type="application/yaml",\n' +
       '        headers=SUBSCRIPTION_HEADERS,\n' +
       '    )';
+  }
+
+  /* ------------------------------------------------------- Remnawave out */
+
+  /* Remnawave emits Subscription-Userinfo and Content-Disposition itself, so
+     the panel artefacts must not repeat them, or the client sees two values. */
+  function rwHeaderSet(headers) {
+    return headers.filter(function (h) {
+      var n = h[0].toLowerCase();
+      return n !== 'subscription-userinfo' && n !== 'content-disposition';
+    });
+  }
+
+  function rwOpts() {
+    var locales = [];
+    if (on('f_rw_en')) locales.push('en');
+    if (on('f_rw_ru')) locales.push('ru');
+    if (!locales.length) locales.push('en');
+    return {
+      fallback: val('f_rw_fallback') || 'CLASH',
+      disableHwid: on('f_rw_hwid'),
+      locales: locales,
+      suburl: val('f_rw_suburl')
+    };
+  }
+
+  /* Subscription Response Rules. Rules match top to bottom and the first hit
+     wins; if none match while SRR is on, the panel answers 403 — so the config
+     is always the ReClash rule plus a catch-all fallback, never just one. */
+  function srrBlock(headers, opts) {
+    var mods = {
+      headers: rwHeaderSet(headers).map(function (h) { return { key: h[0], value: h[1] }; }),
+      applyHeadersToEnd: true,
+      additionalExtendedClientsRegex: ['^ReClash/']
+    };
+    if (opts.disableHwid) mods.disableHwidCheck = true;
+    var reclash = {
+      name: 'ReClash',
+      description: 'Serve mihomo with ReClash provider headers to ReClash and FlClashX clients.',
+      enabled: true,
+      operator: 'OR',
+      conditions: [
+        { headerName: 'user-agent', operator: 'STARTS_WITH', value: 'ReClash/', caseSensitive: false },
+        { headerName: 'user-agent', operator: 'STARTS_WITH', value: 'FlClashX/', caseSensitive: false }
+      ],
+      responseType: 'MIHOMO',
+      responseModifications: mods
+    };
+    var fallback = {
+      name: 'All other clients',
+      description: 'Catch-all so non-ReClash clients are not answered with 403.',
+      enabled: true,
+      operator: 'AND',
+      conditions: [],
+      responseType: opts.fallback
+    };
+    return JSON.stringify({ version: '1', rules: [reclash, fallback] }, null, 2);
+  }
+
+  /* The same header set for the panel's global "Response Headers", where the
+     rwEncodeBase64: transform is available — so non-ASCII goes as readable
+     text rather than as our own base64: payload. */
+  function rwHeadersBlock(headers) {
+    var set = rwHeaderSet(headers);
+    if (!set.length) return '';
+    return set.map(function (h) {
+      var v = h[1];
+      if (v.indexOf('base64:') === 0) return h[0] + ': rwEncodeBase64:' + b64decode(v.slice(7));
+      return h[0] + ': ' + v;
+    }).join('\n');
+  }
+
+  /* A LocalizedText is an object whose keys are all two-letter codes mapping
+     to strings — that lets the walker narrow only real translations and leave
+     branding URLs and config flags untouched. */
+  function isLocalized(o) {
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return false;
+    var ks = Object.keys(o);
+    if (!ks.length) return false;
+    return ks.every(function (k) { return /^[a-z]{2}$/.test(k) && typeof o[k] === 'string'; });
+  }
+
+  function narrowLocales(node, locales) {
+    if (Array.isArray(node)) { node.forEach(function (x) { narrowLocales(x, locales); }); return; }
+    if (!node || typeof node !== 'object') return;
+    Object.keys(node).forEach(function (k) {
+      var v = node[k];
+      if (isLocalized(v)) {
+        var picked = {};
+        locales.forEach(function (l) { picked[l] = v[l] !== undefined ? v[l] : (v.en || v[Object.keys(v)[0]]); });
+        node[k] = picked;
+      } else {
+        narrowLocales(v, locales);
+      }
+    });
+  }
+
+  /* Subscription-page config: the shipped ReClash template with the provider's
+     branding folded in and every translation narrowed to the chosen locales,
+     so the saved config never declares a locale it cannot fill. */
+  function subpageBlock(opts, preview) {
+    if (!RWTPL) return '';
+    var cfg = JSON.parse(JSON.stringify(RWTPL));
+    cfg.locales = opts.locales.slice();
+    var title = preview.name || cfg.brandingSettings.title;
+    cfg.brandingSettings.title = title;
+    cfg.brandingSettings.logoUrl = preview.logo || '';
+    cfg.brandingSettings.supportUrl = preview.support || '';
+    cfg.baseSettings.metaTitle = title;
+    narrowLocales(cfg, opts.locales);
+    return JSON.stringify(cfg, null, 2);
+  }
+
+  /* The panel can't be probed from the browser — fetch cannot set User-Agent
+     and cross-origin reads are blocked — so the check is a copy-paste curl the
+     provider runs themselves: expect 200, a mihomo YAML body, and the
+     Subscription-Userinfo the panel adds. */
+  function curlBlock(opts) {
+    var url = opts.suburl || 'https://panel.example.com/api/sub/<id>';
+    var q = "'" + url.replace(/'/g, "'\\''") + "'";
+    return [
+      '# Expect: 200, Content-Type application/yaml, Subscription-Userinfo, ReClash-* headers.',
+      '# FlClashX compatibility user-agent (the ReClash default):',
+      "curl -sS -D - -o /dev/null -A 'FlClashX/v0.4.2' " + q,
+      '',
+      '# Native ReClash user-agent:',
+      "curl -sS -D - -o /dev/null -A 'ReClash/1.0' " + q
+    ].join('\n');
   }
 
   /* ------------------------------------------------------------- preview */
@@ -696,7 +861,7 @@
              with a typo in it leaves the client showing its fallback, and the
              preview has to show the same thing rather than an empty square. */
           '<div class="service__logo">' + esc(p.name.slice(0, 1).toUpperCase()) +
-          (p.logo ? '<img src="' + esc(p.logo) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
+          (p.logo ? '<img src="' + esc(p.logo) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
           '</div>' +
           '<div style="min-width:0"><div class="service__name">' + esc(p.name) + '</div>' +
           '<div class="tile__sub">user-4821</div></div></div></div>';
@@ -819,7 +984,15 @@
     cart: '<circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.4 10.2a1.8 1.8 0 0 0 1.8 1.4h8.3a1.8 1.8 0 0 0 1.8-1.4L21 7.5H6"/>',
     support: '<path d="M5 13.5a7 7 0 0 1 14 0"/><rect x="2.5" y="13" width="4" height="6.5" rx="1.7"/><rect x="17.5" y="13" width="4" height="6.5" rx="1.7"/><path d="M19.5 19.5a3 3 0 0 1-3 3h-2.2"/>',
     pause: '<path d="M9.2 5v14M14.8 5v14"/>',
-    bolt: '<path d="M13.2 2.6 5 13.8h5.9l-.9 7.6 8.2-11.2h-6z"/>'
+    bolt: '<path d="M13.2 2.6 5 13.8h5.9l-.9 7.6 8.2-11.2h-6z"/>',
+    /* The orb speed pair: south for download, north for upload. */
+    sdown: '<path d="M12 4.5v15M6 13.5l6 6 6-6"/>',
+    sup: '<path d="M12 19.5v-15M6 10.5l6-6 6 6"/>',
+    /* The provider card's cloud fallback (no serviceLogo) and the system
+       card's memory section title. */
+    cloud: '<path d="M7 18.5a4 4 0 0 1-.5-7.97 5.5 5.5 0 0 1 10.6-1.03A3.75 3.75 0 0 1 17 18.5z"/>',
+    mem: '<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5" rx="0.6"/>'
+      + '<path d="M9 6V3.5M12 6V3.5M15 6V3.5M9 20.5V18M12 20.5V18M15 20.5V18M6 9H3.5M6 12H3.5M6 15H3.5M20.5 9H18M20.5 12H18M20.5 15H18"/>'
   };
 
   function hIcon(k, cls) {
@@ -839,7 +1012,9 @@
   var HERO_NODE = { ip: '185.146.173.42', delay: 42, stack: 2 };
 
   function heroOrb(p, ring) {
-    return '<div class="horb" style="--r1:' + ring[0] + ';--r2:' + ring[1] + ';--r3:' + ring[2] + '">' +
+    return '<div class="horb' + (p.heroEffect ? ' horb--aurora' : '') +
+      '" style="--r1:' + ring[0] + ';--r2:' + ring[1] + ';--r3:' + ring[2] + '">' +
+      (p.heroEffect ? '<span class="horb__aurora" aria-hidden="true"></span>' : '') +
       '<span class="horb__glow" aria-hidden="true"></span>' +
       '<span class="horb__rim" aria-hidden="true"></span>' +
       /* The client paints mark_mono.png in the core when there is no logo —
@@ -848,7 +1023,7 @@
          the markup, the image on top, and it takes itself out on error. */
       '<span class="horb__core">' + APP_MARK +
       (p.logo
-        ? '<img class="horb__logo" src="' + esc(p.logo) + '" alt="" onerror="this.remove()">'
+        ? '<img class="horb__logo" src="' + esc(p.logo) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">'
         : '') +
       '</span></div>';
   }
@@ -917,6 +1092,20 @@
     return '<div class="hacts">' + acts + '</div>';
   }
 
+  /* The download/upload readout under the caption once connected — a centred
+     pair of arrow + monospace value + unit, exactly the _SpeedEntry row in
+     hero_connect_orb_slot.dart. */
+  function heroSpeed() {
+    function entry(icon, val) {
+      return '<span class="hspeed__e">' + hIcon(icon) +
+        '<b class="mono">' + esc(val) + '</b>' +
+        '<span class="hspeed__u">' + esc(s('heroSpeedUnit')) + '</span></span>';
+    }
+    return '<div class="hspeed">' +
+      entry('sdown', s('heroDownVal')) + entry('sup', s('heroUpVal')) + '</div>';
+  }
+
+
   function renderHero(p, sc) {
     /* hasSub in hero_connect.dart: no quota and no expiry means there is
        nothing to put in the strip, and an announcement takes its place. */
@@ -926,6 +1115,7 @@
       '<div class="hcap">' +
       '<p class="hcap__t">' + esc(p.activeText || s('heroProtected')) + '</p>' +
       '<p class="hcap__s">' + esc(s('heroSince').replace('{n}', s('heroDur'))) + '</p>' +
+      heroSpeed() +
       '</div>' +
       heroServer(p, sc) +
       (hasSub
@@ -945,6 +1135,10 @@
   var titleEl = document.getElementById('pv-title');
   var titleDash = titleEl ? titleEl.textContent : '';
 
+  /* Guards background loads: a fetch that resolves after the URL changed
+     must not overwrite the current one. Bumped on every bg (re)apply. */
+  var bgToken = 0;
+
   function renderPreview(p) {
     if (!screenEl || !phoneEl) return;
     var sc = scheme('#' + p.hex, p.theme ? p.variant : 'tonalspot', p.theme && p.pureblack);
@@ -963,9 +1157,39 @@
     var bgEl = document.getElementById('pv-bg');
     if (bgEl) {
       if (p.bg) {
-        bgEl.style.backgroundImage = 'url("' + p.bg.replace(/"/g, '') + '")';
-        bgEl.style.opacity = String(Math.max(1, Math.min(100, p.bgOpacity)) / 100);
+        /* The background art is the one thing in the preview that reaches out
+           to a host the provider typed. On the blocked or throttled networks
+           this audience lives on, a dead host would otherwise pin the tab's
+           loading indicator for the browser's full image timeout — which is
+           exactly the "#cfg= link takes forever to load" report. So fetch it
+           out of band: paint it only once it actually decodes, drop it on
+           error or after 6s, and ignore a load that resolves after the URL
+           has already changed. A missing image just leaves the flat scheme. */
+        var url = p.bg.replace(/"/g, '');
+        var op = String(Math.max(1, Math.min(100, p.bgOpacity)) / 100);
+        var token = ++bgToken;
+        bgEl.style.backgroundImage = '';
+        bgEl.style.opacity = '0';
+        var img = new Image();
+        var settled = false;
+        var timer = setTimeout(function () {
+          if (settled) return;
+          settled = true;
+          img.onload = img.onerror = null;
+          img.src = '';
+        }, 6000);
+        img.onload = function () {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          if (token !== bgToken) return;
+          bgEl.style.backgroundImage = 'url("' + url + '")';
+          bgEl.style.opacity = op;
+        };
+        img.onerror = function () { settled = true; clearTimeout(timer); };
+        img.src = url;
       } else {
+        bgToken++;
         bgEl.style.backgroundImage = '';
         bgEl.style.opacity = '0';
       }
@@ -1020,6 +1244,10 @@
 
   var warnBox = document.getElementById('builder-warnings');
   var outputs = {
+    srr: document.getElementById('out-srr'),
+    rwh: document.getElementById('out-rwh'),
+    subpage: document.getElementById('out-subpage'),
+    curl: document.getElementById('out-curl'),
     http: document.getElementById('out-http'),
     nginx: document.getElementById('out-nginx'),
     caddy: document.getElementById('out-caddy'),
@@ -1033,12 +1261,21 @@
     var res = collect();
     var h = res.headers;
 
-    if (outputs.http) outputs.http.textContent = httpBlock(h);
-    if (outputs.nginx) outputs.nginx.textContent = h.length ? nginxBlock(h) : '';
-    if (outputs.caddy) outputs.caddy.textContent = h.length ? caddyBlock(h) : '';
-    if (outputs.php) outputs.php.textContent = h.length ? phpBlock(h) : '';
-    if (outputs.go) outputs.go.textContent = h.length ? goBlock(h) : '';
-    if (outputs.py) outputs.py.textContent = h.length ? pyBlock(h) : '';
+    /* Remnawave artefacts stay valid even with no headers: SRR always needs
+       its ReClash rule plus the catch-all, the page is a full template, and
+       the check is a command — so these render unconditionally. */
+    var rw = rwOpts();
+    if (outputs.srr) outputs.srr.textContent = srrBlock(h, rw);
+    if (outputs.rwh) outputs.rwh.textContent = rwHeadersBlock(h);
+    if (outputs.subpage) outputs.subpage.textContent = subpageBlock(rw, res.preview);
+    if (outputs.curl) outputs.curl.textContent = curlBlock(rw);
+
+    if (outputs.http) outputs.http.textContent = httpBlock(h, res.userinfo);
+    if (outputs.nginx) outputs.nginx.textContent = h.length ? nginxBlock(h, res.userinfo) : '';
+    if (outputs.caddy) outputs.caddy.textContent = h.length ? caddyBlock(h, res.userinfo) : '';
+    if (outputs.php) outputs.php.textContent = h.length ? phpBlock(h, res.userinfo) : '';
+    if (outputs.go) outputs.go.textContent = h.length ? goBlock(h, res.userinfo) : '';
+    if (outputs.py) outputs.py.textContent = h.length ? pyBlock(h, res.userinfo) : '';
 
     if (counter) {
       var size = h.reduce(function (a, x) { return a + x[0].length + x[1].length + 4; }, 0);

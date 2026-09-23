@@ -124,9 +124,15 @@ def check(path):
     return c, src
 
 
+# Every rendered page, including the noindex mock-subscriptions page (it still
+# has to be structurally sound and language-parallel — it is just kept out of
+# the sitemap).
+PAGE_FILES = ("index.html", "gallery.html", "docs.html", "headers.html",
+              "reference.html", "download.html", "start.html", "mock-subs.html")
+
 pages = {}
 for lang in ("ru", "en"):
-    for f in ("index.html", "headers.html", "download.html", "start.html"):
+    for f in PAGE_FILES:
         p = os.path.join(DIST, lang, f)
         if not os.path.exists(p):
             fails.append("missing %s/%s" % (lang, f))
@@ -134,7 +140,7 @@ for lang in ("ru", "en"):
         pages[(lang, f)] = check(p)
 
 # ---- cross-language parity -------------------------------------------------
-for f in ("index.html", "headers.html", "download.html", "start.html"):
+for f in PAGE_FILES:
     if (("ru", f) not in pages) or (("en", f) not in pages):
         continue
     ru, en = pages[("ru", f)][0], pages[("en", f)][0]
@@ -213,37 +219,97 @@ for lang in ("ru", "en"):
 
     # home.js / core.js ↔ index.html
     src = pages[(lang, "index.html")][1]
-    for need in ('data-dashboard-demo', 'class="live-panel__viewport"',
-                 'href="headers.html#builder"',
+    for need in ('href="headers.html#builder"',
                  # the first-run panel mounts the same converter core.js wires
                  'id="get-started"', 'class="deeplink"', 'data-scheme="reclash"',
-                 'class="deeplink__out"', "data-make"):
+                 'class="deeplink__out"', "data-make",
+                 # the two audience doors that open the page
+                 'class="paths"', 'class="path path--user',
+                 'class="path path--provider'):
         if need not in src:
             fails.append("%s/index.html: missing %s" % (lang, need))
-    for key in ("default", "nebula", "mono"):
-        if src.count('data-demo-preset="%s"' % key) != 1:
-            fails.append("%s/index.html: dashboard preset %s missing or duplicated" % (lang, key))
-        if src.count('data-demo-panel="%s"' % key) != 1:
-            fails.append("%s/index.html: dashboard panel %s missing or duplicated" % (lang, key))
-    if 'data-demo-preset="default" aria-pressed="true"' not in src:
-        fails.append("%s/index.html: dashboard default preset is not pressed" % lang)
-    if 'data-demo-panel="default"' not in src or 'data-demo-panel="default" data-demo-label=' not in src:
-        fails.append("%s/index.html: dashboard default panel state is invalid" % lang)
-    for stale in ('class="dpi__stage"', 'id="dpi-strings"', 'data-mode="split"'):
+    for stale in ('class="dpi__stage"', 'id="dpi-strings"', 'data-mode="split"',
+                  'data-dashboard-demo', 'class="live-panel', 'data-demo-preset',
+                  'class="marquee'):
         if stale in src:
-            fails.append("%s/index.html: stale DPI demo hook %s" % (lang, stale))
+            fails.append("%s/index.html: stale demo hook %s" % (lang, stale))
     if src.count('class="launch__step reveal"') != 3:
         fails.append("%s/index.html: %d first-run steps, expected 3"
                      % (lang, src.count('class="launch__step reveal"')))
 
 # ---- site-wide files -------------------------------------------------------
-for f in ("index.html", "404.html", "robots.txt", "sitemap.xml", ".nojekyll"):
+for f in ("index.html", "404.html", "robots.txt", "sitemap.xml", ".nojekyll",
+          "site.webmanifest"):
     if not os.path.exists(os.path.join(DIST, f)):
         fails.append("missing dist/%s" % f)
 
 sm = open(os.path.join(DIST, "sitemap.xml"), encoding="utf-8").read()
-if sm.count("<loc>") != 8:
-    fails.append("sitemap has %d <loc>, expected 8" % sm.count("<loc>"))
+if sm.count("<loc>") != 14:
+    fails.append("sitemap has %d <loc>, expected 14" % sm.count("<loc>"))
+
+# ---- mock subscriptions ----------------------------------------------------
+# dist/_headers, the profile bodies and the manifest must all agree, and the
+# page must show one card per subscription.
+import json as _json
+hp = os.path.join(DIST, "_headers")
+if not os.path.exists(hp):
+    fails.append("missing dist/_headers")
+else:
+    paths = re.findall(r"^(/mock/[a-z0-9_-]+)$", open(hp, encoding="utf-8").read(), re.M)
+    if not paths:
+        fails.append("dist/_headers has no /mock/ blocks")
+    for mp in paths:
+        body = os.path.join(DIST, mp.lstrip("/"))
+        if not (os.path.exists(body) and os.path.getsize(body) > 0):
+            fails.append("mock body missing/empty: %s" % mp)
+    mf = os.path.join(DIST, "mock", "_headers.json")
+    try:
+        man = _json.load(open(mf, encoding="utf-8"))
+    except (OSError, ValueError):
+        man = None
+        fails.append("mock manifest missing or invalid: dist/mock/_headers.json")
+    if man is not None and set(man) != set(paths):
+        fails.append("mock manifest/_headers path mismatch: %s vs %s"
+                     % (sorted(man), sorted(paths)))
+    for mp, hdrs in (man or {}).items():
+        for need in ("Content-Type", "Profile-Title"):
+            if need not in hdrs:
+                fails.append("%s: header %s missing" % (mp, need))
+    for lang in ("ru", "en"):
+        pg = pages.get((lang, "mock-subs.html"))
+        if pg and pg[1].count('class="mock ') != len(paths):
+            fails.append("%s/mock-subs.html: %d cards, expected %d"
+                         % (lang, pg[1].count('class="mock '), len(paths)))
+
+# ---- structured data (JSON-LD) + robots + manifest ------------------------
+for (lang, f), (c, src) in pages.items():
+    blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', src, re.S)
+    if len(blocks) != 1:
+        fails.append("%s/%s: %d ld+json blocks, expected 1" % (lang, f, len(blocks)))
+    else:
+        try:
+            graph = json.loads(blocks[0].replace("<\\/", "</")).get("@graph", [])
+        except ValueError as e:
+            graph = []
+            fails.append("%s/%s: ld+json does not parse: %s" % (lang, f, e))
+        types = {n.get("@type") for n in graph}
+        for need in ("Organization", "WebSite", "WebPage", "BreadcrumbList"):
+            if need not in types:
+                fails.append("%s/%s: ld+json missing %s" % (lang, f, need))
+        want = {"index.html": "SoftwareApplication", "start.html": "FAQPage",
+                "docs.html": "TechArticle"}.get(f)
+        if want and want not in types:
+            fails.append("%s/%s: ld+json missing %s" % (lang, f, want))
+    marker = "noindex" if f == "mock-subs.html" else "index, follow"
+    if ('<meta name="robots" content="%s' % marker) not in src:
+        fails.append("%s/%s: robots meta not %r" % (lang, f, marker))
+
+try:
+    mani = json.load(open(os.path.join(DIST, "site.webmanifest"), encoding="utf-8"))
+    if not mani.get("icons"):
+        fails.append("site.webmanifest has no icons")
+except (OSError, ValueError) as e:
+    fails.append("site.webmanifest invalid: %s" % e)
 
 # every CSS/JS referenced by a page exists, and nothing in assets is orphaned
 refs = set()

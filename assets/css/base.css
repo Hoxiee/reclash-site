@@ -75,6 +75,12 @@ html {
   /* The page is dark, so the browser's own chrome has to be too: without this
      the date picker, the scrollbars and the select popup all arrive white. */
   color-scheme: dark;
+  /* The ink also lives on the root, not only on <body>. During a cross-document
+     View Transition the old and new root snapshots crossfade, so mid-way the
+     combined coverage dips below 100% and whatever is *behind* them shows
+     through. If that is the browser canvas it flashes pale-grey on every
+     navigation; painting the root --ink means the gap stays ink instead. */
+  background: var(--ink);
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: 6.5rem;
@@ -610,6 +616,22 @@ hr {
 .chip--live {
   color: var(--cyan);
   border-color: color-mix(in oklab, var(--cyan) 45%, transparent);
+}
+
+/* A chip that is a link to the paired page (builder <-> reference): tinted like
+   an action and lit on hover, so it reads as "go here" among the plain stat
+   chips beside it. */
+.chip--link {
+  color: var(--violet-bright, var(--violet));
+  border-color: color-mix(in oklab, var(--violet) 45%, transparent);
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease),
+    background 0.16s var(--ease);
+}
+
+.chip--link:hover {
+  color: var(--text);
+  border-color: color-mix(in oklab, var(--violet) 70%, transparent);
+  background: color-mix(in oklab, var(--violet) 16%, transparent);
 }
 
 .chip__dot {
