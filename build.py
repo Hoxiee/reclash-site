@@ -17,7 +17,7 @@ from gen import layout, ui  # noqa: E402
 from gen.layout import Ctx  # noqa: E402
 from gen import (  # noqa: E402
     page_home, page_docs, page_headers, page_downloads, page_start,
-    page_gallery, page_mocksubs, mocks,
+    page_gallery, page_mocksubs, page_report, mocks,
 )
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -35,6 +35,7 @@ RENDERERS = {
     "download": page_downloads.render,
     "start": page_start.render,
     "mock": page_mocksubs.render,
+    "report": page_report.render,
 }
 
 
@@ -370,6 +371,15 @@ def build_mocks(base_url):
         for k, v in pairs:
             lines.append("  %s: %s" % (k, v.replace("{BASE}", base_url)))
         lines.append("")
+    # The report decoder gets a strict, network-free policy header on both
+    # localized copies. frame-ancestors is header-only (ignored in the page's
+    # own <meta> CSP), so it lives here; the rest mirrors page_report.CSP.
+    lines.append("/*/report.html")
+    lines.append("  Content-Security-Policy: %s; frame-ancestors 'none'"
+                 % page_report.CSP)
+    lines.append("  X-Content-Type-Options: nosniff")
+    lines.append("  Referrer-Policy: no-referrer")
+    lines.append("")
     write(os.path.join(DIST, "_headers"), "\n".join(lines))
     write(os.path.join(DIST, "mock", "_headers.json"),
           _json.dumps(manifest, ensure_ascii=False, indent=0))

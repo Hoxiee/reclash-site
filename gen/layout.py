@@ -22,6 +22,7 @@ FILE = {
     "download": "download.html",
     "start": "start.html",
     "mock": "mock-subs.html",
+    "report": "report.html",
 }
 
 # A nav item may open a hover/focus sub-menu instead of being a plain link.
@@ -36,6 +37,7 @@ SUBNAV = {
         ("reference", "Заголовки", "Headers"),
         ("headers", "Конструктор", "Builder"),
         ("mock", "Мок-подписки", "Mock subs"),
+        ("report", "Отчёт подписки", "Subscription report"),
     ),
 }
 

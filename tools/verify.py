@@ -128,7 +128,8 @@ def check(path):
 # has to be structurally sound and language-parallel — it is just kept out of
 # the sitemap).
 PAGE_FILES = ("index.html", "gallery.html", "docs.html", "headers.html",
-              "reference.html", "download.html", "start.html", "mock-subs.html")
+              "reference.html", "download.html", "start.html", "mock-subs.html",
+              "report.html")
 
 pages = {}
 for lang in ("ru", "en"):
@@ -184,6 +185,19 @@ for lang in ("ru", "en"):
         r'id="builder-strings">(.*?)</script>', src, re.S).group(1).replace("<\\/", "</"))
     for k in keys - set(payload):
         fails.append("%s/headers.html: builder-strings missing %r" % (lang, k))
+
+    # report.js ↔ report.html
+    src = pages[(lang, "report.html")][1]
+    have = ids_in(src)
+    rj = js("report.js")
+    for i in set(re.findall(r"getElementById\('([A-Za-z0-9_-]+)'\)", rj)):
+        if i not in have:
+            fails.append("%s/report.html: report.js needs #%s" % (lang, i))
+    keys = set(re.findall(r"\bs\('([A-Za-z0-9_]+)'\)", rj))
+    payload = json.loads(re.search(
+        r'id="report-strings">(.*?)</script>', src, re.S).group(1).replace("<\\/", "</"))
+    for k in keys - set(payload):
+        fails.append("%s/report.html: report-strings missing %r" % (lang, k))
 
     # downloads.js ↔ download.html
     src = pages[(lang, "download.html")][1]
@@ -300,7 +314,7 @@ for (lang, f), (c, src) in pages.items():
                 "docs.html": "TechArticle"}.get(f)
         if want and want not in types:
             fails.append("%s/%s: ld+json missing %s" % (lang, f, want))
-    marker = "noindex" if f == "mock-subs.html" else "index, follow"
+    marker = "noindex" if f in ("mock-subs.html", "report.html") else "index, follow"
     if ('<meta name="robots" content="%s' % marker) not in src:
         fails.append("%s/%s: robots meta not %r" % (lang, f, marker))
 
