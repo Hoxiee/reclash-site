@@ -8,7 +8,7 @@
 "ReClash-Widgets": "networkSpeed,trafficUsage,serviceInfo,changeServerButton",
 "ReClash-SupportURL": "https://t.me/ReClashApp",
 "ReClash-AutoUpdateInterval": "720",
-"Subscription-Userinfo": "upload=21474836480; download=26843545600; total=214748364800; expire=1792258719"
+"Subscription-Userinfo": "upload=21474836480; download=26843545600; total=214748364800; expire=1792267487"
 },
 "/mock/expiring": {
 "Content-Type": "text/yaml; charset=utf-8",
@@ -21,7 +21,7 @@
 "ReClash-BuyPlan": "https://t.me/ReClashApp",
 "ReClash-BuyTraffic": "https://t.me/ReClashApp",
 "ReClash-AutoUpdateInterval": "360",
-"Subscription-Userinfo": "upload=103079215104; download=107374182400; total=214748364800; expire=1790617119"
+"Subscription-Userinfo": "upload=103079215104; download=107374182400; total=214748364800; expire=1790625887"
 },
 "/mock/unlimited": {
 "Content-Type": "text/yaml; charset=utf-8",
@@ -50,6 +50,6 @@
 "ReClash-BuyPlan": "https://t.me/ReClashApp",
 "ReClash-Announce": "base64:0KLQtdGB0YLQvtCy0L7QtSDQvtCx0YrRj9Cy0LvQtdC90LjQtSDQv9GA0L7QstCw0LnQtNC10YDQsCDigJQg0Y3RgtC+INC80L7Qui3QtNCw0L3QvdGL0LUu",
 "ReClash-AutoUpdateInterval": "720",
-"Subscription-Userinfo": "upload=5368709120; download=8589934592; total=107374182400; expire=1798047519"
+"Subscription-Userinfo": "upload=5368709120; download=8589934592; total=107374182400; expire=1798056287"
 }
 }

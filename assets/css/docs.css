@@ -1975,6 +1975,11 @@
 /* ---------------------------------------------------------------- card */
 
 .hcard {
+  /* A grid item defaults to min-width: auto, so a wide code block or table in
+     the open panel forces the whole card past its track and doubles the page
+     width on mobile. min-width: 0 lets the card shrink to its column; the pre
+     and .table-wrap inside (both overflow-x: auto) then scroll on their own. */
+  min-width: 0;
   border: 1px solid var(--line);
   background: var(--ink-1);
   transition: border-color 0.16s var(--ease), background 0.16s var(--ease);

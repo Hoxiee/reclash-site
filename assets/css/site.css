@@ -270,13 +270,29 @@
     order: 3;
   }
 
+  /* The drawer is an opaque overlay anchored under the bar, not an in-flow
+     block. Opening it must not grow the sticky masthead — that reflows the
+     document and jogs the scroll — and its own solid ground stops page content
+     bleeding through the translucent bar behind it. It anchors to
+     .masthead__inner (position: relative via .shell) and carries the shell
+     gutter itself so its links line up under the brand. */
   .nav {
-    order: 5;
-    flex-basis: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 40;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    padding-bottom: var(--step-3);
+    margin: 0;
+    padding: 0 var(--gutter) var(--step-3);
+    background: var(--ink-1);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 24px 40px -24px rgba(0, 0, 0, 0.85);
+    max-height: calc(100dvh - 4.15rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     display: none;
   }
 
@@ -439,6 +455,25 @@
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) repeat(auto-fit, minmax(9rem, 1fr));
   gap: var(--step-4);
+}
+
+/* On phones the mixed 1.5fr + auto-fit(9rem) tracks have no room to lay out and
+   collapse into one another — the brand blurb crushes to one word per line and
+   the link columns overlap it. Stack instead: the brand spans the full width,
+   the three link groups sit two-up, then one-up on the narrowest screens. */
+@media (max-width: 720px) {
+  .footer__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer__grid > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 460px) {
+  .footer__grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .footer h3 {
