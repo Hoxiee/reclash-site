@@ -46,8 +46,10 @@ _FAULT = {
     ),
 }
 
-# fault -> banner tone. subscription/server are the only BAD tones; the app's
-# model refuses to reach them on thin data, so the banner never accuses wrongly.
+# fault -> banner tone. subscription/server are the only BAD tones. `server` is
+# sample-guarded (min attempts + contrasting egress), so it is never reached on
+# thin data; `subscription` fires only on an observed failed update and is
+# ordered after the local checks, so neither banner accuses the provider wrongly.
 _TONE = {
     "yourNetwork": "caution",
     "client": "caution",
@@ -136,6 +138,46 @@ def strings(ctx):
         "act_copy": t("Скопировать JSON", "Copy JSON"),
         "act_copy_done": t("Скопировано", "Copied"),
         "act_download": t("Скачать JSON", "Download JSON"),
+
+        # paste-and-match: the provider owns the subscription, so pasting its
+        # body here resolves each node-NN back to a real name — parsed in the
+        # browser, no network request, connect-src 'none' stays intact.
+        "map_title": t("Раскрыть имена узлов",
+                       "Reveal the node names"),
+        "map_lede": t(
+            "Псевдонимы node-NN анонимны специально. Если у вас есть сама "
+            "подписка (а у провайдера она есть), вставьте её тело — конфиг "
+            "Clash/mihomo или его base64 — и страница сопоставит отмеченные "
+            "узлы с реальными именами. Разбор идёт только в браузере: страница "
+            "по-прежнему не делает ни одного сетевого запроса, ссылку она не "
+            "открывает.",
+            "The node-NN aliases are anonymous on purpose. If you hold the "
+            "subscription itself (the provider does), paste its body — a "
+            "Clash/mihomo config or its base64 — and the page maps the flagged "
+            "nodes back to real names. Parsing happens only in the browser: the "
+            "page still makes no network request and never opens the link."),
+        "map_input_label": t("Тело подписки", "Subscription body"),
+        "map_placeholder": t(
+            "proxies:\n  - {name: …, type: vless, server: …}\nproxy-groups: …  "
+            "(или base64)",
+            "proxies:\n  - {name: …, type: vless, server: …}\nproxy-groups: …  "
+            "(or base64)"),
+        "map_go": t("Сопоставить", "Match"),
+        "map_example": t("Подставить пример", "Use the example"),
+        "map_col_real": t("реальный узел", "real node"),
+        "map_matched": t("Сопоставлено узлов", "Nodes matched"),
+        "map_parse_fail": t(
+            "Не удалось разобрать подписку. Ожидается YAML-конфиг Clash/mihomo "
+            "(секции proxies и proxy-groups) или его base64.",
+            "Could not parse the subscription. A Clash/mihomo YAML config "
+            "(proxies and proxy-groups) or its base64 is expected."),
+        "map_no_nodes": t(
+            "В подписке не нашлось узлов.", "No nodes found in the subscription."),
+        "conf_exact": t("точное", "exact"),
+        "conf_likely": t("вероятно", "likely"),
+        "conf_ambiguous": t("неоднозначно", "ambiguous"),
+        "conf_none": t("нет в подписке", "not in subscription"),
+        "cand_n": t("кандидатов: {n}", "candidates: {n}"),
 
         "yes": t("да", "yes"),
         "no": t("нет", "no"),

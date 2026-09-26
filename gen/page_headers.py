@@ -923,7 +923,7 @@ def section_builder(ctx):
             "or Python.",
         )) + "</p>"
         + '<p class="row gap-2 builder-head__meta">'
-        + chip("19 reclash-*") + chip(t("6 общих", "6 common"))
+        + chip("20 reclash-*") + chip(t("7 общих", "7 common"))
         + chip(t("11 псевдонимов", "11 aliases")) + chip("HWID")
         + '<a class="chip chip--link" href="' + ctx.page("reference") + '">'
         + esc(t("Заголовки →", "Headers →")) + "</a>"
@@ -1321,8 +1321,8 @@ def catalog(ctx):
          t("Стандартные заголовки Clash. Отдаёте их уже — ReClash подхватит без изменений.",
            "Standard Clash headers. If you already send them, ReClash picks them up unchanged.")),
         ("reclash", t("Заголовки ReClash", "ReClash headers"),
-         t("Девятнадцать заголовков, которые понимает только ReClash. Все необязательны.",
-           "Nineteen headers only ReClash understands. Every one is optional.")),
+         t("Двадцать заголовков, которые понимает только ReClash. Все необязательны.",
+           "Twenty headers only ReClash understands. Every one is optional.")),
         ("hwid", t("Устройства и HWID", "Devices and HWID"),
          t("Заголовки запроса от клиента и ответы на них.",
            "Request headers from the client and the responses to them.")),
@@ -1389,7 +1389,7 @@ def render_reference(ctx):
             "together is in the documentation.",
         )) + "</p>",
         '<p class="pagehead__meta">',
-        chip("19 reclash-*"), chip(t("6 общих", "6 common")),
+        chip("20 reclash-*"), chip(t("7 общих", "7 common")),
         chip("HWID"),
         '<a class="chip chip--link" href="' + ctx.page("docs") + '">'
         + esc(t("Документация →", "Documentation →")) + "</a>",

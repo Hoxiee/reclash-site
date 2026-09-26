@@ -26,6 +26,57 @@ CSP = ("default-src 'self'; connect-src 'none'; img-src 'self' data:; "
        "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; "
        "base-uri 'none'; form-action 'none'")
 
+# A worked Clash subscription behind the demo report: its groups/positions map
+# node-01/02/03 back to real names when pasted into the match box. Kept ASCII so
+# it stays language-neutral, and inert (type="text/plain") so it never executes.
+DEMO_SUB = """proxies:
+  - name: "NL Amsterdam A"
+    type: vless
+    server: ams-a.demo.example
+    port: 443
+    network: tcp
+  - name: "NL Amsterdam B"
+    type: vless
+    server: ams-b.demo.example
+    port: 443
+    network: tcp
+  - name: "NL Rotterdam C"
+    type: vless
+    server: rot-c.demo.example
+    port: 443
+    network: tcp
+  - name: "NL Amsterdam D"
+    type: vless
+    server: ams-d.demo.example
+    port: 443
+    network: ws
+  - name: "DE Frankfurt 1"
+    type: trojan
+    server: fra1.demo.example
+    port: 443
+  - name: "DE Frankfurt 2"
+    type: trojan
+    server: fra2.demo.example
+    port: 443
+proxy-groups:
+  - name: Netherlands
+    type: select
+    proxies:
+      - "NL Amsterdam A"
+      - "NL Amsterdam B"
+      - "NL Rotterdam C"
+      - "NL Amsterdam D"
+  - name: Germany
+    type: select
+    proxies:
+      - "DE Frankfurt 1"
+      - "DE Frankfurt 2"
+  - name: Premium
+    type: select
+    proxies:
+      - "NL Amsterdam B"
+"""
+
 
 def demo_blob():
     """The demo report as an `R1.` envelope: gzip + base64url, no padding."""
@@ -88,12 +139,51 @@ def render(ctx):
         '<button class="btn btn--sm" type="button" id="report-copy" '
         'data-done-label="%s">%s</button>'
         '<button class="btn btn--sm" type="button" id="report-download">%s</button>'
+        '<button class="btn btn--sm btn--ghost" type="button" id="report-reset">%s</button>'
         "</div>"
     ) % (
         esc(t("Скопировано", "Copied")),
         esc(t("Скопировать JSON", "Copy JSON")),
         esc(t("Скачать JSON", "Download JSON")),
+        esc(t("Загрузить другой отчёт", "Load another report")),
     )
+
+    mapping = (
+        '<div class="report__map" id="report-map" hidden>'
+        "<h3>%s</h3>"
+        '<p class="report__map-lede faint">%s</p>'
+        '<label class="report__cap" for="report-map-input">%s</label>'
+        '<textarea id="report-map-input" rows="4" spellcheck="false" '
+        'autocomplete="off" placeholder="%s"></textarea>'
+        '<div class="row gap-2 report__paste-act">'
+        '<button class="btn btn--sm" type="button" id="report-map-go">%s</button>'
+        '<button class="btn btn--sm btn--ghost" type="button" '
+        'id="report-map-example">%s</button>'
+        "</div>"
+        '<p class="report__map-msg faint" id="report-map-msg" '
+        'aria-live="polite"></p>'
+        "</div>"
+    ) % (
+        esc(t("Раскрыть имена узлов", "Reveal the node names")),
+        esc(t(
+            "Псевдонимы node-NN анонимны специально. Вставьте тело самой "
+            "подписки — конфиг Clash/mihomo или его base64 — и страница "
+            "сопоставит отмеченные узлы с реальными именами. Разбор идёт только "
+            "в браузере: ни одного сетевого запроса, ссылка не открывается.",
+            "The node-NN aliases are anonymous on purpose. Paste the body of "
+            "the subscription itself — a Clash/mihomo config or its base64 — "
+            "and the page maps the flagged nodes back to real names. Parsing "
+            "runs only in the browser: no network request, the link is never "
+            "opened.")),
+        esc(t("Тело подписки", "Subscription body")),
+        esc(t("proxies: … proxy-groups: …  (или base64)",
+              "proxies: … proxy-groups: …  (or base64)")),
+        esc(t("Сопоставить", "Match")),
+        esc(t("Подставить пример", "Use the example")),
+    )
+
+    demo_sub = ('<script type="text/plain" id="report-demo-sub">%s</script>'
+                % DEMO_SUB)
 
     body = (
         head
@@ -105,6 +195,8 @@ def render(ctx):
         '<div class="report__out" id="report-out" aria-live="polite"></div>'
         "%s"
         "%s"
+        "%s"
+        "%s"
         "</div></section>"
     ) % (
         esc(t("Для расшифровки отчёта нужен JavaScript — он работает только в "
@@ -113,6 +205,8 @@ def render(ctx):
               "browser and sends nothing anywhere.")),
         paste,
         actions,
+        mapping,
+        demo_sub,
         json_block("report-strings", report_copy.strings(ctx)),
     )
 

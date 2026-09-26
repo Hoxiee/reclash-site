@@ -27,6 +27,7 @@
    the way the rest of the site scopes its [hidden] overrides. */
 .report__paste[hidden],
 .report__actions[hidden],
+.report__map[hidden],
 .report .notice[hidden] {
   display: none;
 }
@@ -37,6 +38,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--step-2);
+  scroll-margin-top: 5.5rem;
 }
 
 .report__cap {
@@ -232,5 +234,207 @@
   }
   .report__env dd {
     margin-bottom: var(--step-2);
+  }
+}
+
+/* ----------------------------------------------------------- verdict pills */
+
+.report__headline {
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+}
+
+.report__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--step-1);
+  margin-top: var(--step-3);
+}
+
+.report__pill {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  padding: 0.22rem 0.55rem;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--ink-1) 60%, transparent);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------- bars */
+
+.report__bar {
+  height: 0.42rem;
+  width: 100%;
+  max-width: 100%;
+  background: color-mix(in oklab, var(--line) 55%, transparent);
+  overflow: hidden;
+}
+
+.report__bar-fill {
+  height: 100%;
+  min-width: 2px;
+  background: var(--text-dim);
+  transition: width 0.5s ease;
+}
+
+.report__bar-fill[data-tone="good"] { background: var(--cyan-bright); }
+.report__bar-fill[data-tone="warn"] { background: var(--amber); }
+.report__bar-fill[data-tone="bad"] { background: var(--magenta); }
+
+.report__fact .report__bar {
+  margin-top: 0.35rem;
+}
+
+/* ------------------------------------------------------- dial breakdown */
+
+.report__brk {
+  display: flex;
+  flex-direction: column;
+  gap: var(--step-2);
+  margin: var(--step-2) var(--step-3) var(--step-3);
+}
+
+.report__brk-row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 10rem) 1fr max-content;
+  align-items: center;
+  gap: var(--step-2);
+}
+
+.report__brk-k {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report__brk-v {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+/* ------------------------------------------------------- match / reveal */
+
+.report__map {
+  display: flex;
+  flex-direction: column;
+  gap: var(--step-2);
+  padding: var(--step-4);
+  border: 1px solid var(--line-soft);
+  border-left: 4px solid var(--cyan-bright);
+  background: var(--ink-1);
+}
+
+.report__map > h3 {
+  font-family: var(--display);
+  font-size: 1.15rem;
+}
+
+.report__map-lede {
+  max-width: 68ch;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.report__map textarea {
+  width: 100%;
+  resize: vertical;
+  padding: var(--step-3);
+  border: 1px solid var(--line);
+  background: var(--ink-1);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.report__map-msg {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  min-height: 1.1em;
+}
+
+.report__reveal-hit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  align-items: flex-start;
+}
+
+.report__reveal-name {
+  font-family: var(--mono);
+  font-size: 0.84rem;
+  color: var(--text);
+}
+
+.report__reveal-host {
+  font-size: 0.74rem;
+}
+
+.report__conf {
+  margin-top: 0.1rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.4rem;
+}
+
+.report__conf--exact {
+  border-color: var(--cyan-bright);
+  color: var(--cyan-bright);
+}
+
+.report__conf--likely {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.report__conf--ambiguous {
+  border-color: var(--amber);
+  color: var(--text-dim);
+}
+
+.report__conf--none {
+  border-color: var(--line);
+  color: var(--text-faint);
+}
+
+/* The reveal is the payoff of a match. Give the resolved cells a cyan accent
+   (echoing the match panel's own border) and a one-shot pulse as they arrive,
+   since render() scrolls the table up into view right after. scroll-margin
+   clears the sticky masthead so the heading is not hidden under it. */
+.report__block {
+  scroll-margin-top: 5.5rem;
+}
+
+td.report__reveal--on {
+  border-left: 2px solid color-mix(in oklab, var(--cyan-bright) 45%, var(--line));
+  background: color-mix(in oklab, var(--cyan-bright) 6%, transparent);
+}
+
+.report__reveal--on .report__reveal-hit {
+  animation: report-reveal 0.45s ease both;
+}
+
+@keyframes report-reveal {
+  from { opacity: 0; transform: translateY(0.3rem); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report__reveal--on .report__reveal-hit { animation: none; }
+}
+
+@media (max-width: 560px) {
+  .report__brk-row {
+    grid-template-columns: 1fr max-content;
+  }
+  .report__brk-row .report__bar {
+    grid-column: 1 / -1;
+    order: 3;
   }
 }

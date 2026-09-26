@@ -21,7 +21,7 @@ PLATFORMS = [
       "The build is not App Store signed: on first launch open it from the "
       "context menu → “Open”.")),
     ("linux", "linux", "Linux", "Linux",
-     ("AppImage (x64), DEB, RPM", "AppImage (x64), DEB, RPM"),
+     ("AppImage (x64), DEB, RPM, pacman", "AppImage (x64), DEB, RPM, pacman"),
      ["x64", "ARM64"],
      ("AppImage запускается без установки — не забудьте <code>chmod +x</code>. "
       "DEB и RPM ставят службу TUN сами.",
@@ -294,7 +294,7 @@ def section_verify(ctx):
                     t("копировать", "copy"), t("готово", "copied"))
         + "</div>"
         + "<div><h3>Windows (PowerShell)</h3>"
-        + codeblock("Get-FileHash .\\ReClash-setup.exe -Algorithm SHA256",
+        + codeblock("Get-FileHash .\\ReClash-<version>-windows-amd64-setup.exe -Algorithm SHA256",
                     t("копировать", "copy"), t("готово", "copied"))
         + "</div></div></details>"
         + "</div></section>"

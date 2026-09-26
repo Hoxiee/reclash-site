@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(ROOT, "dist")
 LANGS = ("ru", "en")
 
-DEFAULT_BASE_URL = "https://hoxiee.github.io/ReClash-site"
+DEFAULT_BASE_URL = "https://reclash.pages.dev"
 
 RENDERERS = {
     "index": page_home.render,
@@ -245,8 +245,7 @@ def robots(base_url):
 def webmanifest(base_url):
     """A minimal web app manifest so mobile search and PWA-aware crawlers can
     read the app's name, colours and icons. Icon/URL fields are absolute so the
-    manifest is correct regardless of the hosting sub-path (GitHub project
-    pages serve the site under /ReClash-site, not the domain root)."""
+    manifest stays correct regardless of the host or any hosting sub-path."""
     data = {
         "name": "ReClash",
         "short_name": "ReClash",

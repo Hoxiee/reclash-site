@@ -9,8 +9,8 @@ can never drift from the real envelope format.
 Timestamps are fixed, not `now()`, to keep every build reproducible.
 """
 
-_GENERATED_AT = 1758758400
-_WINDOW = 3600
+_GENERATED_AT = 1758758400000
+_WINDOW = 3600000
 
 
 def report():
@@ -93,20 +93,23 @@ def report():
                 {"key": "DE", "attempts": 90, "failure": 51},
             ],
         },
+        # alias is a severity rank (worst first), not a config position; the
+        # positionHint/groups/protocol triple is what the site's paste-and-match
+        # feature resolves against the demo subscription in page_report.
         "nodes": [
-            {"alias": "node-07", "protocol": "vless", "transport": "tcp",
+            {"alias": "node-01", "protocol": "vless", "transport": "tcp",
              "egressCountry": "NL", "groups": ["Netherlands", "Premium"],
-             "positionHint": 7, "attempts": 60, "failures": 58,
+             "positionHint": 2, "attempts": 60, "failures": 58,
              "successes": 2, "failStreak": 21, "dominantClass": "timeout",
              "delayBucketMs": 2000},
-            {"alias": "node-12", "protocol": "vless", "transport": "ws",
+            {"alias": "node-02", "protocol": "vless", "transport": "ws",
              "egressCountry": "NL", "groups": ["Netherlands"],
-             "positionHint": 12, "attempts": 45, "failures": 40,
+             "positionHint": 4, "attempts": 45, "failures": 40,
              "successes": 5, "failStreak": 9, "dominantClass": "reset",
              "delayBucketMs": 1000},
             {"alias": "node-03", "protocol": "trojan", "transport": "tcp",
              "egressCountry": "DE", "groups": ["Germany"],
-             "positionHint": 3, "attempts": 50, "failures": 31,
+             "positionHint": 1, "attempts": 50, "failures": 31,
              "successes": 19, "failStreak": 4, "dominantClass": "refused",
              "delayBucketMs": 500},
         ],

@@ -1,0 +1,5 @@
+# Cloudflare Pages project config (static site, no Functions).
+# Build command and env vars live in the Pages dashboard; this file
+# fixes the project name and the build-output directory.
+name = "reclash"
+pages_build_output_dir = "dist"

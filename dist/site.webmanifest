@@ -2,9 +2,9 @@
   "name": "ReClash",
   "short_name": "ReClash",
   "description": "An open-source mihomo client with rule-based routing, an Auto mode, a DPI bypass and provider theming.",
-  "id": "https://hoxiee.github.io/ReClash-site/",
-  "start_url": "https://hoxiee.github.io/ReClash-site/",
-  "scope": "https://hoxiee.github.io/ReClash-site/",
+  "id": "https://reclash.pages.dev/",
+  "start_url": "https://reclash.pages.dev/",
+  "scope": "https://reclash.pages.dev/",
   "display": "standalone",
   "background_color": "#07060b",
   "theme_color": "#07060b",
@@ -15,13 +15,13 @@
   ],
   "icons": [
     {
-      "src": "https://hoxiee.github.io/ReClash-site/assets/img/icon-192.png",
+      "src": "https://reclash.pages.dev/assets/img/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://hoxiee.github.io/ReClash-site/assets/img/icon-512.png",
+      "src": "https://reclash.pages.dev/assets/img/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"

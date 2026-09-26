@@ -481,13 +481,13 @@ def section_providers(ctx):
         '<p class="providers__more">%s</p>' % t(
             "Заголовки настраивают всё оформление клиента — имя сервиса, цвет и палитру, "
             "hero-кольцо и эффект, набор виджетов, объявление, кнопки продления, "
-            "запасные хосты и другое. Всего <b>19 заголовков reclash-*</b>; клиент также "
+            "запасные хосты и другое. Всего <b>20 заголовков reclash-*</b>; клиент также "
             "читает стандартные заголовки подписки, а часть имён FlClashX понимает как "
             "псевдонимы — <a class=\"link link--cyan\" href=\"%s\">полный справочник</a>."
             % ctx.page("reference"),
             "The headers configure the whole look of the client — service name, colour and "
             "palette, hero ring and effect, widget set, announcement, renew buttons, "
-            "fallback hosts and more. <b>19 reclash-* headers</b> in all; the client also "
+            "fallback hosts and more. <b>20 reclash-* headers</b> in all; the client also "
             "reads standard subscription headers and understands a subset of FlClashX names "
             "as aliases — <a class=\"link link--cyan\" href=\"%s\">the full reference</a>."
             % ctx.page("reference"),

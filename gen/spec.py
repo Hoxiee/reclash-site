@@ -104,6 +104,15 @@ COMMON_HEADERS = [
         "Показывает объявление провайдера.",
         "Shows a provider announcement.",
     ),
+    (
+        "report-url",
+        "URL для сообщения о проблеме",
+        "Issue-report URL",
+        "Совместимое имя для <code>reclash-reporturl</code>. "
+        "Добавляет действие «Сообщить о проблеме» с подпиской.",
+        "Compatibility name for <code>reclash-reporturl</code>. "
+        "Adds a “report an issue” action for the subscription.",
+    ),
 ]
 
 # name, ru value, en value, ru purpose, en purpose
@@ -131,6 +140,9 @@ RECLASH_HEADERS = [
      "Действие «Продлить / купить тариф».", "Subscription renewal or plan purchase action."),
     ("reclash-buytraffic", "URL", "URL",
      "Действие «Докупить трафик».", "Extra-traffic purchase action."),
+    ("reclash-reporturl", "URL", "URL",
+     "Действие «Сообщить о проблеме с подпиской».",
+     "Subscription issue-report action."),
     ("reclash-view", "Токены страницы прокси", "Proxy-page tokens",
      "Предлагает вид страницы прокси для этого профиля.",
      "Suggests the proxy-page presentation for this profile."),
@@ -178,6 +190,7 @@ ALIASES = [
     ("Группа сервера", "Server-info group", ["reclash-serverinfo", "flclashx-serverinfo"]),
     ("URL тарифа", "Plan URL", ["reclash-buyplan", "flclashx-buyplan"]),
     ("URL трафика", "Traffic URL", ["reclash-buytraffic", "flclashx-buytraffic"]),
+    ("URL отчёта", "Report URL", ["reclash-reporturl", "report-url"]),
     ("Вид прокси", "Proxy view", ["reclash-view", "flclashx-view"]),
     ("Тема", "Theme", ["reclash-hex", "flclashx-hex"]),
     ("Фон", "Background", ["reclash-background", "flclashx-background"]),

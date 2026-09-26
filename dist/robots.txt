@@ -43,4 +43,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://hoxiee.github.io/ReClash-site/sitemap.xml
+Sitemap: https://reclash.pages.dev/sitemap.xml
