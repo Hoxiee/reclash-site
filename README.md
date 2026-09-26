@@ -1,187 +1,39 @@
-# ReClash — сайт
+# ReClash site
 
-Статический двуязычный сайт клиента [ReClash](https://github.com/Hoxiee/ReClash):
-лендинг, справочник HTTP-заголовков с конструктором, загрузки, быстрый старт и FAQ.
+*[Русская версия](README.ru.md)*
 
-Ни npm, ни бандлера, ни CDN во время выполнения. Генератор — один файл на
-Python 3 из стандартной библиотеки; всё, что уезжает на хостинг, лежит в `dist/`
-и целиком пересобирается из `gen/` и `assets/`.
+The website for [ReClash](https://github.com/Hoxiee/ReClash), the mihomo client:
+landing page, an interactive reference and builder for the provider HTTP headers,
+downloads, a quick-start guide, a gallery, mock subscriptions and a
+subscription-report decoder. Bilingual (RU/EN), live at
+**https://reclash.pages.dev**.
 
-```
-python3 build.py            # собрать в dist/
-python3 build.py --serve    # собрать и поднять http://127.0.0.1:8000
-```
-
-## Что где лежит
-
-| Путь | Что это |
-| --- | --- |
-| `build.py` | сборка: рендерит страницы, копирует ассеты, пишет `sitemap.xml`, `robots.txt`, `404.html` |
-| `gen/layout.py` | каркас страницы, шапка, подвал, класс `Ctx` (язык, ссылки, `t()`) |
-| `gen/ui.py` | примитивы разметки: `icon`, `chip`, `btn`, `rubric`, `mark`, `json_block` |
-| `gen/spec.py` | единственный источник правды по заголовкам ReClash |
-| `gen/mocks.py` | единственный источник правды по мок-подпискам |
-| `gen/page_*.py` | по модулю на страницу: `home`, `gallery`, `headers`, `downloads`, `start`, `mocksubs` |
-| `assets/css` | `fonts` → `base` → `site` на каждой странице, дальше постраничные файлы |
-| `assets/js` | `core.js` везде, остальное подключается страницей |
-| `assets/fonts` | самохостинг woff2: Unbounded (дисплей), Onest (текст), JetBrains Mono |
-| `assets/mock` | медиа мок-подписок: логотипы и фоны (`logo-*.svg`, `bg-*.svg`) |
-| `tools/` | проверки и съёмка скриншотов |
-| `dist/` | результат сборки, в репозитории не нужен |
-| `dist/mock/<ключ>` | тело профиля каждой мок-подписки (то, что скачивает клиент) |
-| `dist/_headers` | `ReClash-*` заголовки мок-подписок для Cloudflare Pages / Netlify |
-
-Аудитория сайта живёт под блокировками, поэтому **никаких сторонних доменов
-во время выполнения**: шрифты, иконки и картинки отдаются с того же хоста.
-Единственный внешний запрос — GitHub API на странице загрузок, и страница
-корректно работает, когда он не отвечает.
-
-## Как править тексты
-
-Русский и английский лежат рядом в исходнике — параметрами одного вызова:
-
-```python
-t = ctx.t
-t("Скачать", "Download")
-```
-
-Расхождения между языками поэтому невозможны по построению: чтобы забыть перевод,
-надо не дописать аргумент, и Python об этом скажет. Строки для JavaScript уезжают
-в страницу через `json_block(...)`, а `tools/check_headers.py` следит за тем, чтобы
-у каждого ключа, который читает `builder.js`, была пара в разметке — и наоборот.
-
-Ссылки между страницами всегда через `ctx.page("headers")`: он выдаёт
-относительный путь и сам держит язык.
-
-## Заголовки
-
-`gen/spec.py` описывает все заголовки: имя, тип значения, границы, псевдонимы
-FlClashX, примеры. Из него собираются и справочник, и конструктор, и превью
-телефона, и генераторы конфигов для nginx, Caddy, PHP, Go и Python. Добавить
-заголовок — значит дописать запись в `spec.py`; страница подхватит его сама.
-
-## Мок-подписки
-
-Мок-подписка — это HTTP-ответ, который клиент ReClash получает при
-`reclash://install-config?url=…`: **тело** — профиль mihomo, а метаданные
-(имя, квота, тема, логотип, фон, объявление) едут в **заголовках ответа**
-`ReClash-*` и `Subscription-Userinfo` — тех самых, что собирает конструктор.
-
-Всё лежит в одном источнике — `gen/mocks.py`, по словарю на подписку. При
-сборке из каждой записи получается три согласованные вещи:
-
-- карточка на странице «Мок-подписки» (`mock-subs.html`);
-- тело профиля в `dist/mock/<ключ>` — его и скачивает клиент;
-- блок заголовков в `dist/_headers` (формат Cloudflare Pages / Netlify), плюс
-  манифест `dist/mock/_headers.json` для локального `--serve`.
-
-Значения хранятся в удобном виде, а генератор применяет те же правила, что и
-конструктор: не-ASCII-текст уходит как `base64:…`, гигабайты превращаются в
-байты, «истекает через N дней» — в Unix-время на момент сборки. Медиа (лого,
-фон) — обычные файлы в `assets/mock/`; в заголовке едет их абсолютный HTTPS-URL.
-
-**Добавить подписку:**
-
-1. Дописать словарь в `MOCKS` в `gen/mocks.py`. Обязательны только `key`,
-   `name`, `blurb` и число `nodes`; всё остальное — необязательные заголовки.
-2. Если есть логотип или фон — положить файлы в `assets/mock/` и указать их
-   имена в полях `logo` / `bg`.
-3. `python3 build.py` — карточка, тело и заголовки появятся сами.
-
-Заголовки на статике отдаёт не всякий хостинг: **GitHub Pages кастомные
-заголовки не умеет**, поэтому мок-подписки рассчитаны на Cloudflare Pages или
-Netlify (см. «Выкладка»). Локально их отдаёт `python3 build.py --serve` — можно
-импортировать `http://<ваш-IP>:8000/mock/<ключ>` прямо в приложение.
-
-## Проверки
+Static by construction — no npm, no bundler, no runtime CDN. The generator is a
+single Python 3 stdlib script; everything served is regenerated into `dist/`
+from `gen/` and `assets/`.
 
 ```
-python3 tools/verify.py         # структура dist/, контракты JS↔HTML, битые ссылки, паритет RU/EN
-python3 tools/check_headers.py  # конструктор: все поля, идентификаторы и строки на месте
-node tools/e2e.mjs              # 8 страниц × 3 ширины в Chromium: ошибки консоли,
-                                # горизонтальные переполнения, обрезанный текст, живые виджеты
+python3 build.py            # build into dist/
+python3 build.py --serve    # build and serve http://127.0.0.1:8000
 ```
 
-Перед выпуском стоит прогнать все три. `e2e.mjs` берёт Chromium из кеша
-`npx playwright` — если его нет, поставьте его один раз:
-`npx --yes playwright@latest install chromium`.
+Text is bilingual in place — `t("текст", "text")` — so a missing translation is a
+missing argument, not a silent gap. The header pages read one spec (`gen/spec.py`);
+the mock subscriptions read one source (`gen/mocks.py`).
 
-Посмотреть глазами:
-
-```
-node tools/shots.mjs "$PWD/dist" /tmp/crops ru     # 1440×900 и 390×844, полные страницы и нарезка
-node tools/shots.mjs "$PWD/dist" /tmp/crops-en en
-```
-
-Нарезка снимается **прокруткой реального окна**, а не кадрированием длинного
-скриншота: `fullPage` рисует липкие блоки на их исходном месте, и закреплённая
-колонка выглядит дырой.
-
-Карточки Open Graph рисуются в браузере (дисплейный шрифт самохостится и в
-системе его нет):
+## Checks
 
 ```
-python3 build.py && node tools/make_og.mjs && python3 build.py
+python3 tools/verify.py         # dist/ layout, JS<->HTML contracts, links, RU/EN parity
+python3 tools/check_headers.py  # builder field / id / string coverage
+node   tools/e2e.mjs            # Chromium: console errors, overflow, clipped text
 ```
 
-Второй запуск сборки нужен, чтобы свежие `assets/img/og*.png` попали в `dist/`.
+## Deploy
 
-## Шрифты
+Cloudflare Pages, served from the root of `dist/`. The mock subscriptions need the
+`ReClash-*` response headers in `dist/_headers`, which Pages applies as-is.
 
-`tools/fetch_fonts.py` скачивает woff2-подмножества с Google Fonts и кладёт их в
-`assets/fonts/`. Запускать надо один раз — файлы уже в репозитории; повторный
-запуск нужен только при смене начертаний или диапазонов.
+## License
 
-```
-python3 tools/fetch_fonts.py           # проверить, что всё на месте
-python3 tools/fetch_fonts.py --force   # перекачать
-```
-
-Скрипт не трогает `assets/css/fonts.css`: `unicode-range` там выписаны руками,
-чтобы кириллица и латиница грузились раздельно.
-
-## Выкладка на GitHub Pages
-
-`dist/` — самодостаточная папка со статикой, ей не нужен ни Jekyll (`.nojekyll`
-кладётся при сборке), ни сервер приложений.
-
-```
-BASE_URL="https://<пользователь>.github.io/<репозиторий>" python3 build.py
-```
-
-`--base-url` попадает в канонические ссылки, `sitemap.xml`, `og:url` и в редирект
-с корня на язык браузера. Все остальные ссылки внутри сайта относительные, так
-что `dist/` открывается и по `file://`, и из подкаталога.
-
-Дальше — любым привычным способом: отдельная ветка `gh-pages`, GitHub Action с
-`actions/upload-pages-artifact`, или просто скопировать содержимое `dist/` в
-`docs/` основной ветки.
-
-Необязательная подпись рядом с кнопкой скачивания:
-
-```
-python3 build.py --version-note "v0.1.0-pre.1 · 32 МБ"
-```
-
-### Мок-подписки и заголовки
-
-Сам сайт — статика и живёт на GitHub Pages как угодно. Но **мок-подписки**
-должны отдавать заголовки ответа `ReClash-*`, а GitHub Pages их не умеет.
-Поэтому подписки нужно раздавать с хостинга, который читает `dist/_headers` —
-**Cloudflare Pages** или **Netlify**: у них файл `_headers` работает из коробки,
-и сборка кладёт его в корень `dist/`. Варианты:
-
-- выложить весь сайт на Cloudflare Pages / Netlify — заголовки применятся сами;
-- либо оставить сайт на GitHub Pages, а на CF/Netlify держать только `/mock/`
-  (тогда `install-config` в карточках должен указывать на этот хост — задайте
-  его через `BASE_URL`).
-
-Проверить локально без деплоя: `python3 build.py --serve` подставляет заголовки
-из манифеста и отдаёт `http://127.0.0.1:8000/mock/<ключ>` с полным набором
-`ReClash-*` — импортируйте этот адрес в приложение.
-
-## Лицензия
-
-Код сайта — под лицензией самого проекта ReClash (GPL-3.0). Начертания шрифтов
-распространяются по SIL Open Font License, их авторские права принадлежат
-правообладателям.
+GPL-3.0, matching ReClash. Font faces ship under the SIL Open Font License.
