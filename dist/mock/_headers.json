@@ -10,7 +10,7 @@
 "ReClash-HeroRing": "FFC46B;FF6B1A;D9380A",
 "ReClash-ServiceLogo": "{BASE}/assets/mock/logo-ember.svg",
 "ReClash-Background": "{BASE}/assets/mock/bg-ember.svg,22",
-"ReClash-Widgets": "networkSpeed,trafficUsage,serviceInfo,changeServerButton,announce,outboundModeV2,networkDetection,memoryInfo,metaInfo,intranetIp,tunButton,vpnButton,systemProxyButton",
+"ReClash-Widgets": "networkSpeed,trafficUsage,serviceInfo,changeServerButton,announce,networkDetection,memoryInfo,metaInfo,intranetIp,tunButton,vpnButton,systemProxyButton",
 "ReClash-Custom": "update",
 "ReClash-Settings": "autorun,autoupdate,minimize",
 "ReClash-View": "type:list; sort:delay; layout:tight; icon:standard; card:min",
@@ -52,7 +52,7 @@
 "ReClash-BuyTraffic": "https://example.com/topup",
 "ReClash-Announce": "base64:0J/RgNC+0LHQvdGL0Lkg0L/QtdGA0LjQvtC0INC/0L7Rh9GC0Lgg0LfQsNC60L7QvdGH0LjQu9GB0Y8uINCf0YDQvtC00LvQuNGC0LUsINGH0YLQvtCx0Ysg0L3QtSDQv9C+0YLQtdGA0Y/RgtGMINC00L7RgdGC0YPQvy4=",
 "ReClash-AutoUpdateInterval": "720",
-"Subscription-Userinfo": "upload=9663676416; download=40802189312; total=53687091200; expire=1790712205"
+"Subscription-Userinfo": "upload=9663676416; download=40802189312; total=53687091200; expire=1790721384"
 },
 "/mock/relay": {
 "Content-Type": "text/yaml; charset=utf-8",
@@ -64,7 +64,7 @@
 "ReClash-AutoUpdateInterval": "180",
 "ReClash-NewDomain": "relay-new.example.com",
 "ReClash-FallbackHosts": "relay-b.example.com,relay-c.example.com",
-"Subscription-Userinfo": "upload=5368709120; download=64424509440; total=322122547200; expire=1795723405"
+"Subscription-Userinfo": "upload=5368709120; download=64424509440; total=322122547200; expire=1795732584"
 },
 "/mock/gatekeeper": {
 "Content-Type": "text/yaml; charset=utf-8",

@@ -77,7 +77,7 @@ MOCKS = [
         "logo": "logo-ember.svg",
         "bg": ("bg-ember.svg", 22),
         "widgets": ("networkSpeed,trafficUsage,serviceInfo,changeServerButton,"
-                    "announce,outboundModeV2,networkDetection,memoryInfo,"
+                    "announce,networkDetection,memoryInfo,"
                     "metaInfo,intranetIp,tunButton,vpnButton,systemProxyButton"),
         "custom": "update",
         "settings": "autorun,autoupdate,minimize",

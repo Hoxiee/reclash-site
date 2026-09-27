@@ -162,7 +162,7 @@ def builder_strings(ctx):
         f_widgets=1,
         f_interval="60",
         widgets=["serviceInfo", "networkSpeed", "trafficUsage",
-                 "outboundModeV2", "changeServerButton"],
+                 "changeServerButton"],
     )
     full = preset(
         f_title=t("Тариф «Орбита»", "Orbit plan"),
@@ -187,7 +187,7 @@ def builder_strings(ctx):
         f_fallback="sub2.nebula.example, sub3.nebula.example",
         f_aliases=1,
         widgets=["announce", "metaInfo", "serviceInfo", "networkSpeed",
-                 "trafficUsage", "outboundModeV2", "networkDetection",
+                 "trafficUsage", "networkDetection",
                  "smartRouting", "changeServerButton"],
     )
 
@@ -226,19 +226,31 @@ def builder_strings(ctx):
         "options": t("Опции", "Options"),
         "grpAuto": t("Авто", "Auto"),
         "grpStreaming": t("Стриминг", "Streaming"),
+        "grpDirect": t("Прямой доступ", "Direct"),
         # The connection screen, word for word as the application sets it:
         # lib/l10n/intl/messages_{ru,en}.dart. A preview that paraphrased the
         # client would be a mock-up of a different app.
         "heroDur": t("12 минут", "12 minutes"),
         "heroFree": t("свободно из {n}", "free of {n}"),
         "heroMore": t("Показать сведения о подписке", "Show subscription details"),
+        # The disconnected orb, word for word from hero_connect_orb_slot.dart:
+        # the caption when nothing is running yet and the app is waiting for a
+        # tap. Tapping the orb in the preview flips it to the connected state.
+        "heroNotProtected": t("Вы не защищены", "Not protected"),
+        "heroTapToConnect": t("Нажмите, чтобы включить защиту",
+                              "Tap to turn protection on"),
         "heroPause": t("Пауза", "Pause"),
         "heroProtected": t("Вы защищены", "You are protected"),
         "heroRemaining": t("Осталось", "Remaining"),
         "heroRenew": t("Продлить подписку", "Renew subscription"),
         "heroSince": t("Подключено {n}", "Connected {n}"),
         "heroSmart": t("Умная маршрутизация включена", "Smart routing is on"),
-        "heroSub": t("Подписка", "Subscription"),
+        # hero_routing.dart, the not-flowing branch of heroServiceLineViewOf:
+        # the engine is on but no tunnel is carrying traffic yet, so the line
+        # is muted with an hourglass rather than accented with a bolt.
+        "smartRoutingWaitingTunnel": t(
+            "Умная маршрутизация включена · ждёт туннель",
+            "Smart routing is on · waiting for the tunnel"),
         "heroTopUp": t("Докупить трафик", "Top up traffic"),
         "heroUnlimited": t("без ограничений", "unlimited"),
         "heroUpdate": t("Обновить", "Update"),
@@ -262,12 +274,6 @@ def builder_strings(ctx):
         "lblLogo": t("Логотип", "Logo"),
         "lblSupport": t("Поддержка", "Support"),
         "linkCopied": t("Ссылка скопирована", "Link copied"),
-        # The four routing modes exactly as the client labels them —
-        # arb/intl_{ru,en}.arb, keys auto / rule / global / direct.
-        "modeAuto": t("Авто", "Auto"),
-        "modeDirect": t("Прямой", "Direct"),
-        "modeGlobal": t("Глобальный", "Global"),
-        "modeRule": t("Правило", "Rule"),
         "moveDown": t("Переместить ниже", "Move down"),
         "moveUp": t("Переместить выше", "Move up"),
         "noWidgets": t("Виджеты не выбраны", "No widgets selected"),
@@ -391,6 +397,23 @@ def builder_strings(ctx):
         "wOutbound": t("Режим", "Mode"),
         "wService": t("Сервис", "Service"),
         "wTraffic": t("Трафик", "Traffic"),
+        # The live-feed and resource tiles are labelled exactly as the client
+        # labels them — DashboardInfoCard/FeedCard ellipsize a long head on one
+        # line, so the subject-only shortening the tiles above needed does not
+        # apply here.
+        "wGoroutine": t("Горутины", "Goroutines"),
+        "wConnections": t("Соединения", "Connections"),
+        "wDns": t("DNS-запросы", "DNS queries"),
+        "wRequests": t("Запросы", "Requests"),
+        # run_time.dart labels the uptime tile with the "Start" string.
+        "wRunTime": t("Старт", "Start"),
+        "wProxyGroups": t("Группа прокси", "Proxy group"),
+        "wProfiles": t("Профили", "Profiles"),
+        "wOverrideDns": t("Переопределить DNS", "Override DNS"),
+        "wServiceStatus": t("Статус сервисов", "Service status"),
+        # The only verdict the preview paints; service_status.dart colours
+        # "available" with the success role.
+        "svcAvailable": t("Доступен", "Available"),
         "undo": t("Вернуть как было", "Undo"),
         "undoHint": t("Отменить пресет «{n}» и вернуть прежние значения полей",
                       "Undo the \u201c{n}\u201d preset and bring the old values back"),
@@ -856,11 +879,17 @@ def builder_preview(ctx):
         + esc(t("Панель", "Dashboard")) + "</span>"
         '<span class="phone__sig" aria-hidden="true"><i></i><i></i><i></i></span></div>'
         '<div class="phone__content" id="pv-screen"></div>'
+        # AppNavBar is one floating dock over the content, not a bar bolted to
+        # the frame: a rounded surfaceContainer pill of destinations and, on
+        # the classic dashboard, the start control held at its trailing edge as
+        # a circle the bar's height (widgets/nav/app_nav_bar.dart).
+        '<div class="phone__dock">'
+        '<div class="phone__nav">' + nav + "</div>"
         '<div class="phone__fab" id="pv-fab">'
         '<span class="fab__ring" aria-hidden="true"></span>'
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>'
         "</div>"
-        '<div class="phone__nav">' + nav + "</div>"
+        "</div>"
         "</div></div></div>"
         '<p class="preview-note">' + esc(t(
             "Живое превью экрана подключения: оно обновляется на каждое нажатие клавиши.",
@@ -1217,7 +1246,7 @@ def catalog(ctx):
                 "<code>reclash-custom</code> controls how the list merges with the "
                 "user's own."),
             extra=widget_table,
-            example="ReClash-Widgets: serviceInfo,networkSpeed,trafficUsage,outboundModeV2",
+            example="ReClash-Widgets: serviceInfo,networkSpeed,trafficUsage,changeServerButton",
             keys=("виджеты панель карточки порядок", "widgets dashboard cards order")),
         "reclash-custom": dict(
             fmt="add | update",
@@ -1230,7 +1259,7 @@ def catalog(ctx):
                 "assembled: <code>add</code> appends the missing widgets, <code>update</code> "
                 "replaces the whole set. Without this header the set is suggested only when "
                 "the profile is first added."),
-            example="ReClash-Widgets: serviceInfo,networkSpeed,trafficUsage,outboundModeV2\n"
+            example="ReClash-Widgets: serviceInfo,networkSpeed,trafficUsage,changeServerButton\n"
                     "ReClash-Custom: update",
             keys=("слияние виджеты добавить заменить", "merge widgets add update replace")),
         "reclash-settings": dict(

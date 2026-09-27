@@ -391,7 +391,7 @@
         bgOpacity: parseInt(val('f_bgop'), 10) || 10,
         ring: on('f_ring') ? ['f_ring1', 'f_ring2', 'f_ring3'].map(function (i) { return val(i); }) : null,
         heroEffect: on('f_heroeffect'),
-        widgets: on('f_widgets') ? chosen : ['networkSpeed', 'outboundModeV2', 'trafficUsage'],
+        widgets: on('f_widgets') ? chosen : ['networkSpeed', 'trafficUsage', 'changeServerButton'],
         view: on('f_view') ? {
           type: val('f_view_type'), sort: val('f_view_sort'), layout: val('f_view_layout'),
           icon: val('f_view_icon'), card: val('f_view_card')
@@ -681,15 +681,29 @@
       dns: '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
       chevron: '<path d="m9 6 6 6-6 6"/>',
       /* bolt_rounded */
-      bolt: '<path d="M13.2 2.6 5 13.8h5.9l-.9 7.6 8.2-11.2h-6z"/>'
+      bolt: '<path d="M13.2 2.6 5 13.8h5.9l-.9 7.6 8.2-11.2h-6z"/>',
+      /* hub — a core node linked out to three satellites */
+      hub: '<circle cx="12" cy="12" r="2.6"/><circle cx="12" cy="4.8" r="1.7"/>' +
+        '<circle cx="5.2" cy="18" r="1.7"/><circle cx="18.8" cy="18" r="1.7"/>' +
+        '<path d="M12 9.4V6.5M10.5 13.2 6.4 16.8M13.5 13.2 17.6 16.8"/>',
+      /* history — a clock inside a counter-clockwise rewind sweep */
+      history: '<path d="M3.6 12a8.4 8.4 0 1 0 2.7-6.2"/><path d="M3 3.8v3.7h3.7"/>' +
+        '<path d="M12 8v4.2l3 1.8"/>',
+      /* the three-node triangle the connections glyph draws */
+      connections: '<circle cx="12" cy="5.4" r="2.3"/><circle cx="5.4" cy="17.6" r="2.3"/>' +
+        '<circle cx="18.6" cy="17.6" r="2.3"/><path d="M11 7.4 6.4 15.6M13 7.4 17.6 15.6M7.7 17.6h8.6"/>',
+      /* requests — the schedule clock */
+      requests: '<circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.2 2"/>',
+      /* profiles — a document with a folded corner and two lines */
+      profiles: '<path d="M5.5 3.2h7.8L18.6 8.5V20.8H5.5Z"/><path d="M13.3 3.4v5.1h5.1"/>' +
+        '<path d="M8.5 12.6h7M8.5 16h4.6"/>',
+      /* proxies — the globe */
+      proxies: '<circle cx="12" cy="12" r="8.6"/><ellipse cx="12" cy="12" rx="3.7" ry="8.6"/>' +
+        '<path d="M3.4 12h17.2"/>'
     };
     return '<svg' + (cls ? ' class="' + cls + '"' : '') +
       ' viewBox="0 0 24 24" aria-hidden="true">' + (paths[kind] || paths.info) + '</svg>';
   }
-
-  /* The four routing modes, in the enum's order — UiOutboundMode
-     { auto, rule, global, direct }. Both mode widgets list all four. */
-  var MODES = [s('modeAuto'), s('modeRule'), s('modeGlobal'), s('modeDirect')];
 
   /* _TrafficDataItem: a coloured arrow, the figure, and the unit pushed to
      the far end of the row on its own. */
@@ -791,7 +805,82 @@
       s('wMeta'), 'cal', true, true, iconFor('sync'));
   }
 
+  /* Every DashboardInfoCard that is just an icon, a title and one figure —
+     intranet_ip, memory_info, goroutine_info, connections, dns_queries,
+     requests, run_time — is the same tile with different words. The client
+     draws them all through one card; the preview draws them all through one
+     entry here, so a new counter widget is a spec row plus a line below, not
+     another hand-verset case. `unit` is the trailing small caption the client
+     sets apart from the number; `mono` matches its tabular figures. */
+  var VTILE = {
+    intranetIp:    { icon: 'devices',     val: '192.168.1.42', key: 'wIntranet',    mono: true },
+    memoryInfo:    { icon: 'chip',        val: '96',           key: 'wMemory',      unit: 'MB' },
+    goroutineInfo: { icon: 'hub',         val: '48',           key: 'wGoroutine' },
+    connections:   { icon: 'connections', val: '128',          key: 'wConnections' },
+    dnsQueries:    { icon: 'dns',         val: '2314',         key: 'wDns' },
+    requests:      { icon: 'requests',    val: '5976',         key: 'wRequests' },
+    runTime:       { icon: 'history',     val: '00:12:34',     key: 'wRunTime',     mono: true }
+  };
+
+  function valueTile(id) {
+    var v = VTILE[id];
+    return tile('<div class="value' + (v.mono ? ' mono' : '') + '">' + esc(v.val) +
+      (v.unit ? '<small> ' + esc(v.unit) + '</small>' : '') + '</div>',
+      s(v.key), v.icon);
+  }
+
+  /* service_status.dart is the connection doctor as a full-width card: the
+     probe target on the left, and on the right the outbound address, the node
+     it resolved through and a status line coloured by the probe result. */
+  function serviceStatusTile() {
+    return tile(
+      '<div class="svc">' +
+      '<div class="svc__probe">' + iconFor('globe', 'svc__i') +
+      '<span>google.com</span></div>' +
+      '<div class="svc__out"><span class="svc__ip mono">' + HERO_NODE.ip + '</span>' +
+      '<span class="svc__node">' + esc(NODES[0].n) + '</span>' +
+      '<span class="svc__ok">' + esc(s('svcAvailable')) + ' · ' + HERO_NODE.delay + ' ms</span>' +
+      '</div></div>',
+      s('wServiceStatus'), 'hub', true);
+  }
+
+  /* proxy_groups.dart and profiles.dart are both a titled card wrapping a
+     short list of rows — one _rowCard helper draws the shell, and each names
+     its own rows. */
+  function rowCard(icon, label, rows, action) {
+    return '<div class="tile">' + headRow(iconFor(icon), label, action || '') +
+      '<div class="rows">' + rows + '</div></div>';
+  }
+
+  function proxyGroupsTile() {
+    var groups = [
+      { n: s('grpAuto'), c: NODES[2].n },
+      { n: s('grpStreaming'), c: NODES[0].n },
+      { n: s('grpDirect'), c: 'DIRECT' }
+    ];
+    var rows = groups.map(function (g) {
+      return '<div class="row"><span class="row__n">' + esc(g.n) + '</span>' +
+        '<span class="row__v">' + esc(g.c) + '</span>' + iconFor('chevron', 'row__c') + '</div>';
+    }).join('');
+    return rowCard('proxies', s('wProxyGroups'), rows);
+  }
+
+  function profilesTile() {
+    var profs = [
+      { n: 'ReClash Cloud', u: 62, sel: true },
+      { n: 'Backup', u: 8, sel: false }
+    ];
+    var rows = profs.map(function (pr) {
+      return '<div class="row row--prof' + (pr.sel ? ' is-sel' : '') + '">' +
+        '<div class="row__main"><span class="row__n">' + esc(pr.n) + '</span>' +
+        '<span class="row__sub mono">' + pr.u + '%</span></div>' +
+        '<div class="hbar hbar--sm"><i style="width:' + pr.u + '%"></i></div></div>';
+    }).join('');
+    return rowCard('profiles', s('wProfiles'), rows);
+  }
+
   function renderWidget(id, p) {
+    if (VTILE[id]) return valueTile(id);
     switch (id) {
       /* The head carries the current speed at its far end, and everything
          below it is chart, bled to the card's edges. */
@@ -799,25 +888,6 @@
         return tile('<div class="spark" aria-hidden="true">' + SPARK + '</div>',
           s('wNetworkSpeed'), 'speed', true, true,
           '<span class="tile__now mono">18.4 MB/s</span>');
-      /* The two routing widgets are not two skins of one thing. V2 is a
-         full-width segmented bar with a coloured strip under it and no head
-         at all; the legacy one is a half-width radio list. Both list the
-         same four modes. */
-      case 'outboundModeV2':
-        return '<div class="tile tile--wide tile--seg">' +
-          '<div class="segbar" role="tablist">' +
-          MODES.map(function (label, i) {
-            return '<button type="button" role="tab" aria-selected="' + (i === 0) + '">' +
-              esc(label) + '</button>';
-          }).join('') +
-          '</div><span class="segbar__strip" aria-hidden="true"></span></div>';
-      case 'outboundMode':
-        return tile('<div class="modes">' +
-          MODES.map(function (label, i) {
-            return '<button type="button" aria-checked="' + (i === 0) + '"><span></span>' +
-              esc(label) + '</button>';
-          }).join('') +
-          '</div>', s('wOutbound'), 'split', false, true);
       /* traffic_usage.dart is a donut of upload against download with a
          two-entry legend, then the same two figures spelled out. The quota
          bar belongs to the subscription tile, not here. */
@@ -843,10 +913,6 @@
           headRow(flagDisc('hflag--sm'), s('wDetect'), iconFor('chevron')) +
           '<div class="detect"><span class="detect__s">' + esc(s('detectOk')) + '</span>' +
           '<span class="detect__ip mono">' + HERO_NODE.ip + '</span></div></div>';
-      case 'intranetIp':
-        return tile('<div class="value mono">192.168.1.42</div>', s('wIntranet'), 'devices');
-      case 'memoryInfo':
-        return tile('<div class="value">96<small> MB</small></div>', s('wMemory'), 'chip');
       case 'metaInfo':
         return metaTile(p);
       case 'announce':
@@ -888,6 +954,16 @@
         return quickTile('VPN', 'stack');
       case 'systemProxyButton':
         return quickTile(s('sysProxy'), 'shuffle');
+      case 'serviceStatus':
+        return serviceStatusTile();
+      case 'proxyGroups':
+        return proxyGroupsTile();
+      case 'profiles':
+        return profilesTile();
+      /* override_dns_button.dart is another _QuickSwitchCard — the DNS glyph
+         and a switch, like TUN and the system proxy beside it. */
+      case 'overrideDnsButton':
+        return quickTile(s('wOverrideDns'), 'dns');
       default:
         return '';
     }
@@ -985,6 +1061,9 @@
     support: '<path d="M5 13.5a7 7 0 0 1 14 0"/><rect x="2.5" y="13" width="4" height="6.5" rx="1.7"/><rect x="17.5" y="13" width="4" height="6.5" rx="1.7"/><path d="M19.5 19.5a3 3 0 0 1-3 3h-2.2"/>',
     pause: '<path d="M9.2 5v14M14.8 5v14"/>',
     bolt: '<path d="M13.2 2.6 5 13.8h5.9l-.9 7.6 8.2-11.2h-6z"/>',
+    /* hourglass_empty — the muted routing line while the engine waits for a
+       tunnel (hero_routing.dart, not-flowing branch). */
+    hour: '<path d="M6.5 3.5h11M6.5 20.5h11M7.5 3.5c0 5 9 5 9 8.5s-9 3.5-9 8.5M16.5 3.5c0 5-9 5-9 8.5"/>',
     /* The orb speed pair: south for download, north for upload. */
     sdown: '<path d="M12 4.5v15M6 13.5l6 6 6-6"/>',
     sup: '<path d="M12 19.5v-15M6 10.5l6-6 6 6"/>',
@@ -1011,10 +1090,18 @@
      under one flag, 42 ms away. */
   var HERO_NODE = { ip: '185.146.173.42', delay: 42, stack: 2 };
 
-  function heroOrb(p, ring) {
-    return '<div class="horb' + (p.heroEffect ? ' horb--aurora' : '') +
+  /* The connection screen has two states, and the screenshot is the first of
+     them: the orb is a tap-toggle in the app, so the preview starts
+     disconnected (grey ring, "not protected", no live figures) and flips to
+     connected — coloured HeroRing, speed, IP, lit bars — when the orb is
+     tapped. `heroOn` holds that state across re-renders and tab switches. */
+  var heroOn = false;
+
+  function heroOrb(p, ring, on) {
+    var aurora = on && p.heroEffect;
+    return '<div class="horb' + (on ? '' : ' horb--off') + (aurora ? ' horb--aurora' : '') +
       '" style="--r1:' + ring[0] + ';--r2:' + ring[1] + ';--r3:' + ring[2] + '">' +
-      (p.heroEffect ? '<span class="horb__aurora" aria-hidden="true"></span>' : '') +
+      (aurora ? '<span class="horb__aurora" aria-hidden="true"></span>' : '') +
       '<span class="horb__glow" aria-hidden="true"></span>' +
       '<span class="horb__rim" aria-hidden="true"></span>' +
       /* The client paints mark_mono.png in the core when there is no logo —
@@ -1028,9 +1115,13 @@
       '</span></div>';
   }
 
-  function heroServer(p, sc) {
+  /* _ServerZone. Connected: lit signal bars, the exit IP in mono, the delay
+     in its colour. Disconnected: the same node is selected but nothing is
+     measured yet, so the bars stay dim, the IP is a dash and no delay shows —
+     and the routing line reads routingWaitingTunnel rather than routingOn. */
+  function heroServer(p, sc, on) {
     var d = HERO_NODE.delay;
-    var lvl = d < 150 ? 4 : d < 300 ? 3 : d < 600 ? 2 : 1;
+    var lvl = on ? (d < 150 ? 4 : d < 300 ? 3 : d < 600 ? 2 : 1) : 0;
     var bars = '';
     for (var i = 1; i <= 4; i++) bars += '<i' + (i <= lvl ? ' data-on="true"' : '') + '></i>';
     return '<div class="hcard">' +
@@ -1038,13 +1129,18 @@
       '<span class="hflag"><i></i><i></i><span class="hflag__d"></span>' +
       '<span class="hflag__n mono">+' + HERO_NODE.stack + '</span></span>' +
       '<span class="hsrv__id"><b>' + esc(p.serverInfo) + '</b>' +
-      '<span class="hsrv__ip mono">' + HERO_NODE.ip + '</span></span>' +
+      '<span class="hsrv__ip mono">' + (on ? HERO_NODE.ip : '&mdash;') + '</span></span>' +
       '<span class="hsrv__sig"><span class="hbars">' + bars + '</span>' +
-      '<span class="hsrv__ms mono" style="color:' + delayColor(d, sc.accent) + '">' + d + ' ms</span></span>' +
+      (on
+        ? '<span class="hsrv__ms mono" style="color:' + delayColor(d, sc.accent) + '">' + d + ' ms</span>'
+        : '') +
+      '</span>' +
       hIcon('chev', 'hico--chev') +
       '</div>' +
       '<div class="hcard__div"></div>' +
-      '<div class="hsvc hsvc--on">' + hIcon('bolt') + '<span>' + esc(s('heroSmart')) + '</span></div>' +
+      (on
+        ? '<div class="hsvc hsvc--on">' + hIcon('bolt') + '<span>' + esc(s('heroSmart')) + '</span></div>'
+        : '<div class="hsvc">' + hIcon('hour') + '<span>' + esc(s('smartRoutingWaitingTunnel')) + '</span></div>') +
       '</div>';
   }
 
@@ -1054,7 +1150,10 @@
     var barCol = prog > 0.9 ? '#f2555a' : prog > 0.7 ? '#c57f0a' : sc.accent;
     var days = daysLeft(p.expire);
 
-    var cap = '<span class="hsub__cap">' + esc(s('heroSub')) + '</span>';
+    /* _SubscriptionStrip's head names the service (labelLarge), not the
+       generic word "Subscription" — the classic card the strip was folded
+       into leads with the provider's own name. */
+    var cap = '<span class="hsub__cap">' + esc(p.name) + '</span>';
     if (p.expire) {
       cap += '<span class="hpill" style="--pc:' + (days <= 3 ? '#f2555a' : sc.accent) + '">' +
         hIcon('cal') + esc(s('heroRemaining')) + ' ' + days + ' ' + esc(plural('plDays', days)) +
@@ -1082,12 +1181,17 @@
       '</div>';
   }
 
-  function heroActions(p) {
+  /* _HeroActionRow: Update and Support fill the row, then two square chips —
+     Pause (only once there is a live connection to pause) and the routing
+     Mode chip (always, its icon the current mode). */
+  function heroActions(p, on) {
     var acts = '<span class="hact">' + hIcon('refresh') + '<span>' + esc(s('heroUpdate')) + '</span></span>';
     if (p.support) {
       acts += '<span class="hact">' + hIcon('support') + '<span>' + esc(s('support')) + '</span></span>';
     }
-    acts += '<span class="hact hact--sq" title="' + esc(s('heroPause')) + '">' + hIcon('pause') + '</span>';
+    if (on) {
+      acts += '<span class="hact hact--sq" title="' + esc(s('heroPause')) + '">' + hIcon('pause') + '</span>';
+    }
     acts += '<span class="hact hact--sq" title="' + esc(s('wOutbound')) + '">' + hIcon('route') + '</span>';
     return '<div class="hacts">' + acts + '</div>';
   }
@@ -1109,22 +1213,31 @@
   function renderHero(p, sc) {
     /* hasSub in hero_connect.dart: no quota and no expiry means there is
        nothing to put in the strip, and an announcement takes its place. */
+    var on = heroOn;
     var hasSub = p.userinfo && (p.total > 0 || !!p.expire);
-    return '<div class="hero">' +
-      heroOrb(p, ringOf(p, sc.hue)) +
+    /* Connected takes the HeroRing; disconnected takes a flat grey annulus,
+       the outlineVariant the app falls back to when the status has no colour
+       (hero_status.dart). */
+    var ring = on
+      ? ringOf(p, sc.hue)
+      : [hsl(sc.hue, 6, 46), hsl(sc.hue, 6, 36), hsl(sc.hue, 6, 46)];
+    return '<div class="hero' + (on ? ' hero--on' : '') + '">' +
+      heroOrb(p, ring, on) +
       '<div class="hcap">' +
-      '<p class="hcap__t">' + esc(p.activeText || s('heroProtected')) + '</p>' +
-      '<p class="hcap__s">' + esc(s('heroSince').replace('{n}', s('heroDur'))) + '</p>' +
-      heroSpeed() +
+      '<p class="hcap__t">' + esc(on ? (p.activeText || s('heroProtected')) : s('heroNotProtected')) + '</p>' +
+      '<p class="hcap__s">' + esc(on
+        ? s('heroSince').replace('{n}', s('heroDur'))
+        : s('heroTapToConnect')) + '</p>' +
+      (on ? heroSpeed() : '') +
       '</div>' +
-      heroServer(p, sc) +
+      heroServer(p, sc, on) +
       (hasSub
         ? heroSubCard(p, sc)
         : p.announce
           ? '<div class="hcard hnote">' + hIcon('camp', 'hico--accent') +
             '<span>' + esc(p.announce) + '</span>' + hIcon('chev', 'hico--chev') + '</div>'
           : '') +
-      heroActions(p) +
+      heroActions(p, on) +
       '<div class="hmore">' + hIcon('down') + '<span>' + esc(s('heroMore')) + '</span></div>' +
       '</div>';
   }
@@ -1153,6 +1266,14 @@
     phoneEl.style.setProperty('--app-text', sc.text);
     phoneEl.style.setProperty('--app-dim', sc.dim);
     phoneEl.setAttribute('data-screen', pvMode);
+
+    /* The lit dock destination follows the screen: Dashboard owns the connect
+       and widget screens, Proxies owns the proxy list. */
+    var navOn = pvMode === 'proxy' ? 1 : 0;
+    var navItems = phoneEl.querySelectorAll('.phone__nav > div');
+    for (var ni = 0; ni < navItems.length; ni++) {
+      navItems[ni].setAttribute('data-on', ni === navOn ? 'true' : 'false');
+    }
 
     var bgEl = document.getElementById('pv-bg');
     if (bgEl) {
@@ -1239,6 +1360,21 @@
       update();
     });
   });
+
+  /* The orb is a tap-toggle in the app; on the connection tab tapping it here
+     flips the preview between disconnected and connected so the whole
+     connected state — ring, speed, IP, lit bars, accented routing line —
+     stays reachable. screenEl persists across re-renders, so the listener is
+     delegated onto it once. */
+  if (screenEl) {
+    screenEl.addEventListener('click', function (e) {
+      if (pvMode !== 'hero') return;
+      if (e.target.closest && e.target.closest('.horb')) {
+        heroOn = !heroOn;
+        update();
+      }
+    });
+  }
 
   /* ---------------------------------------------------------------- glue */
 

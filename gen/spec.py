@@ -7,8 +7,6 @@ the reference and the tool can never describe different rules.
 # id, availability, ru label, en label, on-by-default in the builder
 WIDGETS = [
     ("networkSpeed", "all", "Скорость сети", "Network speed", True),
-    ("outboundModeV2", "all", "Режим маршрутизации", "Routing mode", True),
-    ("outboundMode", "all", "Режим маршрутизации (старый)", "Routing mode (legacy)", False),
     ("trafficUsage", "all", "Расход трафика", "Traffic usage", True),
     ("networkDetection", "all", "Определение сети", "Network detection", False),
     ("tunButton", "desktop", "Кнопка TUN", "TUN button", False),
@@ -16,11 +14,20 @@ WIDGETS = [
     ("systemProxyButton", "desktop", "Системный прокси", "System proxy", False),
     ("intranetIp", "all", "Внутренний IP", "Intranet IP", False),
     ("memoryInfo", "all", "Память", "Memory info", False),
+    ("goroutineInfo", "all", "Горутины", "Goroutines", False),
     ("metaInfo", "all", "Подписка: срок и квота", "Subscription: term and quota", False),
     ("announce", "all", "Объявление", "Announcement", False),
     ("serviceInfo", "all", "Карточка сервиса", "Service card", True),
     ("changeServerButton", "all", "Смена сервера", "Change server", True),
     ("smartRouting", "all", "Умная маршрутизация", "Smart routing", False),
+    ("serviceStatus", "all", "Статус сервисов", "Service status", False),
+    ("connections", "all", "Соединения", "Connections", False),
+    ("dnsQueries", "all", "DNS-запросы", "DNS queries", False),
+    ("requests", "all", "Запросы", "Requests", False),
+    ("runTime", "all", "Старт", "Start", False),
+    ("proxyGroups", "all", "Группа прокси", "Proxy group", False),
+    ("profiles", "all", "Профили", "Profiles", False),
+    ("overrideDnsButton", "all", "Переопределить DNS", "Override DNS", False),
 ]
 
 PLATFORM_LABEL = {

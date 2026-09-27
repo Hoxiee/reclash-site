@@ -4,7 +4,7 @@ import os, re, sys, json
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from gen.layout import Ctx
-from gen import page_headers, layout
+from gen import page_headers, layout, spec
 
 JS = open(os.path.join(ROOT, "assets/js/builder.js"), encoding="utf-8").read()
 
@@ -12,7 +12,11 @@ VAL = sorted(set(re.findall(r"val\('([a-z0-9_]+)'\)", JS)))
 ON = sorted(set(re.findall(r"\bon\('([a-z0-9_]+)'\)", JS)))
 IDS = sorted(set(re.findall(r"getElementById\('([a-zA-Z0-9_-]+)'\)", JS)))
 # s('key') is the direct lookup; plural('key', n) reaches the table too
-KEYS = sorted(set(re.findall(r"\b(?:s|plural)\('([A-Za-z0-9_]+)'", JS)))
+KEYS = set(re.findall(r"\b(?:s|plural)\('([A-Za-z0-9_]+)'", JS))
+# the VTILE value-card map names its label with a `key:` field, not a literal
+# s('…'); those strings are consumed through s(v.key) at render time
+KEYS |= set(re.findall(r"key:\s*'([A-Za-z0-9_]+)'", JS))
+KEYS = sorted(KEYS)
 FIELDS = sorted(set(re.findall(r"\bf_[a-z0-9_]+", JS)))
 
 fails = []
@@ -75,8 +79,9 @@ for lang in ("ru", "en"):
         fails.append("%s: no #widget-spec" % lang)
     else:
         ws = json.loads(m.group(1).replace("<\\/", "</"))
-        if len(ws) != 15:
-            fails.append("%s: widget-spec %d entries, expected 15" % (lang, len(ws)))
+        if len(ws) != len(spec.WIDGETS):
+            fails.append("%s: widget-spec %d entries, expected %d"
+                         % (lang, len(ws), len(spec.WIDGETS)))
         for w in ws:
             if set(w) != {"id", "label", "plat", "on"}:
                 fails.append("%s: widget-spec entry shape %s" % (lang, sorted(w)))
