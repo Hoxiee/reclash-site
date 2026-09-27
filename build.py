@@ -30,7 +30,7 @@ RENDERERS = {
     "index": page_home.render,
     "gallery": page_gallery.render,
     "docs": page_docs.render,
-    "headers": page_headers.render,
+    "builder": page_headers.render,
     "reference": page_headers.render_reference,
     "download": page_downloads.render,
     "start": page_start.render,

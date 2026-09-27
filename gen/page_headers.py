@@ -942,7 +942,7 @@ def section_builder(ctx):
     )
 
 def render(ctx):
-    """The builder page (headers.html) — the heavy, interactive one. Carries
+    """The builder page (builder.html) — the heavy, interactive one. Carries
     builder.js and the phone-preview styles. The full spec lives on its own
     lighter page (reference.html), one click away in the header and here."""
     t = ctx.t
@@ -951,7 +951,7 @@ def render(ctx):
     # section's statement and lede).
     body = section_builder(ctx)
     return {
-        "active": "headers",
+        "active": "builder",
         "title": t("Конструктор заголовков подписки",
                    "Subscription header builder"),
         "description": t(
@@ -1373,7 +1373,7 @@ def render_reference(ctx):
     """The reference page (reference.html) — the header catalogue. Light: just
     docs.css and the shared core.js (search + category filter). No builder.js,
     no phone-preview styles. The narrative guide is docs.html; the builder that
-    assembles these headers is headers.html."""
+    assembles these headers is builder.html."""
     t = ctx.t
     body = "".join([
         '<section class="pagehead"><div class="shell">',
@@ -1393,7 +1393,7 @@ def render_reference(ctx):
         chip("HWID"),
         '<a class="chip chip--link" href="' + ctx.page("docs") + '">'
         + esc(t("Документация →", "Documentation →")) + "</a>",
-        '<a class="chip chip--link" href="' + ctx.page("headers") + '">'
+        '<a class="chip chip--link" href="' + ctx.page("builder") + '">'
         + esc(t("Конструктор →", "Builder →")) + "</a>",
         "</p></div></section>",
         '<section class="section"><div class="shell">',

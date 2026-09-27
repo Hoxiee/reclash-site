@@ -362,13 +362,13 @@ def faq_items(ctx):
            '<a class="link link--cyan" href="%s#tool">конструктором</a> и вставьте '
            "фрагмент в nginx, Caddy или ваш бэкенд.</p>"
            "<p>Минимум, который заметит пользователь: остаток трафика, имя сервиса и "
-           "ссылка на поддержку.</p>" % ctx.page("headers"),
+           "ссылка на поддержку.</p>" % ctx.page("builder"),
            '<p>Nothing in the client — just add headers to your subscription response. '
            "No SDK, no plugin, no agreement with us. Assemble them with the "
            '<a class="link link--cyan" href="%s#tool">builder</a> and paste the snippet '
            "into nginx, Caddy or your backend.</p>"
            "<p>The minimum a user will notice: remaining traffic, the service name and "
-           "a support link.</p>" % ctx.page("headers")),
+           "a support link.</p>" % ctx.page("builder")),
          False),
         ("faq-ios",
          t("Будет ли версия для iOS?", "Will there be an iOS version?"),
@@ -419,7 +419,7 @@ def section_help(ctx):
         + btn(ui.GITHUB_ISSUES, t("Баг-трекер", "Issue tracker"),
               "btn--lg", "wrench", True)
         + btn(ui.TELEGRAM, "Telegram", "btn--lg btn--ghost", "link", True)
-        + btn(ctx.page("headers"), t("Заголовки", "Headers"),
+        + btn(ctx.page("builder"), t("Заголовки", "Headers"),
               "btn--lg btn--ghost", "book")
         + "</div>"
         + '<p class="dl-note" style="margin-top:var(--step-3)">' + esc(t(

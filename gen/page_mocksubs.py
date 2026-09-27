@@ -162,7 +162,7 @@ def modal(ctx, m):
         _sub_url(ctx, m),
         t("Копировать ссылку", "Copy link"), t("Скопировано", "Copied"))
 
-    builder_href = ctx.page("headers") + mockhdr.builder_cfg(m, ctx.base_url, ctx.lang)
+    builder_href = ctx.page("builder") + mockhdr.builder_cfg(m, ctx.base_url, ctx.lang)
     acts = (
         btn(_deeplink(ctx, m), t("Импорт в ReClash", "Import into ReClash"),
             "btn--sm", icon_name="download")

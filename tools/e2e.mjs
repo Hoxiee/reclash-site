@@ -6,7 +6,7 @@ import path from 'node:path';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
-const PAGES = ['index.html', 'headers.html', 'download.html', 'start.html', 'report.html'];
+const PAGES = ['index.html', 'builder.html', 'download.html', 'start.html', 'report.html'];
 const LANGS = ['ru', 'en'];
 const SIZES = [
   { name: '360', width: 360, height: 780 },
@@ -148,7 +148,7 @@ for (const lang of LANGS) {
     const page = await ctx.newPage();
     const errs = [];
     page.on('pageerror', (e) => errs.push(e.message));
-    await page.goto('file://' + path.join(DIST, lang, 'headers.html'));
+    await page.goto('file://' + path.join(DIST, lang, 'builder.html'));
     await page.waitForTimeout(400);
 
     const initial = await page.textContent('#out-http');

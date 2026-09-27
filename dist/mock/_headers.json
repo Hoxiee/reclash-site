@@ -52,7 +52,7 @@
 "ReClash-BuyTraffic": "https://example.com/topup",
 "ReClash-Announce": "base64:0J/RgNC+0LHQvdGL0Lkg0L/QtdGA0LjQvtC0INC/0L7Rh9GC0Lgg0LfQsNC60L7QvdGH0LjQu9GB0Y8uINCf0YDQvtC00LvQuNGC0LUsINGH0YLQvtCx0Ysg0L3QtSDQv9C+0YLQtdGA0Y/RgtGMINC00L7RgdGC0YPQvy4=",
 "ReClash-AutoUpdateInterval": "720",
-"Subscription-Userinfo": "upload=9663676416; download=40802189312; total=53687091200; expire=1790712147"
+"Subscription-Userinfo": "upload=9663676416; download=40802189312; total=53687091200; expire=1790712205"
 },
 "/mock/relay": {
 "Content-Type": "text/yaml; charset=utf-8",
@@ -64,7 +64,7 @@
 "ReClash-AutoUpdateInterval": "180",
 "ReClash-NewDomain": "relay-new.example.com",
 "ReClash-FallbackHosts": "relay-b.example.com,relay-c.example.com",
-"Subscription-Userinfo": "upload=5368709120; download=64424509440; total=322122547200; expire=1795723347"
+"Subscription-Userinfo": "upload=5368709120; download=64424509440; total=322122547200; expire=1795723405"
 },
 "/mock/gatekeeper": {
 "Content-Type": "text/yaml; charset=utf-8",

@@ -5,7 +5,7 @@ works, the parsing rules every value obeys, how the whole thing survives the
 trip through a reverse proxy and a CDN, and a rollout checklist. The full
 per-header catalogue (every value, alias and example) lives on its own page —
 `reference.html`, `page_headers.render_reference` — and the interactive
-builder on `headers.html`. Only `docs.css` and the shared `core.js` (TOC
+builder on `builder.html`. Only `docs.css` and the shared `core.js` (TOC
 filter + scroll-spy); no builder.js, no phone-preview styles.
 """
 
@@ -35,7 +35,7 @@ def toc(ctx):
 
     def href(key):
         if key == "tool":
-            return ctx.page("headers")
+            return ctx.page("builder")
         if key == "ref":
             return ctx.page("reference")
         return "#" + key
@@ -62,7 +62,7 @@ def sec(key, title, body):
 def doc_body(ctx):
     t = ctx.t
     ref = ctx.page("reference")
-    tool = ctx.page("headers")
+    tool = ctx.page("builder")
     out = []
 
     # -- overview ---------------------------------------------------------
@@ -346,7 +346,7 @@ def doc_body(ctx):
 def render(ctx):
     """The documentation page (docs.html) — the narrative guide. Light: only
     docs.css and the shared core.js. The per-header catalogue is on
-    reference.html; the builder on headers.html."""
+    reference.html; the builder on builder.html."""
     t = ctx.t
     body = "".join([
         '<section class="pagehead"><div class="shell">',
@@ -366,7 +366,7 @@ def render(ctx):
         chip(t("доставка", "delivery")), chip("HWID"),
         '<a class="chip chip--link" href="' + ctx.page("reference") + '">'
         + esc(t("Заголовки →", "Headers →")) + "</a>",
-        '<a class="chip chip--link" href="' + ctx.page("headers") + '">'
+        '<a class="chip chip--link" href="' + ctx.page("builder") + '">'
         + esc(t("Конструктор →", "Builder →")) + "</a>",
         "</p></div></section>",
         '<section class="section"><div class="shell">',

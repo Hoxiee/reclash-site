@@ -10,14 +10,14 @@ NAV = (
     ("index", "Клиент", "Client"),
     ("gallery", "Галерея", "Gallery"),
     ("start", "Старт и FAQ", "Start & FAQ"),
-    ("headers", "Разработчикам", "Developers"),
+    ("dev", "Разработчикам", "Developers"),
 )
 
 FILE = {
     "index": "index.html",
     "gallery": "gallery.html",
     "docs": "docs.html",
-    "headers": "headers.html",
+    "builder": "builder.html",
     "reference": "reference.html",
     "download": "download.html",
     "start": "start.html",
@@ -32,10 +32,10 @@ FILE = {
 # switch, so the client-facing links come first. Keyed by NAV key so any page's
 # masthead grows the same drop-down.
 SUBNAV = {
-    "headers": (
+    "dev": (
         ("docs", "Документация", "Documentation"),
         ("reference", "Заголовки", "Headers"),
-        ("headers", "Конструктор", "Builder"),
+        ("builder", "Конструктор", "Builder"),
         ("mock", "Мок-подписки", "Mock subs"),
         ("report", "Отчёт подписки", "Subscription report"),
     ),
@@ -165,7 +165,7 @@ def footer(ctx):
             (t("Клиент", "Client"), ctx.page("index"), False),
             (t("Документация по заголовкам", "Header documentation"), ctx.page("docs"), False),
             (t("Справочник по заголовкам", "Header reference"), ctx.page("reference"), False),
-            (t("Конструктор заголовков", "Header builder"), ctx.page("headers"), False),
+            (t("Конструктор заголовков", "Header builder"), ctx.page("builder"), False),
             (t("Загрузки", "Downloads"), ctx.page("download"), False),
             (t("Быстрый старт и FAQ", "Quick start & FAQ"), ctx.page("start"), False),
         ],

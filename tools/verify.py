@@ -127,7 +127,7 @@ def check(path):
 # Every rendered page, including the noindex mock-subscriptions page (it still
 # has to be structurally sound and language-parallel — it is just kept out of
 # the sitemap).
-PAGE_FILES = ("index.html", "gallery.html", "docs.html", "headers.html",
+PAGE_FILES = ("index.html", "gallery.html", "docs.html", "builder.html",
               "reference.html", "download.html", "start.html", "mock-subs.html",
               "report.html")
 
@@ -170,21 +170,21 @@ def ids_in(src):
 
 
 for lang in ("ru", "en"):
-    # builder.js ↔ headers.html
-    src = pages[(lang, "headers.html")][1]
+    # builder.js ↔ builder.html
+    src = pages[(lang, "builder.html")][1]
     have = ids_in(src)
     b = js("builder.js")
     for i in set(re.findall(r"getElementById\('([A-Za-z0-9_-]+)'\)", b)):
         if i not in have:
-            fails.append("%s/headers.html: builder.js needs #%s" % (lang, i))
+            fails.append("%s/builder.html: builder.js needs #%s" % (lang, i))
     for f in set(re.findall(r"\bf_[a-z0-9_]+", b)):
         if f not in have:
-            fails.append("%s/headers.html: builder.js needs control #%s" % (lang, f))
+            fails.append("%s/builder.html: builder.js needs control #%s" % (lang, f))
     keys = set(re.findall(r"\bs\('([A-Za-z0-9_]+)'\)", b))
     payload = json.loads(re.search(
         r'id="builder-strings">(.*?)</script>', src, re.S).group(1).replace("<\\/", "</"))
     for k in keys - set(payload):
-        fails.append("%s/headers.html: builder-strings missing %r" % (lang, k))
+        fails.append("%s/builder.html: builder-strings missing %r" % (lang, k))
 
     # report.js ↔ report.html
     src = pages[(lang, "report.html")][1]
@@ -233,7 +233,7 @@ for lang in ("ru", "en"):
 
     # home.js / core.js ↔ index.html
     src = pages[(lang, "index.html")][1]
-    for need in ('href="headers.html#builder"',
+    for need in ('href="builder.html#builder"',
                  # the first-run panel mounts the same converter core.js wires
                  'id="get-started"', 'class="deeplink"', 'data-scheme="reclash"',
                  'class="deeplink__out"', "data-make",

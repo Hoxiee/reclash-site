@@ -16,7 +16,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch();
 for (const [tag, w, h] of [['desk', 1440, 900], ['phone', 390, 844]]) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
-  for (const f of ['index.html', 'headers.html', 'download.html', 'start.html']) {
+  for (const f of ['index.html', 'builder.html', 'download.html', 'start.html']) {
     const page = await ctx.newPage();
     await page.goto('file://' + path.join(DIST, LANG, f));
     await page.waitForTimeout(700);

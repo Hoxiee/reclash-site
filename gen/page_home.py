@@ -140,7 +140,7 @@ def section_paths(ctx):
            "ReClash opens your provider's link, shows the traffic you have left and "
            "connects — no account, no sign-up, no email."),
          t("Скачать ReClash", "Download ReClash")),
-        (ctx.page("headers") + "#builder", "palette", "provider",
+        (ctx.page("builder") + "#builder", "palette", "provider",
          t("вы продаёте доступ", "you sell access"),
          t("Сделайте клиент своим", "Make the client yours"),
          t("Несколько заголовков в ответе подписки — и приложение носит ваш логотип, "
@@ -458,7 +458,7 @@ def section_providers(ctx):
         )),
         '<div class="row gap-2" style="margin-top:var(--step-4)">%s%s</div>' % (
             btn(ctx.page("docs"), t("Открыть документацию", "Open the docs"), "btn--paper", "book"),
-            btn(ctx.page("headers") + "#builder",
+            btn(ctx.page("builder") + "#builder",
                 t("Собрать заголовки", "Build the headers"), "btn--amber", "wrench"),
         ),
         '<p class="muted" style="margin-top:var(--step-3);font-size:.92rem">%s</p>' % t(

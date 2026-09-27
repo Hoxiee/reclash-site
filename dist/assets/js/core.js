@@ -502,7 +502,7 @@
   if ('addEventListener' in window) {
     /* Nav order = reading order of the masthead links, mock/reference folded in
        under their parent. Index decides which way a jump travels. */
-    var VT_ORDER = ['index', 'gallery', 'start', 'docs', 'reference', 'headers',
+    var VT_ORDER = ['index', 'gallery', 'start', 'docs', 'reference', 'builder',
       'mock', 'download'];
     function vtFile(name) { return name.replace(/^.*\//, '').replace(/[?#].*$/, ''); }
     function vtKey(file) {
