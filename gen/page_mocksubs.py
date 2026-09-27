@@ -1,13 +1,21 @@
 """Mock subscriptions: fake subscription links for exercising the client.
 
 The cards, the profile bodies and the ReClash-* headers all come from the one
-source in gen/mocks.py, so a card can never claim something the served
-response does not carry. The import button is a real reclash://install-config
-deep link pointing at /mock/<key> on this host.
+source in gen/mocks.py (via gen/mockhdr.py), so a card can never claim
+something the served response does not carry. Each card opens a detail modal —
+a small "living manual": the lead says what the stand demonstrates, a table
+annotates every header it sends (explanations from gen/spec.py), and two
+actions import it into ReClash (reclash://install-config) or open it pre-filled
+in the header builder.
 """
 
-from . import ui, mocks
+import datetime
+
+from . import ui, mocks, mockhdr
 from .ui import esc, chip, btn, _uri
+
+_EN_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
 
 def _facts(ctx, m):
@@ -17,8 +25,13 @@ def _facts(ctx, m):
         used = q["up_gb"] + q["down_gb"]
         traffic = t("%d / %d ГБ" % (used, q["total_gb"]),
                     "%d / %d GB" % (used, q["total_gb"]))
-        days = q["expire_days"]
-        expires = t("через %d дн." % days, "in %d days" % days)
+        if q.get("expire_abs"):
+            d = datetime.datetime.fromtimestamp(q["expire_abs"], datetime.timezone.utc)
+            expires = t("до %02d.%02d.%d" % (d.day, d.month, d.year),
+                        "until %s %d, %d" % (_EN_MONTHS[d.month - 1], d.day, d.year))
+        else:
+            days = q["expire_days"]
+            expires = t("через %d дн." % days, "in %d days" % days)
     else:
         traffic = t("без лимита", "unlimited")
         expires = t("бессрочно", "never")
@@ -65,6 +78,14 @@ def section_warn(ctx):
     )
 
 
+def _sub_url(ctx, m):
+    return "%s/mock/%s" % (ctx.base_url, m["key"])
+
+
+def _deeplink(ctx, m):
+    return "reclash://install-config?url=" + _uri(_sub_url(ctx, m))
+
+
 def card(ctx, m):
     t = ctx.t
     name = t(*m["name"])
@@ -74,8 +95,13 @@ def card(ctx, m):
         '<div class="mock__fact"><dt>%s</dt><dd>%s</dd></div>' % (esc(a), esc(b))
         for a, b in _facts(ctx, m)
     )
-    sub_url = "%s/mock/%s" % (ctx.base_url, m["key"])
-    deeplink = "reclash://install-config?url=" + _uri(sub_url)
+    modal_id = "m-" + m["key"]
+    acts = (
+        btn("#" + modal_id, t("Подробнее", "Details"), "btn--sm btn--ghost",
+            icon_name="eye", attrs='data-modal="%s"' % modal_id)
+        + btn(_deeplink(ctx, m), t("Импорт", "Import"), "btn--sm",
+              icon_name="download")
+    )
     return (
         '<article class="mock %s">'
         '<header class="mock__head">'
@@ -86,18 +112,107 @@ def card(ctx, m):
         '<div class="mock__acts">%s</div>'
         "</article>"
     ) % (
-        tone, esc(name), esc(sub), facts, esc(sub_url),
-        btn(deeplink, t("Импорт в ReClash", "Import into ReClash"), "btn--sm",
-            icon_name="download"),
+        tone, esc(name), esc(sub), facts, esc(_sub_url(ctx, m)), acts,
     )
+
+
+def modal(ctx, m):
+    """The per-subscription detail modal: lead, facts, a header manual and the
+    profile body, plus import / open-in-builder / copy actions. Rendered hidden;
+    core.js opens it, and it also opens via :target when JavaScript is off."""
+    t = ctx.t
+    mid = "m-" + m["key"]
+    tone = " mockmodal--" + m["tone"] if m.get("tone") else ""
+    name = t(*m["name"])
+    teaches = t(*m["teaches"]) if m.get("teaches") else ""
+
+    facts = "".join(
+        '<div class="mock__fact"><dt>%s</dt><dd>%s</dd></div>' % (esc(a), esc(b))
+        for a, b in _facts(ctx, m)
+    )
+
+    ref = ctx.page("reference")
+    hint = t("Открыть в справочнике", "Open in the reference")
+
+    def _name_cell(name_, anchor):
+        # a catalogued header links to its reference card; the rest stay plain
+        if anchor:
+            return ('<a class="hdrman__name hdrman__name--link" href="%s#%s" '
+                    'title="%s">%s</a>' % (ref, anchor, esc(hint), esc(name_)))
+        return '<code class="hdrman__name">%s</code>' % esc(name_)
+
+    rows = "".join(
+        '<tr><th scope="row">%s'
+        '<code class="hdrman__val">%s</code></th>'
+        '<td class="hdrman__why">%s</td></tr>'
+        % (_name_cell(name_, anchor), esc(value), why)
+        for name_, value, why, anchor in mockhdr.header_rows(m, ctx.base_url, ctx.lang)
+    )
+    table = (
+        '<table class="hdrman"><thead><tr>'
+        "<th>%s</th><th>%s</th></tr></thead><tbody>%s</tbody></table>"
+        % (esc(t("Заголовок и значение", "Header and value")),
+           esc(t("Назначение", "Purpose")), rows)
+    )
+
+    body_code = ui.codeblock(
+        mockhdr.mock_body(m),
+        t("Копировать", "Copy"), t("Скопировано", "Copied"), "lang-yaml")
+    url_code = ui.codeblock(
+        _sub_url(ctx, m),
+        t("Копировать ссылку", "Copy link"), t("Скопировано", "Copied"))
+
+    builder_href = ctx.page("headers") + mockhdr.builder_cfg(m, ctx.base_url, ctx.lang)
+    acts = (
+        btn(_deeplink(ctx, m), t("Импорт в ReClash", "Import into ReClash"),
+            "btn--sm", icon_name="download")
+        + btn(builder_href, t("Открыть в конструкторе", "Open in the builder"),
+              "btn--sm btn--ghost", icon_name="wrench")
+    )
+
+    return (
+        '<div class="mockmodal%(tone)s" id="%(mid)s" role="dialog" aria-modal="true" '
+        'aria-labelledby="%(mid)s-t">'
+        '<a class="mockmodal__scrim" href="#main" tabindex="-1" '
+        'aria-label="%(close)s"></a>'
+        '<div class="mockmodal__panel">'
+        '<button class="mockmodal__x" type="button" data-close '
+        'aria-label="%(close)s">&times;</button>'
+        '<p class="eyebrow">%(eyebrow)s</p>'
+        '<h2 id="%(mid)s-t" class="mockmodal__name">%(name)s</h2>'
+        '<p class="mockmodal__teaches">%(teaches)s</p>'
+        '<dl class="mock__facts mockmodal__facts">%(facts)s</dl>'
+        '<div class="mockmodal__acts">%(acts)s</div>'
+        '<h3 class="mockmodal__h">%(hdr_h)s</h3>'
+        '<div class="mockmodal__url">%(url)s</div>'
+        '<div class="mockmodal__tablewrap" data-fade>%(table)s</div>'
+        '<h3 class="mockmodal__h">%(body_h)s</h3>'
+        "%(body)s"
+        "</div></div>"
+    ) % {
+        "mid": mid,
+        "tone": tone,
+        "close": esc(t("Закрыть", "Close")),
+        "eyebrow": esc(t("Мок-подписка", "Mock subscription")),
+        "name": esc(name),
+        "teaches": esc(teaches),
+        "facts": facts,
+        "acts": acts,
+        "hdr_h": esc(t("Заголовки ответа", "Response headers")),
+        "url": url_code,
+        "table": table,
+        "body_h": esc(t("Тело профиля", "Profile body")),
+        "body": body_code,
+    }
 
 
 def section_cards(ctx):
     cards = "".join(card(ctx, m) for m in mocks.MOCKS)
+    modals = "".join(modal(ctx, m) for m in mocks.MOCKS)
     return (
         '<section class="section"><div class="shell">'
         '<div class="mocks">%s</div>'
-        "</div></section>" % cards
+        "</div></section>%s" % (cards, modals)
     )
 
 
@@ -144,5 +259,5 @@ def render(ctx):
         ),
         "body": body,
         "css": ("mock.css",),
-        "js": (),
+        "js": ("mock.js",),
     }

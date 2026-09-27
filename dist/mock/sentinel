@@ -1,0 +1,10 @@
+# Mock subscription: sentinel. Fake nodes, for testing ReClash only.
+mixed-port: 7890
+mode: rule
+proxies:
+  - {name: "Sentinel Trial 01", type: ss, server: 127.0.0.1, port: 8388, cipher: aes-256-gcm, password: mock}
+  - {name: "Sentinel Trial 02", type: ss, server: 127.0.0.1, port: 8389, cipher: aes-256-gcm, password: mock}
+proxy-groups:
+  - {name: "Sentinel Trial", type: select, proxies: ["Sentinel Trial 01", "Sentinel Trial 02", DIRECT]}
+rules:
+  - MATCH,Sentinel Trial

@@ -17,7 +17,7 @@ from gen import layout, ui  # noqa: E402
 from gen.layout import Ctx  # noqa: E402
 from gen import (  # noqa: E402
     page_home, page_docs, page_headers, page_downloads, page_start,
-    page_gallery, page_mocksubs, page_report, mocks,
+    page_gallery, page_mocksubs, page_report, mocks, mockhdr,
 )
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -280,76 +280,13 @@ def webmanifest(base_url):
 # request origin for --serve). Media (logo/background) are absolute URLs, as a
 # real provider would send.
 
-import base64 as _b64  # noqa: E402
 import json as _json  # noqa: E402
 
-
-def _hval(text):
-    """A header value: plain ASCII as-is, anything else as base64:<...> — the
-    same rule the headers builder applies to non-ASCII fields."""
-    if text is None:
-        return None
-    if all(0x20 <= ord(c) <= 0x7e for c in text):
-        return text
-    return "base64:" + _b64.b64encode(text.encode("utf-8")).decode("ascii")
-
-
-def mock_body(m):
-    """A minimal, valid mihomo profile with fake nodes — enough to import and
-    exercise the UI; the nodes do not route anywhere."""
-    group = m["servicename"]
-    n = m.get("nodes", 3)
-    nodes = "\n".join(
-        '  - {name: "%s %02d", type: ss, server: 127.0.0.1, port: %d, '
-        'cipher: aes-256-gcm, password: mock}' % (group, i + 1, 8388 + i)
-        for i in range(n)
-    )
-    names = ", ".join('"%s %02d"' % (group, i + 1) for i in range(n))
-    return (
-        "# Mock subscription: %s. Fake nodes, for testing ReClash only.\n"
-        "mixed-port: 7890\n"
-        "mode: rule\n"
-        "proxies:\n%s\n"
-        'proxy-groups:\n  - {name: "%s", type: select, proxies: [%s, DIRECT]}\n'
-        "rules:\n  - MATCH,%s\n"
-        % (m["key"], nodes, group, names, group)
-    )
-
-
-def mock_headers(m):
-    """Ordered (name, value) header pairs for one subscription. Values may
-    carry the {BASE} origin token; the caller substitutes it."""
-    h = [
-        ("Content-Type", "text/yaml; charset=utf-8"),
-        ("Content-Disposition", 'attachment; filename="%s.yaml"' % m["key"]),
-        ("Profile-Title", _hval(m.get("title"))),
-        ("ReClash-ServiceName", _hval(m.get("servicename"))),
-        ("ReClash-ActiveText", _hval(m.get("activetext"))),
-        ("ReClash-Hex", m.get("hex")),
-        ("ReClash-HeroRing", ";".join(m["heroring"]) if m.get("heroring") else None),
-        ("ReClash-HeroEffect", m.get("heroeffect")),
-        ("ReClash-ServiceLogo",
-         "{BASE}/assets/mock/%s" % m["logo"] if m.get("logo") else None),
-        ("ReClash-Background",
-         "{BASE}/assets/mock/%s,%d" % (m["bg"][0], m["bg"][1]) if m.get("bg") else None),
-        ("ReClash-Widgets", m.get("widgets")),
-        ("ReClash-View", m.get("view")),
-        ("ReClash-SupportURL", m.get("support")),
-        ("ReClash-BuyPlan", m.get("buyplan")),
-        ("ReClash-BuyTraffic", m.get("buytraffic")),
-        ("ReClash-Announce", _hval(m["announce"][0]) if m.get("announce") else None),
-        ("ReClash-AutoUpdateInterval",
-         str(m["update_min"]) if m.get("update_min") else None),
-    ]
-    q = m.get("quota")
-    if q:
-        now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
-        expire = now + q["expire_days"] * 86400
-        h.append(("Subscription-Userinfo",
-                  "upload=%d; download=%d; total=%d; expire=%d"
-                  % (q["up_gb"] * mocks.GB, q["down_gb"] * mocks.GB,
-                     q["total_gb"] * mocks.GB, expire)))
-    return [(k, v) for k, v in h if v is not None]
+# The body/headers builders live in gen/mockhdr.py so the mock-subs page can
+# render the exact same response in its manual. Re-exported here under the
+# names build_mocks already uses.
+mock_body = mockhdr.mock_body
+mock_headers = mockhdr.mock_headers
 
 
 def build_mocks(base_url):

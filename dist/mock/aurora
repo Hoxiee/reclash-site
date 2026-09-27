@@ -1,0 +1,12 @@
+# Mock subscription: aurora. Fake nodes, for testing ReClash only.
+mixed-port: 7890
+mode: rule
+proxies:
+  - {name: "Aurora Pass 01", type: ss, server: 127.0.0.1, port: 8388, cipher: aes-256-gcm, password: mock}
+  - {name: "Aurora Pass 02", type: ss, server: 127.0.0.1, port: 8389, cipher: aes-256-gcm, password: mock}
+  - {name: "Aurora Pass 03", type: ss, server: 127.0.0.1, port: 8390, cipher: aes-256-gcm, password: mock}
+  - {name: "Aurora Pass 04", type: ss, server: 127.0.0.1, port: 8391, cipher: aes-256-gcm, password: mock}
+proxy-groups:
+  - {name: "Aurora Pass", type: select, proxies: ["Aurora Pass 01", "Aurora Pass 02", "Aurora Pass 03", "Aurora Pass 04", DIRECT]}
+rules:
+  - MATCH,Aurora Pass

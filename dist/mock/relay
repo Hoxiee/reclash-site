@@ -1,0 +1,12 @@
+# Mock subscription: relay. Fake nodes, for testing ReClash only.
+mixed-port: 7890
+mode: rule
+proxies:
+  - {name: "Relay Shift 01", type: ss, server: 127.0.0.1, port: 8388, cipher: aes-256-gcm, password: mock}
+  - {name: "Relay Shift 02", type: ss, server: 127.0.0.1, port: 8389, cipher: aes-256-gcm, password: mock}
+  - {name: "Relay Shift 03", type: ss, server: 127.0.0.1, port: 8390, cipher: aes-256-gcm, password: mock}
+  - {name: "Relay Shift 04", type: ss, server: 127.0.0.1, port: 8391, cipher: aes-256-gcm, password: mock}
+proxy-groups:
+  - {name: "Relay Shift", type: select, proxies: ["Relay Shift 01", "Relay Shift 02", "Relay Shift 03", "Relay Shift 04", DIRECT]}
+rules:
+  - MATCH,Relay Shift

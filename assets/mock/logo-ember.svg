@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Ember Line logo">
+  <defs>
+    <linearGradient id="e" x1="96" y1="416" x2="416" y2="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC46B"/><stop offset=".55" stop-color="#FF7A1A"/><stop offset="1" stop-color="#E8380D"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0b0a12"/>
+  <polygon fill="none" stroke="url(#e)" stroke-width="44" stroke-dasharray="300 60" stroke-dashoffset="150" stroke-linejoin="round" points="436,256 346,411.8 166,411.8 76,256 166,100.2 346,100.2"/>
+  <polygon fill="none" stroke="url(#e)" stroke-width="7" points="351.3,256 303.6,338.6 208.4,338.6 160.7,256 208.4,173.4 303.6,173.4"/>
+  <polygon fill="url(#e)" points="311,256 283.5,303.6 228.5,303.6 201,256 228.5,208.4 283.5,208.4"/>
+</svg>

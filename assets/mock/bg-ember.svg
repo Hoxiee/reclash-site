@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Ember background">
+  <defs>
+    <linearGradient id="e-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#120704"/><stop offset=".5" stop-color="#331206"/>
+      <stop offset=".82" stop-color="#8a320a"/><stop offset="1" stop-color="#c85a14"/>
+    </linearGradient>
+    <radialGradient id="e-vig" cx=".5" cy=".42" r=".72">
+      <stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/>
+    </radialGradient>
+    <filter id="e-soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="26"/></filter>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#e-sky)"/>
+  <g filter="url(#e-soft)">
+    <circle cx="180" cy="360" r="70" fill="#FF7A1A" opacity=".55"/>
+    <circle cx="470" cy="240" r="34" fill="#FFC46B" opacity=".85"/>
+    <circle cx="820" cy="420" r="80" fill="#E8380D" opacity=".45"/>
+    <circle cx="960" cy="220" r="40" fill="#FFD9A0" opacity=".8"/>
+    <circle cx="240" cy="780" r="88" fill="#FF7A1A" opacity=".3"/>
+    <circle cx="700" cy="880" r="48" fill="#FFD9A0" opacity=".55"/>
+    <circle cx="900" cy="720" r="66" fill="#FF6B1A" opacity=".38"/>
+    <circle cx="360" cy="1180" r="96" fill="#FF7A1A" opacity=".26"/>
+    <circle cx="800" cy="1240" r="72" fill="#FFC46B" opacity=".3"/>
+  </g>
+  <ellipse cx="540" cy="1900" rx="1040" ry="360" fill="#FF6B1A" opacity=".3" filter="url(#e-soft)"/>
+  <rect width="1080" height="1920" fill="url(#e-vig)"/>
+</svg>

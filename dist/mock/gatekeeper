@@ -1,0 +1,10 @@
+# Mock subscription: gatekeeper. Fake nodes, for testing ReClash only.
+mixed-port: 7890
+mode: rule
+proxies:
+  - {name: "Gatekeeper 01", type: ss, server: 127.0.0.1, port: 8388, cipher: aes-256-gcm, password: mock}
+  - {name: "Gatekeeper 02", type: ss, server: 127.0.0.1, port: 8389, cipher: aes-256-gcm, password: mock}
+proxy-groups:
+  - {name: "Gatekeeper", type: select, proxies: ["Gatekeeper 01", "Gatekeeper 02", DIRECT]}
+rules:
+  - MATCH,Gatekeeper
