@@ -64,18 +64,16 @@ def section_hero(ctx):
     )
 
 
-def section_warn(ctx):
+def _warn(ctx):
+    # The warning is about the very links the cards below carry, so it rides at
+    # the top of the cards section rather than stranded in its own tall band.
     t = ctx.t
-    return (
-        '<section class="section section--tight"><div class="shell">'
-        + ui.notice("<span>" + t(
-            "Это не рабочий доступ. Ссылки и цифры вымышлены и существуют только для "
-            "проверки функционала приложения. Не используйте их как подписку.",
-            "This is not working access. The links and figures are invented and exist "
-            "only to test the app. Do not use them as a subscription.",
-        ) + "</span>", "notice--warn")
-        + "</div></section>"
-    )
+    return ui.notice("<span>" + t(
+        "Это не рабочий доступ. Ссылки и цифры вымышлены и существуют только для "
+        "проверки функционала приложения. Не используйте их как подписку.",
+        "This is not working access. The links and figures are invented and exist "
+        "only to test the app. Do not use them as a subscription.",
+    ) + "</span>", "notice--warn mocksubs__warn")
 
 
 def _sub_url(ctx, m):
@@ -210,9 +208,10 @@ def section_cards(ctx):
     cards = "".join(card(ctx, m) for m in mocks.MOCKS)
     modals = "".join(modal(ctx, m) for m in mocks.MOCKS)
     return (
-        '<section class="section"><div class="shell">'
-        '<div class="mocks">%s</div>'
-        "</div></section>%s" % (cards, modals)
+        '<section class="section mocksubs__cards"><div class="shell">'
+        + _warn(ctx)
+        + '<div class="mocks">%s</div>' % cards
+        + "</div></section>%s" % modals
     )
 
 
@@ -233,7 +232,7 @@ def section_how(ctx):
         "<li><h3>%s</h3><p>%s</p></li>" % (esc(a), esc(b)) for a, b in items
     )
     return (
-        '<section class="section section--tight"><div class="shell">'
+        '<section class="section mocksubs__how"><div class="shell">'
         + ui.rubric("→", ctx.t("Как пользоваться", "How to use"))
         + '<ol class="mock-how">%s</ol>' % li
         + "</div></section>"
@@ -244,7 +243,6 @@ def render(ctx):
     t = ctx.t
     body = "".join([
         section_hero(ctx),
-        section_warn(ctx),
         section_cards(ctx),
         section_how(ctx),
     ])

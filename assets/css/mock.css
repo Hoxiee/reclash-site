@@ -5,6 +5,23 @@
    accents from base.css. A card's left rail and the modal's top rail recolour
    per tone (blue / amber / violet). */
 
+/* ----------------------------------------------------------- page rhythm
+   A short utility page: a warning strip, a card grid and a three-step how-to.
+   The site's landing-section rhythm (padding up to 8rem) strands each block in
+   whitespace, so tighten the vertical spacing to one calmer step here. The
+   compound `.section.*` selectors beat base's `.section` and `.section + .section`
+   on specificity, and mock.css loads after base.css to win the ties. */
+.section.mocksubs__cards {
+  padding-block: clamp(2rem, 3.5vw, 3rem) clamp(3rem, 6vw, 4.5rem);
+}
+.section.mocksubs__how {
+  padding-block: 0 clamp(3.5rem, 7vw, 6rem);
+}
+/* the warning sits right above the grid, not floating a section apart */
+.mocksubs__warn {
+  margin-bottom: var(--step-4);
+}
+
 /* ------------------------------------------------------------------ cards */
 .mocks {
   display: grid;
