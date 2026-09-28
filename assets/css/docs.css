@@ -1996,7 +1996,11 @@
 
 .hcard__sum {
   display: grid;
-  grid-template-columns: minmax(11rem, auto) auto minmax(0, 1fr) auto;
+  /* A fixed name column (not minmax, which each independent per-card grid sizes
+     to its own content) so the name, the category badge and the alias badge all
+     line up down the list — the widest name is reclash-autoupdateinterval at
+     ~14.5rem. Below 680px this whole track set is replaced by stacked areas. */
+  grid-template-columns: 15.5rem auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.5rem 0.9rem;
   padding: 0.7rem 0.9rem;
