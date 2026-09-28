@@ -4,31 +4,82 @@ The docs tables, the builder form and the live preview all read from here, so
 the reference and the tool can never describe different rules.
 """
 
-# id, availability, ru label, en label, on-by-default in the builder
-WIDGETS = [
-    ("networkSpeed", "all", "Скорость сети", "Network speed", True),
-    ("trafficUsage", "all", "Расход трафика", "Traffic usage", True),
-    ("networkDetection", "all", "Определение сети", "Network detection", False),
-    ("tunButton", "desktop", "Кнопка TUN", "TUN button", False),
-    ("vpnButton", "android", "Кнопка VPN", "VPN button", False),
-    ("systemProxyButton", "desktop", "Системный прокси", "System proxy", False),
-    ("intranetIp", "all", "Внутренний IP", "Intranet IP", False),
-    ("memoryInfo", "all", "Память", "Memory info", False),
-    ("goroutineInfo", "all", "Горутины", "Goroutines", False),
-    ("metaInfo", "all", "Подписка: срок и квота", "Subscription: term and quota", False),
-    ("announce", "all", "Объявление", "Announcement", False),
-    ("serviceInfo", "all", "Карточка сервиса", "Service card", True),
-    ("changeServerButton", "all", "Смена сервера", "Change server", True),
-    ("smartRouting", "all", "Умная маршрутизация", "Smart routing", False),
-    ("serviceStatus", "all", "Статус сервисов", "Service status", False),
-    ("connections", "all", "Соединения", "Connections", False),
-    ("dnsQueries", "all", "DNS-запросы", "DNS queries", False),
-    ("requests", "all", "Запросы", "Requests", False),
-    ("runTime", "all", "Старт", "Start", False),
-    ("proxyGroups", "all", "Группа прокси", "Proxy group", False),
-    ("profiles", "all", "Профили", "Profiles", False),
-    ("overrideDnsButton", "all", "Переопределить DNS", "Override DNS", False),
-]
+import json as _json
+import os as _os
+
+# The structural half of this file — the widget set and its platforms, the
+# reclash-view token values, the theme variants — is generated in the ReClash
+# fork by `tool/gen_provider_standard.dart` and vendored beside this module as
+# JSON. The RU/EN prose stays here, keyed by the same ids, so the fork owns the
+# structure and the site owns the wording; tools/check_fork_headers.py guards
+# the seam and --sync refreshes the vendored copy.
+_STANDARD_PATH = _os.path.join(
+    _os.path.dirname(_os.path.abspath(__file__)), "provider_standard.g.json")
+with open(_STANDARD_PATH, encoding="utf-8") as _fh:
+    STANDARD = _json.load(_fh)
+
+
+def _cover(kind, prose_keys, standard_keys):
+    """Fail the build when the prose and the fork standard name different keys."""
+    prose, canon = set(prose_keys), set(standard_keys)
+    if prose != canon:
+        raise SystemExit(
+            "spec.py: %s prose out of sync with the fork standard "
+            "(missing prose for: %s; stale prose for: %s) — run "
+            "`python tools/check_fork_headers.py --sync`, then edit the prose"
+            % (kind, ", ".join(sorted(canon - prose)) or "\u2014",
+               ", ".join(sorted(prose - canon)) or "\u2014"))
+
+
+def _widget_platform(platforms):
+    """Collapse the fork's platform list into the builder's availability tag."""
+    s = set(platforms)
+    if s == {"Windows", "MacOS", "Linux", "Android"}:
+        return "all"
+    if s == {"Windows", "MacOS", "Linux"}:
+        return "desktop"
+    if s == {"Android"}:
+        return "android"
+    raise SystemExit("spec.py: unmapped widget platform set %s — extend "
+                     "_widget_platform and PLATFORM_LABEL" % sorted(s))
+
+
+# ru label, en label, on-by-default in the builder, keyed by widget id.
+# byedpi-only widgets (the classic desync tools) are documented elsewhere and
+# are intentionally absent; the modes filter below drops them before _cover.
+_WIDGET_PROSE = {
+    'networkSpeed': ('Скорость сети', 'Network speed', True),
+    'trafficUsage': ('Расход трафика', 'Traffic usage', True),
+    'networkDetection': ('Определение сети', 'Network detection', False),
+    'tunButton': ('Кнопка TUN', 'TUN button', False),
+    'vpnButton': ('Кнопка VPN', 'VPN button', False),
+    'systemProxyButton': ('Системный прокси', 'System proxy', False),
+    'intranetIp': ('Внутренний IP', 'Intranet IP', False),
+    'memoryInfo': ('Память', 'Memory info', False),
+    'goroutineInfo': ('Горутины', 'Goroutines', False),
+    'metaInfo': ('Подписка: срок и квота', 'Subscription: term and quota', False),
+    'announce': ('Объявление', 'Announcement', False),
+    'serviceInfo': ('Карточка сервиса', 'Service card', True),
+    'changeServerButton': ('Смена сервера', 'Change server', True),
+    'smartRouting': ('Умная маршрутизация', 'Smart routing', False),
+    'serviceStatus': ('Статус сервисов', 'Service status', False),
+    'connections': ('Соединения', 'Connections', False),
+    'dnsQueries': ('DNS-запросы', 'DNS queries', False),
+    'requests': ('Запросы', 'Requests', False),
+    'runTime': ('Старт', 'Start', False),
+    'proxyGroups': ('Группа прокси', 'Proxy group', False),
+    'profiles': ('Профили', 'Profiles', False),
+    'overrideDnsButton': ('Переопределить DNS', 'Override DNS', False),
+}
+
+WIDGETS = []
+for _w in STANDARD["widgets"]:
+    if _w["modes"] == ["byedpi"]:
+        continue
+    _ru, _en, _on = _WIDGET_PROSE[_w["id"]]
+    WIDGETS.append((_w["id"], _widget_platform(_w["platforms"]), _ru, _en, _on))
+_cover("widget", _WIDGET_PROSE,
+       [_w["id"] for _w in STANDARD["widgets"] if _w["modes"] != ["byedpi"]])
 
 PLATFORM_LABEL = {
     "all": ("все платформы", "all platforms"),
@@ -36,24 +87,30 @@ PLATFORM_LABEL = {
     "android": ("Android", "Android"),
 }
 
-# reclash-view tokens
-VIEW_TOKENS = [
-    ("type", ["tab", "list"], "Форма страницы прокси", "Proxy page shape"),
-    ("sort", ["default", "none", "delay", "name"], "Сортировка узлов", "Node sorting"),
-    ("layout", ["loose", "standard", "tight"], "Плотность сетки", "Grid density"),
-    ("icon", ["none", "standard", "icon"], "Иконки узлов", "Node icons"),
-    ("card", ["expand", "shrink", "min", "oneline"], "Размер карточки", "Card size"),
-]
+# reclash-view tokens: value lists come from the fork standard, prose stays here
+_VIEW_PROSE = {
+    'type': ('Форма страницы прокси', 'Proxy page shape'),
+    'sort': ('Сортировка узлов', 'Node sorting'),
+    'layout': ('Плотность сетки', 'Grid density'),
+    'icon': ('Иконки узлов', 'Node icons'),
+    'card': ('Размер карточки', 'Card size'),
+}
+VIEW_TOKENS = [(_k, STANDARD["tokens"]["view"][_k], _ru, _en)
+               for _k, (_ru, _en) in _VIEW_PROSE.items()]
+_cover("view-token", _VIEW_PROSE, STANDARD["tokens"]["view"])
 
-THEME_VARIANTS = [
-    ("tonalspot", "Сбалансированный, по умолчанию", "Balanced, the default"),
-    ("fidelity", "Ближе к исходному цвету", "Closer to the source colour"),
-    ("monochrome", "Оттенки серого", "Greyscale"),
-    ("neutral", "Почти без насыщенности", "Nearly desaturated"),
-    ("vibrant", "Максимальная насыщенность", "Maximum saturation"),
-    ("expressive", "Смещённый оттенок", "Shifted hue"),
-    ("content", "От контента, живее fidelity", "Content-driven, livelier than fidelity"),
-]
+# theme variants: the key set comes from the fork standard, prose stays here
+_THEME_PROSE = {
+    'tonalspot': ('Сбалансированный, по умолчанию', 'Balanced, the default'),
+    'fidelity': ('Ближе к исходному цвету', 'Closer to the source colour'),
+    'monochrome': ('Оттенки серого', 'Greyscale'),
+    'neutral': ('Почти без насыщенности', 'Nearly desaturated'),
+    'vibrant': ('Максимальная насыщенность', 'Maximum saturation'),
+    'expressive': ('Смещённый оттенок', 'Shifted hue'),
+    'content': ('От контента, живее fidelity', 'Content-driven, livelier than fidelity'),
+}
+THEME_VARIANTS = [(_v, _ru, _en) for _v, (_ru, _en) in _THEME_PROSE.items()]
+_cover("theme-variant", _THEME_PROSE, STANDARD["tokens"]["themeVariants"])
 
 SETTINGS_TOKENS = [
     ("minimize", "Сворачивать вместо выхода", "Minimize instead of exiting"),
