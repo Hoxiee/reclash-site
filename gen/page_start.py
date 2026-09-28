@@ -239,8 +239,8 @@ def faq_items(ctx):
          t('<p>ReClash — форк <a class="link link--cyan" href="%s" target="_blank" '
            'rel="noopener">FlClash</a>. Основные добавления: умная маршрутизация, '
            "которая сама держит рабочий узел под текущую сеть, расширенный набор "
-           "заголовков для провайдеров (тема, виджеты, объявления, миграция домена), "
-           "переработанная панель с виджетами, импорт из большего числа форматов "
+           "заголовков для провайдеров (тема, объявления, миграция домена), "
+           "переработанная панель, импорт из большего числа форматов "
            "(в том числе Amnezia) и встроенный обход DPI. Ядро маршрутизации то "
            "же — mihomo.</p>"
            "<p>Проект не аффилирован с FlClash, mihomo или FlClashX.</p>"
@@ -248,8 +248,8 @@ def faq_items(ctx):
            '<p>ReClash is a fork of <a class="link link--cyan" href="%s" target="_blank" '
            'rel="noopener">FlClash</a>. The main additions: smart routing that keeps a '
            "working node for the current network on its own, a much larger provider "
-           "header set (theme, widgets, announcements, domain migration), a reworked "
-           "dashboard with widgets, import from more formats (Amnezia among them), and "
+           "header set (theme, announcements, domain migration), a reworked "
+           "dashboard, import from more formats (Amnezia among them), and "
            "a built-in DPI bypass. The routing core is the same — mihomo.</p>"
            "<p>The project is not affiliated with FlClash, mihomo or FlClashX.</p>"
            % ui.UPSTREAM_FLCLASH),

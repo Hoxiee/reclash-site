@@ -94,10 +94,10 @@ def section_why(ctx):
         ),
         '<p class="lede" style="margin-top:var(--step-3)">%s</p>' % t(
             "Маршрутизацию делает то же ядро <strong>mihomo</strong>, что и в Clash.Meta. "
-            "ReClash добавляет сверху то, чего не хватало: оформление и виджеты от провайдера, "
+            "ReClash добавляет сверху то, чего не хватало: оформление от провайдера, "
             "умную маршрутизацию, встроенный обход DPI и панель, собранную заново.",
             "Routing runs on the same <strong>mihomo</strong> core as Clash.Meta. ReClash adds "
-            "what was missing on top: provider theming and widgets, smart routing, a built-in "
+            "what was missing on top: provider theming, smart routing, a built-in "
             "DPI bypass, and a dashboard rebuilt from scratch.",
         ),
         '<p class="row gap-2" style="margin-top:var(--step-4)">%s%s</p>' % (
@@ -276,15 +276,15 @@ def section_features(ctx):
         ("palette",
          t("Вид задаёт провайдер", "The look comes from the provider"),
          t("Один заголовок в ответе подписки — и приложение перекрашивается под бренд: "
-           "цвет, фон, кольцо подключения, логотип, набор виджетов.",
+           "цвет, фон, кольцо подключения и логотип.",
            "A single response header repaints the app in your brand: colour, background, "
-           "connection ring, logo and the widget set.")),
-        ("layers",
-         t("Панель из виджетов", "A dashboard of widgets"),
-         t("Пятнадцать виджетов: скорость, расход трафика, режим, определение сети, "
-           "TUN, системный прокси, объявление, карточка сервиса.",
-           "Fifteen widgets: speed, traffic usage, mode, network detection, TUN, "
-           "system proxy, announcement, service card.")),
+           "connection ring and logo.")),
+        ("shield",
+         t("Встроенный обход DPI", "Built-in DPI bypass"),
+         t("Разбивает и маскирует handshake ещё до прокси. Включается в настройках, "
+           "когда провайдер режет само соединение по DPI.",
+           "Fragments and masks the handshake before the proxy even starts. Turn it on "
+           "when your ISP throttles the connection itself by DPI.")),
         ("split",
          t("Весь трафик или только приложения", "Whole device or just apps"),
          t("Режим TUN заворачивает всю систему, системный прокси — только "
@@ -306,6 +306,10 @@ def section_features(ctx):
             return ('<a class="link link--cyan" href="%s">%s</a>'
                     % (ctx.page("start") + "#faq-smart",
                        esc(t("Как работает «Авто»", "How “Auto” works"))))
+        if ic == "shield":
+            return ('<a class="link link--cyan" href="%s">%s</a>'
+                    % (ctx.page("start") + "#faq-dpi",
+                       esc(t("Как работает обход", "How the bypass works"))))
         return ""
 
     cards = "".join(
@@ -480,13 +484,13 @@ def section_providers(ctx):
         hdemo,
         '<p class="providers__more">%s</p>' % t(
             "Заголовки настраивают всё оформление клиента — имя сервиса, цвет и палитру, "
-            "hero-кольцо и эффект, набор виджетов, объявление, кнопки продления, "
+            "hero-кольцо и эффект, объявление, кнопки продления, "
             "запасные хосты и другое. Всего <b>20 заголовков reclash-*</b>; клиент также "
             "читает стандартные заголовки подписки, а часть имён FlClashX понимает как "
             "псевдонимы — <a class=\"link link--cyan\" href=\"%s\">полный справочник</a>."
             % ctx.page("reference"),
             "The headers configure the whole look of the client — service name, colour and "
-            "palette, hero ring and effect, widget set, announcement, renew buttons, "
+            "palette, hero ring and effect, announcement, renew buttons, "
             "fallback hosts and more. <b>20 reclash-* headers</b> in all; the client also "
             "reads standard subscription headers and understands a subset of FlClashX names "
             "as aliases — <a class=\"link link--cyan\" href=\"%s\">the full reference</a>."
@@ -587,8 +591,8 @@ def section_stats(ctx):
     t = ctx.t
     stats = [
         ("4", t("платформы", "platforms")),
-        ("15", t("виджетов", "widgets")),
-        ("19", t("заголовков бренда", "brand headers")),
+        ("7", t("варианта темы", "theme variants")),
+        ("20", t("заголовков бренда", "brand headers")),
         ("GPL-3.0", t("открытый код", "open source")),
     ]
     cells = "".join(
