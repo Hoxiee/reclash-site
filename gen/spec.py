@@ -177,6 +177,15 @@ COMMON_HEADERS = [
         "Compatibility name for <code>reclash-reporturl</code>. "
         "Adds a “report an issue” action for the subscription.",
     ),
+    (
+        "profile-web-page-url",
+        "URL личного кабинета",
+        "Provider account URL",
+        "Совместимое имя для <code>reclash-webpageurl</code>, "
+        "которое уже шлют marzban и 3x-ui.",
+        "Compatibility name for <code>reclash-webpageurl</code>, "
+        "already emitted by marzban and 3x-ui.",
+    ),
 ]
 
 # name, ru value, en value, ru purpose, en purpose
@@ -184,11 +193,20 @@ RECLASH_HEADERS = [
     ("reclash-announce", "Текст или Base64", "Plain text or Base64",
      "Объявление провайдера. Приоритетнее <code>announce</code>.",
      "Provider announcement. Takes priority over <code>announce</code>."),
+    ("reclash-announceurl", "URL объявления", "Provider announcement URL",
+     "Делает объявление ссылкой: открывается вместо кнопки закрытия на листе и карточке объявления. Абсолютный HTTPS.",
+     "Turns the announcement into a link: opens instead of the dismiss button on the announcement sheet and card. Use an absolute HTTPS URL."),
     ("reclash-supporturl", "URL поддержки", "Provider support URL",
      "Страница поддержки. Абсолютный HTTPS.",
      "Support page. Use an absolute HTTPS URL."),
     ("reclash-autoupdateinterval", "Целое &gt; 0, в минутах", "Positive integer, in minutes",
      "Интервал обновления профиля.", "Profile update interval."),
+    ("reclash-expiredays", "Дни через запятую", "Comma-separated days",
+     "За сколько дней до конца подписки напоминать. Переопределяет значение по умолчанию 3,2,1.",
+     "Days-before-expiry the client reminds at. Overrides the default 3,2,1."),
+    ("reclash-trafficpercent", "Проценты через запятую", "Comma-separated percents",
+     "На каких процентах израсходованного трафика напоминать на тарифах с лимитом. Переопределяет значение по умолчанию 90.",
+     "Used-traffic percents the client reminds at on metered plans. Overrides the default 90."),
     ("reclash-servicename", "Текст или Base64", "Plain text or Base64",
      "Имя сервиса на панели.", "Provider name shown in the dashboard."),
     ("reclash-activetext", "Текст или Base64", "Plain text or Base64",
@@ -207,6 +225,9 @@ RECLASH_HEADERS = [
     ("reclash-reporturl", "URL", "URL",
      "Действие «Сообщить о проблеме с подпиской».",
      "Subscription issue-report action."),
+    ("reclash-webpageurl", "URL личного кабинета", "Provider account URL",
+     "Ссылка на личный кабинет в деталях подписки. Также читается из заголовка <code>profile-web-page-url</code>, который уже шлют marzban и 3x-ui. Абсолютный HTTPS.",
+     "Personal-account link in the subscription details. Also read from the Profile-Web-Page-Url header that marzban and 3x-ui already emit. Use an absolute HTTPS URL."),
     ("reclash-view", "Токены страницы прокси", "Proxy-page tokens",
      "Предлагает вид страницы прокси для этого профиля.",
      "Suggests the proxy-page presentation for this profile."),

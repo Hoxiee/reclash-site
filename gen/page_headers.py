@@ -1139,12 +1139,24 @@ def catalog(ctx):
         "reclash-announce": dict(
             example="ReClash-Announce: base64:0J/RgNC+0YTQuNC70LDQutGC0LjQutCw 14.04",
             keys=("объявление баннер", "announcement banner")),
+        "reclash-announceurl": dict(
+            example="ReClash-AnnounceURL: https://nebula.example/news",
+            keys=("объявление ссылка новости", "announcement link news")),
         "reclash-supporturl": dict(
             example="ReClash-SupportURL: https://nebula.example/help",
             keys=("поддержка помощь", "support help")),
         "reclash-autoupdateinterval": dict(
             example="ReClash-AutoUpdateInterval: 60",
             keys=("интервал обновления минуты", "update interval minutes")),
+        "reclash-webpageurl": dict(
+            example="ReClash-WebPageURL: https://nebula.example/account",
+            keys=("личный кабинет аккаунт профиль", "account personal cabinet profile")),
+        "reclash-expiredays": dict(
+            example="ReClash-ExpireDays: 7,3,1",
+            keys=("дни окончания напоминание срок", "expiry days reminder")),
+        "reclash-trafficpercent": dict(
+            example="ReClash-TrafficPercent: 80,95",
+            keys=("трафик проценты напоминание лимит", "traffic percent reminder quota")),
         "reclash-servicename": dict(
             example="ReClash-ServiceName: Nebula VPN",
             keys=("имя сервиса бренд", "service name brand")),
@@ -1350,8 +1362,8 @@ def catalog(ctx):
          t("Стандартные заголовки Clash. Отдаёте их уже — ReClash подхватит без изменений.",
            "Standard Clash headers. If you already send them, ReClash picks them up unchanged.")),
         ("reclash", t("Заголовки ReClash", "ReClash headers"),
-         t("Двадцать заголовков, которые понимает только ReClash. Все необязательны.",
-           "Twenty headers only ReClash understands. Every one is optional.")),
+         t("Заголовки, которые понимает только ReClash. Все необязательны.",
+           "Headers only ReClash understands. Every one is optional.")),
         ("hwid", t("Устройства и HWID", "Devices and HWID"),
          t("Заголовки запроса от клиента и ответы на них.",
            "Request headers from the client and the responses to them.")),
