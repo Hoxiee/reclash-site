@@ -1,0 +1,75 @@
+# Follow the fork's provider standard without a local checkout. Fetches the
+# fork's provider_standard.g.json over HTTPS, and if it differs from the
+# vendored copy opens a PR with the update. The PR runs through ci.yml, whose
+# check_fork_headers step fails until gen/spec.py gains the RU/EN prose for any
+# new header, widget or token — so drift surfaces, but prose stays human.
+name: sync-standard
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+  # Fired by the fork when the standard changes (optional layer 3).
+  repository_dispatch:
+    types: [provider-standard-changed]
+
+concurrency:
+  group: sync-standard
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  # Raw copy of the fork's generated standard. A private fork needs a PAT with
+  # read access instead of anonymous raw; wire it in here if the fork goes private.
+  FORK_RAW: https://raw.githubusercontent.com/Hoxiee/ReClash/main/provider_standard.g.json
+  BRANCH: bot/sync-provider-standard
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch the fork's standard
+        run: curl -fsSL "$FORK_RAW" -o /tmp/fork.json
+
+      - name: Compare with the vendored copy
+        id: diff
+        run: |
+          if cmp -s /tmp/fork.json gen/provider_standard.g.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "provider standard: already in sync"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open a sync PR
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp /tmp/fork.json gen/provider_standard.g.json
+          # Does the vendored prose still cover the new standard?
+          if python3 tools/check_fork_headers.py > /tmp/cover.txt 2>&1; then
+            cover="Coverage guard is green — spec prose and the builder already cover it."
+          else
+            cover="Coverage guard FAILS — add the RU/EN prose in \`gen/spec.py\` (and any builder field) before merging:\n\n\`\`\`\n$(cat /tmp/cover.txt)\n\`\`\`"
+          fi
+          git config user.name "reclash-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add gen/provider_standard.g.json
+          git commit -m "chore: re-vendor provider standard from fork"
+          git push -f origin "$BRANCH"
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number')" ]; then
+            printf 'The fork changed its provider standard. This PR re-vendors %s.\n\n%b\n' \
+              "gen/provider_standard.g.json" "$cover" \
+              | gh pr create --base main --head "$BRANCH" \
+                  --title "chore: re-vendor provider standard from fork" --body-file -
+          fi

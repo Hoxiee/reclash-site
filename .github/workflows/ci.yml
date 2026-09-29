@@ -1,0 +1,50 @@
+# Build the site and run every guard before it ships. Cloudflare Pages deploys
+# on push independently of this workflow, so this gates through PR review /
+# branch protection rather than by blocking the deploy directly.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # verify.py reads dist/, so build first. The fork is absent here, so the
+      # freshness leg of check_fork_headers and all of check_widgets self-skip.
+      - run: python3 build.py
+      - run: python3 tools/verify.py
+      - run: python3 tools/check_headers.py
+      - run: python3 tools/check_fork_headers.py
+      - run: python3 tools/check_widgets.py
+      - run: python3 tools/report_roundtrip.py
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # The site ships no node_modules; install Playwright for the check only.
+      - run: npm install playwright
+      - run: npx playwright install --with-deps chromium
+      - run: python3 build.py
+      - run: node tools/e2e.mjs

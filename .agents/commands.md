@@ -35,3 +35,16 @@ Freshness (vendored JSON vs the fork's own copy) runs only when the fork is chec
 
 Open built HTML locally with `xdg-open dist/<lang>/<page>.html`. Never publish site output to external hosts to
 preview it.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs the build and every guard above on push and PR.
+`.github/workflows/sync-standard.yml` fetches the fork's `provider_standard.g.json` over HTTPS on a daily schedule
+(and on `workflow_dispatch` / a `provider-standard-changed` repository_dispatch), and opens a PR when it drifts from
+the vendored copy; that PR is then gated by `ci.yml`.
+
+Two repo settings make this bite:
+
+- Cloudflare Pages deploys on push regardless of Actions, so protect `main` (require `ci.yml`) to keep unbuilt work
+  off the site, or move the deploy into a `wrangler pages deploy` CI step.
+- The sync PR needs *Settings → Actions → Allow GitHub Actions to create and approve pull requests* enabled.
