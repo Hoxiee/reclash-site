@@ -123,6 +123,45 @@ def check_spec(std):
     return fails, undoc
 
 
+# Canonical headers the interactive builder is not expected to emit: the two
+# HWID verdicts are runtime answers the client reads, not values a provider
+# authors in a response. Everything else the fork reads, the builder must be
+# able to write, or the "keep the builder in sync" chore has silently lapsed.
+BUILDER_SKIP = {"hwidMaxDevicesReached", "hwidNotSupported"}
+BUILDER_JS = os.path.join(ROOT, "assets", "js", "builder.js")
+
+
+def check_builder(std):
+    """Every provider-authorable header the fork reads must have a push() in
+    builder.js — the guard that makes forgetting the builder fail the build."""
+    if not os.path.isfile(BUILDER_JS):
+        return [("assets/js/builder.js missing — cannot check builder coverage",
+                 None)]
+    src = open(BUILDER_JS, encoding="utf-8").read()
+    emitted = {m.lower() for m in re.findall(r"push\('([^']+)'", src)}
+    # A canonical header can have several converter entries (the reclash-* form
+    # plus a compat alias with its own transform); the builder writes one wire
+    # spelling. Gather every wire key per canonical and count it covered when
+    # any spelling is emitted, so an alias row never demands a second field.
+    keys = {}
+    for h in std["headers"]:
+        if h["canonical"] in BUILDER_SKIP:
+            continue
+        keys.setdefault(h["canonical"], []).extend(h["sourceKeys"])
+    missing = sorted(
+        next(k for k in ks if k.startswith("reclash-")) if any(
+            k.startswith("reclash-") for k in ks) else ks[0]
+        for ks in keys.values()
+        if not any(k.lower() in emitted for k in ks)
+    )
+    if missing:
+        return [("read by the fork but the builder never emits it: "
+                 + ", ".join(sorted(missing))
+                 + " — add a field in gen/page_headers.py and a push() in "
+                 "assets/js/builder.js", None)]
+    return []
+
+
 def do_sync():
     """Regenerate the standard in the fork and copy it into the site."""
     if not os.path.isdir(FORK):
@@ -175,6 +214,7 @@ def main(argv):
     std = json.load(open(VENDOR, encoding="utf-8"))
 
     fails, undoc = check_spec(std)
+    fails += check_builder(std)
     fails += [(m, None) for m in check_freshness()]
 
     print("check_fork_headers: %d headers, %d widgets, %d view tokens, %d theme "
@@ -192,7 +232,8 @@ def main(argv):
                 print(stub(h))
                 print()
         return 1
-    print("headers: spec documents every header the fork reads, tables in sync")
+    print("headers: spec documents every header the fork reads, the builder "
+          "emits every authorable one, tables in sync")
     return 0
 
 

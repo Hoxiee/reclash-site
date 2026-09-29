@@ -231,6 +231,8 @@
 
     /* --- links --------------------------------------------------------- */
     push('ReClash-SupportURL', checkUrl(val('f_support'), s('lblSupport')));
+    push('ReClash-ReportURL', checkUrl(val('f_report'), s('lblReport')));
+    push('ReClash-WebPageURL', checkUrl(val('f_webpage'), s('lblWebpage')));
     push('ReClash-BuyPlan', checkUrl(val('f_buyplan'), s('lblBuyPlan')));
     push('ReClash-BuyTraffic', checkUrl(val('f_buytraffic'), s('lblBuyTraffic')));
 
@@ -242,6 +244,7 @@
       if (/[\r\n]/.test(ann)) { err(s('warnAnnounceNl')); ann = ann.replace(/\s*[\r\n]+\s*/g, ' '); }
       push('ReClash-Announce', (on('f_announce_b64') || !isAscii(ann)) ? 'base64:' + b64(ann) : ann);
     }
+    push('ReClash-AnnounceURL', checkUrl(val('f_announceurl'), s('lblAnnounceUrl')));
 
     /* --- update interval ----------------------------------------------- */
     var iv = val('f_interval');
@@ -252,6 +255,20 @@
         push('ReClash-AutoUpdateInterval', String(n));
         if (n < 10) err(s('warnIntervalSmall'));
       }
+    }
+
+    /* --- reminder thresholds ------------------------------------------- */
+    var eds = val('f_expiredays');
+    if (eds) {
+      var edl = eds.split(/[,\s]+/).filter(Boolean);
+      if (edl.some(function (d) { return !/^\d+$/.test(d) || parseInt(d, 10) < 1; })) err(s('errExpireDays'), true);
+      else push('ReClash-ExpireDays', edl.join(','));
+    }
+    var tps = val('f_trafficpercent');
+    if (tps) {
+      var tpl = tps.split(/[,\s]+/).filter(Boolean);
+      if (tpl.some(function (p) { return !/^\d+$/.test(p) || +p < 1 || +p > 100; })) err(s('errTrafficPercent'), true);
+      else push('ReClash-TrafficPercent', tpl.join(','));
     }
 
     /* --- theme --------------------------------------------------------- */

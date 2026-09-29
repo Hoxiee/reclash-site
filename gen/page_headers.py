@@ -125,8 +125,10 @@ def builder_strings(ctx):
         "f_up": "12.5", "f_down": "78.2", "f_total": "200", "f_expire": "2026-12-31",
         "f_title": "", "f_svcname": "", "f_activetext": "", "f_logo": "",
         "f_serverinfo": "",
-        "f_support": "", "f_buyplan": "", "f_buytraffic": "",
-        "f_announce": "", "f_interval": "",
+        "f_support": "", "f_report": "", "f_webpage": "",
+        "f_buyplan": "", "f_buytraffic": "",
+        "f_announce": "", "f_announceurl": "", "f_interval": "",
+        "f_expiredays": "", "f_trafficpercent": "",
         "f_hex": "7C5CFF", "f_variant": "tonalspot",
         "f_bgurl": "", "f_bgop": "10",
         "f_ring1": "7C5CFF", "f_ring2": "3686ED", "f_ring3": "2FD3B6",
@@ -171,13 +173,18 @@ def builder_strings(ctx):
         f_logo="https://nebula.example/logo-512.png",
         f_serverinfo="Auto",
         f_support="https://nebula.example/help",
+        f_report="https://nebula.example/report",
+        f_webpage="https://nebula.example/account",
         f_buyplan="https://nebula.example/billing",
         f_buytraffic="https://nebula.example/billing/traffic",
         f_announce=t(
             "Профилактика на узлах DE 14 апреля, 02:00–04:00 МСК.",
             "Maintenance on the DE nodes on 14 April, 02:00–04:00 UTC.",
         ),
+        f_announceurl="https://nebula.example/status",
         f_interval="60",
+        f_expiredays="7,3,1",
+        f_trafficpercent="80,95",
         f_theme=1, f_hex="7C5CFF", f_variant="expressive", f_pureblack=1,
         f_bg=1, f_bgurl="https://nebula.example/bg.webp", f_bgop="14",
         f_ring=1, f_heroeffect=1,
@@ -206,6 +213,8 @@ def builder_strings(ctx):
                       "credentials in the URL are not allowed"),
         "errDomain": t("только хост и необязательный порт — без схемы и пути",
                        "hostname and optional port only — no scheme, no path"),
+        "errExpireDays": t("дни — целые больше нуля через запятую",
+                           "days must be positive integers, comma-separated"),
         "errFallbackPort": t("запасные хосты указываются без портов",
                              "fallback hosts must not carry ports"),
         "errHex": t("нужен RRGGBB или AARRGGBB", "expected RRGGBB or AARRGGBB"),
@@ -216,6 +225,8 @@ def builder_strings(ctx):
                         "opacity must be an integer from 1 to 100"),
         "errRing": t("кольцу нужны ровно три цвета RRGGBB",
                      "the ring needs exactly three RRGGBB colours"),
+        "errTrafficPercent": t("проценты — целые 1–100 через запятую",
+                               "percents must be integers 1–100, comma-separated"),
         "errUrl": t(
             "не похоже на URL — клиент не сможет разобрать адрес и заголовок уйдёт пустым",
             "this does not parse as a URL — the client cannot read the address and "
@@ -268,11 +279,14 @@ def builder_strings(ctx):
         "metaPerpetual": t("Бессрочная подписка", "Perpetual subscription"),
         "metaRemaining": t("Осталось", "Remaining"),
         "metaUsed": t("Использовано", "Used traffic"),
+        "lblAnnounceUrl": t("Ссылка объявления", "Announcement link"),
         "lblBg": t("Фон", "Background"),
         "lblBuyPlan": t("Тариф", "Plan"),
         "lblBuyTraffic": t("Трафик", "Traffic"),
         "lblLogo": t("Логотип", "Logo"),
+        "lblReport": t("Сообщить о проблеме", "Report a problem"),
         "lblSupport": t("Поддержка", "Support"),
+        "lblWebpage": t("Личный кабинет", "Account page"),
         "linkCopied": t("Ссылка скопирована", "Link copied"),
         "moveDown": t("Переместить ниже", "Move down"),
         "moveUp": t("Переместить выше", "Move up"),
@@ -461,6 +475,18 @@ def builder_form(ctx):
               txt("f_interval", "60", "number", 'min="1" step="1"'),
               esc(t("ReClash считает минуты, псевдонимы — часы.",
                     "ReClash counts minutes; the aliases count hours.")))
+        + grid(
+            fld("f_expiredays", esc(t("Напоминания об окончании, дней",
+                                      "Expiry reminders, days")),
+                txt("f_expiredays", "7,3,1"),
+                esc(t("Через запятую; по умолчанию 3,2,1.",
+                      "Comma-separated; default 3,2,1."))),
+            fld("f_trafficpercent", esc(t("Напоминания о трафике, %",
+                                          "Traffic reminders, %")),
+                txt("f_trafficpercent", "80,95"),
+                esc(t("Через запятую; по умолчанию 90.",
+                      "Comma-separated; default 90."))),
+        )
     )
 
     # --- 02 service -------------------------------------------------------
@@ -494,6 +520,14 @@ def builder_form(ctx):
             txt("f_support", "https://nebula.example/help", "url"),
             esc(t("Даёт кнопку «Поддержка» в ряду действий.",
                   "Adds the Support chip to the action row.")))
+        + fld("f_report", esc(t("Сообщить о проблеме", "Report a problem")),
+              txt("f_report", "https://nebula.example/report", "url"),
+              esc(t("Кнопка «Сообщить о проблеме» на карточке подписки.",
+                    "Adds the “Report a problem” action to the subscription.")))
+        + fld("f_webpage", esc(t("Личный кабинет", "Account page")),
+              txt("f_webpage", "https://nebula.example/account", "url"),
+              esc(t("Читается и из profile-web-page-url, который шлют marzban и 3x-ui.",
+                    "Also read from profile-web-page-url, which marzban and 3x-ui send.")))
         + grid(
             fld("f_buyplan", esc(t("Продление тарифа", "Renew plan")),
                 txt("f_buyplan", "https://nebula.example/billing", "url")),
@@ -507,6 +541,10 @@ def builder_form(ctx):
                     "One line, up to 180 characters, no markup.")))
         + chk("f_announce_b64", esc(t("Всегда кодировать объявление в Base64",
                                       "Always Base64-encode the announcement")))
+        + fld("f_announceurl", esc(t("Ссылка объявления", "Announcement link")),
+              txt("f_announceurl", "https://nebula.example/status", "url"),
+              esc(t("Делает объявление ссылкой вместо кнопки «Закрыть».",
+                    "Turns the announcement into a link instead of the dismiss button.")))
     )
 
     # --- 04 theme + ring --------------------------------------------------
@@ -655,11 +693,12 @@ def builder_form(ctx):
     # it emits, so a shut one still says what is inside it.
     groups = [
         ("01", t("Подписка и трафик", "Subscription and traffic"),
-         "ReClash-AutoUpdateInterval", g_sub, True),
+         "ReClash-AutoUpdateInterval · ExpireDays · TrafficPercent", g_sub, True),
         ("02", t("Сервис", "Service"),
          "ReClash-ServiceName · ActiveText · ServiceLogo · ServerInfo", g_service, False),
         ("03", t("Ссылки и объявление", "Links and announcement"),
-         "ReClash-SupportURL · BuyPlan · BuyTraffic · Announce", g_links, False),
+         "ReClash-SupportURL · ReportURL · WebPageURL · BuyPlan · "
+         "BuyTraffic · Announce · AnnounceURL", g_links, False),
         ("04", t("Тема и кольцо", "Theme and ring"),
          "ReClash-Hex · HeroRing · HeroEffect", g_theme, False),
         ("05", t("Фон панели", "Dashboard background"),
