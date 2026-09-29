@@ -1,3 +1,6 @@
 # Python bytecode — regenerated on every run, never belongs in the repo.
 __pycache__/
 *.pyc
+
+# Agent worktrees — local scratch, never committed.
+.claude/worktrees/
