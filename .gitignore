@@ -2,5 +2,6 @@
 __pycache__/
 *.pyc
 
-# Agent worktrees — local scratch, never committed.
+# Local, per-machine agent state — never committed.
+.claude/settings.local.json
 .claude/worktrees/
