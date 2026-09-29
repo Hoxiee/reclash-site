@@ -952,7 +952,7 @@ def section_builder(ctx):
             "or Python.",
         )) + "</p>"
         + '<p class="row gap-2 builder-head__meta">'
-        + chip("20 reclash-*") + chip(t("7 общих", "7 common"))
+        + chip("%d reclash-*" % len(spec.RECLASH_HEADERS)) + chip(t("%d общих" % len(spec.COMMON_HEADERS), "%d common" % len(spec.COMMON_HEADERS)))
         + chip(t("11 псевдонимов", "11 aliases")) + chip("HWID")
         + '<a class="chip chip--link" href="' + ctx.page("reference") + '">'
         + esc(t("Заголовки →", "Headers →")) + "</a>"
@@ -1430,7 +1430,7 @@ def render_reference(ctx):
             "together is in the documentation.",
         )) + "</p>",
         '<p class="pagehead__meta">',
-        chip("20 reclash-*"), chip(t("7 общих", "7 common")),
+        chip("%d reclash-*" % len(spec.RECLASH_HEADERS)), chip(t("%d общих" % len(spec.COMMON_HEADERS), "%d common" % len(spec.COMMON_HEADERS))),
         chip("HWID"),
         '<a class="chip chip--link" href="' + ctx.page("docs") + '">'
         + esc(t("Документация →", "Documentation →")) + "</a>",

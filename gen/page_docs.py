@@ -115,10 +115,10 @@ def doc_body(ctx):
                "<code>profile-title</code> and the rest. If you already send them, "
                "nothing changes.")),
             (t("ReClash", "ReClash"),
-             t("Двадцать заголовков <code>reclash-*</code> — всё, что делает "
+             t("Заголовки <code>reclash-*</code> — всё, что делает "
                "панель фирменной: тема, кольцо, виджеты, объявления. Понимает "
                "только ReClash.",
-               "Twenty <code>reclash-*</code> headers — everything that makes the "
+               "The <code>reclash-*</code> headers — everything that makes the "
                "dashboard yours: theme, ring, widgets, announcements. Only ReClash "
                "reads them.")),
             (t("Псевдонимы", "Aliases"),
