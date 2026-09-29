@@ -277,6 +277,42 @@ HWID_RESPONSE = [
      "Shows that the selected client/device mode is unsupported."),
 ]
 
+# Every header the fork reads must be documented on this page. The fork standard
+# owns the header set; this guard fails the build when a new fork header has no
+# prose here — the same seam _cover() protects for widgets and tokens. Wording
+# stays curated per language; only coverage is enforced. hwid verdicts live in
+# HWID_RESPONSE and the two externals in COMMON_HEADERS, so all three tables count.
+_WIRE_TO_CANON = {}
+for _h in STANDARD["headers"]:
+    for _wire in _h["sourceKeys"]:
+        _WIRE_TO_CANON[_wire] = _h["canonical"]
+_EXTERNAL_WIRE = set(STANDARD["externalCommon"])
+
+
+def _cover_headers():
+    documented, orphan = set(), []
+    for _row in RECLASH_HEADERS + HWID_RESPONSE + COMMON_HEADERS:
+        _name = _row[0]
+        if _name in _EXTERNAL_WIRE:
+            continue
+        _canon = _WIRE_TO_CANON.get(_name)
+        if _canon is None:
+            orphan.append(_name)
+        else:
+            documented.add(_canon)
+    fork = {_h["canonical"] for _h in STANDARD["headers"]}
+    missing = fork - documented
+    if missing or orphan:
+        raise SystemExit(
+            "spec.py: header prose out of sync with the fork standard "
+            "(undocumented fork headers: %s; site names no fork header reads: "
+            "%s) — run `python tools/check_fork_headers.py --sync`, then add "
+            "the prose" % (", ".join(sorted(missing)) or "\u2014",
+                           ", ".join(sorted(orphan)) or "\u2014"))
+
+
+_cover_headers()
+
 
 def widget_spec(lang):
     """Payload consumed by builder.js."""
