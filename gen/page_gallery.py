@@ -103,10 +103,8 @@ def section_note(ctx):
     return (
         '<section class="section section--tight"><div class="shell">'
         + ui.notice("<span>" + t(
-            "Это заглушка галереи. Кадры и клипы добавим позже — сетка и подписи "
-            "уже на своих местах.",
-            "This is a gallery placeholder. Captures and clips come later — the "
-            "grid and captions are already in place.",
+            "Это заглушка галереи. Кадры и клипы добавим позже.",
+            "This is a gallery placeholder. Captures and clips come later.",
         ) + "</span>", "notice--info")
         + "</div></section>"
     )

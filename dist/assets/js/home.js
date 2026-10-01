@@ -274,3 +274,47 @@
 
   start();
 })();
+
+/* ============================================ stat band: numerals count up */
+/* Each .stat__num that is a plain integer ticks from zero to its value the
+   first time the band scrolls into view. The final number is already in the
+   HTML, so with no JS, without IntersectionObserver, or under reduced motion
+   the band simply shows its finished figures — the animation only ever adds
+   motion, never supplies the content. */
+(function () {
+  var band = RC.$('.statband');
+  if (!band || RC.reduced || !('IntersectionObserver' in window)) return;
+
+  var nums = RC.$$('.stat__num', band).filter(function (el) {
+    return /^\d+$/.test(el.textContent.trim());
+  });
+  if (!nums.length) return;
+
+  var targets = nums.map(function (el) {
+    var end = parseInt(el.textContent, 10);
+    el.style.minWidth = el.getBoundingClientRect().width + 'px';
+    el.textContent = '0';
+    return end;
+  });
+
+  function run() {
+    var start = 0;
+    var dur = 900;
+    function step(now) {
+      if (!start) start = now;
+      var p = Math.min(1, (now - start) / dur);
+      var e = 1 - Math.pow(1 - p, 3); /* easeOutCubic */
+      nums.forEach(function (el, i) {
+        el.textContent = Math.round(targets[i] * e);
+      });
+      if (p < 1) requestAnimationFrame(step);
+      else nums.forEach(function (el) { el.style.minWidth = ''; });
+    }
+    requestAnimationFrame(step);
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) { run(); io.disconnect(); }
+  }, { threshold: 0.4 });
+  io.observe(band);
+})();

@@ -1200,9 +1200,9 @@
 
 .dl-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
   gap: clamp(1.5rem, 4vw, 3rem);
-  align-items: center;
+  align-items: start;
 }
 
 @media (max-width: 900px) {
@@ -1274,11 +1274,11 @@
 
 .dl-row {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr) auto;
-  gap: var(--step-2);
-  align-items: center;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  column-gap: var(--step-3);
+  align-items: start;
   background: var(--ink-1);
-  padding: 0.85rem var(--step-3);
+  padding: var(--step-3);
   transition: background 0.18s var(--ease);
 }
 
@@ -1287,9 +1287,10 @@
 }
 
 .dl-row__icon {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.3rem;
+  height: 1.3rem;
   color: var(--text-faint);
+  margin-top: 0.12rem;
 }
 
 .dl-row__icon svg {
@@ -1298,25 +1299,41 @@
   fill: currentColor;
 }
 
+.dl-row[data-current='true'] .dl-row__icon {
+  color: var(--cyan-bright);
+}
+
+/* name + count on their own baseline, files wrapping underneath — nothing
+   competes for width, so a platform with many packages never collides. */
+.dl-row__body {
+  min-width: 0;
+}
+
+.dl-row__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-bottom: 0.6rem;
+}
+
 .dl-row__name {
   font-weight: 600;
-  font-size: 0.95rem;
-  min-width: 0;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
 }
 
 .dl-row__meta {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   color: var(--text-faint);
-  letter-spacing: 0.06em;
-  margin-top: 0.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.dl-row__arch {
+.dl-row__files {
   display: flex;
-  gap: 0.35rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
 .dl-asset {
@@ -1385,13 +1402,124 @@
 .release__notes {
   font-size: 0.9rem;
   color: var(--text-dim);
-  max-height: 18rem;
+  max-height: 24rem;
   overflow-y: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: break-word;
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
+  line-height: 1.6;
+}
+
+/* Rendered release markdown. Kept deliberately quiet — the changelog is a
+   supporting note, not a heading hierarchy of its own. */
+.release__notes > :first-child {
+  margin-top: 0;
+}
+
+.release__notes h4 {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: var(--step-3) 0 var(--step-2);
+}
+
+.release__notes h5 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: var(--step-3) 0 var(--step-2);
+}
+
+.release__notes p {
+  margin: 0 0 var(--step-2);
+}
+
+.release__notes ul,
+.release__notes ol {
+  margin: 0 0 var(--step-2);
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.release__notes li {
+  padding-left: 0.15rem;
+}
+
+.release__notes li::marker {
+  color: var(--violet);
+}
+
+.release__notes code {
+  font-family: var(--mono);
+  font-size: 0.82em;
+  padding: 0.08em 0.4em;
+  border: 1px solid var(--line);
+  background: var(--ink-2);
+  color: var(--text);
+}
+
+.release__notes strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.release__notes a {
+  color: var(--cyan-bright);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-color: color-mix(in oklab, var(--cyan-bright) 45%, transparent);
+}
+
+/* GitHub-style alert (> [!WARNING] …). Only the tones a release actually uses. */
+.release__alert {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--amber);
+  background: color-mix(in oklab, var(--amber) 8%, var(--ink-1));
+  padding: var(--step-3);
+  margin: 0 0 var(--step-3);
+  font-size: 0.88rem;
+  color: var(--text-dim);
   line-height: 1.55;
+}
+
+.release__alert strong {
+  color: var(--text);
+}
+
+.release__alert[data-kind='note'],
+.release__alert[data-kind='tip'] {
+  border-left-color: var(--cyan-bright);
+  background: color-mix(in oklab, var(--cyan-bright) 8%, var(--ink-1));
+}
+
+.release__alert[data-kind='caution'] {
+  border-left-color: var(--red, #ff5a5a);
+  background: color-mix(in oklab, var(--red, #ff5a5a) 8%, var(--ink-1));
+}
+
+.release__alert__kind {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 0.45rem;
+}
+
+.release__alert[data-kind='note'] .release__alert__kind,
+.release__alert[data-kind='tip'] .release__alert__kind {
+  color: var(--cyan-bright);
+}
+
+.release__alert[data-kind='caution'] .release__alert__kind {
+  color: var(--red, #ff5a5a);
 }
 
 /* ------------------------------------------------------------ SHA256 verify */

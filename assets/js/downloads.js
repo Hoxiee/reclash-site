@@ -80,6 +80,128 @@
     return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : (n / 1024).toFixed(0) + ' KB';
   }
 
+  /* --------------------------------------------- release notes (markdown)
+     GitHub release bodies are Markdown. The old page dumped them as text with
+     angle brackets stripped, which turned every heading, list and alert into
+     noise. This renders the small subset a release actually uses — and does it
+     safely: each value is HTML-escaped before any tag is introduced, and only
+     http(s) links are emitted. When the body carries the reclash:changelog
+     begin/end markers, only the intro and the curated changelog are shown; the
+     rest (download tables, shield badges) stays behind the GitHub link. */
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function inlineMd(raw) {
+    /* pull code spans out first so emphasis/link rules never reach inside */
+    var codes = [];
+    var s = esc(raw).replace(/`([^`]+)`/g, function (_, c) {
+      codes.push(c);
+      return '\u0000' + (codes.length - 1) + '\u0000';
+    });
+    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, function (_, txt, url) {
+      return '<a href="' + url + '" rel="noopener" target="_blank">' + txt + '</a>';
+    });
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/(^|[^*])\*([^*\s][^*]*?)\*/g, '$1<em>$2</em>');
+    s = s.replace(/(^|[^\w`])_([^_\s][^_]*?)_/g, '$1<em>$2</em>');
+    return s.replace(/\u0000(\d+)\u0000/g, function (_, i) {
+      return '<code>' + codes[+i] + '</code>';
+    });
+  }
+
+  var ALERT = /^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*$/i;
+
+  function markdown(src) {
+    var lines = String(src || '').replace(/<!--[\s\S]*?-->/g, '').split(/\r?\n/);
+    var out = [], para = [], i = 0;
+
+    function flush() {
+      if (para.length) { out.push('<p>' + inlineMd(para.join(' ')) + '</p>'); para = []; }
+    }
+
+    while (i < lines.length) {
+      var t = lines[i].trim();
+
+      if (!t) { flush(); i++; continue; }
+
+      if (t.charAt(0) === '>') {
+        var head = t.replace(/^>\s?/, '');
+        var m = ALERT.exec(head);
+        if (m) {
+          flush();
+          var kind = m[1].toLowerCase();
+          var buf = [];
+          i++;
+          while (i < lines.length && lines[i].trim().charAt(0) === '>') {
+            buf.push(lines[i].trim().replace(/^>\s?/, ''));
+            i++;
+          }
+          var body = buf.filter(function (x) { return x; })
+            .map(function (x) { return inlineMd(x); }).join('<br>');
+          out.push('<div class="release__alert" data-kind="' + kind + '">' +
+            '<span class="release__alert__kind">' + kind + '</span>' + body + '</div>');
+          continue;
+        }
+        para.push(head);   // a plain blockquote line folds into the paragraph
+        i++;
+        continue;
+      }
+
+      var h = /^(#{1,6})\s+(.+)$/.exec(t);
+      if (h) {
+        flush();
+        var tag = h[1].length <= 3 ? 'h4' : 'h5';
+        out.push('<' + tag + '>' + inlineMd(h[2]) + '</' + tag + '>');
+        i++;
+        continue;
+      }
+
+      if (/^[-*+]\s+/.test(t)) {
+        flush();
+        out.push('<ul>');
+        while (i < lines.length && /^[-*+]\s+/.test(lines[i].trim())) {
+          out.push('<li>' + inlineMd(lines[i].trim().replace(/^[-*+]\s+/, '')) + '</li>');
+          i++;
+        }
+        out.push('</ul>');
+        continue;
+      }
+
+      if (/^\d+\.\s+/.test(t)) {
+        flush();
+        out.push('<ol>');
+        while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+          out.push('<li>' + inlineMd(lines[i].trim().replace(/^\d+\.\s+/, '')) + '</li>');
+          i++;
+        }
+        out.push('</ol>');
+        continue;
+      }
+
+      para.push(t);
+      i++;
+    }
+    flush();
+    return out.join('');
+  }
+
+  function releaseNotes(body) {
+    var src = String(body || '');
+    var begin = /<!--\s*reclash:changelog:begin\s*-->/.exec(src);
+    var end = /<!--\s*reclash:changelog:end\s*-->/.exec(src);
+    if (begin && end && end.index > begin.index) {
+      return markdown(src.slice(0, begin.index)) +
+        markdown(src.slice(begin.index + begin[0].length, end.index));
+    }
+    var fb = src.trim();
+    if (fb.length > 2400) fb = fb.slice(0, 2400) + '\n\n…';
+    return markdown(fb);
+  }
+
   /* --------------------------------------------------------------- fetch */
 
   var loading = $('#dl-loading');
@@ -113,30 +235,33 @@
     orderOs.forEach(function (os) {
       if (!groups[os]) return;
       var tpl = document.getElementById('icon-' + os);
+      var pills = groups[os].map(function (a) {
+        return '<a class="dl-asset" href="' + esc(a.browser_download_url) + '" rel="noopener">' +
+          esc(label(a.name)) + (a.size ? ' <span class="faint">' + size(a.size) + '</span>' : '') + '</a>';
+      }).join('');
       html += '<div class="dl-row"' + (os === current ? ' data-current="true"' : '') + '>' +
         '<span class="dl-row__icon">' + (tpl ? tpl.innerHTML : '') + '</span>' +
-        '<span><span class="dl-row__name">' + (s('os_' + os) || os) + '</span>' +
-        '<span class="dl-row__meta">' + groups[os].length + ' ' + s('files') + '</span></span>' +
-        '<span class="dl-row__arch">' +
-        groups[os].map(function (a) {
-          return '<a class="dl-asset" href="' + a.browser_download_url + '" rel="noopener">' +
-            label(a.name) + (a.size ? ' <span class="faint">' + size(a.size) + '</span>' : '') + '</a>';
-        }).join('') +
-        '</span></div>';
+        '<div class="dl-row__body">' +
+          '<div class="dl-row__head">' +
+            '<span class="dl-row__name">' + esc(s('os_' + os) || os) + '</span>' +
+            '<span class="dl-row__meta">' + groups[os].length + ' ' + esc(s('files')) + '</span>' +
+          '</div>' +
+          '<div class="dl-row__files">' + pills + '</div>' +
+        '</div>' +
+        '</div>';
     });
 
     if (listBox) listBox.innerHTML = html;
 
     if (relBox) {
       var when = rel.published_at ? new Date(rel.published_at).toLocaleDateString(document.documentElement.lang) : '';
-      var notes = (rel.body || '').trim();
-      if (notes.length > 2400) notes = notes.slice(0, 2400) + '…';
+      var notes = releaseNotes(rel.body);
       relBox.innerHTML = '<div class="release__head">' +
-        '<span class="release__tag">' + (rel.tag_name || rel.name || '') + '</span>' +
-        (when ? '<span class="mono faint">' + when + '</span>' : '') +
-        '<a class="link link--cyan" href="' + rel.html_url + '" rel="noopener">' + s('onGithub') + '</a>' +
+        '<span class="release__tag">' + esc(rel.tag_name || rel.name || '') + '</span>' +
+        (when ? '<span class="mono faint">' + esc(when) + '</span>' : '') +
+        '<a class="link link--cyan" href="' + esc(rel.html_url) + '" rel="noopener">' + esc(s('onGithub')) + '</a>' +
         '</div>' +
-        (notes ? '<div class="release__notes">' + notes.replace(/[<>]/g, '') + '</div>' : '');
+        (notes ? '<div class="release__notes">' + notes + '</div>' : '');
       relBox.hidden = false;
     }
 

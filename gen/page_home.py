@@ -328,6 +328,12 @@ def section_features(ctx):
             "Что <em>умеет</em> ReClash.",
             "What ReClash <em>does</em>.",
         ),
+        ui.notice("<span>" + t(
+            "Часть функций — умная маршрутизация («Авто») и обход DPI — "
+            "появится в релизе 0.1.0 и пока недоступна в сборке.",
+            "Some features — smart routing (“Auto”) and the DPI bypass — arrive "
+            "in release 0.1.0 and are not in the current build yet.",
+        ) + "</span>"),
         '<div class="feature-grid">%s</div>' % cards,
         "</div></section>",
     ])
@@ -572,11 +578,11 @@ def section_honest(ctx):
         ),
         '<p class="lede" style="margin-top:var(--step-3);max-width:62ch">%s</p>' % t(
             "Ни аккаунта, ни привязки. Серверы и профили — ваши, а подписка в обычном "
-            "формате Clash уносится в любой совместимый клиент. ReClash открыт целиком "
-            "и ничего не продаёт: платного «доступа», который можно было бы отнять, здесь просто нет.",
+            "формате Clash уносится в любой совместимый клиент. ReClash открыт целиком — "
+            "ничто не держит вас здесь.",
             "No account, no lock-in. Your servers and profiles are yours, and a subscription "
-            "in the plain Clash format moves to any compatible client. ReClash is fully open "
-            "and sells nothing — there is no paid “access” here that could ever be taken away.",
+            "in the plain Clash format moves to any compatible client. ReClash is fully open — "
+            "nothing keeps you here.",
         ),
         "</div></section>",
     ])

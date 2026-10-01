@@ -13,13 +13,12 @@ from . import spec, ui
 from .ui import esc, rubric, chip, codeblock, notice, table
 
 
-# The doc's own sections, in order. `tool` and `ref` are cross-page links
-# (the builder and the catalogue); everything else is an in-page anchor. The
+# The doc's own sections, in order — every entry is an in-page anchor. The
 # fourth field is the TOC filter's search index — both languages on purpose,
-# so a reader finds a section whichever language they type in.
+# so a reader finds a section whichever language they type in. Cross-page
+# links (the builder, the catalogue) live in the page head, not in this
+# contents list: they are not sections of this page.
 TOC = [
-    ("tool", "Конструктор", "The builder", "builder generator форма конструктор"),
-    ("ref", "Заголовки", "Headers", "reference catalog справочник каталог все заголовки список"),
     ("overview", "Как это работает", "How it works", "overview обзор three tiers слои начало"),
     ("rules", "Правила разбора", "Parsing rules", "case base64 приоритет priority регистр"),
     ("compat", "Совместимость", "Compatibility", "flclashx алиасы aliases приоритет псевдонимы"),
@@ -33,16 +32,9 @@ TOC = [
 def toc(ctx):
     t = ctx.t
 
-    def href(key):
-        if key == "tool":
-            return ctx.page("builder")
-        if key == "ref":
-            return ctx.page("reference")
-        return "#" + key
-
     items = "".join(
-        '<li data-keys="%s"><a href="%s">%s</a></li>'
-        % (esc(keys), href(key), esc(t(ru, en)))
+        '<li data-keys="%s"><a href="#%s">%s</a></li>'
+        % (esc(keys), key, esc(t(ru, en)))
         for key, ru, en, keys in TOC
     )
     return (

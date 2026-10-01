@@ -373,11 +373,9 @@ def faq_items(ctx):
         ("faq-ios",
          t("Будет ли версия для iOS?", "Will there be an iOS version?"),
          t("<p>Сейчас нет. App Store не пускает клиенты такого рода без отдельной "
-           "программы разработчика, а сторонняя установка на iOS — отдельная история. "
-           "Обещать сроки было бы нечестно.</p>",
+           "программы разработчика, а сторонняя установка на iOS — отдельная история.</p>",
            "<p>Not currently. The App Store does not admit clients of this kind without "
-           "a separate developer programme, and sideloading on iOS is its own story. "
-           "Promising a date would be dishonest.</p>"),
+           "a separate developer programme, and sideloading on iOS is its own story.</p>"),
          False),
         ("faq-broken",
          t("Не подключается. С чего начать?", "It will not connect. Where do I start?"),

@@ -107,10 +107,8 @@ def section_hero(ctx):
             'Build it or <span class="grad">download it</span>')
         + "</h1>"
         '<p class="lede">' + esc(t(
-            "Ниже — живой список файлов последнего релиза, прямо из GitHub. "
-            "Если релиза ещё нет, страница так и скажет, а не подсунет мёртвую ссылку.",
-            "Below is a live file list of the latest release, straight from GitHub. "
-            "If there is no release yet the page says so instead of handing you a dead link.",
+            "Ниже — живой список файлов последнего релиза, прямо из GitHub.",
+            "Below is a live file list of the latest release, straight from GitHub.",
         )) + "</p>"
         '<p class="pagehead__meta">'
         + chip("GPL-3.0")
@@ -202,9 +200,9 @@ def section_platforms(ctx):
         '<div class="platforms" style="margin-top:var(--step-4)">' + cards + "</div>"
         + '<p class="dl-note" style="margin-top:var(--step-3)">' + esc(t(
             "iOS-сборки нет: App Store не пускает клиенты такого рода без отдельной "
-            "программы разработчика. Заявлять её на сайте было бы враньём.",
+            "программы разработчика.",
             "There is no iOS build: the App Store does not admit clients of this kind "
-            "without a separate developer programme. Claiming one here would be a lie.",
+            "without a separate developer programme.",
         )) + "</p>"
         "</div></section>"
     )
