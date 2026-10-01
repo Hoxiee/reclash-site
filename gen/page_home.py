@@ -328,12 +328,6 @@ def section_features(ctx):
             "Что <em>умеет</em> ReClash.",
             "What ReClash <em>does</em>.",
         ),
-        ui.notice("<span>" + t(
-            "Часть функций — умная маршрутизация («Авто») и обход DPI — "
-            "появится в релизе 0.1.0 и пока недоступна в сборке.",
-            "Some features — smart routing (“Auto”) and the DPI bypass — arrive "
-            "in release 0.1.0 and are not in the current build yet.",
-        ) + "</span>"),
         '<div class="feature-grid">%s</div>' % cards,
         "</div></section>",
     ])
@@ -597,7 +591,7 @@ def section_stats(ctx):
     t = ctx.t
     stats = [
         ("4", t("платформы", "platforms")),
-        ("7", t("варианта темы", "theme variants")),
+        ("∞", t("цветов темы", "theme colours")),
         ("20", t("заголовков бренда", "brand headers")),
         ("GPL-3.0", t("открытый код", "open source")),
     ]
