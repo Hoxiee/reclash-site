@@ -54,7 +54,7 @@
   ReClash-BuyTraffic: https://example.com/topup
   ReClash-Announce: base64:0J/RgNC+0LHQvdGL0Lkg0L/QtdGA0LjQvtC0INC/0L7Rh9GC0Lgg0LfQsNC60L7QvdGH0LjQu9GB0Y8uINCf0YDQvtC00LvQuNGC0LUsINGH0YLQvtCx0Ysg0L3QtSDQv9C+0YLQtdGA0Y/RgtGMINC00L7RgdGC0YPQvy4=
   ReClash-AutoUpdateInterval: 720
-  Subscription-Userinfo: upload=9663676416; download=40802189312; total=53687091200; expire=1790794050
+  Subscription-Userinfo: upload=9663676416; download=40802189312; total=53687091200; expire=1791466928
 
 /mock/relay
   Content-Type: text/yaml; charset=utf-8
@@ -66,7 +66,7 @@
   ReClash-AutoUpdateInterval: 180
   ReClash-NewDomain: relay-new.example.com
   ReClash-FallbackHosts: relay-b.example.com,relay-c.example.com
-  Subscription-Userinfo: upload=5368709120; download=64424509440; total=322122547200; expire=1795805250
+  Subscription-Userinfo: upload=5368709120; download=64424509440; total=322122547200; expire=1796478128
 
 /mock/gatekeeper
   Content-Type: text/yaml; charset=utf-8
@@ -75,6 +75,46 @@
   ReClash-ServiceName: Gatekeeper
   ReClash-SupportURL: https://example.com/support
   X-Hwid-Max-Devices-Reached: 1
+
+/mock/meridian
+  Content-Type: text/yaml; charset=utf-8
+  Content-Disposition: attachment; filename="meridian.yaml"
+  Profile-Title: Meridian
+  ReClash-ServiceName: Meridian
+  ReClash-ServerInfo: Meridian
+  ReClash-ActiveText: Meridian online
+  ReClash-Widgets: serviceInfo,changeServerButton,networkSpeed,trafficUsage,metaInfo
+  ReClash-Custom: update
+  ReClash-Settings: autorun,autoupdate
+  ReClash-View: type:list; sort:default; layout:standard; icon:standard; card:expand
+  ReClash-SupportURL: https://example.com/support
+  ReClash-BuyPlan: https://example.com/plans
+  ReClash-Announce: base64:0KLQsNGA0LjRhCBNZXJpZGlhbiDQsNC60YLQuNCy0LXQvS4g0J3QvtCy0L7RgdGC0Lgg0L/RgNC+0LLQsNC50LTQtdGA0LAg0L/QvtGP0LLRj9GC0YHRjyDQt9C00LXRgdGMLg==
+  ReClash-AutoUpdateInterval: 360
+  Subscription-Userinfo: upload=8589934592; download=28991029248; total=107374182400; expire=1793626928
+
+/mock/ledger
+  Content-Type: text/yaml; charset=utf-8
+  Content-Disposition: attachment; filename="ledger.yaml"
+  Profile-Title: Ledger
+  ReClash-ServiceName: Ledger
+  ReClash-ServerInfo: Ledger
+  ReClash-ActiveText: Ledger
+  ReClash-ServiceLogo: https://reclash.pages.dev/assets/mock/logo-standard.svg
+  ReClash-Widgets: serviceStatus,connections,proxyGroups,profiles,smartRouting,runTime,announce,serviceInfo
+  ReClash-Custom: add
+  ReClash-Settings: shadowstart,autostart,openlogs,closeconnections
+  ReClash-View: type:list; sort:none; layout:loose; icon:none; card:shrink
+  ReClash-SupportURL: https://example.com/support
+  ReClash-ReportURL: https://example.com/report
+  ReClash-WebPageURL: https://example.com/account
+  ReClash-BuyPlan: https://example.com/plans
+  ReClash-Announce: base64:0J3QsNC/0L7QvNC40L3QsNC90LjRjyDQvdCw0YHRgtGA0L7QtdC90Ysg0L/RgNC+0LLQsNC50LTQtdGA0L7QvC4g0J/QvtC00YDQvtCx0L3QvtGB0YLQuCDigJQg0L/QviDRgdGB0YvQu9C60LUu
+  ReClash-AnnounceURL: https://example.com/news
+  ReClash-AutoUpdateInterval: 1440
+  ReClash-ExpireDays: 7,3,1
+  ReClash-TrafficPercent: 80,95
+  Subscription-Userinfo: upload=10737418240; download=21474836480; total=128849018880; expire=1793886128
 
 /*/report.html
   Content-Security-Policy: default-src 'self'; connect-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'

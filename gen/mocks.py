@@ -38,6 +38,10 @@ GB = 1073741824
 #   buyplan    ReClash-BuyPlan, or None
 #   buytraffic ReClash-BuyTraffic, or None
 #   reporturl  ReClash-ReportURL, or None
+#   webpageurl ReClash-WebPageURL, or None
+#   announceurl ReClash-AnnounceURL, or None
+#   expiredays ReClash-ExpireDays ("7,3,1"), or None
+#   trafficpercent ReClash-TrafficPercent ("80,95"), or None
 #   newdomain  ReClash-NewDomain (host, optional :port), or None
 #   fallbackhosts ReClash-FallbackHosts (comma-separated hosts), or None
 #   hwid_limit True -> X-Hwid-Max-Devices-Reached (a service header), or None
@@ -266,6 +270,88 @@ rules:
         "support": "https://example.com/support",
         "hwid_limit": True,
         "nodes": 2,
+    },
+    {
+        "key": "meridian",
+        "tone": "",
+        "name": ("Meridian", "Meridian"),
+        "blurb": ("средний тариф: квота, виджеты и ссылки без оформления",
+                  "the average plan: quota, widgets and links with no theming"),
+        "teaches": (
+            "Точка отсчёта среди моков: обычный здоровый тариф. Нет ни темы, ни "
+            "кольца, ни фона, ни логотипа — клиент выглядит стоково. Есть квота "
+            "середины срока, базовые виджеты, вид по умолчанию и ссылки на "
+            "поддержку и оплату. Так выглядит провайдер, который ничего не "
+            "кастомизирует.",
+            "The baseline among the mocks: an ordinary healthy plan. No theme, "
+            "no ring, no background, no logo — the client looks stock. It has "
+            "a mid-term quota, the default widgets, the default view and "
+            "support/billing links. This is what a provider that customises "
+            "nothing looks like.",
+        ),
+        "title": "Meridian",
+        "servicename": "Meridian",
+        "serverinfo": "Meridian",
+        "activetext": "Meridian online",
+        "widgets": ("serviceInfo,changeServerButton,networkSpeed,"
+                    "trafficUsage,metaInfo"),
+        "custom": "update",
+        "settings": "autorun,autoupdate",
+        "view": "type:list; sort:default; layout:standard; icon:standard; card:expand",
+        "support": "https://example.com/support",
+        "buyplan": "https://example.com/plans",
+        "announce": (
+            "Тариф Meridian активен. Новости провайдера появятся здесь.",
+            "Your Meridian plan is active. Provider news will appear here.",
+        ),
+        "quota": {"up_gb": 8, "down_gb": 27, "total_gb": 100, "expire_days": 27},
+        "update_min": 360,
+        "nodes": 5,
+    },
+    {
+        "key": "ledger",
+        "tone": "",
+        "name": ("Ledger", "Ledger"),
+        "blurb": ("напоминания и ссылки: отчёт, кабинет, дни и проценты",
+                  "reminders and links: report, account, days and percents"),
+        "teaches": (
+            "Редкие заголовки, которых нет в остальных моках. Объявление-ссылка "
+            "ведёт на новости, ReClash-WebPageURL — в личный кабинет, "
+            "ReClash-ReportURL — на жалобу, а ReClash-ExpireDays и "
+            "ReClash-TrafficPercent задают свои пороги напоминаний. Виджеты "
+            "сливаются режимом add, в наборе — пульт управления: статус, "
+            "соединения, группы, профили и аптайм.",
+            "The rare headers no other mock sends. The announcement links to "
+            "news, ReClash-WebPageURL leads to the account page, "
+            "ReClash-ReportURL to issue reporting, and ReClash-ExpireDays with "
+            "ReClash-TrafficPercent set custom reminder thresholds. Widgets "
+            "merge with mode add, and the set is a control room: status, "
+            "connections, groups, profiles and uptime.",
+        ),
+        "title": "Ledger",
+        "servicename": "Ledger",
+        "serverinfo": "Ledger",
+        "activetext": "Ledger",
+        "logo": "logo-standard.svg",
+        "widgets": ("serviceStatus,connections,proxyGroups,profiles,"
+                    "smartRouting,runTime,announce,serviceInfo"),
+        "custom": "add",
+        "settings": "shadowstart,autostart,openlogs,closeconnections",
+        "view": "type:list; sort:none; layout:loose; icon:none; card:shrink",
+        "support": "https://example.com/support",
+        "buyplan": "https://example.com/plans",
+        "reporturl": "https://example.com/report",
+        "webpageurl": "https://example.com/account",
+        "announce": (
+            "Напоминания настроены провайдером. Подробности — по ссылке.",
+            "Reminders are set by the provider. Follow the link for details.",
+        ),
+        "announceurl": "https://example.com/news",
+        "expiredays": "7,3,1",
+        "trafficpercent": "80,95",
+        "quota": {"up_gb": 10, "down_gb": 20, "total_gb": 120, "expire_days": 30},
+        "update_min": 1440,
+        "nodes": 4,
     },
 ]
 

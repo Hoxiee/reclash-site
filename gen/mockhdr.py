@@ -84,12 +84,16 @@ def mock_headers(m):
         ("ReClash-Settings", m.get("settings")),
         ("ReClash-View", m.get("view")),
         ("ReClash-SupportURL", m.get("support")),
+        ("ReClash-ReportURL", m.get("reporturl")),
+        ("ReClash-WebPageURL", m.get("webpageurl")),
         ("ReClash-BuyPlan", m.get("buyplan")),
         ("ReClash-BuyTraffic", m.get("buytraffic")),
-        ("ReClash-ReportURL", m.get("reporturl")),
         ("ReClash-Announce", hval(m["announce"][0]) if m.get("announce") else None),
+        ("ReClash-AnnounceURL", m.get("announceurl")),
         ("ReClash-AutoUpdateInterval",
          str(m["update_min"]) if m.get("update_min") else None),
+        ("ReClash-ExpireDays", m.get("expiredays")),
+        ("ReClash-TrafficPercent", m.get("trafficpercent")),
         ("ReClash-NewDomain", m.get("newdomain")),
         ("ReClash-FallbackHosts", m.get("fallbackhosts")),
         # a service header: the server sets it on the response, the provider
@@ -190,8 +194,9 @@ def _cfg_base():
         "f_up": "", "f_down": "", "f_total": "", "f_expire": "",
         "f_title": "", "f_svcname": "", "f_svcname_b64": 0, "f_activetext": "",
         "f_logo": "", "f_serverinfo": "",
-        "f_support": "", "f_buyplan": "", "f_buytraffic": "",
-        "f_announce": "", "f_announce_b64": 0, "f_interval": "",
+        "f_support": "", "f_report": "", "f_webpage": "", "f_buyplan": "", "f_buytraffic": "",
+        "f_announce": "", "f_announce_b64": 0, "f_announceurl": "", "f_interval": "",
+        "f_expiredays": "", "f_trafficpercent": "",
         "f_hex": "7C5CFF", "f_variant": "tonalspot", "f_theme": 0, "f_pureblack": 0,
         "f_bg": 0, "f_bgurl": "", "f_bgop": "10",
         "f_ring": 0, "f_ring1": "7C5CFF", "f_ring2": "3686ED", "f_ring3": "2FD3B6",
@@ -220,14 +225,20 @@ def builder_cfg(m, base_url, lang):
         d["f_serverinfo"] = m["serverinfo"]
     if m.get("logo"):
         d["f_logo"] = "%s/assets/mock/%s" % (base_url, m["logo"])
-    for field, key in (("f_support", "support"), ("f_buyplan", "buyplan"),
-                       ("f_buytraffic", "buytraffic")):
+    for field, key in (("f_support", "support"), ("f_report", "reporturl"),
+                       ("f_webpage", "webpageurl"), ("f_buyplan", "buyplan"),
+                       ("f_buytraffic", "buytraffic"),
+                       ("f_announceurl", "announceurl")):
         if m.get(key):
             d[field] = m[key]
     if m.get("announce"):
         d["f_announce"] = m["announce"][0 if lang == "ru" else 1]
     if m.get("update_min"):
         d["f_interval"] = str(m["update_min"])
+    if m.get("expiredays"):
+        d["f_expiredays"] = m["expiredays"]
+    if m.get("trafficpercent"):
+        d["f_trafficpercent"] = m["trafficpercent"]
 
     if m.get("hex"):
         parts = m["hex"].split(":")
