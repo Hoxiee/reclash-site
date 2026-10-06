@@ -946,6 +946,7 @@
 }
 
 .tabs {
+  position: relative;
   display: flex;
   gap: 0;
   border: 1px solid var(--line);
@@ -953,11 +954,31 @@
   scrollbar-width: none;
 }
 
+/* The active fill as a sliding ink: core.js moves it to the selected button and
+   adds .tabs--inked. Width trails the move a hair longer than the slide, so the
+   fill stretches toward the target and settles — FlClash's seg-ink. Without JS
+   the fill stays painted on the button (rule below), so nothing depends on it. */
+.tabs__ink {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  background: var(--violet);
+  pointer-events: none;
+  transform: translate(var(--tab-x, 0), var(--tab-y, 0));
+  transition: transform 0.46s var(--spring), width 0.6s var(--spring),
+    height 0.4s var(--spring);
+}
+
 .tabs::-webkit-scrollbar {
   display: none;
 }
 
 .tabs button {
+  position: relative;
+  z-index: 1;
   background: none;
   border: 0;
   border-right: 1px solid var(--line);
@@ -984,6 +1005,12 @@
   background: var(--violet);
   color: #fff;
   font-weight: 700;
+}
+
+/* Once the sliding ink is live it carries the fill, so the button itself goes
+   transparent and the colour travels between tabs instead of snapping. */
+.tabs--inked button[aria-selected='true'] {
+  background: none;
 }
 
 /* A two-way switch, not a strip of formats: it splits the column in half so it

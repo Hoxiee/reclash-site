@@ -238,7 +238,7 @@ for lang in ("ru", "en"):
                  'id="get-started"', 'class="deeplink"', 'data-scheme="reclash"',
                  'class="deeplink__out"', "data-make",
                  # the two audience doors that open the page
-                 'class="paths"', 'class="path path--user',
+                 'class="paths reveal-group"', 'class="path path--user',
                  'class="path path--provider'):
         if need not in src:
             fails.append("%s/index.html: missing %s" % (lang, need))
@@ -247,9 +247,9 @@ for lang in ("ru", "en"):
                   'class="marquee'):
         if stale in src:
             fails.append("%s/index.html: stale demo hook %s" % (lang, stale))
-    if src.count('class="launch__step reveal"') != 3:
+    if src.count('class="launch__step"') != 3:
         fails.append("%s/index.html: %d first-run steps, expected 3"
-                     % (lang, src.count('class="launch__step reveal"')))
+                     % (lang, src.count('class="launch__step"')))
 
 # ---- site-wide files -------------------------------------------------------
 for f in ("index.html", "404.html", "robots.txt", "sitemap.xml", ".nojekyll",

@@ -113,9 +113,62 @@
     });
   }
 
+  /* ------------------------------------------------ magnetic primary buttons
+     The main call-to-action leans a few px toward the cursor and springs back
+     on leave (after FlClash's pull-x/pull-y). Fine pointers only; it rides on
+     the `translate` property so it composes with the button's hover lift. */
+
+  var magnets = $$('.btn:not(.btn--ghost):not(.btn--paper):not(.btn--amber)');
+  if (magnets.length && finePointer && !reduced) {
+    magnets.forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width / 2)) / r.width;
+        var dy = (e.clientY - (r.top + r.height / 2)) / r.height;
+        el.style.setProperty('--pull-x', (dx * 8).toFixed(1) + 'px');
+        el.style.setProperty('--pull-y', (dy * 6).toFixed(1) + 'px');
+      });
+      el.addEventListener('pointerleave', function () {
+        el.style.setProperty('--pull-x', '0px');
+        el.style.setProperty('--pull-y', '0px');
+      });
+    });
+  }
+
+  /* ------------------------------------------------- sliding nav hover-ink
+     A soft pill follows the pointer across the top-level nav links and springs
+     back out on leave (after FlClash's hover-ink). Fine pointers only; the
+     per-link underline keeps marking the current page without it. */
+
+  var nav = $('.nav');
+  if (nav && finePointer) {
+    var navInk = d.createElement('span');
+    navInk.className = 'nav__ink';
+    navInk.setAttribute('aria-hidden', 'true');
+    nav.insertBefore(navInk, nav.firstChild);
+    nav.classList.add('nav--inked');
+    var navTops = $$(':scope > a, :scope > .nav__item > a', nav);
+    function moveInk(el) {
+      var nr = nav.getBoundingClientRect(), r = el.getBoundingClientRect();
+      navInk.style.width = r.width + 'px';
+      navInk.style.height = r.height + 'px';
+      navInk.style.setProperty('--ink-x', (r.left - nr.left) + 'px');
+      navInk.style.setProperty('--ink-y', (r.top - nr.top) + 'px');
+      navInk.classList.add('on');
+    }
+    navTops.forEach(function (el) {
+      el.addEventListener('pointerenter', function () { moveInk(el); });
+      el.addEventListener('focus', function () { moveInk(el); });
+    });
+    nav.addEventListener('pointerleave', function () { navInk.classList.remove('on'); });
+    nav.addEventListener('focusout', function (e) {
+      if (!nav.contains(e.relatedTarget)) navInk.classList.remove('on');
+    });
+  }
+
   /* ------------------------------------------------------------- reveals */
 
-  var revealables = $$('.reveal');
+  var revealables = $$('.reveal, .reveal-group');
   if (revealables.length) {
     if (!('IntersectionObserver' in window) || reduced) {
       revealables.forEach(function (el) { el.classList.add('is-static'); });
@@ -188,6 +241,21 @@
 
   $$('[data-tabs]').forEach(function (group) {
     var buttons = $$('[role="tab"]', group);
+    /* A sliding fill behind the active tab; see .tabs__ink. The group is its
+       offset parent, so a button's offsetLeft/Top place the ink in the same
+       coordinates — including when the strip is scrolled sideways. */
+    var ink = d.createElement('span');
+    ink.className = 'tabs__ink';
+    ink.setAttribute('aria-hidden', 'true');
+    group.insertBefore(ink, group.firstChild);
+    group.classList.add('tabs--inked');
+    function placeInk(b) {
+      if (!b) return;
+      ink.style.width = b.offsetWidth + 'px';
+      ink.style.height = b.offsetHeight + 'px';
+      ink.style.setProperty('--tab-x', b.offsetLeft + 'px');
+      ink.style.setProperty('--tab-y', b.offsetTop + 'px');
+    }
     function select(idx) {
       buttons.forEach(function (b, i) {
         var on = i === idx;
@@ -196,7 +264,14 @@
         var panel = d.getElementById(b.getAttribute('aria-controls'));
         if (panel) panel.hidden = !on;
       });
+      placeInk(buttons[idx]);
     }
+    window.addEventListener('resize', function () {
+      var cur = buttons.findIndex(function (b) {
+        return b.getAttribute('aria-selected') === 'true';
+      });
+      placeInk(buttons[Math.max(0, cur)]);
+    }, { passive: true });
     buttons.forEach(function (b, i) {
       b.addEventListener('click', function () { select(i); });
       b.addEventListener('keydown', function (ev) {
@@ -209,6 +284,56 @@
     });
     select(Math.max(0, buttons.findIndex(function (b) { return b.getAttribute('aria-selected') === 'true'; })));
   });
+
+  /* ------------------------------------------------------------- word reel
+     A word in the hero line rotates through synonyms on a vertical track (after
+     FlClash's reel): slide a line at a time, resize the clip to the live word. */
+
+  $$('[data-reel]').forEach(function (reel) {
+    var track = reel.querySelector('.reel__track');
+    if (!track) return;
+    var words = $$(':scope > span', track);
+    if (words.length < 2) return;
+    var i = 0;
+    if (reduced) return;
+    setInterval(function () {
+      i = (i + 1) % words.length;
+      track.style.transform = 'translateY(-' + (i * 1.1).toFixed(2) + 'em)';
+    }, 2600);
+  });
+
+  /* ------------------------------------------------------ language seg-ink
+     The RU/EN toggle gets the tab strip's sliding fill: it rests under the
+     current language and previews toward the half the pointer is over. */
+
+  var lang = $('.lang');
+  if (lang) {
+    var langs = $$('a', lang);
+    if (langs.length) {
+      var langInk = d.createElement('span');
+      langInk.className = 'lang__ink';
+      langInk.setAttribute('aria-hidden', 'true');
+      lang.insertBefore(langInk, lang.firstChild);
+      lang.classList.add('lang--inked');
+      var activeLang = langs.filter(function (a) {
+        return a.getAttribute('aria-current') === 'true';
+      })[0] || langs[0];
+      function litTo(el) {
+        langs.forEach(function (a) { a.classList.toggle('is-lit', a === el); });
+        langInk.style.width = el.offsetWidth + 'px';
+        langInk.style.height = el.offsetHeight + 'px';
+        langInk.style.setProperty('--lang-x', el.offsetLeft + 'px');
+      }
+      litTo(activeLang);
+      if (finePointer) {
+        langs.forEach(function (a) {
+          a.addEventListener('pointerenter', function () { litTo(a); });
+        });
+        lang.addEventListener('pointerleave', function () { litTo(activeLang); });
+      }
+      window.addEventListener('resize', function () { litTo(activeLang); }, { passive: true });
+    }
+  }
 
   /* ------------------------------------------------------------------ FAQ */
 

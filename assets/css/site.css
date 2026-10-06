@@ -93,13 +93,41 @@
 }
 
 .nav {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.15rem;
 }
 
+/* A single soft pill that slides under whichever top-level link the pointer is
+   over, skewed to our parallelogram so FlClash's hover-ink reads as ours. JS
+   places it (--ink-x/-y, width, height) and toggles .on; the per-link underline
+   below still marks the current page. Fine pointers only — placed by core.js. */
+.nav__ink {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  background: color-mix(in oklab, var(--text) 9%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(var(--ink-x, 0), var(--ink-y, 0))
+    skewX(calc(var(--tilt) * -1)) scale(0.82);
+  transition: transform 0.44s var(--spring), width 0.44s var(--spring),
+    height 0.44s var(--spring), opacity 0.2s var(--ease);
+}
+
+.nav__ink.on {
+  opacity: 1;
+  transform: translate(var(--ink-x, 0), var(--ink-y, 0))
+    skewX(calc(var(--tilt) * -1)) scale(1);
+}
+
 .nav a {
   position: relative;
+  z-index: 1;
   font-family: var(--mono);
   font-size: 0.74rem;
   letter-spacing: 0.1em;
@@ -126,7 +154,7 @@
   transition: transform 0.24s var(--ease-out);
 }
 
-.nav a:hover::before,
+.nav:not(.nav--inked) a:hover::before,
 .nav a[aria-current='page']::before {
   transform: scaleX(1) skewX(calc(var(--tilt) * -1));
 }
@@ -216,9 +244,42 @@
 }
 
 .lang {
+  position: relative;
   display: inline-flex;
   border: 1px solid var(--line);
   flex: none;
+}
+
+/* A sliding fill under the active language that previews toward whichever half
+   the pointer is over — the seg-ink from the tab strips, in the masthead. JS
+   places it and adds .lang--inked; without it the active half stays filled. */
+.lang__ink {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  background: var(--text);
+  pointer-events: none;
+  transform: translate(var(--lang-x, 0), 0);
+  transition: transform 0.42s var(--spring), width 0.42s var(--spring);
+}
+
+.lang--inked a {
+  position: relative;
+  z-index: 1;
+  color: var(--text-dim);
+}
+
+.lang--inked a[aria-current='true'] {
+  background: none;
+  font-weight: 400;
+}
+
+.lang--inked a.is-lit {
+  color: var(--ink);
+  font-weight: 700;
 }
 
 /* The inactive half is the control — the only way to reach the other language.
@@ -232,11 +293,11 @@
   transition: background 0.16s var(--ease), color 0.16s var(--ease);
 }
 
-.lang a:hover {
+.lang:not(.lang--inked) a:hover {
   color: var(--text);
 }
 
-.lang a[aria-current='true'] {
+.lang:not(.lang--inked) a[aria-current='true'] {
   background: var(--text);
   color: var(--ink);
   font-weight: 700;
@@ -496,13 +557,32 @@
 }
 
 .footer li a {
+  position: relative;
+  display: inline-block;
   color: var(--text-dim);
   font-size: 0.94rem;
   transition: color 0.16s var(--ease);
 }
 
+.footer li a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--violet);
+  transform: scaleX(0) skewX(calc(var(--tilt) * -1));
+  transform-origin: left;
+  transition: transform 0.24s var(--ease-out);
+}
+
 .footer li a:hover {
   color: var(--text);
+}
+
+.footer li a:hover::after {
+  transform: scaleX(1) skewX(calc(var(--tilt) * -1));
 }
 
 .footer__word {
@@ -585,7 +665,7 @@
   border: 1px solid var(--line);
   padding: var(--step-3);
   overflow: hidden;
-  transition: border-color 0.22s var(--ease), transform 0.22s var(--ease);
+  transition: border-color 0.3s var(--ease), transform 0.5s var(--spring);
 }
 
 .card::after {
@@ -596,7 +676,7 @@
   background: linear-gradient(
     calc(90deg + var(--tilt)),
     transparent 38%,
-    color-mix(in oklab, var(--violet) 16%, transparent) 50%,
+    color-mix(in oklab, var(--hue, var(--violet)) 16%, transparent) 50%,
     transparent 62%
   );
   transform: translateY(60%);
@@ -606,7 +686,7 @@
 }
 
 .card:hover {
-  border-color: color-mix(in oklab, var(--violet) 55%, var(--line));
+  border-color: color-mix(in oklab, var(--hue, var(--violet)) 55%, var(--line));
   transform: translateY(-2px);
 }
 
@@ -625,7 +705,7 @@
   z-index: 0;
   background: radial-gradient(
     22rem circle at var(--mx, 50%) var(--my, 0%),
-    color-mix(in oklab, var(--violet) 15%, transparent),
+    color-mix(in oklab, var(--hue, var(--violet)) 15%, transparent),
     transparent 60%
   );
   opacity: 0;
@@ -669,8 +749,15 @@
   display: block;
   width: 1.6rem;
   height: 1.6rem;
-  color: var(--cyan-bright);
+  color: var(--hue, var(--cyan-bright));
 }
+
+/* Walk the brand palette down the feature grid, so the row reads in colour the
+   way FlClash's cards do; every other card surface already keys off --hue. */
+.feature-grid .card:nth-child(4n + 1) { --hue: var(--violet); }
+.feature-grid .card:nth-child(4n + 2) { --hue: var(--blue); }
+.feature-grid .card:nth-child(4n + 3) { --hue: var(--cyan); }
+.feature-grid .card:nth-child(4n + 4) { --hue: var(--magenta); }
 
 .card__icon svg {
   width: 100%;
@@ -933,13 +1020,13 @@ table.data code {
 
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(32px) scale(0.97);
 }
 
 .reveal.is-in {
   opacity: 1;
   transform: none;
-  transition: opacity 0.6s var(--ease-out), transform 0.7s var(--ease-out);
+  transition: opacity 0.7s var(--ease-out), transform 0.9s var(--spring);
 }
 
 .no-js .reveal,
@@ -952,6 +1039,59 @@ table.data code {
   .reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* A reveal container whose direct children cascade in sequence rather than the
+   block arriving as one. The observer tags the container .is-in (or .is-static
+   without JS); children rise with an index-based delay, capped so a long list
+   never trails too far behind. */
+.reveal-group > * {
+  opacity: 0;
+}
+
+.reveal-group.is-in > * {
+  opacity: 1;
+  animation: rc-rise 0.85s var(--spring) backwards;
+  animation-delay: calc(var(--n, 0) * 90ms);
+}
+
+.reveal-group.is-in > :nth-child(2) {
+  --n: 1;
+}
+
+.reveal-group.is-in > :nth-child(3) {
+  --n: 2;
+}
+
+.reveal-group.is-in > :nth-child(4) {
+  --n: 3;
+}
+
+.reveal-group.is-in > :nth-child(5) {
+  --n: 4;
+}
+
+.reveal-group.is-in > :nth-child(n + 6) {
+  --n: 5;
+}
+
+@keyframes rc-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.95);
+  }
+}
+
+.no-js .reveal-group > *,
+.reveal-group.is-static > * {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-group > * {
+    opacity: 1;
+    animation: none;
   }
 }
 
@@ -990,10 +1130,12 @@ table.data code {
 
 .statement em {
   font-style: normal;
-  background: linear-gradient(100deg, var(--violet), var(--cyan));
+  background: linear-gradient(100deg, var(--violet), var(--cyan), var(--violet));
+  background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: rc-flow 9s linear infinite;
 }
 
 /* The builder page has no pagehead above it: its section header is the page

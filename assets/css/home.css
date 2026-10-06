@@ -85,6 +85,36 @@
   font-weight: 600;
 }
 
+/* The rotating word in the hero sub-line (see _hero_reel / core.js). The track
+   is a column of words clipped to one line; the clip width springs to the live
+   word so the trailing period stays snug. */
+.reel {
+  display: inline-block;
+  position: relative;
+  height: 1.1em;
+  /* Width sits at the widest word (max-content) so the live word is never
+     clipped sideways across a font swap; the box clips the stacked words
+     vertically. The trailing period travels inside each word, so a shorter
+     word just leaves blank line-end to its right rather than a stray dot. */
+  overflow: hidden;
+  vertical-align: bottom;
+  color: var(--violet);
+}
+.reel__track {
+  display: flex;
+  flex-direction: column;
+  /* Size to the widest word so no word overflows the track; the reel itself
+     (overflow:hidden, width set to the live word) does the clipping. */
+  width: max-content;
+  will-change: transform;
+  transition: transform 0.6s var(--spring);
+}
+.reel__track > span {
+  display: block;
+  height: 1.1em;
+  white-space: nowrap;
+}
+
 /* Entrance choreography. Each piece rises and fades in on its own --d delay,
    so the hero assembles top-to-bottom on load. Guarded by html:not(.no-js):
    with no JS (or before the inline unblock runs) the content is simply there,
@@ -96,18 +126,23 @@
 
 html:not(.no-js) .hero .enter {
   opacity: 0;
-  animation: hero-enter 0.9s var(--ease-out) both;
+  animation: hero-enter 1.05s var(--spring) both;
   animation-delay: var(--d, 0s);
 }
 
 @keyframes hero-enter {
   from {
     opacity: 0;
-    transform: translateY(1.6rem);
+    transform: translateY(2.4rem) scale(0.965);
+    filter: blur(10px);
+  }
+  55% {
+    filter: blur(0);
   }
   to {
     opacity: 1;
     transform: none;
+    filter: blur(0);
   }
 }
 
@@ -155,6 +190,7 @@ html:not(.no-js) .hero .enter {
   width: 100%;
   max-width: 30rem;
   margin-inline: auto;
+  perspective: 1000px;
   /* The dashed ring is a circle (border-radius:50%) but its layout box is a
      square; while it spins, that square's axis-aligned bounds swell past the
      stage. The visual never leaves the inscribed circle, so clipping the stage
@@ -197,6 +233,11 @@ html:not(.no-js) .hero .enter {
   width: 76%;
   cursor: pointer;
   touch-action: manipulation;
+  /* Pointer parallax: core.js writes --rx/--ry on the stage, the mark leans
+     into them and springs back on leave. */
+  transform: rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.6s var(--spring);
 }
 
 .hero__mark svg {
@@ -350,13 +391,18 @@ html:not(.no-js) .hero .enter {
   color: inherit;
   text-decoration: none;
   overflow: hidden;
-  transition: border-color 0.22s var(--ease), transform 0.22s var(--ease);
+  transition: border-color 0.3s var(--ease), transform 0.55s var(--spring);
 }
 
 .path:hover,
 .path:focus-visible {
   border-color: var(--violet);
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+}
+
+.path:active {
+  transform: translateY(-1px) scale(0.992);
+  transition-duration: 0.12s;
 }
 
 .path__icon {
@@ -708,10 +754,12 @@ html:not(.no-js) .hero .enter {
   font-size: clamp(1.3rem, 1rem + 1.4vw, 2rem);
   line-height: 1;
   letter-spacing: -0.03em;
-  background: linear-gradient(100deg, var(--violet), var(--cyan));
+  background: linear-gradient(100deg, var(--violet), var(--cyan), var(--violet));
+  background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: rc-flow 7s linear infinite;
 }
 
 .stat__label {
@@ -721,6 +769,24 @@ html:not(.no-js) .hero .enter {
   text-transform: uppercase;
   color: var(--text-faint);
 }
+
+/* A slanted hue-dash over each figure, one brand colour per cell, so the band
+   reads in colour rather than one tone and grows on hover — our skew applied to
+   FlClash's growing facts marker. */
+.stat::before {
+  content: '';
+  width: 1.4rem;
+  height: 0.3rem;
+  border-radius: 1em;
+  background: var(--hue, var(--violet));
+  transform: skewX(calc(var(--tilt) * -1));
+  transition: width 0.5s var(--spring-pop);
+}
+.stat:hover::before { width: 2.3rem; }
+.statband__grid .stat:nth-child(1) { --hue: var(--violet); }
+.statband__grid .stat:nth-child(2) { --hue: var(--blue); }
+.statband__grid .stat:nth-child(3) { --hue: var(--cyan); }
+.statband__grid .stat:nth-child(4) { --hue: var(--amber); }
 
 @media (max-width: 720px) {
   .statband__grid { grid-template-columns: repeat(2, 1fr); }

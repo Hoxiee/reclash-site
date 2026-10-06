@@ -1,7 +1,21 @@
 """Landing page."""
 
 from . import ui
-from .ui import esc, icon, brand_icon, mark, ticks, rubric, chip, btn
+from .ui import esc, icon, brand_icon, mark, ticks, rubric, chip, btn, eyebrow_chip
+
+
+def _hero_reel(prefix, words):
+    """The hero sub-line with its last word on a rotating reel (core.js cycles
+    it). The reel is decorative, so it is aria-hidden and the first word is
+    restated for assistive tech, keeping the spoken sentence stable."""
+    track = "".join("<span>%s.</span>" % esc(w) for w in words)
+    return (
+        '<span class="hero__title__sub">%s'
+        '<span class="reel" data-reel aria-hidden="true">'
+        '<span class="reel__track">%s</span></span>'
+        '<span class="visually-hidden">%s.</span></span>'
+        % (esc(prefix), track, esc(words[0]))
+    )
 
 
 def hero(ctx):
@@ -13,6 +27,10 @@ def hero(ctx):
         '<div class="hero__glow hero__glow--2" aria-hidden="true"></div>',
         '<div class="shell hero__inner">',
         '<div class="hero__copy">',
+        '<div class="enter" style="--d:.02s;margin-bottom:var(--step-3)">',
+        eyebrow_chip(ui.GITHUB,
+                     t("в активной разработке", "in active development"), True),
+        "</div>",
         '<p class="hero__meta enter" style="--d:.05s">',
         ticks(),
         "<span>",
@@ -22,8 +40,11 @@ def hero(ctx):
         "</span><span>GPL-3.0</span></p>",
         '<h1 class="hero__title enter" style="--d:.16s">',
         esc(t("Свобода,", "Freedom")),
-        '<span class="hero__title__sub">%s</span>'
-        % esc(t("которую нельзя отобрать.", "no one can take away.")),
+        _hero_reel(
+            t("которую нельзя ", "no one can "),
+            [t("отобрать", "take away"), t("купить", "buy"),
+             t("отозвать", "revoke"), t("выключить", "switch off")],
+        ),
         "</h1>",
         '<p class="hero__lede enter" style="--d:.3s">',
         t(
@@ -150,19 +171,19 @@ def section_paths(ctx):
          t("Собрать заголовки", "Build the headers")),
     ]
     figs = "".join(
-        '<a class="path path--%s reveal" href="%s" data-delay="%s">'
+        '<a class="path path--%s" href="%s">'
         '<span class="path__icon">%s</span>'
         '<p class="eyebrow">%s</p><h2>%s</h2><p>%s</p>'
         '<span class="path__go">%s<i aria-hidden="true">&#8594;</i></span></a>'
-        % (kind, href, round(i * 0.08, 2), icon(ic), esc(eyebrow),
+        % (kind, href, icon(ic), esc(eyebrow),
            esc(title), esc(body), esc(go))
-        for i, (href, ic, kind, eyebrow, title, body, go) in enumerate(cards)
+        for href, ic, kind, eyebrow, title, body, go in cards
     )
     return (
         '<section class="section section--tight" id="paths"><div class="shell">'
         '<p class="eyebrow center">%s</p>'
         '<h2 class="statement center" style="margin-bottom:var(--step-5)">%s</h2>'
-        '<div class="paths">%s</div></div></section>'
+        '<div class="paths reveal-group">%s</div></div></section>'
         % (esc(t("что дальше", "what's next")),
            t("Дальше зависит от того, <em>кто вы</em>.",
              "What comes next depends on <em>who you are</em>."), figs)
@@ -197,10 +218,10 @@ def section_launch(ctx):
            "You can switch the mode from the main screen at any time.")),
     ]
     ol = "".join(
-        '<li class="launch__step reveal" data-delay="%s">'
+        '<li class="launch__step">'
         '<span class="launch__step__n" aria-hidden="true"><span>%02d</span></span>'
         "<h3>%s</h3><p>%s</p></li>"
-        % (round(i * 0.07, 2), i + 1, esc(pair[0]), esc(pair[1]))
+        % (i + 1, esc(pair[0]), esc(pair[1]))
         for i, pair in enumerate(steps)
     )
 
@@ -250,7 +271,7 @@ def section_launch(ctx):
             ),
         ),
         "</div>",
-        '<div class="launch"><ol class="launch__steps">%s</ol>%s</div>' % (ol, tool),
+        '<div class="launch"><ol class="launch__steps reveal-group">%s</ol>%s</div>' % (ol, tool),
         "</div></section>",
     ])
 
@@ -313,11 +334,11 @@ def section_features(ctx):
         return ""
 
     cards = "".join(
-        '<article class="card reveal" data-glow data-delay="%s">'
+        '<article class="card" data-glow>'
         '<span class="card__icon">%s</span>'
         '<span class="card__num">%02d</span>'
         "<h3>%s</h3><p>%s</p>%s</article>"
-        % (round(i * 0.06, 2), icon(ic), i + 1, esc(title), esc(text), card_link(ic))
+        % (icon(ic), i + 1, esc(title), esc(text), card_link(ic))
         for i, (ic, title, text) in enumerate(items)
     )
     return "".join([
@@ -328,7 +349,7 @@ def section_features(ctx):
             "Что <em>умеет</em> ReClash.",
             "What ReClash <em>does</em>.",
         ),
-        '<div class="feature-grid">%s</div>' % cards,
+        '<div class="feature-grid reveal-group">%s</div>' % cards,
         "</div></section>",
     ])
 

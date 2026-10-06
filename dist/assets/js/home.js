@@ -180,6 +180,26 @@
     });
   }
 
+  /* Pointer parallax: the whole stage leans toward the cursor. CSS springs the
+     --rx/--ry back to flat on its own transition, so no reset loop is needed. */
+  var stage = $('.hero__stage');
+  var fine = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (stage && fine && !RC.reduced) {
+    var tilting = false;
+    window.addEventListener('pointermove', function (e) {
+      if (tilting) return;
+      tilting = true;
+      requestAnimationFrame(function () {
+        tilting = false;
+        var r = stage.getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2);
+        var dy = (e.clientY - (r.top + r.height / 2)) / (window.innerHeight / 2);
+        stage.style.setProperty('--rx', (Math.max(-1, Math.min(1, dx)) * 7).toFixed(2) + 'deg');
+        stage.style.setProperty('--ry', (Math.max(-1, Math.min(1, -dy)) * 7).toFixed(2) + 'deg');
+      });
+    }, { passive: true });
+  }
+
 })();
 
 /* ===================================== providers: headers → result diptych */

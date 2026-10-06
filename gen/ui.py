@@ -144,6 +144,10 @@ def chip(text, live=False):
 
 def btn(href, label, kind="", icon_name=None, external=False, attrs=""):
     ico = icon(icon_name, "btn__icon") if icon_name else ""
+    # The download arrow gets a clip wrapper so its hover "drop" stays inside
+    # the button edge (see .btn__clip in base.css).
+    if icon_name == "download":
+        ico = '<span class="btn__clip" aria-hidden="true">%s</span>' % ico
     rel = ' target="_blank" rel="noopener"' if external else ""
     return '<a class="btn %s" href="%s"%s %s>%s<span>%s</span></a>' % (
         kind,
@@ -152,6 +156,20 @@ def btn(href, label, kind="", icon_name=None, external=False, attrs=""):
         attrs,
         ico,
         esc(label),
+    )
+
+
+def eyebrow_chip(href, label, external=False):
+    """An eyebrow rendered as a live link-chip: a pulsing dot, the label and a
+    small arrow that nudges on hover (see .eyebrow--chip in base.css)."""
+    rel = ' target="_blank" rel="noopener"' if external else ""
+    return (
+        '<a class="eyebrow eyebrow--chip" href="%s"%s>'
+        '<span class="pulse" aria-hidden="true"></span><span>%s</span>'
+        '<svg class="eyebrow__arrow" viewBox="0 0 16 16" width="12" height="12" '
+        'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
+        'stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/>'
+        '</svg></a>' % (esc(href), rel, esc(label))
     )
 
 
