@@ -11,22 +11,24 @@
   --amber: #ffd45f;
   --magenta: #f0448c;
 
-  /* Six surfaces on one hue, a plum a good deal warmer than the blue-black
-     they started at, each a clear 0.04 OKLCH lightness apart. The old ladder
+  /* Six surfaces on one warm charcoal, each a clear ~0.04 OKLCH lightness step
+     apart. The hue was pulled off the cold plum it started on toward a warm
+     near-black (after FlClash's #181617), so the brand violet now reads as a
+     light cast on the surface rather than a tint baked into it. The old ladder
      stepped by 0.02 and everything below the text sank into one dark smudge. */
-  --ink: #0d090f; /* page          L .148 */
-  --ink-1: #171119; /* panel         L .190 */
-  --ink-2: #221a25; /* raised panel  L .232 */
-  --ink-3: #2e2433; /* chip, code    L .278 */
-  --line-soft: #332a38; /* quiet rule    L .300 */
-  --line: #453a4e; /* rule          L .368 */
+  --ink: #141211; /* page          L .184 */
+  --ink-1: #1e1b1a; /* panel         L .225 */
+  --ink-2: #292523; /* raised panel  L .268 */
+  --ink-3: #332e2c; /* chip, code    L .306 */
+  --line-soft: #3b3533; /* quiet rule    L .335 */
+  --line: #4d4642; /* rule          L .400 */
 
-  --text: #f1eaf2;
-  --text-dim: #baaabf;
+  --text: #f1ebe4;
+  --text-dim: #bdb0a6;
   /* 4.5:1 has to hold on the raised surfaces too, not just on --ink: eyebrows
      and slugs sit on cards as often as on the page. This clears it on --ink-3,
-     the lightest plate. */
-  --text-faint: #9b88a1;
+     the lightest plate, at 4.88:1. */
+  --text-faint: #a79a8e;
 
   /* The paper insert is a light plate inside a dark site, so every dark-theme
      text colour is wrong on it. These are the paper-side equivalents; the
@@ -61,8 +63,26 @@
 
   --ease: cubic-bezier(0.22, 0.68, 0.24, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Two springs borrowed from FlClash: --spring settles with no overshoot,
+     --spring-pop lands past its mark and eases back. Used on transform-driven
+     hovers where the small overshoot reads as life, never on colour or width. */
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   --focus: 2px solid var(--cyan-bright);
+}
+
+/* Where linear() easing lands, upgrade the two springs to a sampled curve that
+   actually settles like a spring rather than the single-arc bezier guess. */
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --spring: linear(0, 0.0072, 0.0283 2.4%, 0.1123 5.1%, 0.5374 16.4%, 0.7337 22.6%, 0.8682 28.6%,
+      0.9203 31.6%, 0.9601 34.8%, 0.9914 38.6%, 1.0131 42.8%, 1.0247 47.7%, 1.0276 53.5%, 1.0206 61.3%,
+      1.0054 75.6%, 0.9994 90%, 1);
+    --spring-pop: linear(0, 0.0284 1.4%, 0.1185 3%, 0.4925 8.5%, 0.8077 14.1%, 1.0074 19.3%, 1.1146 24.4%,
+      1.1471 28.3%, 1.1445 31.8%, 1.0986 38.6%, 1.0294 47.4%, 0.9906 55.6%, 0.9826 61.5%, 0.9918 71.8%,
+      1.0019 85%, 1);
+  }
 }
 
 *,
@@ -477,7 +497,7 @@ hr {
   background: var(--btn-bg);
   border: 0;
   cursor: pointer;
-  transition: transform 0.18s var(--ease), box-shadow 0.24s var(--ease);
+  transition: transform 0.4s var(--spring-pop), box-shadow 0.24s var(--ease);
   clip-path: polygon(0.7em 0, 100% 0, calc(100% - 0.7em) 100%, 0 100%);
   padding-inline: 1.75em;
 }
@@ -581,7 +601,7 @@ hr {
   background: currentColor;
   transform: scaleX(0.28);
   transform-origin: left;
-  transition: transform 0.28s var(--ease-out);
+  transition: transform 0.42s var(--spring);
 }
 
 .link:hover::after,
