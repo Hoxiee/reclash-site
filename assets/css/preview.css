@@ -1342,12 +1342,19 @@
   padding: 0.6rem 0.7rem;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.16s var(--ease), background 0.16s var(--ease);
+  transition: border-color 0.16s var(--ease), background 0.16s var(--ease),
+    transform 0.4s var(--spring-pop);
   min-width: 0;
 }
 
 .node:hover {
   border-color: color-mix(in oklab, var(--accent) 50%, var(--app-line));
+  transform: translateY(-2px);
+}
+
+.node:active {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
 }
 
 .node[aria-checked='true'] {
@@ -1588,4 +1595,163 @@
 
 .hbar--sm {
   height: 5px;
+}
+
+/* ============================================================= tactile pass
+   Hover, press and change feedback for the live preview, plus the few
+   JS-driven classes builder.js toggles. Everything rides on transform and
+   opacity against the shared tokens in base.css; the global
+   prefers-reduced-motion catch-all there stills all of it, and because the
+   entrance keyframes fill `both` they resolve to the settled state when motion
+   is off, so the preview stays correct. Overshoot (--spring-pop) is used only
+   on transform hovers, never on colour or width. */
+
+/* The preview's app-style surfaces lift and press like the real cards. These
+   stay on hover/active pseudo-classes rather than a JS entrance so a keystroke
+   re-render of #pv-screen never replays them. */
+.tile,
+.hact,
+.hbuy,
+.horb {
+  transition: transform 0.4s var(--spring-pop);
+}
+
+.tile:hover,
+.hact:hover,
+.hbuy:hover {
+  transform: translateY(-2px);
+}
+
+.tile:active,
+.hact:active,
+.hbuy:active {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
+}
+
+/* The orb is a genuine tap-toggle in the preview, so it gets the firmest press. */
+.horb:hover {
+  transform: scale(1.03);
+}
+
+.horb:active {
+  transform: scale(0.96);
+  transition-duration: 0.12s;
+}
+
+/* Dock chrome: destinations and the start button give under a tap. */
+.phone__nav div,
+.phone__fab {
+  transition: transform 0.4s var(--spring-pop);
+}
+
+.phone__fab:hover {
+  transform: translateY(-1px) scale(1.04);
+}
+
+.phone__nav div:active,
+.phone__fab:active {
+  transform: scale(0.9);
+  transition-duration: 0.1s;
+}
+
+/* The proxy group tabs already fade on select (transition: all above); lift
+   them a hair on hover and let them give on press. */
+.grouptabs button:hover {
+  transform: translateY(-1px);
+}
+
+.grouptabs button:active {
+  transform: scale(0.96);
+}
+
+/* One-shot entrance: builder.js adds .pv-enter to #pv-screen for a single
+   render (on a tab switch or first paint) then removes it, so the tiles rise
+   in once instead of on every keystroke. */
+.phone__content.pv-enter .appgrid > *,
+.phone__content.pv-enter .hero > *,
+.phone__content.pv-enter .nodes > .node {
+  animation: pv-rise 0.46s var(--spring) both;
+}
+
+.phone__content.pv-enter .appgrid > :nth-child(2),
+.phone__content.pv-enter .hero > :nth-child(2),
+.phone__content.pv-enter .nodes > .node:nth-child(2) { animation-delay: 0.04s; }
+
+.phone__content.pv-enter .appgrid > :nth-child(3),
+.phone__content.pv-enter .hero > :nth-child(3),
+.phone__content.pv-enter .nodes > .node:nth-child(3) { animation-delay: 0.08s; }
+
+.phone__content.pv-enter .appgrid > :nth-child(4),
+.phone__content.pv-enter .hero > :nth-child(4),
+.phone__content.pv-enter .nodes > .node:nth-child(4) { animation-delay: 0.12s; }
+
+.phone__content.pv-enter .appgrid > :nth-child(5),
+.phone__content.pv-enter .hero > :nth-child(5),
+.phone__content.pv-enter .nodes > .node:nth-child(5) { animation-delay: 0.16s; }
+
+.phone__content.pv-enter .appgrid > :nth-child(n+6),
+.phone__content.pv-enter .hero > :nth-child(n+6),
+.phone__content.pv-enter .nodes > .node:nth-child(n+6) { animation-delay: 0.2s; }
+
+@keyframes pv-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A change propagated to the preview: a single accent ring pulse on the frame.
+   builder.js toggles .is-flash on .phone when the scheme re-themes or a preset
+   is applied. The ring lives on .phone__screen, which persists across the
+   #pv-screen innerHTML swaps, and only its opacity animates. */
+.phone__screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+  opacity: 0;
+}
+
+.phone.is-flash .phone__screen::after {
+  animation: pv-flash 0.6s var(--ease-out);
+}
+
+@keyframes pv-flash {
+  0% { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+/* The app-bar title pops when it changes screen. */
+.phone__title.is-flash {
+  animation: pv-pop 0.4s var(--spring-pop);
+}
+
+@keyframes pv-pop {
+  0% { transform: scale(0.86); }
+  100% { transform: scale(1); }
+}
+
+/* Reorder affordance: the widget row builder.js just moved settles into its new
+   slot with a spring and an accent wash. .is-moved is a new modifier toggled by
+   builder.js; the row's resting style stays in docs.css, untouched. */
+.orderitem.is-moved {
+  animation: pv-settle 0.5s var(--spring);
+}
+
+@keyframes pv-settle {
+  0% {
+    transform: scale(0.95);
+    background: color-mix(in oklab, var(--accent) 22%, transparent);
+  }
+  100% {
+    transform: none;
+  }
 }

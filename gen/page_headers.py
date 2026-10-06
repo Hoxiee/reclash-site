@@ -693,9 +693,9 @@ def builder_form(ctx):
     # it emits, so a shut one still says what is inside it.
     groups = [
         ("01", t("Подписка и трафик", "Subscription and traffic"),
-         "ReClash-AutoUpdateInterval · ExpireDays · TrafficPercent", g_sub, True),
+         "ReClash-AutoUpdateInterval · ExpireDays · TrafficPercent", g_sub, False),
         ("02", t("Сервис", "Service"),
-         "ReClash-ServiceName · ActiveText · ServiceLogo · ServerInfo", g_service, False),
+         "ReClash-ServiceName · ActiveText · ServiceLogo · ServerInfo", g_service, True),
         ("03", t("Ссылки и объявление", "Links and announcement"),
          "ReClash-SupportURL · ReportURL · WebPageURL · BuyPlan · "
          "BuyTraffic · Announce · AnnounceURL", g_links, False),

@@ -306,10 +306,31 @@
     var curHash = '';   // hash of the file in hand, '' while none/computing
     var curName = '';   // its name, for matching a SHA256SUMS line
     var token = 0;      // guards against a slow hash landing after a newer file
+    var lastSay = '';   // last verdict shown, so a settle pops only on change
+
+    /* Replay the shared one-shot CSS pop (rc-dl-pop) the way home.js/builder
+       flash diffs: drop the flag, force a reflow, set it again, so a rapid
+       repeat still restarts the spring. Cleared after the animation so the
+       attribute never lingers. Gated on reduced motion — the resting state
+       (flag absent, text and tone already set) never depends on it. */
+    function pop(el) {
+      if (!el || RC.reduced) return;
+      el.removeAttribute('data-pop');
+      void el.offsetWidth;
+      el.setAttribute('data-pop', 'true');
+      if (el.__popT) clearTimeout(el.__popT);
+      el.__popT = setTimeout(function () { el.removeAttribute('data-pop'); }, 520);
+    }
 
     function say(key, tone) {
       verdict.textContent = s(key);
       verdict.setAttribute('data-tone', tone);
+      /* Pop only as the verdict settles into a conclusive tone, and only when
+         it actually changes — not on every keystroke that keeps a match, and
+         never on the idle hint or the busy spinner. */
+      var sig = tone + ':' + key;
+      if (sig !== lastSay && tone !== 'idle' && tone !== 'busy') pop(verdict);
+      lastSay = sig;
     }
 
     /* What the pasted text expects for THIS file: a single digest wins; a
@@ -360,6 +381,7 @@
       curName = file.name || '';
       dropCap.textContent = curName + (file.size ? '  ·  ' + size(file.size) : '');
       drop.setAttribute('data-has-file', 'true');
+      pop(drop);   // one springy pop confirms the drop, no layout shift
       if (!subtle || !window.isSecureContext) {
         hashBox.hidden = true;
         say('v_unsupported', 'warn');

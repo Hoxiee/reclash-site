@@ -39,7 +39,7 @@
   border: 1px solid var(--line);
   /* the accent rail on the left edge; recoloured per tone below */
   box-shadow: inset 3px 0 0 var(--blue);
-  transition: transform 0.22s var(--ease), border-color 0.22s var(--ease);
+  transition: transform 0.5s var(--spring), border-color 0.22s var(--ease);
 }
 /* diagonal sweep on hover — the mark's angle, mirroring .card */
 .mock::after {
@@ -62,6 +62,11 @@
   z-index: 1;
 }
 .mock:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--violet) 55%, var(--line));
+}
+/* Keyboard focus landing on a card's action lifts the whole card too. */
+.mock:focus-within {
   transform: translateY(-2px);
   border-color: color-mix(in oklab, var(--violet) 55%, var(--line));
 }
@@ -153,6 +158,11 @@
   padding: 1rem 1.1rem 1.1rem 3.1rem;
   border: 1px solid var(--line-soft);
   background: var(--ink-1);
+  transition: transform 0.5s var(--spring), border-color 0.22s var(--ease);
+}
+.mock-how li:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--violet) 45%, var(--line-soft));
 }
 .mock-how li::before {
   content: counter(how);
@@ -168,6 +178,10 @@
   font-weight: 800;
   color: var(--ink);
   background: linear-gradient(100deg, var(--violet), var(--blue) 52%, var(--cyan));
+  transition: transform 0.4s var(--spring-pop);
+}
+.mock-how li:hover::before {
+  transform: scale(1.12) rotate(-4deg);
 }
 .mock-how h3 {
   margin: 0 0 0.3rem;
@@ -181,7 +195,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mock {
+  .mock,
+  .mock-how li,
+  .mock-how li::before {
     transition: none;
   }
   .mock::after {
@@ -259,11 +275,18 @@
   background: var(--ink-3);
   border: 1px solid var(--line);
   cursor: pointer;
-  transition: color 0.16s var(--ease), border-color 0.16s var(--ease);
+  transition: transform 0.4s var(--spring-pop), color 0.16s var(--ease),
+    border-color 0.16s var(--ease);
 }
-.mockmodal__x:hover {
+.mockmodal__x:hover,
+.mockmodal__x:focus-visible {
   color: var(--text);
   border-color: var(--violet);
+  transform: rotate(90deg) scale(1.08);
+}
+.mockmodal__x:active {
+  transform: rotate(90deg) scale(0.9);
+  transition-duration: 0.1s;
 }
 
 .mockmodal .eyebrow {
@@ -472,5 +495,8 @@ a.hdrman__name--link:focus-visible {
   .mockmodal__panel,
   .mockmodal__scrim {
     animation: none;
+  }
+  .mockmodal__x {
+    transition: none;
   }
 }

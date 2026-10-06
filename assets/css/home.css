@@ -525,6 +525,7 @@ html:not(.no-js) .hero__pill--c {
   gap: var(--step-3);
   align-items: baseline;
   padding: var(--step-3);
+  transition: background 0.3s var(--ease);
 }
 
 .lineage__row + .lineage__row {
@@ -536,6 +537,7 @@ html:not(.no-js) .hero__pill--c {
   font-size: 0.94rem;
   letter-spacing: 0.01em;
   color: var(--text-dim);
+  transition: transform 0.4s var(--spring), color 0.3s var(--ease);
 }
 
 .lineage__what {
@@ -559,6 +561,15 @@ html:not(.no-js) .hero__pill--c {
 
 .lineage__row--this .lineage__what {
   color: var(--text-dim);
+}
+
+/* Hover walks a quiet wash across the plain rows (the lit --this row keeps its
+   own gradient) and eases the project name a hair to the right. */
+.lineage__row:not(.lineage__row--this):hover {
+  background: color-mix(in oklab, var(--violet) 7%, transparent);
+}
+.lineage__row:hover .lineage__name {
+  transform: translateX(3px);
 }
 
 /* --------------------------------------------------------------- paths */
@@ -732,6 +743,12 @@ html:not(.no-js) .hero__pill--c {
   color: var(--ink);
   background: var(--plate, var(--violet));
   transform: skewX(calc(var(--tilt) * -1));
+  transition: transform 0.5s var(--spring-pop);
+}
+
+/* The plate springs up a notch while its step is hovered. */
+.launch__step:hover .launch__step__n {
+  transform: skewX(calc(var(--tilt) * -1)) scale(1.08);
 }
 
 .launch__step__n > span {
@@ -799,6 +816,13 @@ html:not(.no-js) .hero__pill--c {
     transparent 70%
   );
   pointer-events: none;
+  transition: transform 0.6s var(--ease-out);
+}
+
+/* The accent bloom drifts down into the panel as it is hovered; overflow:hidden
+   on .launch__tool keeps the travel clipped to the notched card. */
+.launch__tool:hover::before {
+  transform: translate(-7%, 9%) scale(1.08);
 }
 
 .launch__tool > * {
@@ -970,10 +994,22 @@ html:not(.no-js) .hero__pill--c {
   height: 0.3rem;
   border-radius: 1em;
   background: var(--hue, var(--violet));
+  /* Grow the dash on the compositor via scaleX, so the spring-pop overshoot
+     rides a transform rather than an animated width. */
   transform: skewX(calc(var(--tilt) * -1));
-  transition: width 0.5s var(--spring-pop);
+  transition: transform 0.5s var(--spring-pop);
 }
-.stat:hover::before { width: 2.3rem; }
+.stat:hover::before {
+  transform: skewX(calc(var(--tilt) * -1)) scaleX(1.64);
+}
+
+/* The figure lifts a touch toward the reader as its cell is hovered. */
+.stat__num {
+  transition: transform 0.45s var(--spring-pop);
+}
+.stat:hover .stat__num {
+  transform: translateY(-3px) scale(1.04);
+}
 .statband__grid .stat:nth-child(1) { --hue: var(--violet); }
 .statband__grid .stat:nth-child(2) { --hue: var(--blue); }
 .statband__grid .stat:nth-child(3) { --hue: var(--cyan); }
@@ -1399,19 +1435,32 @@ html:not(.no-js) .hero__pill--c {
   border: 1px solid var(--paper-line);
   cursor: pointer;
   transition: color 0.16s var(--ease), background 0.16s var(--ease),
-    border-color 0.16s var(--ease);
+    border-color 0.16s var(--ease), transform 0.4s var(--spring-pop);
 }
 .hdemo__dot {
   width: 0.56rem; height: 0.56rem; border-radius: 50%;
   background: var(--pdot);
   flex: none;
+  transition: transform 0.4s var(--spring-pop);
 }
 .hdemo__tab.is-on {
   color: var(--paper-ink);
   background: color-mix(in oklab, var(--pdot) 12%, transparent);
   border-color: color-mix(in oklab, var(--pdot) 55%, var(--paper-line));
 }
-.hdemo__tab:hover { border-color: color-mix(in oklab, var(--pdot) 45%, var(--paper-line)); }
+.hdemo__tab:hover {
+  border-color: color-mix(in oklab, var(--pdot) 45%, var(--paper-line));
+  transform: translateY(-1px);
+}
+.hdemo__tab:hover .hdemo__dot,
+.hdemo__tab.is-on .hdemo__dot {
+  transform: scale(1.3);
+}
+/* A quick press-down, snappier than the hover so a tap reads as physical. */
+.hdemo__tab:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
+}
 .hdemo__tab:focus-visible { outline: 2px solid var(--pdot); outline-offset: 2px; }
 
 .hdemo__grid {

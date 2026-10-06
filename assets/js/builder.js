@@ -7,6 +7,17 @@
   if (!form) return;
 
   var $ = RC.$, $$ = RC.$$;
+
+  /* Replay a one-shot CSS feedback class the way home.js flashes diffs: drop
+     it, force a reflow, re-add, so a rapid repeat still restarts the animation.
+     Gated on reduced motion so a change settles with no movement when asked. */
+  function pulse(el, cls) {
+    if (!el || RC.reduced) return;
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+  }
+
   var S = {}, WIDGETS = [], RWTPL = null;
   try { S = JSON.parse(document.getElementById('builder-strings').textContent); } catch (e) {}
   try { WIDGETS = JSON.parse(document.getElementById('widget-spec').textContent); } catch (e) {}
@@ -107,6 +118,9 @@
   WIDGETS.forEach(function (w) { enabled[w.id] = !!w.on; });
 
   var listEl = document.getElementById('widget-order');
+  /* The id of the row a reorder just moved, so renderWidgetList can flash it
+     into its new slot once the list is rebuilt. */
+  var pvMovedId = null;
 
   function renderWidgetList() {
     if (!listEl) return;
@@ -128,6 +142,8 @@
         ' aria-label="' + esc(s('moveDown')) + '">&#9660;</button>';
       row.title = w.label;
       listEl.appendChild(row);
+      /* Settle the row the user just reordered into its new slot. */
+      if (id === pvMovedId) { pulse(row, 'is-moved'); pvMovedId = null; }
 
       $('input', row).addEventListener('change', function (e) {
         enabled[id] = e.target.checked;
@@ -139,6 +155,7 @@
           var to = b.getAttribute('data-mv') === 'up' ? idx - 1 : idx + 1;
           if (to < 0 || to >= order.length) return;
           var tmp = order[idx]; order[idx] = order[to]; order[to] = tmp;
+          pvMovedId = order[to];
           renderWidgetList();
           update();
         });
@@ -1265,6 +1282,14 @@
   var titleEl = document.getElementById('pv-title');
   var titleDash = titleEl ? titleEl.textContent : '';
 
+  /* Previous preview state, so a render can flash only what actually changed:
+     the frame when the scheme re-themes, the title when it switches screen, and
+     the tiles when a new tab mounts. */
+  var pvPrevMode = '';
+  var pvPrevAccent = '';
+  var pvPrevTitle = '';
+  var pvEnterTimer = 0;
+
   /* Guards background loads: a fetch that resolves after the URL changed
      must not overwrite the current one. Bumped on every bg (re)apply. */
   var bgToken = 0;
@@ -1273,6 +1298,17 @@
     if (!screenEl || !phoneEl) return;
     var sc = scheme('#' + p.hex, p.theme ? p.variant : 'tonalspot', p.theme && p.pureblack);
     if (!p.theme) sc = scheme('#7C5CFF', 'tonalspot', false);
+
+    /* A new tab is mounting: let its tiles rise in once. #pv-screen keeps the
+       class across the innerHTML swap below, and a timer clears it so a later
+       keystroke render in the same tab stays still. */
+    var tabChanged = pvMode !== pvPrevMode;
+    pvPrevMode = pvMode;
+    if (tabChanged && !RC.reduced) {
+      screenEl.classList.add('pv-enter');
+      if (pvEnterTimer) clearTimeout(pvEnterTimer);
+      pvEnterTimer = setTimeout(function () { screenEl.classList.remove('pv-enter'); }, 560);
+    }
 
     phoneEl.style.setProperty('--accent', sc.accent);
     phoneEl.style.setProperty('--accent-2', sc.accent2);
@@ -1283,6 +1319,10 @@
     phoneEl.style.setProperty('--app-text', sc.text);
     phoneEl.style.setProperty('--app-dim', sc.dim);
     phoneEl.setAttribute('data-screen', pvMode);
+
+    /* The scheme re-themed: ring the frame once so the change registers. */
+    if (pvPrevAccent && pvPrevAccent !== sc.accent) pulse(phoneEl, 'is-flash');
+    pvPrevAccent = sc.accent;
 
     /* The lit dock destination follows the screen: Dashboard owns the connect
        and widget screens, Proxies owns the proxy list. */
@@ -1348,7 +1388,12 @@
       }
     }
 
-    if (titleEl) titleEl.textContent = pvMode === 'proxy' ? s('proxies') : titleDash;
+    if (titleEl) {
+      var pvTitle = pvMode === 'proxy' ? s('proxies') : titleDash;
+      if (pvPrevTitle && pvPrevTitle !== pvTitle) pulse(titleEl, 'is-flash');
+      titleEl.textContent = pvTitle;
+      pvPrevTitle = pvTitle;
+    }
 
     if (pvMode === 'proxy') {
       screenEl.innerHTML = renderProxyView(p);
@@ -1368,15 +1413,41 @@
       '</div>';
   }
 
+  /* The screen tabs stay click-driven here (they re-render the preview rather
+     than toggle a static panel, so core.js's tab wiring does not fit), but they
+     still earn the same sliding fill as every other tab strip: a .tabs__ink the
+     active button carries, re-seated on click and whenever the strip resizes. */
+  var pvStrip = document.querySelector('.pv-controls .tabs');
+  var pvInk = null;
+  if (pvStrip) {
+    pvInk = document.createElement('span');
+    pvInk.className = 'tabs__ink';
+    pvInk.setAttribute('aria-hidden', 'true');
+    pvStrip.insertBefore(pvInk, pvStrip.firstChild);
+    pvStrip.classList.add('tabs--inked');
+  }
+  function placePvInk() {
+    if (!pvInk) return;
+    var on = pvStrip.querySelector('[data-pv][aria-selected="true"]');
+    if (!on) return;
+    pvInk.style.width = on.offsetWidth + 'px';
+    pvInk.style.height = on.offsetHeight + 'px';
+    pvInk.style.setProperty('--tab-x', on.offsetLeft + 'px');
+    pvInk.style.setProperty('--tab-y', on.offsetTop + 'px');
+  }
+
   $$('[data-pv]').forEach(function (b) {
     b.addEventListener('click', function () {
       pvMode = b.getAttribute('data-pv');
       $$('[data-pv]').forEach(function (x) {
         x.setAttribute('aria-selected', x === b ? 'true' : 'false');
       });
+      placePvInk();
       update();
     });
   });
+  if (pvStrip && 'ResizeObserver' in window) new ResizeObserver(placePvInk).observe(pvStrip);
+  else placePvInk();
 
   /* The orb is a tap-toggle in the app; on the connection tab tapping it here
      flips the preview between disconnected and connected so the whole
@@ -1624,6 +1695,9 @@
       });
       renderWidgetList();
       update();
+      /* A preset rewrites the whole form; ring the frame so the sweeping change
+         to the preview registers even when the accent happens to be unchanged. */
+      pulse(phoneEl, 'is-flash');
       showUndo(b.textContent.trim());
       form.scrollIntoView({ behavior: RC.reduced ? 'auto' : 'smooth', block: 'start' });
     });
@@ -1637,6 +1711,7 @@
       undoBtn.hidden = true;
       renderWidgetList();
       update();
+      pulse(phoneEl, 'is-flash');
     });
   }
 

@@ -31,6 +31,23 @@
     return e;
   }
 
+  /* Cursor-tracked glow for the fact cards, mirroring core.js's [data-glow]
+     seam — those cards are built after load, so core.js never sees them.
+     Fine pointers only, and off under reduced motion; the glow reveals
+     nothing, so skipping it costs nothing. */
+  var finePointer = !!(window.matchMedia &&
+    window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+
+  function wireGlow(node) {
+    if (!finePointer || (window.RC && window.RC.reduced)) return;
+    node.addEventListener('pointermove', function (e) {
+      var r = node.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      node.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+      node.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+    });
+  }
+
   var lastReport = null;
   var matchMap = null;
   var nodesBlockEl = null;
@@ -346,6 +363,7 @@
     c.appendChild(el('strong', 'report__fact-v', big));
     if (sub) c.appendChild(el('span', 'report__fact-s faint', sub));
     if (extra) c.appendChild(extra);
+    wireGlow(c);
     return c;
   }
 

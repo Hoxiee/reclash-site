@@ -674,6 +674,7 @@ hr {
   color: var(--text);
   font-weight: 500;
   white-space: nowrap;
+  transition: color 0.25s var(--ease), opacity 0.25s var(--ease);
 }
 
 .link::after {
@@ -692,6 +693,13 @@ hr {
 .link:hover::after,
 .link:focus-visible::after {
   transform: scaleX(1);
+}
+
+/* A text link is inline (non-transformable), so its press reads as a quick dip
+   in opacity rather than a scale. */
+.link:active {
+  opacity: 0.68;
+  transition-duration: 0.08s;
 }
 
 .link--cyan {
@@ -746,6 +754,12 @@ hr {
   background: color-mix(in oklab, var(--violet) 16%, transparent);
 }
 
+/* Press-down for the interactive chip: snap in, overriding the hover lift. */
+.chip--link:active {
+  transform: translateY(0) scale(0.96);
+  transition-duration: 0.1s;
+}
+
 .chip__dot {
   width: 6px;
   height: 6px;
@@ -791,12 +805,23 @@ hr {
   color: var(--cyan);
   border: 1px solid color-mix(in oklab, var(--cyan) 40%, transparent);
   padding: 0.45em 0.85em;
-  transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease),
+    transform 0.5s var(--spring);
+}
+
+.eyebrow--chip:hover,
+.eyebrow--chip:focus-visible {
+  color: var(--cyan-bright);
+  border-color: color-mix(in oklab, var(--cyan) 70%, transparent);
 }
 
 .eyebrow--chip:hover {
-  color: var(--cyan-bright);
-  border-color: color-mix(in oklab, var(--cyan) 70%, transparent);
+  transform: translateY(-2px);
+}
+
+.eyebrow--chip:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.1s;
 }
 
 .eyebrow__arrow {
@@ -804,7 +829,8 @@ hr {
   transition: transform 0.5s var(--spring);
 }
 
-.eyebrow--chip:hover .eyebrow__arrow {
+.eyebrow--chip:hover .eyebrow__arrow,
+.eyebrow--chip:focus-visible .eyebrow__arrow {
   transform: translateX(3px);
 }
 
@@ -933,11 +959,15 @@ pre {
   padding: 0.7em 1.1em;
   font-family: var(--mono);
   font-size: 0.78rem;
-  transition: top 0.2s var(--ease);
+  transition: top 0.2s var(--ease), transform 0.1s var(--ease);
 }
 
 .skip-link:focus {
   top: 0.75rem;
+}
+
+.skip-link:active {
+  transform: translateY(1px) scale(0.98);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -471,7 +471,7 @@
 .bgroup__reveal {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.5s var(--ease-out);
+  transition: grid-template-rows 0.46s var(--spring);
 }
 
 .bgroup[data-open='true'] .bgroup__reveal {
@@ -486,6 +486,17 @@
   border: 0;
   margin: 0;
   padding: 0 var(--step-3) var(--step-3);
+  /* The shade does not just unclip the fields: they settle down into place and
+     fade up as it opens, so the block reads as content arriving, not a window
+     cropping a static panel. Transform/opacity only — the height is the grid's. */
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: transform 0.5s var(--spring), opacity 0.34s var(--ease-out);
+}
+
+.bgroup[data-open='true'] .bgroup__body {
+  transform: none;
+  opacity: 1;
 }
 
 /* An informational note at the head of a block — used where a field is shown
@@ -509,6 +520,12 @@
    controls stay reachable. */
 .no-js .bgroup__reveal {
   grid-template-rows: 1fr;
+}
+
+/* ...and their fields show, since no data-open flip is coming to raise them. */
+.no-js .bgroup__body {
+  transform: none;
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1370,7 +1387,9 @@
   border: 1px solid var(--line);
   padding: 0.3rem 0.6rem;
   color: var(--text-dim);
-  transition: all 0.16s var(--ease);
+  /* Colour/border settle quietly; the lift springs with a touch of overshoot. */
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease),
+    background 0.16s var(--ease), transform 0.4s var(--spring-pop);
   white-space: nowrap;
 }
 
@@ -1378,6 +1397,12 @@
   color: #fff;
   border-color: var(--violet);
   background: color-mix(in oklab, var(--violet) 22%, transparent);
+  transform: translateY(-2px);
+}
+
+.dl-asset:active {
+  transform: translateY(0) scale(0.96);
+  transition-duration: 0.1s;
 }
 
 .dl-state {
@@ -2336,5 +2361,300 @@
   .hcard__row {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.15rem;
+  }
+}
+
+/* ===================================================== tactile pass
+   One pass over every clickable/focusable element the doc, reference,
+   headers, start and download pages share, so each reacts to hover,
+   press and keyboard focus at the quality bar the base `.btn` sets.
+   Transform/opacity only; overshoot (`--spring-pop`) is reserved for
+   transform hovers, never for colour, width or opacity. Rules sit at
+   the file end so they layer over the base styles above at equal
+   specificity. The global prefers-reduced-motion catch-all in base.css
+   neutralises every transition and animation here; the block at the
+   very end also drops the resting transforms so nothing is hidden by
+   motion when motion is off. */
+
+/* A shared one-shot pop for confirmations (copy done, a landed file, a
+   settled verdict). Small overshoot, no layout cost. */
+@keyframes rc-dl-pop {
+  0% { transform: scale(0.82); }
+  60% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* --- on-this-page nav ------------------------------------------------ */
+
+/* The hover already slides the row right; press nudges it back a hair so
+   a click reads as a physical tap. */
+.toc a:active {
+  padding-left: 0.25rem;
+  transition-duration: 0.1s;
+}
+
+.toc__search:focus-visible {
+  outline: none;
+  border-color: color-mix(in oklab, var(--cyan) 55%, var(--line));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--cyan) 16%, transparent);
+}
+
+/* --- heading anchor links -------------------------------------------- */
+
+/* The anchor fades in on heading hover; give it a short travel so it
+   slides out from under the title, and reveal it for keyboard focus too
+   (hover alone would strand a tabbing reader). */
+.doc__body h2 .anchor {
+  transform: translateX(-0.3rem);
+  transition: opacity 0.2s var(--ease), transform 0.32s var(--spring),
+    color 0.16s var(--ease);
+}
+
+.doc__body h2:hover .anchor,
+.doc__body h2 .anchor:focus-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.doc__body h2 .anchor:active {
+  transform: scale(0.9);
+  transition-duration: 0.1s;
+}
+
+/* --- preset cards ---------------------------------------------------- */
+
+/* A card, so it lifts on hover with the small overshoot and snaps on press,
+   like the primary button. Colour/border keep their quiet ease. */
+.preset-card {
+  transition: border-color 0.16s var(--ease), background 0.16s var(--ease),
+    transform 0.4s var(--spring-pop);
+}
+
+.preset-card:hover {
+  transform: translateY(-2px);
+}
+
+.preset-card:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.1s;
+}
+
+.preset-card:focus-visible {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+/* --- builder block toggles ------------------------------------------- */
+
+/* The summary is a full-width row, so it presses by sinking rather than
+   scaling. The chevron leans toward the open direction on hover. */
+.bgroup__sum:active {
+  transform: translateY(1px);
+  transition: background 0.16s var(--ease), transform 0.1s var(--ease);
+}
+
+.bgroup__sum:focus-visible {
+  outline: var(--focus);
+  outline-offset: -2px;
+}
+
+.bgroup__sum:hover .bgroup__chev {
+  transform: translateY(1px);
+}
+
+.bgroup[data-open='true'] .bgroup__sum:hover .bgroup__chev {
+  transform: rotate(180deg) translateY(1px);
+}
+
+/* --- widget order move buttons --------------------------------------- */
+
+.orderitem__mv {
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease),
+    transform 0.35s var(--spring-pop);
+}
+
+.orderitem__mv:active:not(:disabled) {
+  transform: scale(0.86);
+  transition-duration: 0.1s;
+}
+
+.orderitem__mv:focus-visible {
+  outline: var(--focus);
+  outline-offset: 1px;
+}
+
+/* --- output / preview tabs ------------------------------------------- */
+
+.tabs button:active {
+  transform: scale(0.96);
+  transition: background 0.16s var(--ease), color 0.16s var(--ease),
+    transform 0.1s var(--ease);
+}
+
+.tabs button:focus-visible {
+  outline: var(--focus);
+  outline-offset: -2px;
+}
+
+/* --- header catalogue filters ---------------------------------------- */
+
+.hfilter {
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease),
+    background 0.16s var(--ease), transform 0.4s var(--spring-pop);
+}
+
+.hfilter:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
+}
+
+.hfilter:focus-visible {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+/* --- header catalogue cards ------------------------------------------ */
+
+/* The summary already hovers and has a focus ring; add the press and lean
+   the chevron down on hover so the open affordance is felt before the click. */
+.hcard__sum:active {
+  transform: translateY(1px);
+  transition: background 0.16s var(--ease), transform 0.1s var(--ease);
+}
+
+.hcard__sum:hover .hcard__chev svg {
+  transform: translateY(1px);
+}
+
+.hcard[open] .hcard__sum:hover .hcard__chev svg {
+  transform: rotate(180deg) translateY(1px);
+}
+
+/* --- FAQ questions --------------------------------------------------- */
+
+.faq__q:active {
+  transform: translateX(1px);
+  transition: color 0.16s var(--ease), transform 0.1s var(--ease);
+}
+
+.faq__q:focus-visible {
+  outline: var(--focus);
+  outline-offset: 3px;
+}
+
+/* The +/- mark leans with the question on hover so the toggle feels live. */
+.faq__q:hover .faq__q__mark {
+  transform: scale(1.12);
+}
+
+.faq__q__mark {
+  transition: transform 0.4s var(--spring-pop);
+}
+
+/* --- step list ------------------------------------------------------- */
+
+/* The ghost number already fills on hover; let it ease in rather than snap. */
+.step::before {
+  transition: color 0.3s var(--ease), transform 0.5s var(--spring);
+}
+
+.step:hover::before {
+  transform: skewX(calc(var(--tilt) * -1)) translateX(2px);
+}
+
+/* --- download rows --------------------------------------------------- */
+
+.dl-row__icon {
+  transition: color 0.18s var(--ease), transform 0.4s var(--spring-pop);
+}
+
+.dl-row:hover .dl-row__icon {
+  transform: translateX(2px);
+}
+
+/* --- release-notes inline links -------------------------------------- */
+
+/* Grow the underline toward full ink on hover/focus, matching the base
+   `.link` feel without changing the link's layout. */
+.release__notes a {
+  transition: text-decoration-color 0.3s var(--ease),
+    text-underline-offset 0.3s var(--spring);
+}
+
+.release__notes a:hover,
+.release__notes a:focus-visible {
+  text-decoration-color: var(--cyan-bright);
+  text-underline-offset: 0.22em;
+}
+
+/* --- SHA256 verifier ------------------------------------------------- */
+
+/* The drop target presses on click; a landed file gives one springy pop so
+   the picker confirms the drop without a layout shift. */
+.verify__drop:active {
+  transform: scale(0.99);
+  transition: border-color 0.16s var(--ease), background 0.16s var(--ease),
+    color 0.16s var(--ease), transform 0.1s var(--ease);
+}
+
+.verify__drop[data-over='true'] .verify__drop__ico {
+  transform: scale(1.12) translateY(-1px);
+}
+
+.verify__drop__ico {
+  transition: color 0.16s var(--ease), transform 0.4s var(--spring-pop);
+}
+
+.verify__drop[data-pop='true'] {
+  animation: rc-dl-pop 0.42s var(--spring-pop);
+}
+
+/* The verdict pip pops once as it settles into a conclusive tone
+   (downloads.js sets data-pop); the spinning busy state is left untouched. */
+.verify__verdict[data-pop='true']::before {
+  animation: rc-dl-pop 0.46s var(--spring-pop);
+}
+
+/* --- CLI fallback disclosure ----------------------------------------- */
+
+.verify__cli > summary:active {
+  transform: translateX(1px);
+  transition: color 0.16s var(--ease), transform 0.1s var(--ease);
+}
+
+.verify__cli > summary:focus-visible {
+  outline: var(--focus);
+  outline-offset: 3px;
+}
+
+/* The +/- toggle leans on hover, matching the FAQ mark. */
+.verify__cli > summary::before {
+  display: inline-block;
+  transition: transform 0.4s var(--spring-pop), color 0.16s var(--ease);
+}
+
+.verify__cli > summary:hover::before {
+  transform: scale(1.18);
+}
+
+/* --- copy buttons (shared .copy from site.css) ----------------------- */
+
+/* site.css owns the copy button's colour swap; this adds the one-shot pop as
+   the "ok" state lands, so the confirmation is felt on every doc/download
+   code block and on the verifier's hash box. Transform only, so it layers
+   over the base rule without touching it. */
+.copy[data-done='true'] {
+  animation: rc-dl-pop 0.42s var(--spring-pop);
+}
+
+/* --- reduced motion -------------------------------------------------- */
+
+/* The base.css catch-all already forces every transition/animation to a
+   near-zero duration. This drops the resting transforms the rules above
+   introduce, so a reveal or lift never leaves an element shifted or hidden
+   when motion is off. */
+@media (prefers-reduced-motion: reduce) {
+  .doc__body h2 .anchor {
+    transform: none;
   }
 }

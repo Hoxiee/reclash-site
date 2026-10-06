@@ -266,12 +266,19 @@
       });
       placeInk(buttons[idx]);
     }
-    window.addEventListener('resize', function () {
+    /* The group itself can resize without the window doing so — the builder's
+       segment loses half its width the moment the live count label appears
+       beside it — which would strand the ink at its stale size. A ResizeObserver
+       on the group re-seats the ink on whatever is selected; it also covers the
+       plain window resize, so no separate listener is needed. */
+    function reseat() {
       var cur = buttons.findIndex(function (b) {
         return b.getAttribute('aria-selected') === 'true';
       });
       placeInk(buttons[Math.max(0, cur)]);
-    }, { passive: true });
+    }
+    if ('ResizeObserver' in window) new ResizeObserver(reseat).observe(group);
+    else window.addEventListener('resize', reseat, { passive: true });
     buttons.forEach(function (b, i) {
       b.addEventListener('click', function () { select(i); });
       b.addEventListener('keydown', function (ev) {

@@ -59,6 +59,16 @@
   font-family: var(--mono);
   font-size: 0.9rem;
   line-height: 1.5;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.report__paste textarea:hover {
+  border-color: color-mix(in oklab, var(--cyan) 35%, var(--line));
+}
+
+.report__paste textarea:focus {
+  border-color: var(--cyan-bright);
+  background: color-mix(in oklab, var(--cyan-bright) 4%, var(--ink-1));
 }
 
 .report__paste-act {
@@ -130,12 +140,41 @@
 }
 
 .report__fact {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   padding: var(--step-3);
   border: 1px solid var(--line-soft);
   background: var(--ink-1);
+  transition: transform 0.5s var(--spring), border-color 0.25s var(--ease);
+}
+
+/* A soft brand light that blooms under the pointer, tracking the (mx, my)
+   pair report.js sets on each card — the same seam .platform uses. */
+.report__fact::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    14rem circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in oklab, var(--cyan) 12%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+  pointer-events: none;
+}
+
+.report__fact:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--cyan) 40%, var(--line-soft));
+}
+
+.report__fact:hover::before {
+  opacity: 1;
 }
 
 .report__fact-k {
@@ -175,14 +214,78 @@
   font-size: 0.85rem;
   letter-spacing: 0.04em;
   color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--step-2);
+  list-style: none;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+/* Swap the UA disclosure triangle for a chevron that springs between the
+   closed (down) and open (up) positions. */
+.report__det > summary::-webkit-details-marker {
+  display: none;
+}
+
+.report__det > summary::after {
+  content: '';
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.2rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.6;
+  transition: transform 0.5s var(--spring-pop), opacity 0.2s var(--ease);
+}
+
+.report__det[open] > summary::after {
+  transform: rotate(-135deg);
 }
 
 .report__det > summary:hover {
   color: var(--cyan-bright);
+  background: color-mix(in oklab, var(--cyan-bright) 6%, transparent);
+}
+
+.report__det > summary:hover::after {
+  opacity: 1;
+}
+
+.report__det > summary:active {
+  background: color-mix(in oklab, var(--cyan-bright) 10%, transparent);
 }
 
 .report__det[open] > summary {
   border-bottom: 1px solid var(--line-soft);
+}
+
+/* The disclosed body eases down on open, so the panel unfolds rather than
+   snapping. The content stays visible with motion off (reveal, not gate). */
+.report__det[open] > :not(summary) {
+  animation: report-expand 0.42s var(--spring) both;
+}
+
+@keyframes report-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-0.45rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report__det > summary::after {
+    transition: none;
+  }
+  .report__det[open] > :not(summary) {
+    animation: none;
+  }
 }
 
 .report__det > :not(summary) {
@@ -350,6 +453,16 @@
   font-family: var(--mono);
   font-size: 0.85rem;
   line-height: 1.5;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.report__map textarea:hover {
+  border-color: color-mix(in oklab, var(--cyan) 35%, var(--line));
+}
+
+.report__map textarea:focus {
+  border-color: var(--cyan-bright);
+  background: color-mix(in oklab, var(--cyan-bright) 4%, var(--ink-1));
 }
 
 .report__map-msg {
