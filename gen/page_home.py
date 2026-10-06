@@ -18,6 +18,23 @@ def _hero_reel(prefix, words):
     )
 
 
+def _hero_pill(cls, icon_name, label, extra_class=""):
+    """A feature chip beside the hero mark. Decorative — the facts it names
+    are stated again in the copy and the statband below, so it is aria-hidden
+    and sits inside the stage bounds so it never swells the scroll box."""
+    return (
+        '<span class="hero__pill %s %s" aria-hidden="true">%s<span>%s</span></span>'
+        % (cls, extra_class, icon(icon_name, "hero__pill__ico"), esc(label))
+    )
+
+
+def _hero_plat(name, label):
+    return (
+        '<span class="hero__plat">%s<span>%s</span></span>'
+        % (brand_icon(name, "hero__plat__ico"), esc(label))
+    )
+
+
 def hero(ctx):
     t = ctx.t
     return "".join([
@@ -25,6 +42,7 @@ def hero(ctx):
         '<canvas class="hero__canvas" aria-hidden="true"></canvas>',
         '<div class="hero__glow" aria-hidden="true"></div>',
         '<div class="hero__glow hero__glow--2" aria-hidden="true"></div>',
+        '<div class="hero__glow hero__glow--3" aria-hidden="true"></div>',
         '<div class="shell hero__inner">',
         '<div class="hero__copy">',
         '<div class="enter" style="--d:.02s;margin-bottom:var(--step-3)">',
@@ -60,14 +78,20 @@ def hero(ctx):
         btn(ctx.page("download"), t("Скачать", "Download"), "", "download"),
         btn("#get-started", t("Как это работает", "How it works"), "btn--ghost", "bolt"),
         "</div>",
-        '<div class="hero__chips enter" style="--d:.52s">',
-        chip("Windows"), chip("macOS"), chip("Linux"), chip("Android"),
-        chip(t("открытый код", "open source"), True),
+        '<div class="hero__plats enter" style="--d:.52s">',
+        '<span class="hero__plats__cap">%s</span>'
+        % esc(t("доступно на", "available on")),
+        _hero_plat("windows", "Windows"),
+        _hero_plat("apple", "macOS"),
+        _hero_plat("linux", "Linux"),
+        _hero_plat("android", "Android"),
         "</div>",
         "</div>",
-        '<div class="hero__stage">',
-        '<span class="hero__orbit hero__orbit--1" aria-hidden="true"></span>',
-        '<span class="hero__orbit hero__orbit--2" aria-hidden="true"></span>',
+        '<div class="hero__stage enter" style="--d:.24s">',
+        '<span class="hero__frame" aria-hidden="true"></span>',
+        _hero_pill("hero__pill--a", "bolt", t("режим «Авто»", "Auto mode")),
+        _hero_pill("hero__pill--b", "chip", t("ядро mihomo", "mihomo core")),
+        _hero_pill("hero__pill--c", "lock", t("открытый код", "open source")),
         '<div class="hero__mark" tabindex="0" role="img" aria-label="%s">'
         % esc(t("Знак ReClash", "The ReClash mark")),
         '<span class="halo" aria-hidden="true"></span>',
@@ -76,7 +100,8 @@ def hero(ctx):
         % esc(t("наведите · кликните", "hover · click")),
         "</div>",
         "</div>",
-        "</div></section>",
+        "</div>",
+        "</section>",
     ])
 
 

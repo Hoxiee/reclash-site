@@ -1,120 +1,228 @@
-/* Landing page: the diagonal hero field and the living mark. */
+/* Landing page: the hero signal field and the living mark. */
 (function () {
   'use strict';
 
   var $ = RC.$, $$ = RC.$$;
-  var TAN = 0.36397; /* tan(20deg) — the angle of the mark */
 
-  /* =================================================== hero packet field */
-
-  var canvas = $('.hero__canvas');
-  if (canvas && canvas.getContext) {
+  /* ================================================= hero signal field
+     A sparse, living mesh in ReClash's own motif: a handful of upright bars,
+     each sheared by the brand tilt and capped round, standing in the open
+     margins around the copy. A bar rises, breathes its height for a while,
+     then sinks and hops to another free slot — the field re-routes itself the
+     way signal finds a new path, never crowding the screen. It keeps clear of
+     the copy and the mark, pauses off-screen or when the tab is hidden,
+     quickens with the scroll, and hops the bars the pointer sweeps past.
+     No per-frame glow and only a dozen-odd bars, so it stays cheap. */
+  (function () {
+    var canvas = $('.hero__canvas');
+    if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext('2d');
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var W = 0, H = 0;
-    var lanes = [];
-    var pointer = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
+    if (!ctx) return;
 
-    function build() {
-      var r = canvas.getBoundingClientRect();
-      W = canvas.width = Math.round(r.width * dpr);
-      H = canvas.height = Math.round(r.height * dpr);
-      var gap = Math.max(52, Math.min(96, r.width / 16)) * dpr;
-      var count = Math.ceil((W + H * TAN) / gap) + 2;
-      lanes = [];
-      for (var i = 0; i < count; i++) {
-        lanes.push({
-          x: -H * TAN + i * gap,
-          bright: Math.random() < 0.18,
-          pkts: []
+    var LEAN = 0.26;         /* top-of-bar shear, echoing the --tilt buttons */
+    var PIXEL_BUDGET = 10e6;
+
+    function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+    function rand(lo, hi) { return lo + Math.random() * (hi - lo); }
+    function pick(list) { return list[(Math.random() * list.length) | 0]; }
+    function ease(t) { return t >= 1 ? 1 : 1 - Math.pow(1 - t, 3); }
+
+    /* Content boxes sit under .hero__inner, which is a positioned .shell, so
+       their offsetLeft/Top read against that centred box — not the canvas,
+       whose offset parent is the hero. Walking the offset-parent chain up to
+       the hero puts every box in the canvas's own coordinates, and because it
+       uses layout (not transform) positions it is immune to the entrance
+       animation's translate/scale. */
+    var root = canvas.offsetParent;
+    function boxIn(node) {
+      var left = 0, top = 0, n = node;
+      while (n && n !== root) { left += n.offsetLeft; top += n.offsetTop; n = n.offsetParent; }
+      return { left: left, top: top, right: left + node.offsetWidth, bottom: top + node.offsetHeight };
+    }
+    function blocks() {
+      return $$('.hero__copy > .enter, .hero__meta, .hero__title, .hero__lede, ' +
+        '.hero__actions, .hero__plats, .hero__stage')
+        .filter(function (n) { return n.offsetWidth; })
+        .map(function (n) {
+          var r = boxIn(n);
+          return { left: r.left - pitch, right: r.right + pitch, top: r.top - pitch, bottom: r.bottom + pitch };
         });
-      }
     }
 
-    function spawn() {
-      var live = lanes.filter(function (l) { return l.bright; });
-      if (!live.length) return;
-      var lane = live[(Math.random() * live.length) | 0];
-      if (lane.pkts.length > 2) return;
-      lane.pkts.push({
-        t: 0,
-        speed: 0.0016 + Math.random() * 0.0028,
-        len: (26 + Math.random() * 70) * dpr,
-        hue: Math.random() < 0.5 ? '124,92,255' : '47,211,182'
-      });
+    function hex(s) {
+      s = s.replace('#', '');
+      if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+      return 'rgb(' + parseInt(s.slice(0, 2), 16) + ',' +
+        parseInt(s.slice(2, 4), 16) + ',' + parseInt(s.slice(4, 6), 16) + ')';
     }
 
-    var last = 0;
-    function frame(now) {
-      requestAnimationFrame(frame);
-      if (!W) return;
-      var dt = Math.min(46, now - last || 16);
-      last = now;
+    var width = 0, height = 0, pitch = 0, pool = [], cells = [], bars = [];
+    var frame = 0, last = 0, clock = 0, tempo = 1, onScreen = true, pointer = null;
+    var scrollAt = { y: window.scrollY, time: performance.now() };
 
-      pointer.x += (pointer.tx - pointer.x) * 0.05;
-      pointer.y += (pointer.ty - pointer.y) * 0.05;
-      var shift = (pointer.x - 0.5) * 26 * dpr;
+    function measure() {
+      var r = canvas.getBoundingClientRect();
+      width = r.width; height = r.height;
+      var ratio = Math.min(window.devicePixelRatio || 1, 2,
+        Math.sqrt(PIXEL_BUDGET / Math.max(width * height, 1)));
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      pitch = clamp(width * 0.032, 24, 42);
+    }
 
-      ctx.clearRect(0, 0, W, H);
+    function tint() {
+      var s = getComputedStyle(canvas);
+      function v(i) { return hex(s.getPropertyValue('--field-' + i).trim() || '#333'); }
+      /* Weighted toward the quiet hues; a bright brand bar surfaces rarely. */
+      pool = [v(1), v(1), v(1), v(2), v(2), v(3), v(4), v(6)];
+    }
 
-      for (var i = 0; i < lanes.length; i++) {
-        var lane = lanes[i];
-        var x0 = lane.x + shift;
-        var x1 = x0 + H * TAN;
-
-        ctx.beginPath();
-        ctx.moveTo(x0, H);
-        ctx.lineTo(x1, 0);
-        ctx.strokeStyle = lane.bright ? 'rgba(160,140,255,0.10)' : 'rgba(255,255,255,0.035)';
-        ctx.lineWidth = dpr;
-        ctx.stroke();
-
-        for (var p = lane.pkts.length - 1; p >= 0; p--) {
-          var pk = lane.pkts[p];
-          pk.t += pk.speed * dt;
-          if (pk.t > 1.2) { lane.pkts.splice(p, 1); continue; }
-          var y = H - pk.t * (H + pk.len);
-          var x = x0 + (H - y) * TAN;
-          var y2 = y + pk.len;
-          var x2 = x0 + (H - y2) * TAN;
-          var grad = ctx.createLinearGradient(x, y, x2, y2);
-          grad.addColorStop(0, 'rgba(' + pk.hue + ',0.85)');
-          grad.addColorStop(1, 'rgba(' + pk.hue + ',0)');
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x2, y2);
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = 2.1 * dpr;
-          ctx.lineCap = 'round';
-          ctx.stroke();
+    /* Candidate slots: a loose grid, keeping only points clear of the copy and
+       the mark with room for a bar to stand above them. */
+    function chart() {
+      cells = [];
+      var box = blocks();
+      var reach = pitch * 2.4;
+      var cols = Math.max(1, Math.round(width / (pitch * 2.2)));
+      var rows = Math.max(1, Math.round(height / (pitch * 2.4)));
+      for (var cx = 0; cx <= cols; cx++) {
+        for (var cy = 0; cy <= rows; cy++) {
+          var x = (cx + 0.5) / (cols + 1) * width;
+          var y = (cy + 0.5) / (rows + 1) * height;
+          if (x < pitch || x > width - pitch || y < pitch || y > height - pitch) continue;
+          if (box.some(function (b) {
+            return x > b.left && x < b.right && y - reach < b.bottom && y > b.top;
+          })) continue;
+          cells.push({ x: x, y: y });
         }
       }
     }
 
-    build();
-    window.addEventListener('resize', build);
-    window.addEventListener('pointermove', function (e) {
-      pointer.tx = e.clientX / window.innerWidth;
-      pointer.ty = e.clientY / window.innerHeight;
-    }, { passive: true });
-
-    if (!RC.reduced) {
-      requestAnimationFrame(frame);
-      setInterval(spawn, 380);
-      for (var k = 0; k < 6; k++) spawn();
-    } else {
-      last = performance.now();
-      ctx.clearRect(0, 0, W, H);
-      lanes.forEach(function (lane) {
-        ctx.beginPath();
-        ctx.moveTo(lane.x, H);
-        ctx.lineTo(lane.x + H * TAN, 0);
-        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-        ctx.lineWidth = dpr;
-        ctx.stroke();
-      });
+    function far() {
+      var best = null, bestD = -1;
+      for (var i = 0; i < 10 && cells.length; i++) {
+        var c = pick(cells), d = 1e9;
+        for (var j = 0; j < bars.length; j++) {
+          var dd = Math.hypot(bars[j].x - c.x, bars[j].y - c.y);
+          if (dd < d) d = dd;
+        }
+        if (d > bestD) { bestD = d; best = c; }
+      }
+      return best;
     }
-  }
+
+    function born(b) {
+      var c = far();
+      if (!c) return b;
+      b = b || {};
+      b.x = c.x; b.y = c.y;
+      b.rest = pitch * rand(0.6, 1.15);
+      b.amp = b.rest * rand(0.16, 0.26);
+      b.phase = rand(0, 6.28);
+      b.speed = rand(0.5, 0.95);
+      b.hue = pick(pool);
+      b.phase2 = 'rise';
+      b.t = 0; b.span = rand(0.5, 0.7);
+      return b;
+    }
+
+    function seed() {
+      bars = [];
+      if (!cells.length) return;
+      var total = clamp(Math.round(cells.length * 0.3), 4, width < 700 ? 7 : 15);
+      for (var i = 0; i < total; i++) {
+        var b = born(null);
+        if (!b.x && b.x !== 0) break;
+        b.phase2 = 'live'; b.span = rand(2.5, 6); b.t = rand(0, b.span); b.w = 1;
+        bars.push(b);
+      }
+    }
+
+    function advance(b, dt) {
+      b.t += dt;
+      var p = b.span ? b.t / b.span : 1;
+      if (b.phase2 === 'rise') { b.w = ease(p); if (p >= 1) { b.w = 1; b.phase2 = 'live'; b.t = 0; b.span = rand(2.5, 6); } }
+      else if (b.phase2 === 'live') { b.w = 1; if (p >= 1) { b.phase2 = 'sink'; b.t = 0; b.span = rand(0.45, 0.65); } }
+      else { b.w = 1 - ease(p); if (p >= 1) born(b); }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      ctx.lineCap = 'round';
+      ctx.lineWidth = pitch * 0.4;
+      for (var i = 0; i < bars.length; i++) {
+        var b = bars[i];
+        if (b.w < 0.02) continue;
+        var breathe = 0.5 + 0.5 * Math.sin(clock * b.speed + b.phase);
+        var h = (b.rest + b.amp * breathe) * (0.6 + 0.4 * b.w);
+        ctx.globalAlpha = b.w;
+        ctx.strokeStyle = b.hue;
+        ctx.beginPath();
+        ctx.moveTo(b.x, b.y);
+        ctx.lineTo(b.x + h * LEAN, b.y - h);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function stir() {
+      var r = canvas.getBoundingClientRect();
+      var px = pointer.x - r.left, py = pointer.y - r.top;
+      pointer = null;
+      for (var i = 0; i < bars.length; i++) {
+        var b = bars[i];
+        if (b.phase2 === 'live' && Math.hypot(b.x - px, b.y - 0.5 * b.rest - py) < pitch * 2.2) {
+          b.phase2 = 'sink'; b.t = 0; b.span = 0.45;
+        }
+      }
+    }
+
+    function tick(now) {
+      frame = requestAnimationFrame(tick);
+      var dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      tempo += (1 - tempo) * Math.min(1, dt * 2.5);
+      clock += dt * tempo;
+      if (pointer) stir();
+      for (var i = 0; i < bars.length; i++) advance(bars[i], dt * tempo);
+      draw();
+    }
+
+    function sync() {
+      var go = onScreen && !document.hidden && !RC.reduced;
+      if (go && !frame) { last = performance.now(); frame = requestAnimationFrame(tick); }
+      else if (!go && frame) { cancelAnimationFrame(frame); frame = 0; }
+    }
+
+    function rebuild() { measure(); tint(); chart(); seed(); draw(); }
+
+    rebuild();
+    if (RC.reduced) return;  /* a still mesh; no loop, no listeners */
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(function () {
+        var r = canvas.getBoundingClientRect();
+        if (Math.abs(r.width - width) > 1 || Math.abs(r.height - height) > 1) rebuild();
+      }).observe(canvas);
+    } else {
+      window.addEventListener('resize', rebuild, { passive: true });
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { onScreen = e[0].isIntersecting; sync(); }).observe(canvas);
+    }
+    document.addEventListener('visibilitychange', sync);
+    window.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'touch' && frame) pointer = { x: e.clientX, y: e.clientY };
+    }, { passive: true });
+    window.addEventListener('scroll', function () {
+      var now = performance.now();
+      var speed = Math.abs(window.scrollY - scrollAt.y) / Math.max(now - scrollAt.time, 8) * 1000;
+      scrollAt = { y: window.scrollY, time: now };
+      tempo = Math.max(tempo, 1 + Math.min(speed / 700, 2));
+    }, { passive: true });
+    sync();
+  })();
 
   /* ======================================================= the living mark */
 

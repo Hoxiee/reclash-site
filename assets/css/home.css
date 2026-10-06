@@ -2,18 +2,38 @@
 
 /* ------------------------------------------------------------------ hero */
 
+/* Full-screen hero: a flex column that fills the viewport under the sticky
+   masthead (min-height 4.15rem), with the copy/stage row centred and the proof
+   strip settling at the bottom. */
 .hero {
   position: relative;
-  padding-block: clamp(3rem, 7vw, 6.5rem) clamp(2.5rem, 5vw, 4.5rem);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - 4.15rem);
+  padding-block: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 3vw, 2.5rem);
   overflow: hidden;
   isolation: isolate;
 }
 
+/* The hero signal field (home.js) reads these as its bar palette: --field-1..3
+   and --field-5 are the quiet resting hues (warm, dim violet, amber); a bar
+   that charges brightens toward the sparks --field-3/4/6 (violet, cyan,
+   magenta). Kept mid-dark so the mesh stays a texture behind the copy. */
 .hero__canvas {
   position: absolute;
   inset: 0;
+  /* A canvas is a replaced element: insets alone leave it at its intrinsic
+     300x150, so size it explicitly to fill the hero. */
+  width: 100%;
+  height: 100%;
   z-index: -1;
-  opacity: 0.85;
+  opacity: 0.9;
+  --field-1: #2a2523;
+  --field-2: #322c48;
+  --field-3: #6a56d8;
+  --field-4: #2fcbb6;
+  --field-5: #7a5f2c;
+  --field-6: #e24d8f;
 }
 
 .hero__glow {
@@ -44,7 +64,59 @@
   );
 }
 
+/* A low, warm amber wash behind the copy, so the full-screen hero reads as
+   candy rather than a cold void. */
+.hero__glow--3 {
+  right: auto;
+  left: 18%;
+  top: 36%;
+  width: min(52vw, 620px);
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--amber) 16%, transparent),
+    transparent 70%
+  );
+}
+
+/* The three glows breathe out of phase so the backdrop never sits still.
+   Guarded by html:not(.no-js) and dropped under reduced-motion. */
+html:not(.no-js) .hero__glow {
+  animation: hero-breathe 11s var(--ease) infinite;
+}
+html:not(.no-js) .hero__glow--2 {
+  animation-duration: 14s;
+  animation-delay: -4s;
+}
+html:not(.no-js) .hero__glow--3 {
+  animation-duration: 17s;
+  animation-delay: -8s;
+}
+
+@keyframes hero-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(4%, -3%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-3%, 2%, 0) scale(1.05);
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.no-js) .hero__glow {
+    animation: none;
+  }
+}
+
 .hero__inner {
+  flex: 1 1 auto;
   display: grid;
   grid-template-columns: minmax(0, 1.32fr) minmax(0, 0.68fr);
   gap: clamp(1.5rem, 4vw, 3.5rem);
@@ -72,11 +144,11 @@
 /* A plain sentence, not a slogan. The first line states what ReClash is; the
    second, dimmed, states the deal. No uppercase, no gradient, no diagonal. */
 .hero__title {
-  font-size: clamp(1.9rem, 1.2rem + 3vw, 3.5rem);
-  line-height: 1.1;
-  letter-spacing: -0.025em;
+  font-size: clamp(2.3rem, 1.4rem + 4.2vw, 4.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
   font-weight: 800;
-  max-width: 18ch;
+  max-width: 16ch;
 }
 
 .hero__title__sub {
@@ -173,15 +245,61 @@ html:not(.no-js) .hero .enter {
   margin-top: var(--step-4);
 }
 
-.hero__chips {
+/* Platform row: a quiet "available on" caption followed by the four OS marks,
+   each a low pill that lifts on hover. Replaces the old generic chip strip so
+   the hero names its reach straight away. */
+.hero__plats {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: var(--step-3);
+  align-items: center;
+  gap: 0.5rem 0.7rem;
+  margin-top: var(--step-4);
 }
 
-/* The mark and everything orbiting it share one square stage so the rings and
-   telemetry chips position against the same box. */
+.hero__plats__cap {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-right: 0.2rem;
+}
+
+.hero__plat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: color-mix(in oklab, var(--ink-1) 70%, transparent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease),
+    transform 0.3s var(--spring), background 0.3s var(--ease);
+}
+
+.hero__plat__ico {
+  width: 1.05rem;
+  height: 1.05rem;
+  color: var(--text-faint);
+  transition: color 0.3s var(--ease);
+}
+
+.hero__plat:hover {
+  color: var(--text);
+  border-color: color-mix(in oklab, var(--violet) 50%, var(--line));
+  background: color-mix(in oklab, var(--violet) 10%, var(--ink-1));
+  transform: translateY(-2px);
+}
+
+.hero__plat:hover .hero__plat__ico {
+  color: var(--violet);
+}
+
+/* The mark, its frame, and the feature pills share one square stage so they
+   all position against the same box. */
 .hero__stage {
   position: relative;
   display: grid;
@@ -191,37 +309,27 @@ html:not(.no-js) .hero .enter {
   max-width: 30rem;
   margin-inline: auto;
   perspective: 1000px;
-  /* The dashed ring is a circle (border-radius:50%) but its layout box is a
-     square; while it spins, that square's axis-aligned bounds swell past the
-     stage. The visual never leaves the inscribed circle, so clipping the stage
-     keeps the box honest without changing what you see. */
+  /* The tilted frame and the floating pills sit near the stage edges; clipping
+     to the square stage keeps the scroll box honest without changing what you
+     see. */
   overflow: hidden;
 }
 
-/* Two concentric rings: a still inner one and a slow dashed outer one, both on
-   the brand hue. They give the mark somewhere to sit rather than floating in
-   the void. */
-.hero__orbit {
+/* ReClash geometry, not a circle: a rounded rectangle sheared to the mark's
+   20deg tilt gives the upright mark somewhere to sit. The inset leaves room for
+   the skew so the parallelogram never reaches the clipping stage edge. */
+.hero__frame {
   position: absolute;
-  border-radius: 50%;
+  inset: 16%;
+  border-radius: clamp(1.25rem, 4vw, 2.25rem);
+  border: 1px solid color-mix(in oklab, var(--violet) 30%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--violet) 10%, transparent),
+    transparent 62%
+  );
+  transform: skewX(calc(var(--tilt) * -1));
   pointer-events: none;
-}
-
-.hero__orbit--1 {
-  inset: 8%;
-  border: 1px solid color-mix(in oklab, var(--violet) 26%, transparent);
-}
-
-.hero__orbit--2 {
-  inset: 0;
-  border: 1px dashed color-mix(in oklab, var(--cyan) 24%, transparent);
-  animation: orbit-spin 56s linear infinite;
-}
-
-@keyframes orbit-spin {
-  to {
-    transform: rotate(1turn);
-  }
 }
 
 /* Interactive mark */
@@ -261,7 +369,7 @@ html:not(.no-js) .hero .enter {
 .hero__mark .halo {
   position: absolute;
   inset: 12%;
-  border-radius: 50%;
+  border-radius: clamp(1rem, 3vw, 2rem);
   background: radial-gradient(
     closest-side,
     color-mix(in oklab, var(--violet) 40%, transparent),
@@ -296,13 +404,91 @@ html:not(.no-js) .hero .enter {
   opacity: 1;
 }
 
+/* Three feature chips beside the mark, absolutely placed inside the square
+   stage bounds (which clips, see .hero__stage) so they lift the stage from "a
+   mark in a frame" to "a mark that does things" without touching the scroll
+   box. Each floats on its own slow loop, out of phase. */
+.hero__pill {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: color-mix(in oklab, var(--ink-1) 86%, transparent);
+  backdrop-filter: blur(6px);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  box-shadow: 0 10px 30px -16px rgba(0, 0, 0, 0.7);
+}
+
+.hero__pill__ico {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.hero__pill--a {
+  top: 12%;
+  left: 2%;
+  color: var(--text);
+}
+.hero__pill--a .hero__pill__ico {
+  color: var(--amber);
+}
+
+.hero__pill--b {
+  top: 46%;
+  right: 1%;
+}
+.hero__pill--b .hero__pill__ico {
+  color: var(--cyan);
+}
+
+.hero__pill--c {
+  bottom: 12%;
+  left: 8%;
+}
+.hero__pill--c .hero__pill__ico {
+  color: var(--violet);
+}
+
+html:not(.no-js) .hero__pill {
+  animation: hero-float 7s var(--ease) infinite;
+}
+html:not(.no-js) .hero__pill--b {
+  animation-duration: 8.5s;
+  animation-delay: -3s;
+}
+html:not(.no-js) .hero__pill--c {
+  animation-duration: 9.5s;
+  animation-delay: -6s;
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.5rem);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hero__orbit--2 {
+  html:not(.no-js) .hero__pill {
     animation: none;
   }
 }
 
 @media (max-width: 900px) {
+  .hero {
+    min-height: 0;
+  }
+
   .hero__inner {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -313,6 +499,11 @@ html:not(.no-js) .hero .enter {
     margin-inline: 0;
   }
 
+  /* The floating pills crowd a small stage, and the copy already names the
+     same facts, so drop them on narrow screens. */
+  .hero__pill {
+    display: none;
+  }
 }
 
 /* ------------------------------------------------------- why / lineage */
