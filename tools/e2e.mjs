@@ -190,9 +190,14 @@ for (const lang of LANGS) {
       note(`${lang}/builder: hard warning stuck after fixing the URL`);
     }
 
-    // widget list rendered
+    // widget list rendered: one row per widget the page shipped, so this
+    // tracks the vendored standard instead of a constant that drifts on sync
     const wrows = await page.locator('#widget-order .orderitem').count();
-    if (wrows !== 15) note(`${lang}/builder: ${wrows} widget rows, expected 15`);
+    const wspec = await page.evaluate(() => {
+      try { return JSON.parse(document.getElementById('widget-spec').textContent).length; }
+      catch (e) { return -1; }
+    });
+    if (wrows !== wspec) note(`${lang}/builder: ${wrows} widget rows, expected ${wspec}`);
 
     // preview follows the theme colour
     await reveal('#f_hex');

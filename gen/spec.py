@@ -51,6 +51,7 @@ _WIDGET_PROSE = {
     'networkSpeed': ('Скорость сети', 'Network speed', True),
     'trafficUsage': ('Расход трафика', 'Traffic usage', True),
     'networkDetection': ('Определение сети', 'Network detection', False),
+    'connectionPath': ('Путь соединения', 'Connection path', False),
     'tunButton': ('Кнопка TUN', 'TUN button', False),
     'vpnButton': ('Кнопка VPN', 'VPN button', False),
     'systemProxyButton': ('Системный прокси', 'System proxy', False),
