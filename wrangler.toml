@@ -1,0 +1,4 @@
+name = "reclash"
+pages_build_output_dir = ".output/public"
+compatibility_date = "2026-10-22"
+send_metrics = false
