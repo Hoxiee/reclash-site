@@ -1,8 +1,8 @@
 # ReClash
 
-A bilingual Nuxt 4 static site for Cloudflare Pages. This repository contains the
-base site shell and placeholder sections. The application uses Vue, TypeScript
-and local assets.
+A bilingual Nuxt 4 site generated for Cloudflare Pages. The home, quick start,
+download, gallery and draft header builder port the supplied static site, with
+English translations of the same content. Fonts and styles are hosted locally.
 
 ## Local development
 
@@ -16,9 +16,45 @@ npm run dev
 
 The root page selects a language. `/ru` and `/en` contain the site shell. Each
 language has `start`, `download`, `docs`, `reference`, `builder`, `mock-subs`,
-`report`, `gallery` and `motion` sections. Page content and tools are placeholders.
+`report`, `gallery` and `motion` sections. Documentation, reference, mock
+subscriptions, report and motion retain the foundation's placeholders. The
+builder retains its draft notice and raw-header/nginx output; gallery media
+retain their eight placeholders.
 Routes live in `shared/site/routes.ts`; SEO lives in `shared/site/seo.ts` and
 `app/composables/usePageMeta.ts`.
+
+`shared/provider/builder.ts` contains the imported field schema, validation and
+emitters. Preview quotas are sample values. `shared/site/gallery.ts` contains
+the gallery items; add `src` or `video` to replace a placeholder with local media.
+The download page requests release metadata from GitHub only in the browser,
+with a ten-minute session cache. File hashing stays on the device.
+
+`shared/motion/core.ts` contains the original spring presets, integration,
+CSS easing simulation and blob geometry without browser dependencies.
+`app/motion/` adapts the original interactions to a single lazy scheduler.
+`useMotion` initializes and disposes listeners, observers, animations and timers
+per mounted document. Hero choreography loads lazily and responds to live
+reduced-motion changes and document visibility.
+
+The imported motion adapter exposes the following operations within the mounted
+page; it does not install global `window.Motion`, `Theme` or `Hero` objects.
+
+| Operation | Behavior |
+| --- | --- |
+| `spring(value, options)` | Interruptible spring; `to` preserves velocity, `kick` adds impulse, `set` jumps. |
+| `presets` | `gentle`, `smooth`, `snappy`, `bouncy`, `jelly`, and near-critical `scroll`. |
+| `cssEase` / `installEasings` | Simulate spring physics into CSS `linear()` and duration variables. |
+| `magnetGroup` | Shared spring indicator with pointer pull, content pull and sticky selection. |
+| `morph` | Spring interpolation between SVG paths with matching command layouts. |
+| `blobPath` | Smooth closed path through polar radii. |
+| `splitWords` / `reveal` | Word splitting and once-only intersection reveals. |
+| `onScroll` / `tick` | Coalesced scroll updates and a shared frame loop that sleeps when idle. |
+
+The home keeps the pinned jelly ring, platform choreography, rotating verb slot,
+lineage slabs, scroll-filled setup rail, provider studio, hover blobs and footer
+letter springs. Inner pages keep the smaller jelly ring, accordion height
+springs, deep-link opening, copy feedback and gallery FLIP filtering. Reduced
+motion snaps springs and removes hero pinning.
 
 ## Build and verify
 

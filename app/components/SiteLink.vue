@@ -2,7 +2,8 @@
 import { isReportPath } from '~~/shared/site/routes'
 const props = defineProps<{ to: string }>()
 const route = useRoute()
-const documentNavigation = computed(() => isReportPath(route.path) || isReportPath(props.to))
+const documentNavigation = computed(() => isReportPath(route.path) || isReportPath(props.to)
+  || /^(?:[a-z][a-z\d+.-]*:|\/\/|#)/i.test(props.to))
 </script>
 
 <template>

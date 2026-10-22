@@ -37,7 +37,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'ReClash',
-      meta: [{ name: 'theme-color', content: '#11131a' }],
+      meta: [{ name: 'theme-color', content: '#11131a' }, { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' }],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
   },

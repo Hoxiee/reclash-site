@@ -18,7 +18,7 @@ test('all canonical and legacy pages serve prerendered bilingual HTML', async ({
         const response = await request.get(route)
         expect(response.status(), route).toBe(200)
         const body = await response.text()
-        expect(body).toMatch(new RegExp(`<html\\s+lang="${language}"`))
+        expect(body).toMatch(new RegExp(`<html\\b[^>]*\\blang="${language}"`))
         expect(body).toMatch(/<h1[ >]/)
         expect(body).toContain(`href="https://reclash.pages.dev${pagePath(language, page.key)}"`)
       }
@@ -28,26 +28,26 @@ test('all canonical and legacy pages serve prerendered bilingual HTML', async ({
 
 test('language navigation preserves legacy query and fragment state', async ({ page }) => {
   await page.goto('/ru/builder.html?mode=example#cfg=sample')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Конструктор')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Соберите заголовки и сразу посмотрите, что увидит пользователь.')
   await page.getByRole('link', { name: 'Переключить на английский' }).click()
   await expect(page).toHaveURL(/\/en\/builder(?:\.html|\/)?\?mode=example#cfg=sample$/)
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Builder')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Build headers and see what your users will see.')
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 })
 
 test('home, keyboard navigation and mobile layout work', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('link', { name: 'English' }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('ReClash')
-  await page.getByRole('link', { name: 'Get started', exact: true }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Quick start')
+  await expect(page.locator('#hero-title')).toContainText('Freedom')
+  await page.locator('.nav-links').getByRole('link', { name: 'Start and FAQ', exact: true }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('From zero to traffic.')
   await page.goto('/ru')
   await page.keyboard.press('Tab')
   await expect(page.getByRole('link', { name: 'К содержимому' })).toBeFocused()
   await page.keyboard.press('Enter')
   await expect(page.locator('#main')).toBeFocused()
   await page.setViewportSize({ width: 390, height: 844 })
-  for (const route of ['/ru', '/en/reference', '/ru/mock-subs']) {
+  for (const route of ['/ru', '/en', '/ru/start', '/en/start', '/ru/builder', '/en/builder', '/ru/gallery', '/en/gallery', '/en/reference', '/ru/mock-subs']) {
     await page.goto(route)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   }
@@ -71,7 +71,7 @@ test('report entry and exit navigate documents without prefetching', async ({ pa
   page.on('request', request => {
     if (/\/report(?:[/?#.]|$)/.test(request.url())) reports.push(request.url())
   })
-  await page.goto('/en')
+  await page.goto('/en/reference')
   await page.getByRole('link', { name: 'Report', exact: true }).hover()
   await expect.poll(() => reports.length).toBe(0)
   await page.evaluate(() => { (window as Window & { documentMarker?: string }).documentMarker = 'home' })
@@ -80,7 +80,7 @@ test('report entry and exit navigate documents without prefetching', async ({ pa
   expect(await page.evaluate(() => (window as Window & { documentMarker?: string }).documentMarker)).toBeUndefined()
   await page.evaluate(() => { (window as Window & { documentMarker?: string }).documentMarker = 'report' })
   await page.getByRole('link', { name: 'Home', exact: true }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('ReClash')
+  await expect(page.locator('#hero-title')).toContainText('Freedom')
   expect(await page.evaluate(() => (window as Window & { documentMarker?: string }).documentMarker)).toBeUndefined()
 })
 
