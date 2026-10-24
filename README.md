@@ -14,12 +14,14 @@ npm ci
 npm run dev
 ```
 
-The root page selects a language. `/ru` and `/en` contain the site shell. Each
-language has `start`, `download`, `docs`, `reference`, `builder`, `mock-subs`,
-`report`, `gallery` and `motion` sections. Documentation, reference, mock
-subscriptions, report and motion retain the foundation's placeholders. The
-builder retains its draft notice and raw-header/nginx output; gallery media
-retain their eight placeholders.
+The root page redirects before first paint: an explicit language switch stored
+in `localStorage` wins, otherwise the browser's preferred languages decide
+(Russian-reading locales go to `/ru`, everything else to `/en`). Without
+JavaScript it shows plain language links. Each language has `start`,
+`download`, `docs`, `reference`, `builder`, `mock-subs`, `report`, `gallery`
+and `motion` sections; report and motion keep their placeholders. The builder
+shares the site shell and developer tabs, emits raw headers and nginx lines,
+and colours only its preview card. Gallery media retain their eight placeholders.
 Routes live in `shared/site/routes.ts`; SEO lives in `shared/site/seo.ts` and
 `app/composables/usePageMeta.ts`.
 
@@ -32,9 +34,22 @@ with a ten-minute session cache. File hashing stays on the device.
 `shared/motion/core.ts` contains the original spring presets, integration,
 CSS easing simulation and blob geometry without browser dependencies.
 `app/motion/` adapts the original interactions to a single lazy scheduler.
-`useMotion` initializes and disposes listeners, observers, animations and timers
-per mounted document. Hero choreography loads lazily and responds to live
-reduced-motion changes and document visibility.
+`useSiteMotion` mounts the nav, menu, footer and brand theme once per document;
+every rendered page gets a child scope that shares the scheduler and disposes
+its listeners, observers, animations and timers on the next route. Hero
+choreography loads lazily and responds to live reduced-motion changes and
+document visibility.
+
+An inline head script (`shared/site/boot.ts`) marks the document before first
+paint, applies the saved brand colour and decides between the full and short
+loader. The loader grows the three-capsule glyph out of dots and pulses it like
+a signal meter, then reveals the page through a mask in the glyph's shape while
+page reveals start; it falls back to static content after eight seconds. The
+glyph (`app/components/BrandMark.vue`) and the favicon take their colours from
+the brand hue, so a recolor moves the logo with the rest of the site. Route
+changes run inside a same-document view transition: the old page recedes and
+the new one opens from the pointer, while the nav keeps its own layer. Reduced
+motion, hidden documents and browsers without the API switch instantly.
 
 The imported motion adapter exposes the following operations within the mounted
 page; it does not install global `window.Motion`, `Theme` or `Hero` objects.

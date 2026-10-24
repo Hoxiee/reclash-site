@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { pagePath } from '~~/shared/site/routes'
-definePageMeta({ layout: 'ported' })
 usePageMeta('gallery')
 const { language, t } = useText()
 </script>

@@ -22,7 +22,7 @@ export const builderSchema: Array<{ id: string, title: BilingualText, open?: boo
   ] },
   { id: 'theme', title: { ru: 'Тема', en: 'Theme' }, fields: [
     { key: 'hex', header: 'ReClash-Hex', label: { ru: 'Цвет', en: 'Color' }, type: 'color', value: '7C5CFF',
-      hint: { ru: 'RRGGBB или AARRGGBB. Сайт перекрашивается вместе с превью.', en: 'RRGGBB or AARRGGBB. The site changes along with the preview.' },
+      hint: { ru: 'RRGGBB или AARRGGBB. Превью карточки перекрашивается сразу.', en: 'RRGGBB or AARRGGBB. The card preview updates as you type.' },
       validate: value => !value || normHex(value) ? null : { ru: 'Нужно 6 или 8 шестнадцатеричных символов', en: 'Use 6 or 8 hexadecimal characters' } },
   ] },
   { id: 'links', title: { ru: 'Ссылки', en: 'Links' }, fields: [

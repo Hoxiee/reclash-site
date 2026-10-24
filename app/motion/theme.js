@@ -1,22 +1,23 @@
 import { normHex, hexToOklch } from '../../shared/provider/theme.ts'
+import { glyphSvg } from '../../shared/site/brand.ts'
 /*
  * Brand theme. The site recolors exactly the way the client does: from one ReClash-Hex.
  * The seed goes to OKLCH, lightness and chroma get clamped into a band that stays readable
  * on the dark background, then hue/chroma/lightness spring to the new value — so a recolor
- * is a short physical sweep, not a flash.
+ * is a short physical sweep, not a flash. The brand glyph and the favicon follow the same band.
  */
 export function createTheme(scope, M) {
   'use strict';
   const root = document.documentElement;
   const KEY = 'reclash-brand';
-  const DEFAULT = '7C5CFF';
+  const DEFAULT = 'FF7A2F';
 
   const norm = normHex;
 
   // readable band on #0d0a14-ish background
   const ui = ({ l, c, h }) => ({ l: M.clamp(l, 0.68, 0.84), c: Math.min(c, 0.19), h });
 
-  const cur = { l: 0.7, c: 0.17, h: 286 };
+  const cur = { l: 0.7247, c: 0.1822, h: 46.04 };
   const write = () => {
     root.style.setProperty('--bl', cur.l.toFixed(4));
     root.style.setProperty('--bc', cur.c.toFixed(4));
@@ -47,8 +48,15 @@ export function createTheme(scope, M) {
     } else {
       springs.l.set(t.l); springs.c.set(t.c); springs.h.set(h);
     }
-    if (persist) try { localStorage.setItem(KEY, v); } catch (_) {}
+    // The resolved band is stored too, so the head script can paint the brand before hydration.
+    if (persist) try {
+      localStorage.setItem(KEY, v);
+      localStorage.setItem(KEY + '-ui', [t.l.toFixed(4), t.c.toFixed(4), (((h % 360) + 360) % 360).toFixed(2)].join(' '));
+    } catch (_) {}
     meta()?.setAttribute('content', '#' + v);
+    // the tab icon is the glyph in the same colours; the default stays the static file
+    const icon = document.querySelector('link[rel="icon"]');
+    if (icon) icon.setAttribute('href', v === DEFAULT ? '/favicon.svg' : 'data:image/svg+xml,' + encodeURIComponent(glyphSvg({ l: t.l, c: t.c, h: t.h })));
     window.dispatchEvent(new CustomEvent('brandchange', { detail: { hex: v } }));
     return true;
   }

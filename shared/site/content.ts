@@ -1,4 +1,34 @@
 export const portedPages = {
+  "docs": {
+    "title": {
+      "ru": "Документация по заголовкам подписки — ReClash",
+      "en": "Subscription header documentation — ReClash"
+    },
+    "description": {
+      "ru": "Документация по заголовкам ответа подписки для ReClash: как работает механизм, правила разбора, совместимость с FlClashX, доставка через прокси и CDN, HWID и чеклист внедрения.",
+      "en": "Documentation for ReClash subscription response headers: how the mechanism works, parsing rules, FlClashX compatibility, delivery through a proxy and CDN, HWID and a rollout checklist."
+    }
+  },
+  "reference": {
+    "title": {
+      "ru": "Справочник по заголовкам подписки — ReClash",
+      "en": "Subscription header reference — ReClash"
+    },
+    "description": {
+      "ru": "Справочник по заголовкам ответа подписки для ReClash: имя, формат, псевдонимы, назначение и пример каждого. Поиск и фильтр по категориям.",
+      "en": "Reference for ReClash subscription response headers: name, format, aliases, purpose and an example for each. Searchable and filterable by category."
+    }
+  },
+  "mock-subs": {
+    "title": {
+      "ru": "Мок-подписки — ReClash",
+      "en": "Mock subscriptions — ReClash"
+    },
+    "description": {
+      "ru": "Фейковые тестовые подписки для проверки импорта, квоты и оформления в ReClash. Не рабочий доступ.",
+      "en": "Fake test subscriptions for checking import, quota and theming in ReClash. Not working access."
+    }
+  },
   "gallery": {
     "title": {
       "ru": "Галерея — ReClash",

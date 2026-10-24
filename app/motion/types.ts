@@ -5,6 +5,7 @@ export type BrowserMotion = typeof core & {
   spring: (value?: number, options?: core.SpringOptions) => core.Spring,
   tick: (job: core.FrameJob) => () => void,
   onReduced: (job: (reduced: boolean) => void) => () => void,
+  whenReady: () => Promise<void>,
   installEasings: (names?: core.Preset[]) => void,
   write: (key: string, job: () => void) => void,
   magnetGroup: (element: Element, options?: Record<string, unknown>) => Magnet,

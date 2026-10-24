@@ -1,18 +1,24 @@
 <script setup lang="ts">
+import { languageScript } from '~~/shared/site/boot'
 definePageMeta({ layout: false })
 const config = useRuntimeConfig()
 useSeoMeta({ title: 'ReClash', description: 'ReClash — клиент для ваших подключений. A client for your connections.' })
-useHead({ htmlAttrs: { lang: 'ru' }, link: [{ rel: 'canonical', href: `${config.public.siteOrigin}/` }] })
+// The visitor's language is picked before paint; the loader covers the redirect.
+useHead({
+  htmlAttrs: { lang: 'ru' },
+  link: [
+    { rel: 'canonical', href: `${config.public.siteOrigin}/` },
+    { rel: 'alternate', hreflang: 'ru', href: `${config.public.siteOrigin}/ru` },
+    { rel: 'alternate', hreflang: 'en', href: `${config.public.siteOrigin}/en` },
+    { rel: 'alternate', hreflang: 'x-default', href: `${config.public.siteOrigin}/` },
+  ],
+  script: [{ innerHTML: languageScript, tagPriority: 'critical' }],
+})
 </script>
 
 <template>
-  <main class="language-chooser">
-    <p class="eyebrow">ReClash</p>
-    <h1>ReClash<span class="brand-dot" aria-hidden="true" /></h1>
-    <p class="lead"><span lang="ru">Выберите язык</span> / <span lang="en">Choose your language</span></p>
-    <div class="language-links">
-      <NuxtLink to="/ru" lang="ru" no-prefetch>Русский <span aria-hidden="true">→</span></NuxtLink>
-      <NuxtLink to="/en" lang="en" no-prefetch>English <span aria-hidden="true">→</span></NuxtLink>
-    </div>
+  <main class="lang-gate">
+    <h1>ReClash</h1>
+    <p><NuxtLink to="/ru" lang="ru" no-prefetch>Русский</NuxtLink> · <NuxtLink to="/en" lang="en" no-prefetch>English</NuxtLink></p>
   </main>
 </template>

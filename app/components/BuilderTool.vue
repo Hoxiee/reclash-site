@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { builderDefaults, builderSchema, builderFields, builderEmitters, headerPairs, type BuilderField } from '~~/shared/provider/builder'
-import { normHex } from '~~/shared/provider/theme'
+import { brandBand } from '~~/shared/provider/theme'
 const { language, t } = useText()
 const motion = usePageMotion()
 const route = useRoute(), router = useRouter()
@@ -10,7 +10,13 @@ const tab = ref<keyof typeof builderEmitters>('headers')
 const copyLabel = ref(''), shareLabel = ref('')
 const tabs = useTemplateRef<HTMLElement>('tabs')
 const output = computed(() => headerPairs(state).map(([key, value]) => builderEmitters[tab.value].line(key, value)))
+const outputText = computed(() => output.value.map(line => line.before + line.key + line.after).join('\n'))
 const name = computed(() => String(state.name).trim() || 'ReClash')
+// The brand colour recolours only the preview card, never the site.
+const previewTheme = computed(() => {
+  const band = brandBand(state.hex)
+  return band ? { '--bl': band.l.toFixed(4), '--bc': band.c.toFixed(4), '--bh': band.h.toFixed(2) } : {}
+})
 const used = computed(() => Number(state.used) || 0), total = computed(() => Number(state.total) || 0)
 let hashTimer: ReturnType<typeof setTimeout> | undefined
 let tabsMagnet: { select: (element: Element | null) => void } | undefined
@@ -30,7 +36,6 @@ function rows(fields: BuilderField[]): Array<BuilderField | BuilderField[]> {
 function update(field: BuilderField, event: Event, color = false) {
   const input = event.target as HTMLInputElement
   state[field.key] = color ? input.value.slice(1).toUpperCase() : field.type === 'number' ? Math.max(0, Number(input.value) || 0) : input.value
-  if (field.type === 'color' && !error(field)) motion.value?.Theme.set(state[field.key])
   clearTimeout(hashTimer)
   hashTimer = setTimeout(saveHash, 300)
 }
@@ -66,7 +71,7 @@ async function copy(share: boolean, event: Event) {
   if (!runtime) return
   if (share) await saveHash()
   const button = event.currentTarget as HTMLElement
-  const text = share ? location.href : output.value.map(line => line.before + line.key + line.after).join('\n')
+  const text = share ? location.href : outputText.value
   const ok = await runtime.helpers.copyText(text)
   if (runtime.scope.disposed) return
   runtime.helpers.morphWidth(button, () => {
@@ -77,9 +82,8 @@ async function copy(share: boolean, event: Event) {
 }
 watch(motion, runtime => {
   if (!runtime || !tabs.value) return
-  tabsMagnet = runtime.M.magnetGroup(tabs.value, { items: 'button', sticky: true, contentPull: 0, pull: 0 })
+  tabsMagnet = runtime.M.magnetGroup(tabs.value, { items: 'button', sticky: true, contentPull: 0 })
   runtime.scope.frame(() => tabsMagnet?.select(tabs.value!.querySelector('[aria-pressed="true"]')))
-  if (normHex(state.hex)) runtime.Theme.set(state.hex, { persist: false })
 })
 onMounted(restoreHash)
 onBeforeUnmount(() => clearTimeout(hashTimer))
@@ -103,7 +107,7 @@ onBeforeUnmount(() => clearTimeout(hashTimer))
       </section>
     </form>
     <aside class="b-aside" :aria-label="t('Результат', 'Result')">
-      <div id="b-card" class="subcard">
+      <div id="b-card" class="subcard theme-scope" :style="previewTheme">
         <div class="sc-head"><span class="sc-logo" aria-hidden="true">{{ Array.from(name)[0]?.toUpperCase() }}</span><div style="min-width:0"><div class="sc-name">{{ name }}</div><div class="sc-sub">{{ t('Превью карточки подписки', 'Subscription card preview') }}</div></div></div>
         <div class="sc-ann" :hidden="!String(state.announce).trim()"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm0 3.2v4.1m0 2.4v.1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg><span>{{ String(state.announce).trim() }}</span></div>
         <div class="sc-traffic"><div class="sc-row"><span>{{ t('Трафик', 'Traffic') }}</span><b>{{ total ? `${used} / ${total} ${t('ГБ', 'GB')}` : `${used} ${t('ГБ · без лимита', 'GB · unlimited')}` }}</b></div><div class="sc-bar"><i :style="{ width: total ? `${Math.min(100, used / total * 100)}%` : '0%' }" /></div></div>
@@ -112,7 +116,7 @@ onBeforeUnmount(() => clearTimeout(hashTimer))
       <div id="b-tabs" ref="tabs" class="b-tabs" role="group" :aria-label="t('Формат вывода', 'Output format')">
         <button v-for="(emitter, key) in builderEmitters" :key="key" type="button" :data-tab="key" :aria-pressed="tab === key" @click="select(key, $event)">{{ emitter.label[language] }}</button>
       </div>
-      <pre id="b-code" class="b-code" aria-live="polite"><template v-for="(line, index) in output" :key="index">{{ line.before }}<span class="k">{{ line.key }}</span>{{ line.after }}{{ index < output.length - 1 ? '\n' : '' }}</template><span v-if="!output.length" style="color:var(--fg-3)">{{ t('Заполните поля слева', 'Fill in the fields on the left') }}</span></pre>
+      <pre id="b-code" class="b-code" aria-live="polite"><CodeLines v-if="output.length" :code="outputText" :lang="tab === 'nginx' ? 'nginx' : 'http'" /><span v-else style="color:var(--fg-3)">{{ t('Заполните поля слева', 'Fill in the fields on the left') }}</span></pre>
       <div class="b-actions">
         <button id="b-copy" class="btn btn-primary btn-s copy-btn" :class="{ 'is-done': copyLabel }" type="button" @click="copy(false, $event)">
           <svg class="ico-m cp" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h10v10H9zM5 15V5h10" /></svg>

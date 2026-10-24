@@ -1,11 +1,11 @@
 import { createScheduler } from '../../shared/motion/core'
 
-// Every browser resource belongs to the mounted document, including delayed work.
-export function createScope(root) {
+// Every browser resource belongs to a scope. The site chrome owns the only frame scheduler;
+// each mounted page gets a child scope that shares it and releases its own jobs on dispose.
+function makeScope(root, scheduler, onDispose) {
   let disposed = false
-  const cleanup = [], timers = new Set(), animations = new Set()
+  const cleanup = [], timers = new Set(), animations = new Set(), children = new Set()
   const controller = new AbortController()
-  const scheduler = createScheduler({ request: fn => requestAnimationFrame(fn), cancel: id => cancelAnimationFrame(id) })
   const scope = {
     root, scheduler, signal: controller.signal,
     get disposed() { return disposed },
@@ -32,16 +32,47 @@ export function createScope(root) {
       animation.finished.then(() => animations.delete(animation), () => animations.delete(animation))
       return animation
     },
+    child(childRoot) {
+      const jobs = new Set()
+      const shared = {
+        tick(job) {
+          const stop = scheduler.tick((dt, time) => {
+            const result = job(dt, time)
+            if (result === false) jobs.delete(release)
+            return result
+          })
+          const release = () => { jobs.delete(release); stop() }
+          jobs.add(release); return release
+        },
+        pause: scheduler.pause,
+        dispose() { for (const release of [...jobs]) release() },
+      }
+      const sub = makeScope(childRoot, shared, () => { shared.dispose(); children.delete(sub) })
+      children.add(sub)
+      return sub
+    },
     dispose() {
-      disposed = true; controller.abort(); scheduler.dispose()
+      if (disposed) return
+      disposed = true
+      for (const sub of [...children]) sub.dispose()
+      controller.abort(); onDispose()
       for (const id of timers) clearTimeout(id)
       for (const animation of animations) animation.cancel()
       for (const fn of cleanup.reverse()) fn()
+      cleanup.length = 0
       root.querySelectorAll('.mg-ind, .slot-measure, .slot-out').forEach(el => el.remove())
-      document.documentElement.classList.remove('js', 'rm', 'menu-open')
-      document.documentElement.style.removeProperty('overflow')
     },
   }
+  return scope
+}
+
+export function createScope(root) {
+  const scheduler = createScheduler({ request: fn => requestAnimationFrame(fn), cancel: id => cancelAnimationFrame(id) })
+  const scope = makeScope(root, scheduler, () => {
+    scheduler.dispose()
+    document.documentElement.classList.remove('menu-open')
+    document.documentElement.style.removeProperty('overflow')
+  })
   scope.listen(document, 'visibilitychange', () => scheduler.pause(document.hidden))
   scheduler.pause(document.hidden)
   return scope

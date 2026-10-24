@@ -8,7 +8,7 @@ const { language, t } = useText()
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-about">
-        <SiteLink class="logo" :to="pagePath(language, 'index')">ReClash</SiteLink>
+        <SiteLink class="logo" :to="pagePath(language, 'index')"><BrandMark class="logo-mark" />ReClash</SiteLink>
         <p>{{ t("Клиент для mihomo с обходом DPI. Не продаёт доступ, не выдаёт подписки и не заменяет вашу осторожность.", "A mihomo client with DPI bypass. It does not sell access, provide subscriptions or replace your judgment.") }}</p>
         <div class="foot-social">
           <SiteLink class="btn btn-ghost btn-s" to="https://github.com/Hoxiee/ReClash">GitHub</SiteLink>
@@ -29,7 +29,7 @@ const { language, t } = useText()
         <li><SiteLink to="https://github.com/hufrea/byedpi">ByeDPI</SiteLink></li>
       </ul></div>
     </div>
-    <div class="wordmark" aria-hidden="true">ReClash</div>
+    <div class="wordmark" aria-hidden="true"><BrandMark class="wordmark-mark" mono /><span class="wordmark-text">ReClash</span></div>
     <div class="foot-legal">
       <span>© <span data-year>2026</span> ReClash</span><span>{{ t("Лицензия GPL-3.0", "GPL-3.0 license") }}</span><span>{{ t("Форк FlClash. Не аффилирован с FlClash, mihomo или FlClashX.", "A FlClash fork. Not affiliated with FlClash, mihomo or FlClashX.") }}</span>
       <span class="live"><span class="dot-live" aria-hidden="true"></span>{{ t("Проект живой", "Actively maintained") }}</span>

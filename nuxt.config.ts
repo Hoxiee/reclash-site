@@ -1,6 +1,7 @@
 import { prerenderRoutes, sitePages } from './shared/site/routes'
 import { normalizeOrigin } from './shared/site/seo'
 import { writeStaticFiles } from './scripts/static'
+import { bootScript } from './shared/site/boot'
 
 const siteOrigin = normalizeOrigin(process.env.NUXT_PUBLIC_SITE_ORIGIN)
 
@@ -8,7 +9,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-10-22',
   devtools: { enabled: false },
   ssr: true,
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/site.css', '~/assets/css/shell.css', '~/assets/css/brand.css'],
   runtimeConfig: { public: { siteOrigin } },
   experimental: { appManifest: false, payloadExtraction: 'client', prerenderErrorPages: true },
   nitro: {
@@ -37,8 +38,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'ReClash',
-      meta: [{ name: 'theme-color', content: '#11131a' }, { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' }],
+      meta: [{ name: 'theme-color', content: '#0d0a14' }, { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' }],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      script: [{ innerHTML: bootScript, tagPriority: 'critical' }],
     },
   },
 })

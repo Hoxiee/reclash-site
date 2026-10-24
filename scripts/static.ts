@@ -1,6 +1,7 @@
-import { writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { languages, legacyPath, pagePath, privatePages, sitePages } from '../shared/site/routes'
+import { mockBody, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
 
 const reportPolicy = {
   'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'",
@@ -12,6 +13,13 @@ const reportPolicy = {
 export async function writeStaticFiles(output: string, origin: string): Promise<void> {
   const headers = ['/*', '  X-Content-Type-Options: nosniff', '/_nuxt/*', '  Cache-Control: public, max-age=31536000, immutable']
   const redirects: string[] = []
+  // Mock subscriptions are plain static files; their response headers live here.
+  const now = Date.now()
+  await mkdir(join(output, 'mock'), { recursive: true })
+  await Promise.all(mockProfiles.map(profile => writeFile(join(output, 'mock', profile.key), mockBody(profile))))
+  for (const profile of mockProfiles) {
+    headers.push(mockPath(profile.key), ...[...mockTransportHeaders, ...mockHeaders(profile, origin, now)].map(([key, value]) => `  ${key}: ${value}`))
+  }
   for (const language of languages) {
     for (const page of sitePages) {
       const canonical = pagePath(language, page.key)

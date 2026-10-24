@@ -1,12 +1,14 @@
 import * as core from '../../shared/motion/core'
 
-export function createMotion(scope) {
+export function createMotion(scope, gate) {
   const root = document.documentElement
   const mq = matchMedia('(prefers-reduced-motion: reduce)')
   const springs = new Set(), changes = new Set()
   /** @type {import('./types').BrowserMotion} */
   const M = { ...core, reduced: mq.matches }
   root.classList.toggle('rm', M.reduced)
+  /** Resolves when page entrances may play (after the loader or a route transition). */
+  M.whenReady = () => gate ? gate() : Promise.resolve()
   M.onReduced = fn => { changes.add(fn); return scope.own(() => changes.delete(fn)) }
   scope.listen(mq, 'change', e => {
     M.reduced = e.matches; root.classList.toggle('rm', e.matches)
@@ -18,7 +20,6 @@ export function createMotion(scope) {
     const spring = new core.Spring(value, scope.scheduler, () => M.reduced, options)
     springs.add(spring); scope.own(() => spring.dispose()); return spring
   }
-  const { clamp } = core
   M.installEasings = (names = Object.keys(core.presets)) => {
     if (!CSS.supports('transition-timing-function', 'linear(0, 1)')) return
     for (const name of names) {
@@ -44,18 +45,17 @@ export function createMotion(scope) {
   };
 
   /* ---------- magnet group ----------
-     One indicator per group. It springs to the hovered item, gets pulled a bit toward the
-     pointer, and stretches along its direction of travel. Items' inner content gets a
-     smaller pull via --mx/--my. `sticky` groups keep a selected item highlighted. */
+     One plate per group. Each edge rides its own spring, so the plate stays glued to the
+     hovered item: the leading edge arrives first, the trailing one follows, and the plate
+     never scales or leans toward the pointer. Corners keep their radius because only width
+     and height change. Items' inner content may get a small pull via --mx/--my.
+     `sticky` groups keep a selected item highlighted. */
   let uid = 0;
   M.magnetGroup = (group, opts = {}) => {
     const {
       items = '[data-mg]',
-      pull = 0.12,
       contentPull = 0.08,
-      preset = 'smooth',
       className = 'mg-ind',
-      stretch = 1,
       sticky = false,
     } = opts;
     const key = 'mg' + ++uid;
@@ -64,48 +64,50 @@ export function createMotion(scope) {
     ind.setAttribute('aria-hidden', 'true');
     group.prepend(ind);
 
-    const S = {};
-    for (const k of ['x', 'y', 'w', 'h']) S[k] = M.spring(0, { preset, precision: 0.05 });
-    S.o = M.spring(0, { preset: 'snappy', precision: 0.003 });
-    S.s = M.spring(0.9, { preset: 'bouncy', precision: 0.002 });
+    const edge = () => M.spring(0, { stiffness: 260, damping: 20, precision: 0.05 });
+    const E = { l: edge(), r: edge(), t: edge(), b: edge() };
+    const O = M.spring(0, { preset: 'snappy', precision: 0.003 });
 
     const render = () => {
-      const vx = Math.abs(S.x.v), vy = Math.abs(S.y.v);
-      const sx = clamp(vx / 2600, 0, 0.22) * stretch;
-      const sy = clamp(vy / 2600, 0, 0.22) * stretch;
-      const w = S.w.x * (1 + sx - sy * 0.35);
-      const h = S.h.x * (1 + sy - sx * 0.35);
-      const s = S.s.x;
-      ind.style.width = w + 'px';
-      ind.style.height = h + 'px';
-      ind.style.transform = `translate3d(${S.x.x - (w - S.w.x) / 2}px, ${S.y.x - (h - S.h.x) / 2}px, 0) scale(${s})`;
-      ind.style.opacity = S.o.x;
+      ind.style.width = Math.max(0, E.r.x - E.l.x) + 'px';
+      ind.style.height = Math.max(0, E.b.x - E.t.x) + 'px';
+      ind.style.transform = `translate3d(${E.l.x}px, ${E.t.x}px, 0)`;
+      ind.style.opacity = O.x;
     };
-    for (const s of Object.values(S)) s.onUpdate = () => M.write(key, render);
+    for (const s of [...Object.values(E), O]) s.onUpdate = () => M.write(key, render);
 
     let active = null;
     let selected = null;
+    let hovered = false;
 
-    function rel(el) {
+    function rect(el) {
       const g = group.getBoundingClientRect();
       const r = el.getBoundingClientRect();
-      return { x: r.left - g.left - group.clientLeft, y: r.top - g.top - group.clientTop, w: r.width, h: r.height, gx: g.left, gy: g.top };
+      const x = r.left - g.left - group.clientLeft + group.scrollLeft;
+      const y = r.top - g.top - group.clientTop + group.scrollTop;
+      return { l: x, r: x + r.width, t: y, b: y + r.height };
     }
 
-    function go(el, e) {
-      const r = rel(el);
-      let dx = 0, dy = 0;
-      if (e && !M.reduced) {
-        dx = (e.clientX - (r.gx + r.x + r.w / 2)) * pull;
-        dy = (e.clientY - (r.gy + r.y + r.h / 2)) * pull;
+    // Leading edges are stiff, trailing ones soft: the plate travels without inflating.
+    function travel(a, b, from, to) {
+      const forward = to > from;
+      const lead = { stiffness: 420, damping: 2 * Math.sqrt(420) * 0.72 };
+      const tail = { stiffness: 170, damping: 2 * Math.sqrt(170) * 0.72 };
+      a.config(forward ? tail : lead);
+      b.config(forward ? lead : tail);
+    }
+
+    function go(el, e, instant = false) {
+      const r = rect(el);
+      const hidden = O.x < 0.04 && O.target === 0;
+      if (hidden || instant) {
+        for (const k in E) E[k].set(r[k]);
+      } else {
+        travel(E.l, E.r, E.l.target, r.l);
+        travel(E.t, E.b, E.t.target, r.t);
+        for (const k in E) E[k].to(r[k]);
       }
-      const hidden = S.o.x < 0.04 && S.o.target === 0;
-      if (hidden) {
-        S.x.set(r.x + dx); S.y.set(r.y + dy); S.w.set(r.w); S.h.set(r.h);
-        S.s.set(0.86);
-      }
-      S.x.to(r.x + dx); S.y.to(r.y + dy); S.w.to(r.w); S.h.to(r.h);
-      S.o.to(1); S.s.to(1);
+      O.to(1);
       if (active !== el) {
         active?.classList.remove('is-mg');
         active?.style.removeProperty('--mx');
@@ -113,21 +115,23 @@ export function createMotion(scope) {
         el.classList.add('is-mg');
         active = el;
       }
-      if (e && contentPull) {
-        el.style.setProperty('--mx', (dx / pull) * contentPull + 'px');
-        el.style.setProperty('--my', (dy / pull) * contentPull + 'px');
+      if (e && contentPull && !M.reduced) {
+        const box = el.getBoundingClientRect();
+        el.style.setProperty('--mx', (e.clientX - box.left - box.width / 2) * contentPull + 'px');
+        el.style.setProperty('--my', (e.clientY - box.top - box.height / 2) * contentPull + 'px');
       }
     }
 
     function leave() {
+      hovered = false;
       if (active) {
         active.classList.remove('is-mg');
         active.style.removeProperty('--mx');
         active.style.removeProperty('--my');
         active = null;
       }
-      if (sticky && selected) return go(selected);
-      S.o.to(0); S.s.to(0.9);
+      if (sticky && selected?.isConnected) return go(selected);
+      O.to(0);
     }
 
     const pick = (e) => {
@@ -137,27 +141,38 @@ export function createMotion(scope) {
     scope.listen(group, 'pointermove', (e) => {
       if (e.pointerType === 'touch') return;
       const it = pick(e);
-      if (it) go(it, e);
+      if (it) { hovered = true; go(it, e); }
       else if (active && !sticky) leave();
     });
     scope.listen(group, 'pointerleave', leave);
     scope.listen(group, 'focusin', (e) => {
       const it = pick(e);
-      if (it) go(it);
+      if (it) { hovered = true; go(it); }
     });
     scope.listen(group, 'focusout', (e) => {
       if (!group.contains(e.relatedTarget)) leave();
     });
-    scope.listen(window, 'resize', () => (active || selected) && go(active || selected));
+    // Layout changes (fonts, wrapping, async content) snap the plate back onto its item.
+    const snap = () => { const el = active || selected; if (el?.isConnected && O.target) go(el, null, true); };
+    scope.listen(window, 'resize', snap);
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver(() => scope.frame(snap));
+      ro.observe(group);
+      scope.own(() => ro.disconnect());
+    }
 
     return {
       el: ind,
       select(el) {
         selected = el;
-        if (el && !active) go(el);
+        // A pointer or focus on the group keeps the plate; it returns to the selection on leave.
+        if (hovered) return;
+        if (el) go(el);
+        else leave();
       },
       refresh() {
-        if (active || selected) go(active || selected);
+        const el = active || selected;
+        if (el?.isConnected) go(el);
       },
     };
   };
@@ -227,6 +242,11 @@ export function createMotion(scope) {
   /* once-only reveal; callback gets the element */
   M.reveal = (targets, fn = (el) => el.classList.add('is-in'), opts = {}) => {
     const list = typeof targets === 'string' ? scope.root.querySelectorAll(targets) : targets;
+    // Page reveals wait for the gate (the loader or a route transition), then run as usual.
+    if (gate) { gate().then(() => { if (!scope.disposed) observeReveal(list, fn, opts); }); return; }
+    observeReveal(list, fn, opts);
+  };
+  const observeReveal = (list, fn, opts) => {
     if (M.reduced || !('IntersectionObserver' in window)) {
       list.forEach((el) => fn(el));
       return;

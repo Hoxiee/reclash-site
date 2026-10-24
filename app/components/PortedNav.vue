@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { pagePath, pageFromPath, switchLanguage } from '~~/shared/site/routes'
+import { languageKey } from '~~/shared/site/boot'
 const route = useRoute()
 const { language, t } = useText()
 const page = computed(() => pageFromPath(route.path))
@@ -8,6 +9,10 @@ const mounted = ref(false)
 onMounted(() => { mounted.value = true })
 const fullPath = computed(() => mounted.value ? route.fullPath : route.path)
 const languageLink = computed(() => switchLanguage(fullPath.value, otherLanguage.value))
+// An explicit switch becomes the preference the root page redirects to.
+function remember(next: 'ru' | 'en') {
+  try { localStorage.setItem(languageKey, next) } catch { /* Storage may be unavailable. */ }
+}
 </script>
 
 <template>
@@ -17,11 +22,7 @@ const languageLink = computed(() => switchLanguage(fullPath.value, otherLanguage
 <header class="nav">
   <nav class="nav-bar" :aria-label="t('Основная навигация', 'Main navigation')">
     <SiteLink class="logo" :to="pagePath(language, 'index')" :aria-label="t('ReClash, на главную', 'ReClash, home')">
-      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
-        <defs><linearGradient id="lmG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--brand-2)"/><stop offset=".55" style="stop-color:var(--brand)"/><stop offset="1" style="stop-color:var(--brand-3)"/></linearGradient></defs>
-        <g class="lm-ring"><path d="M16 4.5a11.5 11.5 0 1 1-10.9 7.8" fill="none" stroke="url(#lmG)" stroke-width="5" stroke-linecap="round"/></g>
-        <circle cx="16" cy="16" r="3.6" fill="currentColor"/>
-      </svg>
+      <BrandMark class="logo-mark" />
       ReClash
     </SiteLink>
     <ul class="nav-links" data-group data-items=".nav-a" data-cpull="0.06">
@@ -42,8 +43,8 @@ const languageLink = computed(() => switchLanguage(fullPath.value, otherLanguage
       </li>
     </ul>
     <div class="lang" data-group data-sticky data-items="a" data-cpull="0" :aria-label="t('Язык', 'Language')">
-      <SiteLink :to="switchLanguage(fullPath, 'ru')" :aria-current="language === 'ru' ? 'true' : undefined" lang="ru" :aria-label="t('Русская версия', 'Switch to Russian')">RU</SiteLink>
-      <SiteLink :to="switchLanguage(fullPath, 'en')" :aria-current="language === 'en' ? 'true' : undefined" lang="en" hreflang="en" :aria-label="t('Переключить на английский', 'English version')">EN</SiteLink>
+      <SiteLink :to="switchLanguage(fullPath, 'ru')" @click="remember('ru')" :aria-current="language === 'ru' ? 'true' : undefined" lang="ru" :aria-label="t('Русская версия', 'Switch to Russian')">RU</SiteLink>
+      <SiteLink :to="switchLanguage(fullPath, 'en')" @click="remember('en')" :aria-current="language === 'en' ? 'true' : undefined" lang="en" hreflang="en" :aria-label="t('Переключить на английский', 'English version')">EN</SiteLink>
     </div>
     <SiteLink class="btn btn-primary btn-s" :to="pagePath(language, 'download')" :aria-current="page === 'download' ? 'page' : undefined">{{ t("Скачать", "Download") }}</SiteLink>
     <button class="burger" type="button" :aria-label="t('Меню', 'Menu')" aria-expanded="false" aria-controls="menu">
@@ -66,7 +67,7 @@ const languageLink = computed(() => switchLanguage(fullPath.value, otherLanguage
     <li><SiteLink :to="pagePath(language, 'builder')">{{ t("Конструктор", "Builder") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'mock-subs')">{{ t("Мок-подписки", "Mock subscriptions") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'report')">{{ t("Отчёт подписки", "Subscription report") }}</SiteLink></li>
-    <li><SiteLink  :to="languageLink" :lang="otherLanguage">{{ t('English version', 'Русская версия') }}</SiteLink></li>
+    <li><SiteLink :to="languageLink" :lang="otherLanguage" @click="remember(otherLanguage)">{{ t('English version', 'Русская версия') }}</SiteLink></li>
   </ul>
 </div>
 </template>

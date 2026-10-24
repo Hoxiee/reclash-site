@@ -16,3 +16,11 @@ export const normHex = (hex: unknown) => {
     if (/^[0-9A-F]{8}$/.test(v)) return v.slice(2); // AARRGGBB → RRGGBB
     return /^[0-9A-F]{6}$/.test(v) ? v : null;
   };
+
+/** The readable band the client and the site use for a brand seed on a dark surface. */
+export function brandBand(hex: unknown) {
+  const value = normHex(hex)
+  if (!value) return null
+  const { l, c, h } = hexToOklch(value)
+  return { l: Math.min(0.84, Math.max(0.68, l)), c: Math.min(c, 0.19), h }
+}

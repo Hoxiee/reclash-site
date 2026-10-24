@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { pagePath } from '~~/shared/site/routes'
-definePageMeta({ layout: 'ported' })
 usePageMeta('start')
 const { language, t } = useText()
 </script>
@@ -45,23 +44,9 @@ const { language, t } = useText()
     <p class="lede" data-fade>{{ t("Провайдеру не нужно объяснять пользователю, куда вставлять URL. Соберите ссылку здесь и положите её кнопкой в личный кабинет.", "Providers do not need to explain where to paste the URL. Build a link here and put it behind a button on your account page.") }}</p>
   </div>
   <div>
-    <div class="importer" id="importer" style="position:relative;top:0">
-      <h3>{{ t("Соберите ссылку-импорт", "Build an import link") }}</h3>
-      <div class="field">
-        <label for="sub-url">{{ t("Ваша ссылка на подписку", "Your subscription link") }}</label>
-        <input class="input" id="sub-url" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://…" aria-describedby="sub-err">
-        <span class="err" id="sub-err" role="alert"></span>
-      </div>
-      <div><button class="btn btn-primary copy-btn" type="button">
-        <svg class="ico-m cp" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h10v10H9zM5 15V5h10"/></svg>
-        <svg class="ico-m ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-        <span class="btn-label">{{ t("Собрать и скопировать", "Build and copy") }}</span></button></div>
-      <div class="out" aria-live="polite"><span class="lbl">{{ t("Пример ссылки-импорта", "Example import link") }}</span>
-        <code>reclash://install-config?url=<span class="hl">https%3A%2F%2Fsub.example%2Flink%2Fabc123</span></code></div>
-      <p class="fine">{{ t("Ссылка никуда не отправляется — она собирается прямо в браузере.", "The link is never sent anywhere: it is built in your browser.") }}</p>
-    </div>
+    <ImportLink class="is-static" :title="t('Соберите ссылку-импорт', 'Build an import link')" />
 
-    <ul class="schemes" data-group data-items=".scheme" data-pull="0.03" data-cpull="0" :aria-label="t('Схемы ссылок reclash://', 'reclash:// link schemes')">
+    <ul class="schemes" data-group data-items=".scheme" data-cpull="0" :aria-label="t('Схемы ссылок reclash://', 'reclash:// link schemes')">
       <li class="scheme" data-mg><code>reclash://connect</code><span>{{ t("Запустить туннель и подключиться", "Start the tunnel and connect") }}</span><button class="cp" type="button" data-copy="reclash://connect" :aria-label="t('Скопировать reclash://connect', 'Copy reclash://connect')"><svg viewBox="0 0 24 24"><path d="M9 9h10v10H9zM5 15V5h10"/></svg></button></li>
       <li class="scheme" data-mg><code>reclash://disconnect</code><span>{{ t("Остановить туннель", "Stop the tunnel") }}</span><button class="cp" type="button" data-copy="reclash://disconnect" :aria-label="t('Скопировать reclash://disconnect', 'Copy reclash://disconnect')"><svg viewBox="0 0 24 24"><path d="M9 9h10v10H9zM5 15V5h10"/></svg></button></li>
       <li class="scheme" data-mg><code>reclash://toggle</code><span>{{ t("Подключить, если остановлено, иначе отключить", "Connect if stopped, otherwise disconnect") }}</span><button class="cp" type="button" data-copy="reclash://toggle" :aria-label="t('Скопировать reclash://toggle', 'Copy reclash://toggle')"><svg viewBox="0 0 24 24"><path d="M9 9h10v10H9zM5 15V5h10"/></svg></button></li>
@@ -77,7 +62,7 @@ const { language, t } = useText()
 
 <section class="sub-sec" id="faq"><div class="wrap two">
   <div class="sec-head"><h2 data-words>{{ t("Отвечаем до того, как вы спросите.", "Answers before you ask.") }}</h2></div>
-  <ul class="acc" data-acc data-group data-items=".acc-item" data-pull="0.02" data-cpull="0">
+  <ul class="acc" data-acc data-group data-items=".acc-item" data-cpull="0">
     <li class="acc-item" id="faq-what" data-mg><h3><button class="acc-btn" type="button" aria-expanded="false" aria-controls="faq-what-p"><span>{{ t("Что такое ReClash и чем он не является?", "What is ReClash, and what isn't it?") }}</span><span class="pm" aria-hidden="true"></span></button></h3>
       <div class="acc-panel" id="faq-what-p" role="region"><div class="acc-body"><p>{{ t("Это клиент для ядра mihomo: он берёт вашу подписку, маршрутизирует трафик по правилам и умеет обходить DPI. Это", "It is a client for the mihomo core: it uses your subscription, routes traffic by rules and can bypass DPI. It is") }} <b>{{ t("не", "not a") }}</b> {{ t("VPN-сервис: ReClash не продаёт доступ, не выдаёт подписки и не рекомендует провайдеров. Сервер и ссылку вы приносите свои.", "VPN service: ReClash does not sell access, provide subscriptions or recommend providers. Bring your own server and link.") }}</p></div></div></li>
     <li class="acc-item" id="faq-flclash" data-mg><h3><button class="acc-btn" type="button" aria-expanded="false" aria-controls="faq-flclash-p"><span>{{ t("Чем это отличается от FlClash?", "How does it differ from FlClash?") }}</span><span class="pm" aria-hidden="true"></span></button></h3>

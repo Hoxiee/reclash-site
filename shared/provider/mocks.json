@@ -1,0 +1,295 @@
+[
+  {
+    "key": "ember",
+    "tone": "themed",
+    "name": {
+      "ru": "Ember Line",
+      "en": "Ember Line"
+    },
+    "blurb": {
+      "ru": "полный стенд: квота, виджеты, тема, фон и объявление",
+      "en": "the full stand: quota, widgets, theme, background and announce"
+    },
+    "teaches": {
+      "ru": "Полный эталонный стенд. Показывает почти каждый заголовок ReClash сразу: квоту и срок, полный набор виджетов с режимом слияния, тему (цвет и вариант палитры), градиент кольца, фон, логотип, объявление, вид страницы прокси, настройки по умолчанию и ссылки на поддержку и оплату — всё в одном ответе.",
+      "en": "The full reference stand. It exercises almost every ReClash header at once: quota and expiry, the complete widget set with a merge mode, a theme (colour and palette variant), the hero-ring gradient, a background, a logo, an announcement, the proxy-page view, default settings and support/billing links — all in a single response."
+    },
+    "nodes": 3,
+    "quota": {
+      "uploadGb": 1,
+      "downloadGb": 20,
+      "totalGb": 100,
+      "expireAt": 1924992000
+    },
+    "response": {
+      "title": "Ember Line",
+      "serviceName": "Ember Line",
+      "serverInfo": "Ember Select",
+      "activeText": "Ember Line is live",
+      "hex": "FF6B1A:vibrant",
+      "heroRing": [
+        "FFC46B",
+        "FF6B1A",
+        "D9380A"
+      ],
+      "logo": "logo-ember.svg",
+      "background": {
+        "file": "bg-ember.svg",
+        "opacity": 22
+      },
+      "widgets": "networkSpeed,trafficUsage,serviceInfo,changeServerButton,announce,networkDetection,memoryInfo,metaInfo,intranetIp,tunButton,vpnButton,systemProxyButton",
+      "custom": "update",
+      "settings": "autorun,autoupdate,minimize",
+      "view": "type:list; sort:delay; layout:tight; icon:standard; card:min",
+      "supportUrl": "https://example.com/support",
+      "buyPlan": "https://example.com/plans",
+      "buyTraffic": "https://example.com/traffic",
+      "announce": {
+        "ru": "Капитан, стенд Ember Line развёрнут: квота, виджеты, тема и фон в одной фикстуре.",
+        "en": "Captain, the Ember Line stand is live: quota, widgets, theme, and background in one fixture."
+      },
+      "updateMinutes": 60
+    },
+    "body": "mixed-port: 7890\nmode: rule\nlog-level: info\nproxies:\n  - name: Ember Berlin\n    type: ss\n    server: 127.0.0.1\n    port: 8395\n    cipher: aes-256-gcm\n    password: ember-berlin\n  - name: Ember Tokyo\n    type: ss\n    server: 127.0.0.1\n    port: 8396\n    cipher: aes-256-gcm\n    password: ember-tokyo\n  - name: Ember Seattle\n    type: ss\n    server: 127.0.0.1\n    port: 8397\n    cipher: aes-256-gcm\n    password: ember-seattle\nproxy-groups:\n  - name: Ember Select\n    type: select\n    proxies: [Ember Berlin, Ember Tokyo, Ember Seattle, DIRECT]\n  - name: Ember Fastest\n    type: url-test\n    url: http://www.gstatic.com/generate_204\n    interval: 300\n    proxies: [Ember Berlin, Ember Tokyo, Ember Seattle]\nrules:\n  - MATCH,Ember Select\n"
+  },
+  {
+    "key": "aurora",
+    "tone": "themed",
+    "name": {
+      "ru": "Aurora Pass",
+      "en": "Aurora Pass"
+    },
+    "blurb": {
+      "ru": "только визуал: тема, кольцо, живой эффект и фон",
+      "en": "visual only: theme, ring, living effect and background"
+    },
+    "teaches": {
+      "ru": "Оформление и ничего больше. Показывает, как подписка перекрашивает клиент, не трогая данные: цвет темы с вариантом палитры и чистым чёрным фоном (pureblack), градиент кольца в тон, живой эффект «aurora» за кольцом и фоновую картинку панели. Ни квоты, ни виджетов, ни объявления — только вид.",
+      "en": "Theming and nothing else. It shows how a subscription recolours the client without touching data: a theme colour with a palette variant and a pure-black background, a matching hero-ring gradient, the living “aurora” effect behind the ring and a panel background image. No quota, no widgets, no announcement — appearance only."
+    },
+    "nodes": 4,
+    "quota": null,
+    "response": {
+      "title": "Aurora Pass",
+      "serviceName": "Aurora Pass",
+      "activeText": "Aurora Pass",
+      "hex": "6E55F5:vibrant:pureblack",
+      "heroRing": [
+        "7C5CFF",
+        "22D3EE",
+        "2FD3B6"
+      ],
+      "heroEffect": "aurora",
+      "logo": "logo-aurora.svg",
+      "background": {
+        "file": "bg-aurora.svg",
+        "opacity": 30
+      }
+    }
+  },
+  {
+    "key": "nimbus",
+    "tone": "",
+    "name": {
+      "ru": "Nimbus Free",
+      "en": "Nimbus Free"
+    },
+    "blurb": {
+      "ru": "безлимит без оформления: только имя и узлы",
+      "en": "unlimited and unstyled: just a name and nodes"
+    },
+    "teaches": {
+      "ru": "Противоположность эталонному стенду: почти пустой ответ. Нет заголовка Subscription-Userinfo — приложение показывает «без лимита» и «бессрочно». Ни темы, ни фона, ни виджетов: только имя профиля, имя сервиса и вид страницы прокси вкладками. Так выглядит минимальная рабочая подписка.",
+      "en": "The opposite of the reference stand: an almost empty response. There is no Subscription-Userinfo header, so the app shows “unlimited” and “never”. No theme, no background, no widgets — just the profile title, the service name and the tabbed proxy-page view. This is what a minimal working subscription looks like."
+    },
+    "nodes": 6,
+    "quota": null,
+    "response": {
+      "title": "Nimbus Free",
+      "serviceName": "Nimbus Free",
+      "view": "type:tab; sort:name; layout:standard; icon:standard; card:expand"
+    }
+  },
+  {
+    "key": "sentinel",
+    "tone": "warn",
+    "name": {
+      "ru": "Sentinel Trial",
+      "en": "Sentinel Trial"
+    },
+    "blurb": {
+      "ru": "пробный тариф на исходе: квота, срок и оплата",
+      "en": "trial running out: quota, expiry and billing"
+    },
+    "teaches": {
+      "ru": "Всё на грани. Квота почти израсходована, а срок задан относительно («через 2 дня») — при каждой сборке он снова близко, так что предупреждения о лимите видно всегда. Объявление зовёт продлить, виджеты трафика и объявления держат это на виду, а действия «Продлить» и «Докупить трафик» ведут к оплате.",
+      "en": "Everything on the edge. The quota is nearly spent and the expiry is relative (“in 2 days”), so every build keeps it close and the limit warnings always show. An announcement asks the user to renew, the traffic and announce widgets keep it in view, and the renew / top-up actions lead to billing."
+    },
+    "nodes": 2,
+    "quota": {
+      "uploadGb": 9,
+      "downloadGb": 38,
+      "totalGb": 50,
+      "expireInDays": 2
+    },
+    "response": {
+      "title": "Sentinel Trial",
+      "serviceName": "Sentinel Trial",
+      "activeText": "Sentinel Trial",
+      "widgets": "trafficUsage,metaInfo,announce,serviceInfo,changeServerButton",
+      "supportUrl": "https://example.com/support",
+      "buyPlan": "https://example.com/renew",
+      "buyTraffic": "https://example.com/topup",
+      "announce": {
+        "ru": "Пробный период почти закончился. Продлите, чтобы не потерять доступ.",
+        "en": "Your trial is almost over. Renew to keep your access."
+      },
+      "updateMinutes": 720
+    }
+  },
+  {
+    "key": "relay",
+    "tone": "",
+    "name": {
+      "ru": "Relay Shift",
+      "en": "Relay Shift"
+    },
+    "blurb": {
+      "ru": "миграция домена и запасные хосты",
+      "en": "domain migration and fallback hosts"
+    },
+    "teaches": {
+      "ru": "Провайдер переезжает. ReClash-NewDomain предлагает клиенту сменить адрес подписки на новый домен — после проверок, а ReClash-FallbackHosts даёт запасные хосты на случай временных сбоёв загрузки. Объявление предупреждает о переезде; в остальном это обычная подписка с квотой.",
+      "en": "The provider is moving. ReClash-NewDomain proposes that the client switch the subscription address to a new domain — subject to checks — and ReClash-FallbackHosts supplies backup hosts for transient fetch failures. An announcement warns about the move; otherwise it is an ordinary subscription with a quota."
+    },
+    "nodes": 4,
+    "quota": {
+      "uploadGb": 5,
+      "downloadGb": 60,
+      "totalGb": 300,
+      "expireInDays": 60
+    },
+    "response": {
+      "title": "Relay Shift",
+      "serviceName": "Relay Shift",
+      "supportUrl": "https://example.com/support",
+      "announce": {
+        "ru": "Мы переезжаем на новый домен. Клиент предложит обновить адрес подписки.",
+        "en": "We are moving to a new domain. The client will offer to update your subscription address."
+      },
+      "updateMinutes": 180,
+      "newDomain": "relay-new.example.com",
+      "fallbackHosts": "relay-b.example.com,relay-c.example.com"
+    }
+  },
+  {
+    "key": "gatekeeper",
+    "tone": "warn",
+    "name": {
+      "ru": "Gatekeeper",
+      "en": "Gatekeeper"
+    },
+    "blurb": {
+      "ru": "сервисный ответ: достигнут лимит устройств",
+      "en": "service response: device limit reached"
+    },
+    "teaches": {
+      "ru": "Не оформление, а сигнал сервера. Заголовок X-Hwid-Max-Devices-Reached приложение читает как «достигнут лимит устройств»: оно показывает соответствующее сообщение и предлагает страницу поддержки из ReClash-SupportURL. Такие X-Hwid-заголовки провайдер не настраивает в конструкторе — их ставит сервер в ответе по железу устройства.",
+      "en": "Not styling but a server signal. The app reads the X-Hwid-Max-Devices-Reached header as “device limit reached”: it shows the matching message and offers the support page from ReClash-SupportURL. These X-Hwid headers are not configured in the builder — the server sets them on the response based on the device."
+    },
+    "nodes": 2,
+    "quota": null,
+    "response": {
+      "title": "Gatekeeper",
+      "serviceName": "Gatekeeper",
+      "supportUrl": "https://example.com/support",
+      "hwidLimit": true
+    }
+  },
+  {
+    "key": "meridian",
+    "tone": "",
+    "name": {
+      "ru": "Meridian",
+      "en": "Meridian"
+    },
+    "blurb": {
+      "ru": "средний тариф: квота, виджеты и ссылки без оформления",
+      "en": "the average plan: quota, widgets and links with no theming"
+    },
+    "teaches": {
+      "ru": "Точка отсчёта среди моков: обычный здоровый тариф. Нет ни темы, ни кольца, ни фона, ни логотипа — клиент выглядит стоково. Есть квота середины срока, базовые виджеты, вид по умолчанию и ссылки на поддержку и оплату. Так выглядит провайдер, который ничего не кастомизирует.",
+      "en": "The baseline among the mocks: an ordinary healthy plan. No theme, no ring, no background, no logo — the client looks stock. It has a mid-term quota, the default widgets, the default view and support/billing links. This is what a provider that customises nothing looks like."
+    },
+    "nodes": 5,
+    "quota": {
+      "uploadGb": 8,
+      "downloadGb": 27,
+      "totalGb": 100,
+      "expireInDays": 27
+    },
+    "response": {
+      "title": "Meridian",
+      "serviceName": "Meridian",
+      "serverInfo": "Meridian",
+      "activeText": "Meridian online",
+      "widgets": "serviceInfo,changeServerButton,networkSpeed,trafficUsage,metaInfo",
+      "custom": "update",
+      "settings": "autorun,autoupdate",
+      "view": "type:list; sort:default; layout:standard; icon:standard; card:expand",
+      "supportUrl": "https://example.com/support",
+      "buyPlan": "https://example.com/plans",
+      "announce": {
+        "ru": "Тариф Meridian активен. Новости провайдера появятся здесь.",
+        "en": "Your Meridian plan is active. Provider news will appear here."
+      },
+      "updateMinutes": 360
+    }
+  },
+  {
+    "key": "ledger",
+    "tone": "",
+    "name": {
+      "ru": "Ledger",
+      "en": "Ledger"
+    },
+    "blurb": {
+      "ru": "напоминания и ссылки: отчёт, кабинет, дни и проценты",
+      "en": "reminders and links: report, account, days and percents"
+    },
+    "teaches": {
+      "ru": "Редкие заголовки, которых нет в остальных моках. Объявление-ссылка ведёт на новости, ReClash-WebPageURL — в личный кабинет, ReClash-ReportURL — на жалобу, а ReClash-ExpireDays и ReClash-TrafficPercent задают свои пороги напоминаний. Виджеты сливаются режимом add, в наборе — пульт управления: статус, соединения, группы, профили и аптайм.",
+      "en": "The rare headers no other mock sends. The announcement links to news, ReClash-WebPageURL leads to the account page, ReClash-ReportURL to issue reporting, and ReClash-ExpireDays with ReClash-TrafficPercent set custom reminder thresholds. Widgets merge with mode add, and the set is a control room: status, connections, groups, profiles and uptime."
+    },
+    "nodes": 4,
+    "quota": {
+      "uploadGb": 10,
+      "downloadGb": 20,
+      "totalGb": 120,
+      "expireInDays": 30
+    },
+    "response": {
+      "title": "Ledger",
+      "serviceName": "Ledger",
+      "serverInfo": "Ledger",
+      "activeText": "Ledger",
+      "logo": "logo-standard.svg",
+      "widgets": "serviceStatus,connections,proxyGroups,profiles,smartRouting,runTime,announce,serviceInfo",
+      "custom": "add",
+      "settings": "shadowstart,autostart,openlogs,closeconnections",
+      "view": "type:list; sort:none; layout:loose; icon:none; card:shrink",
+      "supportUrl": "https://example.com/support",
+      "reportUrl": "https://example.com/report",
+      "webPageUrl": "https://example.com/account",
+      "buyPlan": "https://example.com/plans",
+      "announce": {
+        "ru": "Напоминания настроены провайдером. Подробности — по ссылке.",
+        "en": "Reminders are set by the provider. Follow the link for details."
+      },
+      "announceUrl": "https://example.com/news",
+      "updateMinutes": 1440,
+      "expireDays": "7,3,1",
+      "trafficPercent": "80,95"
+    }
+  }
+]

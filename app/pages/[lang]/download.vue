@@ -1,8 +1,18 @@
 <script setup lang="ts">
 import { pagePath } from '~~/shared/site/routes'
-definePageMeta({ layout: 'ported' })
+import '~/assets/css/download.css'
 usePageMeta('download')
 const { language, t } = useText()
+// One GitHub request feeds both the file picker and the changelog.
+const releases = useReleases()
+const buildScript = computed(() => [
+  'git clone https://github.com/Hoxiee/ReClash.git',
+  'cd ReClash',
+  'flutter pub get',
+  `dart run setup.dart            ${t('# хост-платформа', '# host platform')}`,
+  'dart run setup.dart android    # APK',
+  '# → dist/',
+].join('\n'))
 </script>
 
 <template>
@@ -22,13 +32,21 @@ const { language, t } = useText()
 </div></section>
 
 <section class="sub-sec" id="latest" style="padding-top:0;border-top:0"><div class="wrap">
-  <ReleaseList />
+  <ReleaseList :feed="releases" />
+</div></section>
+
+<section class="sub-sec" id="changelog"><div class="wrap two">
+  <div class="sec-head">
+    <h2 data-words>{{ t("Что нового.", "What's new.") }}</h2>
+    <p class="lede" data-fade>{{ t("Заметки к релизам приходят из GitHub вместе со списком файлов: сначала текущий, ниже — предыдущие.", "Release notes come from GitHub with the file list: the current release first, earlier ones below.") }}</p>
+  </div>
+  <ReleaseNotes :feed="releases" />
 </div></section>
 
 <section class="sub-sec" id="platforms"><div class="wrap two">
   <div class="sec-head"><h2 data-words>{{ t("Что под какой системой.", "Packages for each system.") }}</h2></div>
   <div>
-    <ul class="pcards" data-group data-items=".pcard" data-pull="0.04" data-cpull="0.03">
+    <ul class="pcards" data-group data-items=".pcard" data-cpull="0.03">
       <li class="pcard" data-mg><h3>Windows</h3><span class="fmt">{{ t("Установщик или портативный ZIP", "Installer or portable ZIP") }}</span><div class="arch"><span>x64</span><span>ARM64</span></div>
         <p>{{ t("Windows 10 и новее. Портативная сборка не требует прав администратора, а режим TUN — требует.", "Windows 10 or later. The portable build needs no administrator privileges; TUN mode does.") }}</p></li>
       <li class="pcard" data-mg><h3>macOS</h3><span class="fmt">DMG</span><div class="arch"><span>Apple silicon</span><span>Intel</span></div>
@@ -64,19 +82,14 @@ const { language, t } = useText()
     </ul>
     <div class="term">
       <div class="th"><h3>{{ t("Сборка", "Build") }}</h3><button class="btn btn-ghost btn-s" type="button" data-copy="#t-build" :data-label="t('Копировать', 'Copy')"><span class="btn-label">{{ t("Копировать", "Copy") }}</span></button></div>
-<pre id="t-build">git clone https://github.com/Hoxiee/ReClash.git
-cd ReClash
-flutter pub get
-dart run setup.dart            <span class="c">{{ t("# хост-платформа", "# host platform") }}</span>
-dart run setup.dart android    <span class="c"># APK</span>
-<span class="c"># → dist/</span></pre>
+<pre id="t-build"><CodeLines :code="buildScript" lang="shell" /></pre>
     </div>
     <p class="muted" style="margin-top:16px">{{ t("Подробности — в", "Details are in the") }} <SiteLink class="tlink" to="https://github.com/Hoxiee/ReClash/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</SiteLink>.</p>
   </div>
 </div></section>
 
 <section class="sub-sec"><div class="wrap">
-  <div class="next" data-group data-items=".path" data-pull="0.04" data-cpull="0.025">
+  <div class="next" data-group data-items=".path" data-cpull="0.025">
     <SiteLink class="path" data-mg :to="pagePath(language, 'start')" style="min-height:240px"><span class="mg-c" style="display:grid;gap:12px"><span class="who">{{ t("Поставили?", "Installed it?") }}</span><h3>{{ t("Быстрый старт и FAQ", "Quick start and FAQ") }}</h3></span>
       <span class="go"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12m0 0-5-5m5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ t("Открыть", "Open") }}</span></SiteLink>
     <SiteLink class="path" data-mg :to="pagePath(language, 'docs')" style="min-height:240px"><span class="mg-c" style="display:grid;gap:12px"><span class="who">{{ t("Вы провайдер?", "Are you a provider?") }}</span><h3>{{ t("Заголовки для провайдеров", "Headers for providers") }}</h3></span>

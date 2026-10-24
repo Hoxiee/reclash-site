@@ -30,6 +30,8 @@ export function createScheduler(driver: FrameDriver) {
   }
   return {
     tick(job: FrameJob) {
+      // Waking from idle starts a fresh clock, so the first step is never a stale long frame.
+      if (!jobs.size) last = 0
       jobs.add(job); request()
       return () => {
         jobs.delete(job)

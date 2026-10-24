@@ -300,8 +300,8 @@ export function initHero(scope, M, Theme, t, helpers) {
     const at = Math.atan2(y - (b.y + b.height / 2), x - (b.x + b.width / 2));
     wobble(1, at);
   });
-  // gentle entrance: the ring "lands"
-  wobble(0.5);
+  // gentle entrance: the ring "lands" once the page is uncovered
+  M.whenReady().then(() => { if (!scope.disposed) wobble(0.7); });
   if (M.reduced) { P.set(0); render(0); } else start();
   M.onReduced(reduced => {
     scope.clearTimeout(verbTimer); stop?.(); stop = null;

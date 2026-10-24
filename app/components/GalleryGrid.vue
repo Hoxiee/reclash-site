@@ -7,7 +7,7 @@ const current = ref('all')
 let magnet: { select: (element: Element | null) => void } | undefined
 watch(motion, runtime => {
   if (!runtime || !chips.value) return
-  magnet = runtime.M.magnetGroup(chips.value, { items: 'button', sticky: true, pull: 0, contentPull: 0 })
+  magnet = runtime.M.magnetGroup(chips.value, { items: 'button', sticky: true, contentPull: 0 })
   runtime.scope.frame(() => magnet?.select(chips.value!.querySelector('[aria-pressed="true"]')))
 })
 async function filter(cat: string, event: Event) {

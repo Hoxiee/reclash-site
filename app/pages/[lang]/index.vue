@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { pagePath } from '~~/shared/site/routes'
-definePageMeta({ layout: 'ported' })
 usePageMeta('index')
 const { language, t } = useText()
 const manifesto = computed(() => [
@@ -120,7 +119,7 @@ const manifesto = computed(() => [
     <div class="sec-head">
       <h2 id="feat-title" data-words>{{ t("Что умеет ReClash.", "What ReClash can do.") }}</h2>
     </div>
-    <ul class="feats" data-group data-items=".feat" data-pull="0.05" data-cpull="0.03">
+    <ul class="feats" data-group data-items=".feat" data-cpull="0.03">
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-core" viewBox="0 0 64 64" aria-hidden="true">
           <g class="orb">
@@ -204,25 +203,7 @@ const manifesto = computed(() => [
         <li class="step"><span class="step-n">3</span><div><h3>{{ t("Подключитесь", "Connect") }}</h3><p>{{ t("TUN — для всего устройства, системный прокси — для приложений, которые его поддерживают. Режим всегда можно сменить на главном экране.", "TUN covers the whole device; the system proxy covers apps that support it. You can change modes on the main screen at any time.") }}</p></div></li>
       </ol>
 
-      <div class="importer" id="importer" data-fade>
-        <h3>{{ t("Уже есть ссылка на подписку?", "Already have a subscription link?") }}</h3>
-        <p class="muted">{{ t("Вставьте её — получите ссылку, которая открывает ReClash и импортирует профиль одним касанием. Такую же кнопку провайдер может положить в личный кабинет.", "Paste it to get a link that opens ReClash and imports the profile in one tap. Providers can put the same button on their account page.") }}</p>
-        <div class="field">
-          <label for="sub-url">{{ t("Ваша ссылка на подписку", "Your subscription link") }}</label>
-          <input class="input" id="sub-url" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://…" aria-describedby="sub-err">
-          <span class="err" id="sub-err" role="alert"></span>
-        </div>
-        <div><button class="btn btn-primary copy-btn" type="button">
-          <svg class="ico-m cp" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h10v10H9zM5 15V5h10"/></svg>
-          <svg class="ico-m ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-          <span class="btn-label">{{ t("Собрать и скопировать", "Build and copy") }}</span>
-        </button></div>
-        <div class="out" aria-live="polite">
-          <span class="lbl">{{ t("Пример ссылки-импорта", "Example import link") }}</span>
-          <code>reclash://install-config?url=<span class="hl">https%3A%2F%2Fsub.example%2Flink%2Fabc123</span></code>
-        </div>
-        <p class="fine">{{ t("Ссылка собирается прямо в браузере и никуда не отправляется.", "The link is built in your browser and never sent anywhere.") }}</p>
-      </div>
+      <ImportLink data-fade :title="t('Уже есть ссылка на подписку?', 'Already have a subscription link?')" :text="t('Вставьте её — получите ссылку, которая открывает ReClash и импортирует профиль одним касанием. Такую же кнопку провайдер может положить в личный кабинет.', 'Paste it to get a link that opens ReClash and imports the profile in one tap. Providers can put the same button on their account page.')" />
     </div>
   </div>
 </section>
@@ -244,16 +225,16 @@ const manifesto = computed(() => [
       <span class="ripple" aria-hidden="true"></span>
       <div class="studio-top">
         <span class="lbl" id="sw-lbl">{{ t("Цвет бренда — сайт перекрасится вместе с превью", "Brand color: the site changes along with the preview") }}</span>
-        <div class="swatches" role="group" aria-labelledby="sw-lbl" data-group data-sticky data-items=".sw" data-cpull="0" data-pull="0">
-          <button class="sw" type="button" data-mg data-hex="7C5CFF" style="--c:#7C5CFF" :aria-label="t('Фиолетовый, цвет ReClash', 'Purple, the ReClash color')"><i></i></button>
+        <div class="swatches" role="group" aria-labelledby="sw-lbl" data-group data-sticky data-items=".sw" data-cpull="0">
+          <button class="sw" type="button" data-mg data-hex="FF7A2F" style="--c:#FF7A2F" :aria-label="t('Оранжевый, цвет ReClash', 'Orange, the ReClash color')"><i></i></button>
+          <button class="sw" type="button" data-mg data-hex="7C5CFF" style="--c:#7C5CFF" :aria-label="t('Фиолетовый', 'Purple')"><i></i></button>
           <button class="sw" type="button" data-mg data-hex="3EE8FF" style="--c:#3EE8FF" :aria-label="t('Бирюзовый', 'Cyan')"><i></i></button>
           <button class="sw" type="button" data-mg data-hex="C8FF3D" style="--c:#C8FF3D" :aria-label="t('Лаймовый', 'Lime')"><i></i></button>
           <button class="sw" type="button" data-mg data-hex="FF3D7F" style="--c:#FF3D7F" :aria-label="t('Малиновый', 'Pink')"><i></i></button>
-          <button class="sw" type="button" data-mg data-hex="FF7A2F" style="--c:#FF7A2F" :aria-label="t('Оранжевый', 'Orange')"><i></i></button>
           <button class="sw" type="button" data-mg data-hex="2FD08A" style="--c:#2FD08A" :aria-label="t('Зелёный', 'Green')"><i></i></button>
           <button class="sw" type="button" data-mg data-hex="FFC53D" style="--c:#FFC53D" :aria-label="t('Жёлтый', 'Yellow')"><i></i></button>
           <button class="sw" type="button" data-mg data-hex="9AA0B4" style="--c:#9AA0B4" :aria-label="t('Нейтральный серый', 'Neutral gray')"><i></i></button>
-          <label class="sw sw-custom" data-mg :aria-label="t('Свой цвет', 'Custom color')"><i></i><input type="color" value="#7c5cff"></label>
+          <label class="sw sw-custom" data-mg :aria-label="t('Свой цвет', 'Custom color')"><i></i><input type="color" value="#ff7a2f"></label>
         </div>
         <div class="studio-name">
           <label class="sr-only" for="svc-name">{{ t("Имя сервиса", "Service name") }}</label>
@@ -261,7 +242,7 @@ const manifesto = computed(() => [
         </div>
       </div>
       <div class="studio-body">
-<pre class="http" :aria-label="t('Ответ подписки', 'Subscription response')"><span class="line"><span class="k">HTTP/2 200</span></span><span class="line"><span class="k">subscription-userinfo:</span> <span class="v">upload=0; download=66571993088; total=214748364800</span></span><span class="line" data-line="name"><span class="rk">reclash-servicename:</span> <span class="v">ReClash</span></span><span class="line" data-line="hex"><span class="rk">reclash-hex:</span> <span class="v">7C5CFF</span></span><span class="line"><span class="rk">reclash-announce:</span> <span class="v">{{ t("Профиль импортирован по ссылке.", "Profile imported from a link.") }}</span></span><span class="line"><span class="rk">reclash-buyplan:</span> <span class="v">https://sub.example/renew</span></span></pre>
+<pre class="http" :aria-label="t('Ответ подписки', 'Subscription response')"><span class="line"><span class="k">HTTP/2 200</span></span><span class="line"><span class="k">subscription-userinfo:</span> <span class="v">upload=0; download=66571993088; total=214748364800</span></span><span class="line" data-line="name"><span class="rk">reclash-servicename:</span> <span class="v">ReClash</span></span><span class="line" data-line="hex"><span class="rk">reclash-hex:</span> <span class="v">FF7A2F</span></span><span class="line"><span class="rk">reclash-announce:</span> <span class="v">{{ t("Профиль импортирован по ссылке.", "Profile imported from a link.") }}</span></span><span class="line"><span class="rk">reclash-buyplan:</span> <span class="v">https://sub.example/renew</span></span></pre>
         <div class="preview">
           <span class="preview-cap">{{ t("Карточка подписки в клиенте", "Subscription card in the client") }}</span>
           <div class="subcard">
@@ -292,7 +273,7 @@ const manifesto = computed(() => [
     <div class="sec-head">
       <h2 id="plat-title" data-words>{{ t("Работает на четырёх платформах.", "Runs on four platforms.") }}</h2>
     </div>
-    <ul class="plats" data-group data-items=".plat" data-pull="0.04" data-cpull="0.03">
+    <ul class="plats" data-group data-items=".plat" data-cpull="0.03">
       <li class="plat" data-mg><h3>Windows</h3><ul><li>{{ t("Windows 10 и новее", "Windows 10 or later") }}</li><li>{{ t("Установщик и портативная сборка", "Installer and portable build") }}</li><li>{{ t("TUN и системный прокси", "TUN and system proxy") }}</li></ul></li>
       <li class="plat" data-mg><h3>macOS</h3><ul><li>{{ t("Intel и Apple Silicon", "Intel and Apple Silicon") }}</li><li>{{ t("DMG-образ", "DMG image") }}</li><li>{{ t("TUN через системного помощника", "TUN through a system helper") }}</li></ul></li>
       <li class="plat" data-mg><h3>Linux</h3><ul><li>AppImage, deb, rpm</li><li>{{ t("x86_64 и arm64", "x86_64 and arm64") }}</li><li>{{ t("TUN и системный прокси", "TUN and system proxy") }}</li></ul></li>
@@ -323,7 +304,7 @@ const manifesto = computed(() => [
     <div class="sec-head">
       <h2 id="next-title" data-words>{{ t("Дальше — смотря кто вы.", "What comes next depends on you.") }}</h2>
     </div>
-    <div class="next" data-group data-items=".path" data-pull="0.04" data-cpull="0.025">
+    <div class="next" data-group data-items=".path" data-cpull="0.025">
       <SiteLink class="path" data-mg :to="pagePath(language, 'download')">
         <svg class="blob" viewBox="0 0 150 150" aria-hidden="true"><path/></svg>
         <span class="mg-c" style="display:grid;gap:16px">

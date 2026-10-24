@@ -48,7 +48,8 @@ export function initPages(scope, M, Theme, t, helpers) {
       scope.listen(window, 'pointermove', (e) => { if (e.pointerType !== 'touch') pointer = toLocal(e); }, { passive: true });
       scope.listen(document, 'pointerleave', () => (pointer = null));
       scope.listen(ringSvg, 'click', () => { const ph = Math.random() * 6.28; for (let i = 0; i < N; i++) vel[i] += Math.sin(4 * ((i / N) * 6.28) + ph) * 380; });
-      for (let i = 0; i < N; i++) vel[i] = Math.sin(3 * (i / N) * 6.28) * 300; // lands with a wobble
+      // lands with a wobble once the page is uncovered
+      M.whenReady().then(() => { if (scope.disposed) return; for (let i = 0; i < N; i++) vel[i] = Math.sin(3 * (i / N) * 6.28) * 300; loop(); });
       loop();
       M.onReduced(reduced => { if (reduced) { off.fill(0); vel.fill(0); draw(0); } else loop(); });
     }

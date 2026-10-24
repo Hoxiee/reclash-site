@@ -35,9 +35,37 @@ test('language navigation preserves legacy query and fragment state', async ({ p
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 })
 
-test('home, keyboard navigation and mobile layout work', async ({ page }) => {
+test('the root picks a language without a chooser and remembers explicit switches', async ({ browser, baseURL }) => {
+  for (const [locale, target] of [['ru-RU', '/ru'], ['be-BY', '/ru'], ['en-US', '/en'], ['de-DE', '/en']] as const) {
+    const context = await browser.newContext({ locale, baseURL })
+    const page = await context.newPage()
+    await page.goto('/?utm=1#top')
+    await expect(page).toHaveURL(new RegExp(`${target}(?:/)?\\?utm=1#top$`))
+    await context.close()
+  }
+  const context = await browser.newContext({ locale: 'ru-RU', baseURL })
+  const page = await context.newPage()
+  await page.goto('/ru/start')
+  await page.locator('.lang').getByRole('link', { name: 'Переключить на английский' }).click()
+  await expect(page).toHaveURL(/\/en\/start/)
   await page.goto('/')
-  await page.getByRole('link', { name: 'English' }).click()
+  await expect(page).toHaveURL(/\/en\/?$/)
+  await context.close()
+})
+
+test('the loader covers the first paint, opens and leaves the page interactive', async ({ page }) => {
+  await page.goto('/en/start')
+  await expect(page.locator('html')).toHaveClass(/\bjs\b/)
+  await expect(page.locator('html')).toHaveClass(/is-loaded/)
+  await expect(page.locator('.loader')).toBeHidden()
+  await expect(page.locator('h1 [data-words], h1[data-words]').first()).toHaveClass(/is-in/)
+  await page.reload()
+  await expect(page.locator('html')).toHaveClass(/intro-short/)
+  await expect(page.locator('.loader')).toBeHidden()
+})
+
+test('home, keyboard navigation and mobile layout work', async ({ page }) => {
+  await page.goto('/en')
   await expect(page.locator('#hero-title')).toContainText('Freedom')
   await page.locator('.nav-links').getByRole('link', { name: 'Start and FAQ', exact: true }).click()
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('From zero to traffic.')
@@ -79,7 +107,7 @@ test('report entry and exit navigate documents without prefetching', async ({ pa
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Report')
   expect(await page.evaluate(() => (window as Window & { documentMarker?: string }).documentMarker)).toBeUndefined()
   await page.evaluate(() => { (window as Window & { documentMarker?: string }).documentMarker = 'report' })
-  await page.getByRole('link', { name: 'Home', exact: true }).click()
+  await page.locator('.logo').first().click()
   await expect(page.locator('#hero-title')).toContainText('Freedom')
   expect(await page.evaluate(() => (window as Window & { documentMarker?: string }).documentMarker)).toBeUndefined()
 })

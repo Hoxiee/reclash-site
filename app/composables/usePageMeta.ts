@@ -15,7 +15,7 @@ export function usePageMeta(page: PageKey) {
       ogUrl: () => `${config.public.siteOrigin}${pagePath(language.value, page)}`,
       ogLocale: () => language.value === 'ru' ? 'ru_RU' : 'en_US',
       ogImage: () => `${config.public.siteOrigin}/assets/img/og.png`,
-      themeColor: '#7C5CFF',
+      themeColor: '#FF7A2F',
     } : {}),
     robots: privatePages.includes(page) ? 'noindex, nofollow' : 'index, follow',
   })

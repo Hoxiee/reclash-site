@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const root = useTemplateRef<HTMLElement>('root')
-useMotion(root)
+useSiteMotion(root)
 </script>
 
 <template>

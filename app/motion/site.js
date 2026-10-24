@@ -1,10 +1,45 @@
-/* Page wiring for ReClash. Everything here is progressive: without JS the page is complete. */
-export function initSite(scope, M, Theme, t, helpers) {
-  'use strict';
-  const $ = (s, r = scope.root) => r.querySelector(s);
-  const $$ = (s, r = scope.root) => Array.from(r.querySelectorAll(s));
+/* Site wiring for ReClash. Everything here is progressive: without JS the page is complete. */
+const query = (root) => [(s, r = root) => r.querySelector(s), (s, r = root) => Array.from(r.querySelectorAll(s))];
 
-  M.installEasings();
+function magnetGroups(scope, M, groups) {
+  for (const g of groups) {
+    const api = M.magnetGroup(g, {
+      items: g.dataset.items || '[data-mg]',
+      sticky: g.hasAttribute('data-sticky'),
+      contentPull: +(g.dataset.cpull ?? 0.08),
+    });
+    g._mg = api;
+    const sel = g.querySelector('[aria-current="true"], [aria-current="page"], [aria-pressed="true"]');
+    if (sel && g.hasAttribute('data-sticky')) scope.frame(() => api.select(sel));
+  }
+  document.fonts?.ready.then(() => !scope.disposed && groups.forEach((g) => g._mg?.refresh()));
+}
+
+/* The brand glyph's capsules on springs: 0.8 is the drawn length, 0 a dot, 1 the longest stretch. */
+function glyphBars(scope, M, svg) {
+  const bars = $all(svg, '.bm-bar').map((path) => {
+    const s = M.spring(0.8, { preset: 'jelly', precision: 0.001 });
+    s.onUpdate = (v) => {
+      const l = M.clamp(v, 0.0001, 1);
+      path.style.strokeDasharray = `${l.toFixed(4)} 2`;
+      path.style.strokeDashoffset = (-(1 - l) / 2).toFixed(4);
+    };
+    return s;
+  });
+  return {
+    bars,
+    /** A ripple from the short capsule to the long one: each dips, then overshoots and settles. */
+    wave(strength = 1) {
+      bars.forEach((s, i) => scope.timeout(() => s.kick(-4.2 * strength), i * 70));
+    },
+  };
+}
+const $all = (root, s) => Array.from(root.querySelectorAll(s));
+
+/* Helpers shared by the chrome and every page. */
+export function createHelpers(scope, M) {
+  'use strict';
+  const helpers = {};
   const EASE = {
     bouncy: M.cssEase('bouncy'),
     smooth: M.cssEase('smooth'),
@@ -39,21 +74,15 @@ export function initSite(scope, M, Theme, t, helpers) {
     }
   }
   helpers.copyText = copyText;
+  return helpers;
+}
 
-  /* ---------- magnet groups ---------- */
-  for (const g of $$('[data-group]')) {
-    const api = M.magnetGroup(g, {
-      items: g.dataset.items || '[data-mg]',
-      sticky: g.hasAttribute('data-sticky'),
-      pull: +(g.dataset.pull || 0.12),
-      contentPull: +(g.dataset.cpull ?? 0.08),
-    });
-    g._mg = api;
-    const sel = g.querySelector('[aria-current="true"], [aria-pressed="true"]');
-    if (sel && g.hasAttribute('data-sticky')) scope.frame(() => api.select(sel));
-  }
-  document.fonts?.ready.then(() => !scope.disposed && $$('[data-group]').forEach((g) => g._mg?.refresh()));
-
+/* Nav, menu and footer: mounted once, they survive route changes. */
+export function initChrome(scope, M, Theme, t, helpers) {
+  'use strict';
+  const [$, $$] = query(scope.root);
+  const parts = ['.nav', '.menu', '.foot'].map((s) => $(s)).filter(Boolean);
+  magnetGroups(scope, M, parts.flatMap((part) => $$('[data-group]', part)));
   /* ---------- nav: hides going down, returns going up ---------- */
   const nav = $('.nav');
   let lastY = scrollY;
@@ -64,6 +93,15 @@ export function initSite(scope, M, Theme, t, helpers) {
     else if (up || y < 160) nav.classList.remove('is-hidden');
     if (down || up) lastY = y;
   });
+
+  /* ---------- nav glyph: the capsules ripple on hover, on every route and on a recolor ---------- */
+  const navGlyph = $('.nav .bm') && glyphBars(scope, M, $('.nav .bm'));
+  const logo = $('.nav .logo');
+  if (navGlyph && logo) {
+    scope.listen(logo, 'pointerenter', (e) => e.pointerType === 'mouse' && navGlyph.wave());
+    scope.listen(logo, 'focus', () => navGlyph.wave(0.7));
+    scope.listen(window, 'brandchange', () => navGlyph.wave(1.3));
+  }
 
   /* dropdown */
   for (const dd of $$('.dd')) {
@@ -85,6 +123,7 @@ export function initSite(scope, M, Theme, t, helpers) {
   /* burger → full-screen menu that grows out of the button */
   const burger = $('.burger');
   const menu = $('.menu');
+  let menuApi = null;
   if (burger && menu) {
     const path = $('path', burger);
     const morph = M.morph(path, 'bouncy');
@@ -103,10 +142,72 @@ export function initSite(scope, M, Theme, t, helpers) {
       if (open) scope.timeout(() => $('a', menu)?.focus({ preventScroll: true }), 120);
     };
     menu.inert = true;
+    menuApi = { set, isOpen: () => menu.classList.contains('is-open') };
     scope.listen(burger, 'click', () => set(!menu.classList.contains('is-open')));
     scope.listen(menu, 'click', (e) => e.target.closest('a') && set(false));
     scope.listen(window, 'keydown', (e) => { if (e.key === 'Escape' && menu.classList.contains('is-open')) { set(false); burger.focus(); } });
   }
+
+  /* ---------- footer wordmark: letters and the glyph's capsules stretch toward the pointer ---------- */
+  const wm = $('.wordmark');
+  if (wm && !M.reduced) {
+    const text = $('.wordmark-text', wm);
+    const letters = Array.from(text.textContent.trim());
+    text.replaceChildren(...letters.map(c => { const span = document.createElement('span'); span.textContent = c; return span; }));
+    const spans = $$('span', text);
+    const glyph = $('.bm', wm) && glyphBars(scope, M, $('.bm', wm));
+    const S = spans.map((sp) => {
+      const s = M.spring(1, { preset: 'jelly', precision: 0.001 });
+      s.onUpdate = (v) => { sp.style.transform = `scaleY(${v.toFixed(4)}) scaleX(${(1 - (v - 1) * 0.25).toFixed(4)})`; };
+      return s;
+    });
+    const foot = wm.closest('footer');
+    scope.listen(foot, 'pointermove', (e) => {
+      if (e.pointerType === 'touch') return;
+      spans.forEach((sp, i) => {
+        const r = sp.getBoundingClientRect();
+        const d = e.clientX - (r.left + r.width / 2);
+        const near = Math.exp(-(d * d) / (2 * 110 * 110));
+        const vert = M.clamp(1 - Math.abs(e.clientY - r.bottom) / 520, 0, 1);
+        S[i].to(1 + 0.32 * near * vert);
+      });
+      if (glyph) {
+        const r = wm.firstElementChild.getBoundingClientRect();
+        const d = e.clientX - (r.left + r.width / 2);
+        const near = Math.exp(-(d * d) / (2 * 160 * 160)) * M.clamp(1 - Math.abs(e.clientY - r.bottom) / 520, 0, 1);
+        // the capsule nearest the pointer reaches furthest, like a meter following a voice
+        glyph.bars.forEach((bar, i) => bar.to(0.8 + 0.2 * near * (1 - Math.abs(M.clamp((d + 60) / 60, 0, 2) - i) * 0.35)));
+      }
+    });
+    scope.listen(foot, 'pointerleave', () => { S.forEach((s) => s.to(1)); glyph?.bars.forEach((bar) => bar.to(0.8)); });
+  }
+
+  /* footer: year */
+  $$('[data-year]').forEach((el) => (el.textContent = new Date().getFullYear()));
+
+  /* Route changes keep the chrome: close overlays, show the nav and move sticky indicators. */
+  return {
+    route() {
+      if (menuApi?.isOpen()) menuApi.set(false);
+      for (const dd of $$('.dd.is-open')) { dd.classList.remove('is-open'); $('button', dd)?.setAttribute('aria-expanded', 'false'); }
+      nav?.classList.remove('is-hidden');
+      navGlyph?.wave(0.8);
+      scope.frame(() => {
+        for (const g of parts.flatMap((part) => $$('[data-group][data-sticky]', part))) {
+          g._mg?.select(g.querySelector('[aria-current="true"], [aria-current="page"], [aria-pressed="true"]'));
+        }
+      });
+    },
+  };
+}
+
+/* Page content: reveals, home sections and tools. Runs in the page's own scope. */
+export function initSite(scope, M, Theme, t, helpers) {
+  'use strict';
+  const [$, $$] = query(scope.root);
+  const EASE = { bouncy: M.cssEase('bouncy') };
+  const { morphWidth, copyText } = helpers;
+  magnetGroups(scope, M, $$('[data-group]'));
 
   /* ---------- reveals ---------- */
   $$('[data-words]').forEach((el) => M.splitWords(el));
@@ -159,22 +260,114 @@ export function initSite(scope, M, Theme, t, helpers) {
     });
   }
 
-  /* ---------- import-link builder ---------- */
+  /* ---------- import-link builder ----------
+     The link rebuilds on every keystroke and only the changed characters pop in. While the field
+     is empty and idle, a demo types sample links into a ghost layer and builds them the same way;
+     it never touches the input's value and stops the moment the visitor focuses or types. */
   const imp = $('#importer');
   if (imp) {
     const input = $('input', imp);
+    const ghost = $('.imp-ghost', imp);
     const btn = $('.copy-btn', imp);
     const label = $('.btn-label', btn);
     const out = $('.out', imp);
-    const code = $('code', out);
+    const hl = $('code .hl', out);
     const cap = $('.out .lbl', imp);
+    const state = $('.out-state span', imp);
+    const status = $('[data-imp-status]', imp);
     const err = $('.err', imp);
     const build = (u) => 'reclash://install-config?url=' + encodeURIComponent(u);
-    const show = (u) => {
-      const enc = encodeURIComponent(u);
-      const span = document.createElement('span'); span.className = 'hl'; span.textContent = enc;
-      code.replaceChildren('reclash://install-config?url=', span);
+    const sampleText = hl.textContent;
+    const samples = ['https://sub.example/link/abc123', 'https://panel.example.net/s/9fK2', 'https://vpn.example/api/sub?id=7'];
+    let shown = sampleText;
+
+    // Cuts the rendered link back to the shared prefix, then appends the new tail as animated tokens.
+    const render = (enc, animate = true) => {
+      let same = 0;
+      while (same < shown.length && same < enc.length && shown[same] === enc[same]) same++;
+      if (!animate || M.reduced) { hl.textContent = enc; shown = enc; return; }
+      let left = same;
+      for (const node of Array.from(hl.childNodes)) {
+        const len = node.textContent.length;
+        if (left >= len) { left -= len; continue; }
+        if (left > 0) node.replaceWith(node.textContent.slice(0, left));
+        else node.remove();
+        left = 0;
+      }
+      const tokens = enc.slice(same).match(/%[0-9A-F]{2}|[^]/g) || [];
+      tokens.forEach((token, i) => {
+        const ch = document.createElement('span');
+        ch.className = 'ch';
+        ch.textContent = token;
+        if (tokens.length > 1) ch.style.animationDelay = Math.min(i, 40) * 14 + 'ms';
+        hl.append(ch);
+      });
+      shown = enc;
     };
+    const mode = (name) => {
+      out.classList.toggle('is-building', name === 'building');
+      out.classList.toggle('is-valid', name === 'ready' || name === 'yours');
+      state.textContent = {
+        sample: t("пример", "sample"),
+        building: t("собираем…", "building…"),
+        ready: t("готово", "ready"),
+        yours: t("готово", "ready"),
+        waiting: t("ждём https://", "waiting for https://"),
+      }[name];
+      cap.textContent = name === 'yours' || name === 'waiting' ? t("Ваша ссылка-импорт", "Your import link") : t("Пример ссылки-импорта", "Example import link");
+    };
+    const parse = (v) => {
+      try { const url = new URL(v); return /^https?:$/.test(url.protocol) && url.hostname ? url : null; } catch (_) { return null; }
+    };
+
+    /* demo typing */
+    let timer = 0, visible = false, sample = 0, text = '', typed = 0, phase = 'erase';
+    const idle = () => !input.value && document.activeElement !== input && !M.reduced;
+    const wait = (fn, ms) => { timer = scope.timeout(() => { timer = 0; fn(); }, ms); };
+    const stopDemo = () => {
+      scope.clearTimeout(timer); timer = 0;
+      ghost.textContent = ''; imp.classList.remove('is-typing');
+    };
+    const step = () => {
+      if (!visible || document.hidden || !idle()) { timer = 0; return; }
+      imp.classList.add('is-typing');
+      if (phase === 'erase') {
+        typed = Math.max(0, typed - 2);
+        ghost.textContent = text.slice(0, typed);
+        ghost.classList.toggle('is-over', ghost.scrollWidth > ghost.clientWidth);
+        render(shown.slice(0, Math.max(0, shown.length - 4)));
+        mode('building');
+        if (typed || shown) return wait(step, 22);
+        text = samples[sample++ % samples.length];
+        phase = 'type';
+        return wait(step, 380);
+      }
+      typed++;
+      ghost.textContent = text.slice(0, typed);
+      // A long sample keeps its tail in view, like a real input does.
+      ghost.classList.toggle('is-over', ghost.scrollWidth > ghost.clientWidth);
+      render(encodeURIComponent(text.slice(0, typed)));
+      if (typed < text.length) return wait(step, 38 + Math.random() * 70);
+      mode('ready');
+      phase = 'erase';
+      wait(step, 2600);
+    };
+    const resume = (delay = 700) => { if (!timer && idle() && visible) wait(step, delay); };
+    // The demo shares the gate with page entrances, so it never types under the loader.
+    M.whenReady().then(() => {
+      if (scope.disposed) return;
+      const io = scope.observe((entries) => {
+        visible = entries[entries.length - 1].isIntersecting;
+        if (visible) resume(900);
+      }, { threshold: 0.35 });
+      io.observe(imp);
+    });
+    scope.listen(document, 'visibilitychange', () => { if (!document.hidden) resume(); });
+    M.onReduced((reduced) => {
+      if (!reduced || input.value) return;
+      stopDemo(); render(sampleText, false); mode('sample');
+    });
+
     const fail = (msg) => {
       err.textContent = msg;
       input.setAttribute('aria-invalid', 'true');
@@ -182,21 +375,33 @@ export function initSite(scope, M, Theme, t, helpers) {
         [{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }],
         { duration: 420, easing: 'ease-out' });
     };
-    scope.listen(input, 'input', () => { err.textContent = ''; input.removeAttribute('aria-invalid'); });
+    scope.listen(input, 'focus', stopDemo);
+    scope.listen(input, 'blur', () => { if (!input.value) { phase = 'erase'; typed = 0; text = ''; resume(1200); } });
+    scope.listen(input, 'input', () => {
+      err.textContent = ''; input.removeAttribute('aria-invalid');
+      stopDemo();
+      const v = input.value.trim();
+      if (!v) { render(sampleText, false); mode('sample'); return; }
+      const url = parse(v);
+      render(encodeURIComponent(url && url.href.startsWith(v) ? url.href : v));
+      mode(url ? 'yours' : 'waiting');
+    });
     const go = async () => {
       const v = input.value.trim();
       if (!v) return fail(t("Вставьте ссылку на подписку — её выдаёт провайдер.", "Paste your subscription link from your provider."));
       let url;
       try { url = new URL(v); } catch (_) { return fail(t("Это не похоже на ссылку. Нужен адрес вида https://…", "This does not look like a link. Use an address starting with https://\u2026")); }
       if (!/^https?:$/.test(url.protocol)) return fail(t("Подойдёт только ссылка, которая начинается с https:// или http://", "The link must start with https:// or http://"));
-      show(url.href);
-      cap.textContent = t("Ваша ссылка-импорт", "Your import link");
+      render(encodeURIComponent(url.href));
+      mode('yours');
       out.classList.remove('flash'); void out.offsetWidth; out.classList.add('flash');
       const ok = await copyText(build(url.href));
       if (scope.disposed) return;
-      morphWidth(btn, () => { btn.classList.add('is-done'); label.textContent = ok ? t("Скопировано", "Copied") : t("Готово, скопируйте вручную", "Ready: copy it manually"); });
+      const done = ok ? t("Скопировано", "Copied") : t("Готово, скопируйте вручную", "Ready: copy it manually");
+      status.textContent = done;
+      morphWidth(btn, () => { btn.classList.add('is-done'); label.textContent = done; });
       scope.clearTimeout(btn._t);
-      btn._t = scope.timeout(() => morphWidth(btn, () => { btn.classList.remove('is-done'); label.textContent = t("Собрать и скопировать", "Build and copy"); }), 2200);
+      btn._t = scope.timeout(() => morphWidth(btn, () => { btn.classList.remove('is-done'); label.textContent = t("Скопировать", "Copy"); }), 2200);
     };
     scope.listen(btn, 'click', go);
     scope.listen(input, 'keydown', (e) => e.key === 'Enter' && go());
@@ -285,31 +490,4 @@ export function initSite(scope, M, Theme, t, helpers) {
     scope.listen(p, 'pointerleave', () => m.to(M.blobPath(75, 75, blobR(8, 50, 0.35))));
   }
 
-  /* ---------- footer wordmark: letters stretch toward the pointer ---------- */
-  const wm = $('.wordmark');
-  if (wm && !M.reduced) {
-    const letters = Array.from(wm.textContent.trim());
-    wm.replaceChildren(...letters.map(c => { const span = document.createElement('span'); span.textContent = c; return span; }));
-    const spans = $$('span', wm);
-    const S = spans.map((sp) => {
-      const s = M.spring(1, { preset: 'jelly', precision: 0.001 });
-      s.onUpdate = (v) => { sp.style.transform = `scaleY(${v.toFixed(4)}) scaleX(${(1 - (v - 1) * 0.25).toFixed(4)})`; };
-      return s;
-    });
-    const foot = wm.closest('footer');
-    scope.listen(foot, 'pointermove', (e) => {
-      if (e.pointerType === 'touch') return;
-      spans.forEach((sp, i) => {
-        const r = sp.getBoundingClientRect();
-        const d = e.clientX - (r.left + r.width / 2);
-        const near = Math.exp(-(d * d) / (2 * 110 * 110));
-        const vert = M.clamp(1 - Math.abs(e.clientY - r.bottom) / 520, 0, 1);
-        S[i].to(1 + 0.32 * near * vert);
-      });
-    });
-    scope.listen(foot, 'pointerleave', () => S.forEach((s) => s.to(1)));
-  }
-
-  /* footer: year */
-  $$('[data-year]').forEach((el) => (el.textContent = new Date().getFullYear()));
 }
