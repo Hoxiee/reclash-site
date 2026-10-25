@@ -57,7 +57,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0')
         </ol>
       </li>
     </ul>
-    <p class="doc-aliases-legend"><span class="doc-dot" aria-hidden="true" />{{ t('Побеждает первое непустое значение в цепочке', 'The first non-empty value in the chain wins') }}</p>
+    <p class="doc-aliases-legend"><span class="doc-dot" aria-hidden="true" />{{ t('Каноническое имя проверяется раньше псевдонима', 'The canonical name is checked before its alias') }}</p>
   </div>
 
   <figure v-else-if="block.kind === 'table'" class="doc-table">

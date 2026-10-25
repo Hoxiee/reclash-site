@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { languages, legacyPath, pagePath, privatePages, sitePages } from '../shared/site/routes'
 import { mockBody, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
+import { mockPage, mockPagePath, mockPreview, mockPreviewPath } from '../shared/provider/mockpreview'
 
 const reportPolicy = {
   'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'",
@@ -16,9 +17,18 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
   // Mock subscriptions are plain static files; their response headers live here.
   const now = Date.now()
   await mkdir(join(output, 'mock'), { recursive: true })
-  await Promise.all(mockProfiles.map(profile => writeFile(join(output, 'mock', profile.key), mockBody(profile))))
+  await mkdir(join(output, 'mock-page'), { recursive: true })
+  await mkdir(join(output, 'mock-preview'), { recursive: true })
+  await Promise.all(mockProfiles.flatMap(profile => [
+    writeFile(join(output, 'mock', profile.key), mockBody(profile)),
+    writeFile(join(output, 'mock-page', profile.key), mockPage(profile)),
+    writeFile(join(output, 'mock-preview', `${profile.key}.json`), `${JSON.stringify(mockPreview(profile), null, 2)}\n`),
+  ]))
   for (const profile of mockProfiles) {
     headers.push(mockPath(profile.key), ...[...mockTransportHeaders, ...mockHeaders(profile, origin, now)].map(([key, value]) => `  ${key}: ${value}`))
+    // The page and the preview JSON are what ReClash's confirmation reads before a stand is added.
+    headers.push(mockPagePath(profile.key), '  Content-Type: text/html; charset=utf-8', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
+    headers.push(mockPreviewPath(profile.key), '  Content-Type: application/json; charset=utf-8', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
   }
   for (const language of languages) {
     for (const page of sitePages) {

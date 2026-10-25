@@ -35,8 +35,8 @@ export const portedPages = {
       "en": "Gallery — ReClash"
     },
     "description": {
-      "ru": "Скриншоты и короткие клипы ReClash: клиент, обход DPI и оформление под провайдера.",
-      "en": "ReClash screenshots and short clips: the client, DPI bypass and provider branding."
+      "ru": "Обзор экранов ReClash: подключение, маршрутизация RCX, подписки и диагностика.",
+      "en": "Explore ReClash screens: connection, RCX routing, subscriptions and diagnostics."
     }
   },
   "builder": {
@@ -65,8 +65,8 @@ export const portedPages = {
       "en": "ReClash — an open-source mihomo client"
     },
     "description": {
-      "ru": "ReClash — открытый клиент для mihomo с темами провайдера, умной маршрутизацией и опциональным обходом DPI. Windows, macOS, Linux, Android.",
-      "en": "ReClash is an open-source mihomo client with provider themes, smart routing and optional DPI bypass. Windows, macOS, Linux, Android."
+      "ru": "ReClash — открытый клиент для mihomo с маршрутизацией RCX, подписками разных форматов и инструментами диагностики. Windows, macOS, Linux, Android.",
+      "en": "ReClash is an open-source mihomo client with RCX routing, multi-format subscriptions and diagnostic tools. Windows, macOS, Linux, Android."
     }
   },
   "start": {
@@ -75,8 +75,8 @@ export const portedPages = {
       "en": "Quick start and FAQ — ReClash"
     },
     "description": {
-      "ru": "Как запустить ReClash за четыре шага, чем TUN отличается от системного прокси и что делает обход DPI.",
-      "en": "Start ReClash in four steps, learn how TUN differs from the system proxy and what DPI bypass does."
+      "ru": "Как запустить ReClash за четыре шага, выбрать узел, настроить TUN или системный прокси и проверить соединение.",
+      "en": "Start ReClash in four steps, choose a node, set up TUN or the system proxy and troubleshoot connections."
     }
   }
 } as const

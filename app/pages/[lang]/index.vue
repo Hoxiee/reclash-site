@@ -4,7 +4,7 @@ usePageMeta('index')
 const { language, t } = useText()
 const manifesto = computed(() => [
   t('Ядро mihomo целиком.', 'The full mihomo core.'),
-  t('Режим «Авто» сам держит рабочий узел.', 'Auto mode keeps a working node.'),
+  t('RCX подбирает узлы по вашему профилю маршрутизации.', 'RCX selects nodes using your routing profile.'),
   t('Открытый код на четырёх платформах.', 'Open source on four platforms.'),
 ].join(' ').split(' '))
 </script>
@@ -50,7 +50,7 @@ const manifesto = computed(() => [
             <span class="hl"><span class="slot" :data-words="t('отобрать|купить|отозвать|выключить', 'taken|bought|revoked|switched off')"><span class="slot-in">{{ t("отобрать", "taken") }}</span></span><span class="hero-dot">.</span></span>
           </span>
         </h1>
-        <p class="hero-sub">{{ t("Полное ядро mihomo и режим «Авто»: клиент сам держит рабочий узел под вашу сеть и переключается, когда она меняется. Открытый код на Windows, macOS, Linux и Android.", "The full mihomo core and Auto mode: the client keeps a working node for your network and switches when it changes. Open source on Windows, macOS, Linux and Android.") }}</p>
+        <p class="hero-sub">{{ t("Клиент на ядре mihomo: подписки и отдельные узлы, автоматический выбор сервера RCX, TUN и инструменты диагностики. Открытый код на Windows, macOS, Linux и Android.", "A mihomo client for subscriptions and individual nodes, with RCX automatic server selection, TUN and diagnostic tools. Open source on Windows, macOS, Linux and Android.") }}</p>
         <div class="hero-cta">
           <SiteLink class="btn btn-primary" :to="pagePath(language, 'download')">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -76,7 +76,7 @@ const manifesto = computed(() => [
   <div class="wrap lineage">
     <div class="lineage-copy">
       <h2 id="about-title" data-words>{{ t("Форк FlClash на ядре mihomo.", "A FlClash fork powered by mihomo.") }}</h2>
-      <p class="lede" data-fade>{{ t("Маршрутизацию делает то же ядро mihomo, что и в Clash.Meta. ReClash добавляет сверху то, чего не хватало: оформление от провайдера, умную маршрутизацию, встроенный обход DPI и заново собранную панель.", "Routing uses the same mihomo core as Clash.Meta. ReClash adds provider branding, smart routing, built-in DPI bypass and a rebuilt dashboard.") }}</p>
+      <p class="lede" data-fade>{{ t("ReClash развивает основу FlClash: добавляет маршрутизацию RCX, импорт подписок разных форматов и метаданные провайдера. Интерфейс на Material You адаптируется к телефону и рабочему столу; соединения, DNS-запросы и логи доступны в инструментах.", "ReClash builds on FlClash with RCX routing, multi-format subscription import and provider metadata. Its Material You interface adapts to phones and desktops, with connections, DNS queries and logs available in Tools.") }}</p>
       <p class="lineage-note" data-fade style="--d:120ms">{{ t("Проект не аффилирован с FlClash, mihomo или FlClashX.", "The project is not affiliated with FlClash, mihomo or FlClashX.") }} <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-flclash'">{{ t("Чем отличается от FlClash", "How it differs from FlClash") }}</SiteLink></p>
     </div>
 
@@ -105,7 +105,7 @@ const manifesto = computed(() => [
         </g>
       </svg>
       <ul class="stack-list" data-group data-items="li" data-cpull="0.05">
-        <li data-mg data-layer="2" tabindex="0"><span class="mg-c"><b>ReClash</b><span class="s">{{ t("Темы провайдера, умная маршрутизация, обход DPI, новая панель", "Provider themes, smart routing, DPI bypass, a new dashboard") }}</span></span></li>
+        <li data-mg data-layer="2" tabindex="0"><span class="mg-c"><b>ReClash</b><span class="s">{{ t("Маршрутизация RCX, подписки, панель и инструменты", "RCX routing, subscriptions, dashboard and tools") }}</span></span></li>
         <li data-mg data-layer="1" tabindex="0"><span class="mg-c"><b>FlClash</b><span class="s">{{ t("Кроссплатформенная основа на Flutter", "A cross-platform foundation built with Flutter") }}</span></span></li>
         <li data-mg data-layer="0" tabindex="0"><span class="mg-c"><b>mihomo</b><span class="s">{{ t("Ядро маршрутизации: правила, группы, GeoIP, fake-ip", "Routing core: rules, groups, GeoIP, fake-ip") }}</span></span></li>
       </ul>
@@ -139,9 +139,9 @@ const manifesto = computed(() => [
           <path class="b x" d="M28 28l8 8M36 28l-8 8"/>
           <circle class="f" cx="12" cy="48" r="4"/><circle cx="52" cy="16" r="4" fill="var(--fg)"/>
         </svg>
-        <h3>{{ t("Умная маршрутизация", "Smart routing") }}</h3>
-        <p>{{ t("Режим «Авто» сам держит рабочий узел под текущую сеть и переключается, когда она меняется, — начиная с регионального пресета.", "Auto mode keeps a working node for your current network and switches when it changes, starting with a regional preset.") }}</p>
-        <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-smart'">{{ t("Как работает «Авто»", "How Auto works") }}</SiteLink>
+        <h3>{{ t("Автоматический выбор RCX", "RCX automatic selection") }}</h3>
+        <p>{{ t("Профиль маршрутизации задаёт проверки, приоритеты и условия переключения. RCX оценивает узлы в группе, объясняет выбор и учитывает бюджет проверок; при желании узел можно закрепить вручную.", "A routing profile defines checks, priorities and switching conditions. RCX evaluates nodes in a group, explains its choice and respects a probe budget. You can also pin a node manually.") }}</p>
+        <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-smart'">{{ t("Как работает RCX", "How RCX works") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-prov" viewBox="0 0 64 64" aria-hidden="true">
@@ -149,8 +149,8 @@ const manifesto = computed(() => [
           <rect class="s draw" pathLength="1" x="14" y="28" width="36" height="26" rx="8"/>
           <path class="f drop" d="M32 4C32 4 25 12 25 16.5a7 7 0 0 0 14 0C39 12 32 4 32 4Z"/>
         </svg>
-        <h3>{{ t("Вид задаёт провайдер", "Providers set the look") }}</h3>
-        <p>{{ t("Один заголовок в ответе подписки — и приложение перекрашивается под бренд: цвет, фон, кольцо подключения и логотип.", "One subscription response header brings your brand to the app: its accent, background, connection ring and logo.") }}</p>
+        <h3>{{ t("Подписка с контекстом", "Subscriptions with context") }}</h3>
+        <p>{{ t("Имя сервиса, логотип, объявления, остаток трафика, ссылки на поддержку и продление приходят вместе с подпиской. Оформление и настройки провайдера применяются с учётом ваших предпочтений.", "Service name, logo, announcements, remaining traffic, support and renewal links arrive with the subscription. Provider appearance and settings respect your preferences.") }}</p>
         <SiteLink class="tlink" to="#providers">{{ t("Попробовать на этой странице", "Try it on this page") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
@@ -160,9 +160,9 @@ const manifesto = computed(() => [
           <rect class="f pa" x="8" y="26" width="11" height="12" rx="3"/>
           <rect class="b pb" x="20" y="26" width="11" height="12" rx="3"/>
         </svg>
-        <h3>{{ t("Встроенный обход DPI", "Built-in DPI bypass") }}</h3>
-        <p>{{ t("Разбивает и маскирует handshake ещё до прокси. Включается в настройках, когда провайдер режет само соединение по DPI.", "Splits and disguises the handshake before the proxy. Enable it in settings when your ISP blocks the connection through DPI.") }}</p>
-        <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-dpi'">{{ t("Как работает обход", "How bypass works") }}</SiteLink>
+        <h3>{{ t("Диагностика под рукой", "Diagnostics within reach") }}</h3>
+        <p>{{ t("Смотрите активные соединения, запросы, DNS и логи. Проверяйте задержку узлов и качество выходного IP, прежде чем менять конфигурацию наугад.", "Inspect active connections, requests, DNS and logs. Check node latency and exit IP quality before changing your configuration blindly.") }}</p>
+        <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-trouble'">{{ t("Если не подключается", "Connection troubleshooting") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-scope" viewBox="0 0 64 64" aria-hidden="true">
@@ -173,7 +173,7 @@ const manifesto = computed(() => [
           <rect class="s app" x="22" y="30" width="11" height="9" rx="2.5"/>
         </svg>
         <h3>{{ t("Весь трафик или только приложения", "All traffic or selected apps") }}</h3>
-        <p>{{ t("Режим TUN заворачивает всю систему, системный прокси — только приложения, которые его поддерживают. Переключается на главном экране.", "TUN routes the entire system; the system proxy covers apps that support it. Switch modes on the main screen.") }}</p>
+        <p>{{ t("На компьютере выбирайте TUN или системный прокси. На Android используется VPN-сервис с выбором приложений. Правила mihomo определяют, что идёт напрямую, а что — через прокси.", "On desktop, choose TUN or the system proxy. Android uses a VPN service with per-app selection. mihomo rules decide what goes direct and what uses a proxy.") }}</p>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-meter" viewBox="0 0 64 64" aria-hidden="true">
@@ -199,8 +199,8 @@ const manifesto = computed(() => [
     <div class="setup">
       <ol class="steps">
         <li class="step"><span class="step-n">1</span><div><h3>{{ t("Поставьте клиент", "Install the client") }}</h3><p>{{ t("Windows, macOS, Linux или Android. Установщик или портативная сборка — как удобнее.", "Windows, macOS, Linux or Android. Choose an installer or a portable build.") }}</p></div></li>
-        <li class="step"><span class="step-n">2</span><div><h3>{{ t("Добавьте подписку одной ссылкой", "Add a subscription with one link") }}</h3><p>{{ t("Ссылка от провайдера приносит профиль, серверы и правила разом. Заполнять руками нечего.", "Your provider's link brings the profile, servers and rules together. No manual setup.") }}</p></div></li>
-        <li class="step"><span class="step-n">3</span><div><h3>{{ t("Подключитесь", "Connect") }}</h3><p>{{ t("TUN — для всего устройства, системный прокси — для приложений, которые его поддерживают. Режим всегда можно сменить на главном экране.", "TUN covers the whole device; the system proxy covers apps that support it. You can change modes on the main screen at any time.") }}</p></div></li>
+        <li class="step"><span class="step-n">2</span><div><h3>{{ t("Добавьте подписку одной ссылкой", "Add a subscription with one link") }}</h3><p>{{ t("Импортируйте ссылку или файл конфигурации. Поддерживаются профили Clash/mihomo и распространённые ссылки на отдельные узлы; результат можно проверить перед добавлением.", "Import a link or configuration file. Clash/mihomo profiles and common individual-node links are supported, with a review before adding them.") }}</p></div></li>
+        <li class="step"><span class="step-n">3</span><div><h3>{{ t("Подключитесь", "Connect") }}</h3><p>{{ t("Выберите профиль и узел, затем запустите подключение. На Android подтвердите разрешение VPN; на компьютере для TUN потребуется системный помощник.", "Choose a profile and node, then start the connection. Approve VPN permission on Android; desktop TUN requires the system helper.") }}</p></div></li>
       </ol>
 
       <ImportLink data-fade :title="t('Уже есть ссылка на подписку?', 'Already have a subscription link?')" :text="t('Вставьте её — получите ссылку, которая открывает ReClash и импортирует профиль одним касанием. Такую же кнопку провайдер может положить в личный кабинет.', 'Paste it to get a link that opens ReClash and imports the profile in one tap. Providers can put the same button on their account page.')" />
@@ -214,7 +214,7 @@ const manifesto = computed(() => [
     <div class="prov-copy">
       <h2 id="prov-title" data-words>{{ t("Ваше приложение. Писать его не нужно.", "Your app, without writing one.") }}</h2>
       <p class="lede" data-fade>{{ t("Никаких SDK, плагинов и договорённостей. Несколько HTTP-заголовков в ответе подписки — и клиент у пользователя показывает ваш логотип, цвет, остаток трафика и кнопку продления.", "No SDKs, plugins or agreements. A few HTTP headers in the subscription response give users your logo, color, remaining traffic and a renewal button.") }}</p>
-      <p class="muted" data-fade style="--d:100ms">{{ t("Конструктор сразу отдаёт готовые артефакты для панели Remnawave, а", "The builder provides ready-to-use artifacts for Remnawave, and") }} <SiteLink class="tlink" :to="pagePath(language, 'mock-subs')">{{ t("мок-подписки", "mock subscriptions") }}</SiteLink> {{ t("помогут проверить результат.", "help you test the result.") }}</p>
+      <p class="muted" data-fade style="--d:100ms">{{ t("Конструктор выдаёт HTTP-заголовки и фрагмент nginx, а", "The builder produces HTTP headers and an nginx snippet, and") }} <SiteLink class="tlink" :to="pagePath(language, 'mock-subs')">{{ t("мок-подписки", "mock subscriptions") }}</SiteLink> {{ t("помогут проверить результат.", "help you test the result.") }}</p>
       <div class="row" data-fade style="--d:180ms">
         <SiteLink class="btn btn-primary" :to="pagePath(language, 'builder')">{{ t("Собрать заголовки", "Build headers") }}</SiteLink>
         <SiteLink class="btn btn-ghost" :to="pagePath(language, 'docs')">{{ t("Открыть документацию", "Open documentation") }}</SiteLink>
@@ -242,7 +242,7 @@ const manifesto = computed(() => [
         </div>
       </div>
       <div class="studio-body">
-<pre class="http" :aria-label="t('Ответ подписки', 'Subscription response')"><span class="line"><span class="k">HTTP/2 200</span></span><span class="line"><span class="k">subscription-userinfo:</span> <span class="v">upload=0; download=66571993088; total=214748364800</span></span><span class="line" data-line="name"><span class="rk">reclash-servicename:</span> <span class="v">ReClash</span></span><span class="line" data-line="hex"><span class="rk">reclash-hex:</span> <span class="v">FF7A2F</span></span><span class="line"><span class="rk">reclash-announce:</span> <span class="v">{{ t("Профиль импортирован по ссылке.", "Profile imported from a link.") }}</span></span><span class="line"><span class="rk">reclash-buyplan:</span> <span class="v">https://sub.example/renew</span></span></pre>
+<pre class="http" :aria-label="t('Ответ подписки', 'Subscription response')"><span class="line"><span class="k">HTTP/2 200</span></span><span class="line"><span class="k">subscription-userinfo:</span> <span class="v">upload=0; download=66571993088; total=214748364800</span></span><span class="line" data-line="name"><span class="rk">reclash-servicename:</span> <span class="v">ReClash</span></span><span class="line" data-line="hex"><span class="rk">reclash-view:</span> <span class="v">app.color:FF7A2F</span></span><span class="line"><span class="rk">reclash-announce:</span> <span class="v">{{ t("Профиль импортирован по ссылке.", "Profile imported from a link.") }}</span></span><span class="line"><span class="rk">reclash-buyplan:</span> <span class="v">https://sub.example/renew</span></span></pre>
         <div class="preview">
           <span class="preview-cap">{{ t("Карточка подписки в клиенте", "Subscription card in the client") }}</span>
           <div class="subcard">
@@ -260,7 +260,7 @@ const manifesto = computed(() => [
         </div>
       </div>
       <div class="studio-foot">
-        <span>{{ t("Приближение: точные оттенки приложение считает по схеме Material.", "Approximation: the app calculates exact shades using the Material scheme.") }}</span>
+        <span>{{ t("Схема данных, не скриншот. Цвет задаётся через reclash-view: app.color; точные оттенки считает приложение.", "A data illustration, not a screenshot. Set color with reclash-view: app.color; the app derives the exact shades.") }}</span>
         <button class="linkbtn" type="button" data-reset>{{ t("Вернуть цвет ReClash", "Restore the ReClash color") }}</button>
       </div>
     </div>
@@ -275,9 +275,9 @@ const manifesto = computed(() => [
     </div>
     <ul class="plats" data-group data-items=".plat" data-cpull="0.03">
       <li class="plat" data-mg><h3>Windows</h3><ul><li>{{ t("Windows 10 и новее", "Windows 10 or later") }}</li><li>{{ t("Установщик и портативная сборка", "Installer and portable build") }}</li><li>{{ t("TUN и системный прокси", "TUN and system proxy") }}</li></ul></li>
-      <li class="plat" data-mg><h3>macOS</h3><ul><li>{{ t("Intel и Apple Silicon", "Intel and Apple Silicon") }}</li><li>{{ t("DMG-образ", "DMG image") }}</li><li>{{ t("TUN через системного помощника", "TUN through a system helper") }}</li></ul></li>
+      <li class="plat" data-mg><h3>macOS</h3><ul><li>{{ t("macOS 12 и новее · Intel и Apple silicon", "macOS 12 or later · Intel and Apple silicon") }}</li><li>{{ t("DMG-образ", "DMG image") }}</li><li>{{ t("TUN через системного помощника", "TUN through a system helper") }}</li></ul></li>
       <li class="plat" data-mg><h3>Linux</h3><ul><li>AppImage, deb, rpm</li><li>{{ t("x86_64 и arm64", "x86_64 and arm64") }}</li><li>{{ t("TUN и системный прокси", "TUN and system proxy") }}</li></ul></li>
-      <li class="plat" data-mg><h3>Android</h3><ul><li>{{ t("Android 6 и новее", "Android 6 or later") }}</li><li>{{ t("APK по архитектурам", "APKs for each architecture") }}</li><li>{{ t("Режим VPN-сервиса", "VPN service mode") }}</li></ul></li>
+      <li class="plat" data-mg><h3>Android</h3><ul><li>{{ t("Android с поддержкой текущей сборки Flutter", "Android supported by the current Flutter build") }}</li><li>{{ t("APK по архитектурам", "APKs for each architecture") }}</li><li>{{ t("Режим VPN-сервиса", "VPN service mode") }}</li></ul></li>
     </ul>
     <p class="plats-foot" data-fade>{{ t("Актуальные файлы всегда на", "Current files are always on the") }} <SiteLink class="tlink" :to="pagePath(language, 'download')">{{ t("странице загрузок", "download page") }}</SiteLink>.</p>
   </div>

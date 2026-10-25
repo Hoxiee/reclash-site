@@ -11,8 +11,8 @@
       "en": "the full stand: quota, widgets, theme, background and announce"
     },
     "teaches": {
-      "ru": "Полный эталонный стенд. Показывает почти каждый заголовок ReClash сразу: квоту и срок, полный набор виджетов с режимом слияния, тему (цвет и вариант палитры), градиент кольца, фон, логотип, объявление, вид страницы прокси, настройки по умолчанию и ссылки на поддержку и оплату — всё в одном ответе.",
-      "en": "The full reference stand. It exercises almost every ReClash header at once: quota and expiry, the complete widget set with a merge mode, a theme (colour and palette variant), the hero-ring gradient, a background, a logo, an announcement, the proxy-page view, default settings and support/billing links — all in a single response."
+      "ru": "Проверяет: полный стенд: квота, виджеты, тема, фон и объявление. Превью — схема данных, не скриншот приложения.",
+      "en": "Tests: the full stand: quota, widgets, theme, background and announce. The preview illustrates data; it is not an app screenshot."
     },
     "nodes": 3,
     "quota": {
@@ -22,25 +22,19 @@
       "expireAt": 1924992000
     },
     "response": {
+      "subscriptionType": "test",
       "title": "Ember Line",
       "serviceName": "Ember Line",
       "serverInfo": "Ember Select",
-      "activeText": "Ember Line is live",
-      "hex": "FF6B1A:vibrant",
-      "heroRing": [
-        "FFC46B",
-        "FF6B1A",
-        "D9380A"
-      ],
+      "hex": "FF6B1A",
       "logo": "logo-ember.svg",
       "background": {
         "file": "bg-ember.svg",
         "opacity": 22
       },
-      "widgets": "networkSpeed,trafficUsage,serviceInfo,changeServerButton,announce,networkDetection,memoryInfo,metaInfo,intranetIp,tunButton,vpnButton,systemProxyButton",
-      "custom": "update",
+      "widgets": "currentOutbound,networkSpeed,profiles,proxyGroups,connectionStats,announcement",
       "settings": "autorun,autoupdate,minimize",
-      "view": "type:list; sort:delay; layout:tight; icon:standard; card:min",
+      "view": "proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
       "supportUrl": "https://example.com/support",
       "buyPlan": "https://example.com/plans",
       "buyTraffic": "https://example.com/traffic",
@@ -60,26 +54,20 @@
       "en": "Aurora Pass"
     },
     "blurb": {
-      "ru": "только визуал: тема, кольцо, живой эффект и фон",
-      "en": "visual only: theme, ring, living effect and background"
+      "ru": "оформление: цвет, вид списка и фон",
+      "en": "appearance: accent, list presentation and background"
     },
     "teaches": {
-      "ru": "Оформление и ничего больше. Показывает, как подписка перекрашивает клиент, не трогая данные: цвет темы с вариантом палитры и чистым чёрным фоном (pureblack), градиент кольца в тон, живой эффект «aurora» за кольцом и фоновую картинку панели. Ни квоты, ни виджетов, ни объявления — только вид.",
-      "en": "Theming and nothing else. It shows how a subscription recolours the client without touching data: a theme colour with a palette variant and a pure-black background, a matching hero-ring gradient, the living “aurora” effect behind the ring and a panel background image. No quota, no widgets, no announcement — appearance only."
+      "ru": "Проверяет: оформление: цвет, вид списка и фон. Превью — схема данных, не скриншот приложения.",
+      "en": "Tests: appearance: accent, list presentation and background. The preview illustrates data; it is not an app screenshot."
     },
     "nodes": 4,
     "quota": null,
     "response": {
+      "subscriptionType": "test",
       "title": "Aurora Pass",
       "serviceName": "Aurora Pass",
-      "activeText": "Aurora Pass",
-      "hex": "6E55F5:vibrant:pureblack",
-      "heroRing": [
-        "7C5CFF",
-        "22D3EE",
-        "2FD3B6"
-      ],
-      "heroEffect": "aurora",
+      "hex": "6E55F5",
       "logo": "logo-aurora.svg",
       "background": {
         "file": "bg-aurora.svg",
@@ -99,15 +87,16 @@
       "en": "unlimited and unstyled: just a name and nodes"
     },
     "teaches": {
-      "ru": "Противоположность эталонному стенду: почти пустой ответ. Нет заголовка Subscription-Userinfo — приложение показывает «без лимита» и «бессрочно». Ни темы, ни фона, ни виджетов: только имя профиля, имя сервиса и вид страницы прокси вкладками. Так выглядит минимальная рабочая подписка.",
-      "en": "The opposite of the reference stand: an almost empty response. There is no Subscription-Userinfo header, so the app shows “unlimited” and “never”. No theme, no background, no widgets — just the profile title, the service name and the tabbed proxy-page view. This is what a minimal working subscription looks like."
+      "ru": "Проверяет: безлимит без оформления: только имя и узлы. Превью — схема данных, не скриншот приложения.",
+      "en": "Tests: unlimited and unstyled: just a name and nodes. The preview illustrates data; it is not an app screenshot."
     },
     "nodes": 6,
     "quota": null,
     "response": {
+      "subscriptionType": "test",
       "title": "Nimbus Free",
       "serviceName": "Nimbus Free",
-      "view": "type:tab; sort:name; layout:standard; icon:standard; card:expand"
+      "view": "proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact"
     }
   },
   {
@@ -122,8 +111,8 @@
       "en": "trial running out: quota, expiry and billing"
     },
     "teaches": {
-      "ru": "Всё на грани. Квота почти израсходована, а срок задан относительно («через 2 дня») — при каждой сборке он снова близко, так что предупреждения о лимите видно всегда. Объявление зовёт продлить, виджеты трафика и объявления держат это на виду, а действия «Продлить» и «Докупить трафик» ведут к оплате.",
-      "en": "Everything on the edge. The quota is nearly spent and the expiry is relative (“in 2 days”), so every build keeps it close and the limit warnings always show. An announcement asks the user to renew, the traffic and announce widgets keep it in view, and the renew / top-up actions lead to billing."
+      "ru": "Проверяет: пробный тариф на исходе: квота, срок и оплата. Превью — схема данных, не скриншот приложения.",
+      "en": "Tests: trial running out: quota, expiry and billing. The preview illustrates data; it is not an app screenshot."
     },
     "nodes": 2,
     "quota": {
@@ -133,10 +122,10 @@
       "expireInDays": 2
     },
     "response": {
+      "subscriptionType": "test",
       "title": "Sentinel Trial",
       "serviceName": "Sentinel Trial",
-      "activeText": "Sentinel Trial",
-      "widgets": "trafficUsage,metaInfo,announce,serviceInfo,changeServerButton",
+      "widgets": "currentOutbound,networkSpeed,profiles,proxyGroups,connectionStats,announcement",
       "supportUrl": "https://example.com/support",
       "buyPlan": "https://example.com/renew",
       "buyTraffic": "https://example.com/topup",
@@ -159,8 +148,8 @@
       "en": "domain migration and fallback hosts"
     },
     "teaches": {
-      "ru": "Провайдер переезжает. ReClash-NewDomain предлагает клиенту сменить адрес подписки на новый домен — после проверок, а ReClash-FallbackHosts даёт запасные хосты на случай временных сбоёв загрузки. Объявление предупреждает о переезде; в остальном это обычная подписка с квотой.",
-      "en": "The provider is moving. ReClash-NewDomain proposes that the client switch the subscription address to a new domain — subject to checks — and ReClash-FallbackHosts supplies backup hosts for transient fetch failures. An announcement warns about the move; otherwise it is an ordinary subscription with a quota."
+      "ru": "Проверяет: миграция домена и запасные хосты. Превью — схема данных, не скриншот приложения.",
+      "en": "Tests: domain migration and fallback hosts. The preview illustrates data; it is not an app screenshot."
     },
     "nodes": 4,
     "quota": {
@@ -170,6 +159,7 @@
       "expireInDays": 60
     },
     "response": {
+      "subscriptionType": "test",
       "title": "Relay Shift",
       "serviceName": "Relay Shift",
       "supportUrl": "https://example.com/support",
@@ -194,12 +184,13 @@
       "en": "service response: device limit reached"
     },
     "teaches": {
-      "ru": "Не оформление, а сигнал сервера. Заголовок X-Hwid-Max-Devices-Reached приложение читает как «достигнут лимит устройств»: оно показывает соответствующее сообщение и предлагает страницу поддержки из ReClash-SupportURL. Такие X-Hwid-заголовки провайдер не настраивает в конструкторе — их ставит сервер в ответе по железу устройства.",
-      "en": "Not styling but a server signal. The app reads the X-Hwid-Max-Devices-Reached header as “device limit reached”: it shows the matching message and offers the support page from ReClash-SupportURL. These X-Hwid headers are not configured in the builder — the server sets them on the response based on the device."
+      "ru": "Проверяет: сервисный ответ: достигнут лимит устройств. Превью — схема данных, не скриншот приложения.",
+      "en": "Tests: service response: device limit reached. The preview illustrates data; it is not an app screenshot."
     },
     "nodes": 2,
     "quota": null,
     "response": {
+      "subscriptionType": "test",
       "title": "Gatekeeper",
       "serviceName": "Gatekeeper",
       "supportUrl": "https://example.com/support",
@@ -218,8 +209,8 @@
       "en": "the average plan: quota, widgets and links with no theming"
     },
     "teaches": {
-      "ru": "Точка отсчёта среди моков: обычный здоровый тариф. Нет ни темы, ни кольца, ни фона, ни логотипа — клиент выглядит стоково. Есть квота середины срока, базовые виджеты, вид по умолчанию и ссылки на поддержку и оплату. Так выглядит провайдер, который ничего не кастомизирует.",
-      "en": "The baseline among the mocks: an ordinary healthy plan. No theme, no ring, no background, no logo — the client looks stock. It has a mid-term quota, the default widgets, the default view and support/billing links. This is what a provider that customises nothing looks like."
+      "ru": "Проверяет: средний тариф: квота, виджеты и ссылки без оформления. Превью — схема данных, не скриншот приложения.",
+      "en": "Tests: the average plan: quota, widgets and links with no theming. The preview illustrates data; it is not an app screenshot."
     },
     "nodes": 5,
     "quota": {
@@ -229,14 +220,13 @@
       "expireInDays": 27
     },
     "response": {
+      "subscriptionType": "test",
       "title": "Meridian",
       "serviceName": "Meridian",
       "serverInfo": "Meridian",
-      "activeText": "Meridian online",
-      "widgets": "serviceInfo,changeServerButton,networkSpeed,trafficUsage,metaInfo",
-      "custom": "update",
+      "widgets": "currentOutbound,networkSpeed,profiles,proxyGroups,connectionStats,announcement",
       "settings": "autorun,autoupdate",
-      "view": "type:list; sort:default; layout:standard; icon:standard; card:expand",
+      "view": "proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
       "supportUrl": "https://example.com/support",
       "buyPlan": "https://example.com/plans",
       "announce": {
@@ -254,12 +244,12 @@
       "en": "Ledger"
     },
     "blurb": {
-      "ru": "напоминания и ссылки: отчёт, кабинет, дни и проценты",
-      "en": "reminders and links: report, account, days and percents"
+      "ru": "напоминания, личный кабинет, дни и проценты",
+      "en": "reminders, account page, days and percentages"
     },
     "teaches": {
-      "ru": "Редкие заголовки, которых нет в остальных моках. Объявление-ссылка ведёт на новости, ReClash-WebPageURL — в личный кабинет, ReClash-ReportURL — на жалобу, а ReClash-ExpireDays и ReClash-TrafficPercent задают свои пороги напоминаний. Виджеты сливаются режимом add, в наборе — пульт управления: статус, соединения, группы, профили и аптайм.",
-      "en": "The rare headers no other mock sends. The announcement links to news, ReClash-WebPageURL leads to the account page, ReClash-ReportURL to issue reporting, and ReClash-ExpireDays with ReClash-TrafficPercent set custom reminder thresholds. Widgets merge with mode add, and the set is a control room: status, connections, groups, profiles and uptime."
+      "ru": "Проверяет: напоминания, личный кабинет, дни и проценты. Превью — схема данных, не скриншот приложения.",
+      "en": "Tests: reminders, account page, days and percentages. The preview illustrates data; it is not an app screenshot."
     },
     "nodes": 4,
     "quota": {
@@ -269,17 +259,15 @@
       "expireInDays": 30
     },
     "response": {
+      "subscriptionType": "test",
       "title": "Ledger",
       "serviceName": "Ledger",
       "serverInfo": "Ledger",
-      "activeText": "Ledger",
       "logo": "logo-standard.svg",
-      "widgets": "serviceStatus,connections,proxyGroups,profiles,smartRouting,runTime,announce,serviceInfo",
-      "custom": "add",
+      "widgets": "currentOutbound,networkSpeed,profiles,proxyGroups,connectionStats,announcement",
       "settings": "shadowstart,autostart,openlogs,closeconnections",
-      "view": "type:list; sort:none; layout:loose; icon:none; card:shrink",
+      "view": "proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
       "supportUrl": "https://example.com/support",
-      "reportUrl": "https://example.com/report",
       "webPageUrl": "https://example.com/account",
       "buyPlan": "https://example.com/plans",
       "announce": {

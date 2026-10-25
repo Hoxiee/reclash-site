@@ -119,3 +119,18 @@ test('unknown routes return a real prerendered 404', async ({ request }) => {
     expect(await response.text()).toContain('Страница недоступна')
   }
 })
+
+
+test('public copy and provider tools match the current application', async ({ request }) => {
+  for (const language of languages) {
+    const home = await (await request.get(`/${language}`)).text()
+    expect(home).toContain('RCX')
+    expect(home).not.toContain('Built-in DPI bypass')
+    expect(home).not.toContain('Встроенный обход DPI')
+    const reference = await (await request.get(`/${language}/reference`)).text()
+    expect(reference).toContain('h-reclash-routing')
+    expect(reference).toContain('app.color')
+    expect(reference).not.toContain('id="h-reclash-hex"')
+    expect(reference).not.toContain('id="h-flclashx-hex"')
+  }
+})

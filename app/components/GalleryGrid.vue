@@ -35,7 +35,7 @@ async function filter(cat: string, event: Event) {
 
 <template>
   <div class="g-bar"><div id="g-filter" ref="chips" class="plat-tabs" role="group" :aria-label="t('Фильтр', 'Filter')">
-    <button v-for="(label, cat) in { all: t('Всё', 'All'), client: t('Клиент', 'Client'), dpi: t('Обход', 'Bypass'), themes: t('Темы', 'Themes') }" :key="cat" type="button" :data-cat="cat" :aria-pressed="current === cat" @click="filter(cat, $event)">{{ label }}</button>
+    <button v-for="(label, cat) in { all: t('Всё', 'All'), client: t('Клиент', 'Client'), routing: t('Маршрутизация', 'Routing'), themes: t('Темы', 'Themes') }" :key="cat" type="button" :data-cat="cat" :aria-pressed="current === cat" @click="filter(cat, $event)">{{ label }}</button>
   </div></div>
   <ul id="g-grid" ref="grid" class="g-grid">
     <li v-for="(item, i) in galleryItems" :key="i" class="g-item" :class="{ wide: 'wide' in item && item.wide, 'is-hidden': current !== 'all' && item.cat !== current }" :data-cat="item.cat">
@@ -48,7 +48,7 @@ async function filter(cat: string, event: Event) {
           <rect class="mv" style="--tx:20px" x="60" y="150" width="170" height="22" rx="11" fill="var(--brand-soft)" />
           <circle class="mv" style="--ty:-10px" cx="320" cy="120" :r="36 + (i % 3) * 6" fill="none" stroke="var(--brand)" stroke-width="10" />
         </template>
-        <template v-else-if="item.cat === 'dpi'">
+        <template v-else-if="item.cat === 'routing'">
           <path d="M220 30v80M220 170v80" stroke="var(--fg-3)" stroke-width="6" stroke-linecap="round" />
           <path d="M30 140h360" stroke="var(--line-2)" stroke-width="3" stroke-dasharray="4 10" />
           <rect class="mv" style="--tx:150px;--ty:-16px" x="40" y="118" width="54" height="44" rx="12" fill="var(--brand)" />
@@ -56,7 +56,7 @@ async function filter(cat: string, event: Event) {
         </template>
         <template v-else><circle v-for="k in [0, 1, 2]" :key="k" class="mv" :style="`--ty:${k % 2 ? -14 : 12}px`" :cx="120 + k * 90" cy="140" r="46" :fill="['var(--brand-3)', 'var(--brand)', 'var(--brand-2)'][(k + i) % 3]" :opacity=".55 + k * .2" /></template>
       </svg>
-      <span class="g-kind" :class="{ soon: !item.src && !item.video }"><i />{{ item.type[language] }}{{ !item.src && !item.video ? t(', скоро', ', coming soon') : '' }}</span>
+      <span class="g-kind" :class="{ soon: !item.src && !item.video }"><i />{{ item.type[language] }}{{ !item.src && !item.video ? t(', иллюстрация', ', illustration') : '' }}</span>
       <div class="g-cap"><b>{{ item.title[language] }}</b></div>
     </li>
   </ul>

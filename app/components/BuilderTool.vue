@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { builderDefaults, builderSchema, builderFields, builderEmitters, headerPairs, type BuilderField } from '~~/shared/provider/builder'
 import { brandBand } from '~~/shared/provider/theme'
+import { subscriptionTypeText } from '~~/shared/provider/standard'
 const { language, t } = useText()
 const motion = usePageMotion()
 const route = useRoute(), router = useRouter()
@@ -12,6 +13,7 @@ const tabs = useTemplateRef<HTMLElement>('tabs')
 const output = computed(() => headerPairs(state).map(([key, value]) => builderEmitters[tab.value].line(key, value)))
 const outputText = computed(() => output.value.map(line => line.before + line.key + line.after).join('\n'))
 const name = computed(() => String(state.name).trim() || 'ReClash')
+const subscriptionType = computed(() => subscriptionTypeText(String(state.subscriptionType)))
 // The brand colour recolours only the preview card, never the site.
 const previewTheme = computed(() => {
   const band = brandBand(state.hex)
@@ -108,7 +110,7 @@ onBeforeUnmount(() => clearTimeout(hashTimer))
     </form>
     <aside class="b-aside" :aria-label="t('Результат', 'Result')">
       <div id="b-card" class="subcard theme-scope" :style="previewTheme">
-        <div class="sc-head"><span class="sc-logo" aria-hidden="true">{{ Array.from(name)[0]?.toUpperCase() }}</span><div style="min-width:0"><div class="sc-name">{{ name }}</div><div class="sc-sub">{{ t('Превью карточки подписки', 'Subscription card preview') }}</div></div></div>
+        <div class="sc-head"><span class="sc-logo" aria-hidden="true">{{ Array.from(name)[0]?.toUpperCase() }}</span><div style="min-width:0"><div class="sc-name">{{ name }}</div><span v-if="subscriptionType" class="tag" data-subscription-type>{{ subscriptionType[language] }}</span><div class="sc-sub">{{ t('Превью карточки подписки', 'Subscription card preview') }}</div></div></div>
         <div class="sc-ann" :hidden="!String(state.announce).trim()"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm0 3.2v4.1m0 2.4v.1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg><span>{{ String(state.announce).trim() }}</span></div>
         <div class="sc-traffic"><div class="sc-row"><span>{{ t('Трафик', 'Traffic') }}</span><b>{{ total ? `${used} / ${total} ${t('ГБ', 'GB')}` : `${used} ${t('ГБ · без лимита', 'GB · unlimited')}` }}</b></div><div class="sc-bar"><i :style="{ width: total ? `${Math.min(100, used / total * 100)}%` : '0%' }" /></div></div>
         <div class="sc-btn" :hidden="!String(state.buy).trim()">{{ t('Продлить', 'Renew') }}</div>

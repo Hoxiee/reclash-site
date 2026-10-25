@@ -2,8 +2,7 @@
 import type { MockProfile } from '~~/shared/provider/mocks'
 import { mockStrip, mockTheme, stockRing } from '~~/shared/provider/mockview'
 
-// The client's home screen for one stand: the hero orb with the service logo inside its ring,
-// the status words and the subscription strip. The brand color stays inside .theme-scope.
+// A schematic subscription-data preview, not a replica of the app interface.
 const props = defineProps<{ profile: MockProfile, now: number }>()
 const { language, t } = useText()
 
@@ -13,11 +12,9 @@ const strip = computed(() => mockStrip(props.profile, props.now, language.value)
 const name = computed(() => response.value.serviceName ?? props.profile.name[language.value])
 const server = computed(() => response.value.serverInfo ?? `${name.value} 01`)
 const announce = computed(() => response.value.announce?.[language.value])
-// A provider ring is drawn as sent; the stock ring leans toward the brand like the client's harmonized one.
 const ring = computed(() => {
-  const own = response.value.heroRing
-  const colors = (own ?? stockRing).map(color => `#${color}`)
-  const tint = (color: string) => own || !theme.value.seed ? color : `color-mix(in oklch, ${color} 62%, var(--brand))`
+  const colors = stockRing.map(color => `#${color}`)
+  const tint = (color: string) => !theme.value.seed ? color : `color-mix(in oklch, ${color} 62%, var(--brand))`
   return { '--r1': tint(colors[0]!), '--r2': tint(colors[1]!), '--r3': tint(colors[2]!) }
 })
 </script>
@@ -44,7 +41,7 @@ const ring = computed(() => {
         </span>
       </div>
       <div class="mock-app-words">
-        <b>{{ response.activeText ?? t('Вы защищены', 'You are protected') }}</b>
+        <b>{{ t('Тестовая подписка', 'Test subscription') }}</b>
         <span class="mock-app-server"><i aria-hidden="true" />{{ server }}</span>
       </div>
 
@@ -79,8 +76,8 @@ const ring = computed(() => {
     </div>
     <figcaption class="mock-pv-cap">
       {{ theme.seed
-        ? t(`Цвет ${theme.seed} из ReClash-Hex. Приближение: точные оттенки клиент считает по схеме Material.`, `Color ${theme.seed} from ReClash-Hex. An approximation: the client derives exact shades from the Material scheme.`)
-        : t('Без ReClash-Hex клиент остаётся в стоковых цветах.', 'Without ReClash-Hex the client keeps its stock colors.') }}
+        ? t(`Цвет ${theme.seed} из ReClash-View: app.color. Схема данных, не скриншот приложения.`, `Color ${theme.seed} from ReClash-View: app.color. A data illustration, not an app screenshot.`)
+        : t('Без ReClash-View: app.color клиент остаётся в стоковых цветах.', 'Without ReClash-View: app.color the client keeps its stock colors.') }}
     </figcaption>
   </figure>
 </template>

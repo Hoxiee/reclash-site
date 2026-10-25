@@ -1,7 +1,7 @@
 import { normHex, hexToOklch } from '../../shared/provider/theme.ts'
 import { glyphSvg } from '../../shared/site/brand.ts'
 /*
- * Brand theme. The site recolors exactly the way the client does: from one ReClash-Hex.
+ * Brand theme for the website and its schematic previews, independent of the app palette.
  * The seed goes to OKLCH, lightness and chroma get clamped into a band that stays readable
  * on the dark background, then hue/chroma/lightness spring to the new value — so a recolor
  * is a short physical sweep, not a flash. The brand glyph and the favicon follow the same band.

@@ -1,5 +1,6 @@
 import data from './mocks.json' with { type: 'json' }
 import type { BilingualText } from '../site/routes'
+import type { SubscriptionType } from './standard'
 
 // Mock subscriptions: one record per stand. The mock-subs page, the static
 // /mock/<key> bodies and their _headers block are all derived from this data,
@@ -20,22 +21,18 @@ export type MockQuota = {
 
 /** Header-level settings of a stand, stored readable; mockHeaders() encodes them. */
 export type MockResponse = {
+  subscriptionType?: SubscriptionType
   title?: string
   serviceName?: string
   serverInfo?: string
-  activeText?: string
   hex?: string
-  heroRing?: string[]
-  heroEffect?: string
   /** File name under /assets/mock/. */
   logo?: string
   background?: { file: string, opacity: number }
   widgets?: string
-  custom?: string
   settings?: string
   view?: string
   supportUrl?: string
-  reportUrl?: string
   webPageUrl?: string
   buyPlan?: string
   buyTraffic?: string
@@ -68,7 +65,11 @@ export const mockProfiles = data as MockProfile[]
 
 export const mockPath = (key: string) => `/mock/${key}`
 export const mockUrl = (origin: string, key: string) => `${origin}${mockPath(key)}`
-export const mockImportLink = (origin: string, key: string) => `reclash://install-config?url=${encodeURIComponent(mockUrl(origin, key))}`
+export function mockImportLink(origin: string, key: string): string {
+  const response = mockProfiles.find(profile => profile.key === key)?.response
+  const name = response?.title ?? response?.serviceName
+  return `reclash://install-config?url=${encodeURIComponent(mockUrl(origin, key))}${name ? `&name=${encodeURIComponent(name)}` : ''}`
+}
 export const mockAsset = (origin: string, file: string) => `${origin}/assets/mock/${file}`
 
 export const GB = 1024 ** 3
@@ -76,7 +77,7 @@ const DAY = 86_400
 
 /** Plain printable ASCII stays as is; anything else goes out as base64:<utf-8>, like the builder does. */
 export function headerValue(text: string): string {
-  if (/^[\x20-\x7e]*$/.test(text)) return text
+  if (/^[\x20-\x7e]*$/.test(text) && !/^base64[:,]/.test(text)) return text
   let binary = ''
   for (const byte of new TextEncoder().encode(text)) binary += String.fromCharCode(byte)
   return `base64:${btoa(binary)}`
@@ -95,20 +96,15 @@ export function mockHeaders(profile: MockProfile, origin: string, now = Date.now
     ['Content-Type', 'text/yaml; charset=utf-8'],
     ['Content-Disposition', `attachment; filename="${profile.key}.yaml"`],
     ['Profile-Title', r.title && headerValue(r.title)],
+    ['ReClash-SubscriptionType', r.subscriptionType],
     ['ReClash-ServiceName', r.serviceName && headerValue(r.serviceName)],
     ['ReClash-ServerInfo', r.serverInfo && headerValue(r.serverInfo)],
-    ['ReClash-ActiveText', r.activeText && headerValue(r.activeText)],
-    ['ReClash-Hex', r.hex],
-    ['ReClash-HeroRing', r.heroRing?.join(';')],
-    ['ReClash-HeroEffect', r.heroEffect],
     ['ReClash-ServiceLogo', r.logo && mockAsset(origin, r.logo)],
     ['ReClash-Background', r.background && `${mockAsset(origin, r.background.file)},${r.background.opacity}`],
     ['ReClash-Widgets', r.widgets],
-    ['ReClash-Custom', r.custom],
     ['ReClash-Settings', r.settings],
-    ['ReClash-View', r.view],
+    ['ReClash-View', [r.hex && `app.color:${r.hex}`, r.view].filter(Boolean).join(';')],
     ['ReClash-SupportURL', r.supportUrl],
-    ['ReClash-ReportURL', r.reportUrl],
     ['ReClash-WebPageURL', r.webPageUrl],
     ['ReClash-BuyPlan', r.buyPlan],
     ['ReClash-BuyTraffic', r.buyTraffic],

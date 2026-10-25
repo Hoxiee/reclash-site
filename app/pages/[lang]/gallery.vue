@@ -9,7 +9,7 @@ const { language, t } = useText()
 <section class="ph"><div class="wrap ph-grid">
   <div>
     <h1 data-words>{{ t("ReClash в деле.", "ReClash in action.") }}</h1>
-    <p class="lede" data-fade>{{ t("Скриншоты и короткие клипы: как выглядит клиент, что делает обход DPI и как провайдер настраивает вид под себя.", "Screenshots and short clips: what the client looks like, how DPI bypass works and how providers make it their own.") }}</p>
+    <p class="lede" data-fade>{{ t("Подключение, выбор узлов, маршрутизация RCX и данные подписки. Ниже — схематические иллюстрации разделов, а не скриншоты текущей сборки.", "Connection, node selection, RCX routing and subscription data. The tiles below are schematic illustrations of these areas, not screenshots of the current build.") }}</p>
   </div>
   <svg class="ph-ring" viewBox="0 0 400 400" aria-hidden="true">
   <defs><linearGradient id="phG" x1="60" y1="60" x2="340" y2="340" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--brand-2)"/><stop offset=".5" style="stop-color:var(--brand)"/><stop offset="1" style="stop-color:var(--brand-3)"/></linearGradient></defs>
@@ -21,7 +21,7 @@ const { language, t } = useText()
 
 <section class="sub-sec" style="padding-top:0;border-top:0"><div class="wrap">
   <GalleryGrid />
-  <p class="g-empty">{{ t("Живые кадры появятся здесь. Пока на месте каждого кадра — заглушка.", "Real footage will appear here. Each tile is a placeholder for now.") }}</p>
+  <p class="g-empty">{{ t("Иллюстрации не воспроизводят интерфейс приложения. Возможности текущей сборки описаны на главной странице и в быстром старте.", "These illustrations do not reproduce the app interface. The home page and quick start describe the current build.") }}</p>
 </div></section>
 </div>
 </template>

@@ -6,7 +6,7 @@ const { language, t } = useText()
 // One GitHub request feeds both the file picker and the changelog.
 const releases = useReleases()
 const buildScript = computed(() => [
-  'git clone https://github.com/Hoxiee/ReClash.git',
+  'git clone --recurse-submodules --branch dev https://github.com/Hoxiee/ReClash.git',
   'cd ReClash',
   'flutter pub get',
   `dart run setup.dart            ${t('# хост-платформа', '# host platform')}`,
@@ -52,11 +52,11 @@ const buildScript = computed(() => [
       <li class="pcard" data-mg><h3>macOS</h3><span class="fmt">DMG</span><div class="arch"><span>Apple silicon</span><span>Intel</span></div>
         <p>{{ t("Сборка не из App Store: при первом запуске откройте её через контекстное меню → «Открыть».", "This build is outside the App Store. On first launch, use the context menu → Open.") }}</p></li>
       <li class="pcard" data-mg><h3>Linux</h3><span class="fmt">AppImage, DEB, RPM, pacman</span><div class="arch"><span>x64</span><span>ARM64</span></div>
-        <p>{{ t("AppImage запускается без установки — не забудьте", "AppImage runs without installation. Remember to run") }} <code>chmod +x</code>{{ t(". DEB и RPM ставят службу TUN сами.", ". DEB and RPM install the TUN service automatically.") }}</p></li>
+        <p>{{ t("AppImage запускается без установки — не забудьте", "AppImage runs without installation. Remember to run") }} <code>chmod +x</code>{{ t(". Для TUN установите системного помощника из приложения.", ". Install the system helper from the app to use TUN.") }}</p></li>
       <li class="pcard" data-mg><h3>Android</h3><span class="fmt">APK</span><div class="arch"><span>arm64-v8a</span><span>armeabi-v7a</span><span>x86_64</span></div>
         <p>{{ t("Для большинства телефонов —", "For most phones, choose") }} <code>arm64-v8a</code>{{ t(". Есть плитка в шторке, виджеты и Always-on VPN.", ". Includes a Quick Settings tile, widgets and Always-on VPN.") }}</p></li>
     </ul>
-    <p class="note" style="margin-top:16px"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm0 4v4.5m0 2.6v.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>{{ t("Сборки для iOS нет: App Store не пускает клиенты такого рода без отдельной программы разработчика.", "There is no iOS build: the App Store does not accept this kind of client without a separate developer program.") }}</p>
+    <p class="note" style="margin-top:16px"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm0 4v4.5m0 2.6v.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>{{ t("Доступны Android, Windows, macOS и Linux. Сборки для iOS нет.", "Android, Windows, macOS and Linux are supported. There is no iOS build.") }}</p>
   </div>
 </div></section>
 
@@ -75,16 +75,16 @@ const buildScript = computed(() => [
   </div>
   <div>
     <ul class="chips-list">
-      <li>{{ t("Flutter (канал stable) и Go — ядро mihomo собирается из исходников.", "Flutter (stable channel) and Go: the mihomo core is built from source.") }}</li>
-      <li>{{ t("Windows: GCC и Inno Setup для установщика.", "Windows: GCC and Inno Setup for the installer.") }}</li>
-      <li>{{ t("macOS: Node.js для appdmg.", "macOS: Node.js for appdmg.") }}</li>
+      <li>{{ t("Flutter 3.47.6 (как в release CI), Go и Rust/Cargo. Ядро mihomo и нативные библиотеки собираются из исходников.", "Flutter 3.47.6 (matching release CI), Go and Rust/Cargo. The mihomo core and native libraries are built from source.") }}</li>
+      <li>{{ t("Windows: Visual Studio с инструментами C++, GCC и Inno Setup для установщика.", "Windows: Visual Studio C++ tools, GCC and Inno Setup for the installer.") }}</li>
+      <li>{{ t("macOS: Xcode и Node.js для appdmg; macOS 12 или новее для запуска.", "macOS: Xcode and Node.js for appdmg; macOS 12 or later to run.") }}</li>
       <li>{{ t("Linux: пакетчик попросит права администратора, чтобы доставить нативные зависимости.", "Linux: the packager requests administrator privileges to install native dependencies.") }}</li>
     </ul>
     <div class="term">
       <div class="th"><h3>{{ t("Сборка", "Build") }}</h3><button class="btn btn-ghost btn-s" type="button" data-copy="#t-build" :data-label="t('Копировать', 'Copy')"><span class="btn-label">{{ t("Копировать", "Copy") }}</span></button></div>
 <pre id="t-build"><CodeLines :code="buildScript" lang="shell" /></pre>
     </div>
-    <p class="muted" style="margin-top:16px">{{ t("Подробности — в", "Details are in the") }} <SiteLink class="tlink" to="https://github.com/Hoxiee/ReClash/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</SiteLink>.</p>
+    <p class="muted" style="margin-top:16px">{{ t("Подробности — в", "Details are in the") }} <SiteLink class="tlink" to="https://github.com/Hoxiee/ReClash/blob/dev/.agents/commands.md">build commands</SiteLink>.</p>
   </div>
 </div></section>
 

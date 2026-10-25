@@ -10,7 +10,10 @@ const { language, t } = useText()
 <template>
   <div class="field" :data-key="field.key">
     <div class="b-label"><label :for="`f-${field.key}`">{{ field.label[language] }}</label><SiteLink v-if="field.header" class="b-ref" :to="`${pagePath(language, 'reference')}#h-${field.header.toLowerCase()}`" :title="t('Открыть в справочнике', 'Open in the reference')">{{ field.header }}</SiteLink></div>
-    <textarea v-if="field.type === 'textarea'" :id="`f-${field.key}`" class="input" :maxlength="field.max" rows="2" :value="value" :aria-invalid="error ? true : undefined" @input="emit('update', $event)" />
+    <select v-if="field.type === 'select'" :id="`f-${field.key}`" class="input" :value="value" :aria-invalid="error ? true : undefined" @change="emit('update', $event)">
+      <option v-for="option in field.options" :key="option.value" :value="option.value">{{ option.label[language] }}</option>
+    </select>
+    <textarea v-else-if="field.type === 'textarea'" :id="`f-${field.key}`" class="input" :maxlength="field.max" rows="2" :value="value" :aria-invalid="error ? true : undefined" @input="emit('update', $event)" />
     <div v-else-if="field.type === 'color'" class="b-color">
       <input type="color" :aria-label="t('Выбрать цвет', 'Choose a color')" :value="`#${(normHex(value) || '7C5CFF').toLowerCase()}`" @input="emit('update', $event, true)">
       <input :id="`f-${field.key}`" class="input" :value="value" spellcheck="false" autocomplete="off" :aria-invalid="error ? true : undefined" @input="emit('update', $event)">

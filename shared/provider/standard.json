@@ -1,682 +1,737 @@
 {
-  "$generated": "tool/gen_provider_standard.dart — do not edit by hand",
+  "name": "ReClash Subscription Provider Standard",
+  "version": 1,
+  "limits": {
+    "headerBytes": 8192,
+    "headersBytes": 65536,
+    "wireBytes": 16777216,
+    "payloadBytes": 33554432
+  },
+  "fields": [
+    {
+      "path": "provider.name",
+      "name": "reclash-servicename",
+      "type": "text",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "text-or-base64-prefixed",
+      "multiplicity": "singleton",
+      "limit": 160,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.logo",
+      "name": "reclash-servicelogo",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.supportUrl",
+      "name": "reclash-supporturl",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "aliases": [
+        {
+          "name": "support-url"
+        }
+      ],
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.webUrl",
+      "name": "reclash-webpageurl",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "aliases": [
+        {
+          "name": "profile-web-page-url"
+        }
+      ],
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.buyPlanUrl",
+      "name": "reclash-buyplan",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url-with-suffix",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "suffix": {
+        "path": "provider.buyPlanDays",
+        "minimum": 1,
+        "maximum": 3650
+      },
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.buyTrafficUrl",
+      "name": "reclash-buytraffic",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url-with-suffix",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "suffix": {
+        "path": "provider.buyTrafficPercent",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.announce",
+      "name": "reclash-announce",
+      "type": "text",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "text-or-base64-prefixed",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "aliases": [
+        {
+          "name": "announce"
+        }
+      ],
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.announceUrl",
+      "name": "reclash-announceurl",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.notice",
+      "name": "reclash-notice",
+      "type": "text",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "text-or-base64-prefixed",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "provider.noticeUrl",
+      "name": "reclash-noticeurl",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "subscription.type",
+      "name": "reclash-subscriptiontype",
+      "type": "text",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "text-or-base64-prefixed",
+      "multiplicity": "singleton",
+      "limit": 32,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "account.title",
+      "name": "profile-title",
+      "type": "text",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "text-or-base64-prefixed",
+      "multiplicity": "singleton",
+      "limit": 160,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "update.intervalMinutes",
+      "name": "reclash-autoupdateinterval",
+      "type": "integer",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "decimal",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "minimum": 5,
+      "maximum": 43200,
+      "unit": "minutes",
+      "aliases": [
+        {
+          "name": "profile-update-interval",
+          "scale": 60
+        }
+      ],
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "scheduler",
+      "available": true
+    },
+    {
+      "path": "routing.bundleUrl",
+      "name": "reclash-routing",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "routing",
+      "available": true
+    },
+    {
+      "path": "presentation.hideUrl",
+      "name": "reclash-hideurl",
+      "type": "boolean",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "boolean",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "aliases": [
+        {
+          "name": "hide-url"
+        }
+      ],
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "presentation.serverGroup",
+      "name": "reclash-serverinfo",
+      "type": "text",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "text-or-base64-prefixed",
+      "multiplicity": "singleton",
+      "limit": 256,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "panel",
+      "available": true
+    },
+    {
+      "path": "presentation.widgets",
+      "name": "reclash-widgets",
+      "type": "tokens",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-tokens",
+      "multiplicity": "singleton",
+      "limit": 32,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "appearance",
+      "available": true
+    },
+    {
+      "path": "presentation.background",
+      "name": "reclash-background",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url-with-suffix",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "suffix": {
+        "path": "presentation.backgroundOpacity",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "appearance",
+      "available": true
+    },
+    {
+      "path": "presentation.view",
+      "name": "reclash-view",
+      "type": "pairs",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "semicolon-separated-pairs",
+      "multiplicity": "singleton",
+      "limit": 32,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "appearance",
+      "available": true
+    },
+    {
+      "path": "reminder.expireDays",
+      "name": "reclash-expiredays",
+      "type": "numbers",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-decimals",
+      "multiplicity": "singleton",
+      "limit": 8,
+      "minimum": 0,
+      "maximum": 365,
+      "unit": "days",
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "reminder",
+      "available": true
+    },
+    {
+      "path": "reminder.trafficPercent",
+      "name": "reclash-trafficpercent",
+      "type": "numbers",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-decimals",
+      "multiplicity": "singleton",
+      "limit": 8,
+      "minimum": 1,
+      "maximum": 100,
+      "unit": "percent",
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "reminder",
+      "available": true
+    },
+    {
+      "path": "settings.flags",
+      "name": "reclash-settings",
+      "type": "tokens",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-tokens",
+      "multiplicity": "singleton",
+      "limit": 16,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "settings",
+      "available": true
+    },
+    {
+      "path": "settings.restrictions",
+      "name": "reclash-restrictions",
+      "type": "tokens",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-tokens",
+      "multiplicity": "singleton",
+      "limit": 16,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "settings",
+      "available": true
+    },
+    {
+      "path": "transport.fallbackHosts",
+      "name": "reclash-fallbackhosts",
+      "type": "hosts",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-authorities",
+      "multiplicity": "singleton",
+      "limit": 5,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "transport",
+      "available": true
+    },
+    {
+      "path": "transport.newDomain",
+      "name": "reclash-newdomain",
+      "type": "hosts",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-authorities",
+      "multiplicity": "singleton",
+      "limit": 1,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "transport",
+      "available": true
+    },
+    {
+      "path": "apps.exclude",
+      "name": "reclash-excludeapps",
+      "type": "packages",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-packages",
+      "multiplicity": "singleton",
+      "limit": 512,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "apps",
+      "available": true
+    },
+    {
+      "path": "apps.include",
+      "name": "reclash-includeapps",
+      "type": "packages",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-packages",
+      "multiplicity": "singleton",
+      "limit": 512,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "apps",
+      "available": true
+    },
+    {
+      "path": "apps.routing",
+      "name": "reclash-approuting",
+      "type": "tokens",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-tokens",
+      "multiplicity": "singleton",
+      "limit": 1,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "apps",
+      "available": true
+    }
+  ],
   "headers": [
     {
-      "canonical": "hwidMaxDevicesReached",
-      "sourceKeys": [
-        "x-hwid-max-devices-reached"
+      "name": "x-hwid",
+      "direction": "request",
+      "encoding": "lowercase-hex-32",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": true,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "none",
-      "value": "`true`",
-      "purpose": "Shows the device-limit message and offers `reclash-supporturl` when available."
+      "available": true
     },
     {
-      "canonical": "hwidNotSupported",
-      "sourceKeys": [
-        "x-hwid-not-supported"
+      "name": "x-device-os",
+      "direction": "request",
+      "encoding": "ascii",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": true,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "none",
-      "value": "`true`",
-      "purpose": "Shows that the selected client/device mode is unsupported."
+      "available": true
     },
     {
-      "canonical": "announce",
-      "sourceKeys": [
-        "reclash-announce",
-        "announce"
+      "name": "x-ver-os",
+      "direction": "request",
+      "encoding": "ascii",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": true,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "base64",
-      "value": "Plain text or Base64",
-      "purpose": "Provider announcement. Takes priority over `announce`."
+      "available": true
     },
     {
-      "canonical": "supportUrl",
-      "sourceKeys": [
-        "reclash-supporturl",
-        "support-url",
-        "flclashx-supporturl"
+      "name": "x-device-model",
+      "direction": "request",
+      "encoding": "ascii",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": true,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "none",
-      "value": "Provider support URL",
-      "purpose": "Support page. Use an absolute HTTPS URL."
+      "available": true
     },
     {
-      "canonical": "reportUrl",
-      "sourceKeys": [
-        "reclash-reporturl",
-        "report-url"
+      "name": "x-hwid-not-supported",
+      "direction": "response",
+      "encoding": "boolean",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": false,
+      "introduced": 1,
+      "context": [
+        "http-response"
       ],
-      "transform": "none",
-      "value": "Provider issue-report URL",
-      "purpose": "Subscription issue-report action. Use an absolute HTTPS URL."
+      "available": true
     },
     {
-      "canonical": "announceUrl",
-      "sourceKeys": [
-        "reclash-announceurl"
+      "name": "x-hwid-max-devices-reached",
+      "direction": "response",
+      "encoding": "boolean",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": false,
+      "introduced": 1,
+      "context": [
+        "http-response"
       ],
-      "transform": "none",
-      "value": "Provider announcement URL",
-      "purpose": "Turns the announcement into a link: opens instead of the dismiss button on the announcement sheet and card. Use an absolute HTTPS URL."
+      "available": true
     },
     {
-      "canonical": "webPageUrl",
-      "sourceKeys": [
-        "reclash-webpageurl",
-        "profile-web-page-url"
+      "name": "Subscription-Userinfo",
+      "direction": "response",
+      "encoding": "semicolon-counts",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": false,
+      "introduced": 1,
+      "context": [
+        "http-response"
       ],
-      "transform": "none",
-      "value": "Provider account URL",
-      "purpose": "Personal-account link in the subscription details. Also read from the Profile-Web-Page-Url header that marzban and 3x-ui already emit. Use an absolute HTTPS URL."
+      "available": true
     },
     {
-      "canonical": "expireNotifyDays",
-      "sourceKeys": [
-        "reclash-expiredays"
+      "name": "Content-Disposition",
+      "direction": "response",
+      "encoding": "rfc6266",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": false,
+      "introduced": 1,
+      "context": [
+        "http-response"
       ],
-      "transform": "none",
-      "value": "Comma-separated days",
-      "purpose": "Days-before-expiry the client reminds at. Overrides the default 3,2,1."
+      "available": true
     },
     {
-      "canonical": "trafficNotifyPercent",
-      "sourceKeys": [
-        "reclash-trafficpercent"
+      "name": "User-Agent",
+      "direction": "request",
+      "encoding": "ascii",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": false,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "none",
-      "value": "Comma-separated percents",
-      "purpose": "Used-traffic percents the client reminds at on metered plans. Overrides the default 90."
+      "available": true
     },
     {
-      "canonical": "updateIntervalMinutes",
-      "sourceKeys": [
-        "reclash-autoupdateinterval"
+      "name": "Accept-Language",
+      "direction": "request",
+      "encoding": "ascii",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": false,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "none",
-      "value": "Positive integer (minutes for `reclash-autoupdateinterval`, hours for the aliases)",
-      "purpose": "Sets the profile update interval."
+      "available": true
     },
     {
-      "canonical": "updateIntervalMinutes",
-      "sourceKeys": [
-        "profile-update-interval",
-        "flclashx-autoupdateinterval"
+      "name": "x-client",
+      "direction": "request",
+      "encoding": "ascii",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": false,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "hours-to-minutes",
-      "value": "Positive integer (minutes for `reclash-autoupdateinterval`, hours for the aliases)",
-      "purpose": "Sets the profile update interval."
+      "available": true
     },
     {
-      "canonical": "serviceName",
-      "sourceKeys": [
-        "reclash-servicename",
-        "flclashx-servicename"
+      "name": "x-app-version",
+      "direction": "request",
+      "encoding": "ascii",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": false,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "base64",
-      "value": "Plain text or Base64",
-      "purpose": "Provider name shown in the dashboard."
+      "available": true
     },
     {
-      "canonical": "serviceLogo",
-      "sourceKeys": [
-        "reclash-servicelogo",
-        "flclashx-servicelogo"
+      "name": "x-device-locale",
+      "direction": "request",
+      "encoding": "ascii",
+      "multiplicity": "singleton",
+      "limitBytes": 8192,
+      "sensitive": true,
+      "introduced": 1,
+      "context": [
+        "subscription"
       ],
-      "transform": "none",
-      "value": "Absolute HTTPS image URL",
-      "purpose": "Provider logo shown in the dashboard and connection control."
-    },
-    {
-      "canonical": "serverInfoGroup",
-      "sourceKeys": [
-        "reclash-serverinfo",
-        "flclashx-serverinfo"
-      ],
-      "transform": "base64",
-      "value": "Proxy-group name, plain text or Base64",
-      "purpose": "Group used to resolve the active server shown in the dashboard."
-    },
-    {
-      "canonical": "activeText",
-      "sourceKeys": [
-        "reclash-activetext"
-      ],
-      "transform": "base64-trimmed",
-      "value": "Plain text or Base64",
-      "purpose": "Replaces the active protection caption under the hero orb and in the Android notification."
-    },
-    {
-      "canonical": "buyPlanUrl",
-      "sourceKeys": [
-        "reclash-buyplan",
-        "flclashx-buyplan"
-      ],
-      "transform": "none",
-      "value": "Provider URL",
-      "purpose": "Subscription renewal or plan purchase action. Use an absolute HTTPS URL."
-    },
-    {
-      "canonical": "buyTrafficUrl",
-      "sourceKeys": [
-        "reclash-buytraffic",
-        "flclashx-buytraffic"
-      ],
-      "transform": "none",
-      "value": "Provider URL",
-      "purpose": "Extra-traffic purchase action. Use an absolute HTTPS URL."
-    },
-    {
-      "canonical": "proxiesView",
-      "sourceKeys": [
-        "reclash-view",
-        "flclashx-view"
-      ],
-      "transform": "none",
-      "value": "Proxy-page tokens",
-      "purpose": "Suggests the proxy-page presentation for this profile."
-    },
-    {
-      "canonical": "themeHex",
-      "sourceKeys": [
-        "reclash-hex",
-        "flclashx-hex"
-      ],
-      "transform": "none",
-      "value": "Theme tokens",
-      "purpose": "Applies a theme while this profile is active."
-    },
-    {
-      "canonical": "background",
-      "sourceKeys": [
-        "reclash-background",
-        "flclashx-background"
-      ],
-      "transform": "none",
-      "value": "Image URL and optional opacity",
-      "purpose": "Applies a dashboard background while this profile is active."
-    },
-    {
-      "canonical": "heroRing",
-      "sourceKeys": [
-        "reclash-heroring"
-      ],
-      "transform": "none",
-      "value": "Three colors",
-      "purpose": "Sets the connected-state hero-ring gradient."
-    },
-    {
-      "canonical": "heroEffect",
-      "sourceKeys": [
-        "reclash-heroeffect"
-      ],
-      "transform": "none",
-      "value": "`aurora` or `none`",
-      "purpose": "Adds an animated aurora effect to the connected-state hero orb. Default `none`."
-    },
-    {
-      "canonical": "panelWidgets",
-      "sourceKeys": [
-        "reclash-widgets"
-      ],
-      "transform": "none",
-      "value": "Comma-separated widget names",
-      "purpose": "Suggests dashboard widgets and their order."
-    },
-    {
-      "canonical": "widgetsApplyMode",
-      "sourceKeys": [
-        "reclash-custom"
-      ],
-      "transform": "none",
-      "value": "`add` or `update`",
-      "purpose": "Controls how `reclash-widgets` is merged."
-    },
-    {
-      "canonical": "panelSettings",
-      "sourceKeys": [
-        "reclash-settings"
-      ],
-      "transform": "none",
-      "value": "Comma-separated setting tokens",
-      "purpose": "Supplies application defaults when the profile is first added."
-    },
-    {
-      "canonical": "newDomain",
-      "sourceKeys": [
-        "reclash-newdomain",
-        "flclashx-newdomain"
-      ],
-      "transform": "none",
-      "value": "Hostname with optional port",
-      "purpose": "Proposes a subscription-domain migration subject to fetch and configuration checks."
-    },
-    {
-      "canonical": "fallbackHosts",
-      "sourceKeys": [
-        "reclash-fallbackhosts"
-      ],
-      "transform": "none",
-      "value": "Up to four comma-separated hostnames",
-      "purpose": "Supplies fallback hosts for transient fetch failures."
-    },
-    {
-      "canonical": "profileTitle",
-      "sourceKeys": [
-        "profile-title"
-      ],
-      "transform": "none",
-      "value": "Profile name, plain UTF-8 or Base64",
-      "purpose": "Names the imported profile unless the user has renamed it. Use `base64:` for non-ASCII text."
+      "available": true
     }
-  ],
-  "externalCommon": [
-    "subscription-userinfo",
-    "content-disposition"
-  ],
-  "widgets": [
-    {
-      "id": "networkSpeed",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Live upload and download rates."
-    },
-    {
-      "id": "trafficUsage",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Session upload, download and total traffic."
-    },
-    {
-      "id": "networkDetection",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Connectivity and latency probe."
-    },
-    {
-      "id": "connectionPath",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Connection-path stages from app to response."
-    },
-    {
-      "id": "tunButton",
-      "platforms": [
-        "Linux",
-        "MacOS",
-        "Windows"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Toggles the TUN system tunnel."
-    },
-    {
-      "id": "vpnButton",
-      "platforms": [
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Toggles the VPN service."
-    },
-    {
-      "id": "systemProxyButton",
-      "platforms": [
-        "Linux",
-        "MacOS",
-        "Windows"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Toggles the system proxy."
-    },
-    {
-      "id": "intranetIp",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Shows the local network address."
-    },
-    {
-      "id": "memoryInfo",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Core memory usage."
-    },
-    {
-      "id": "goroutineInfo",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Core goroutine count."
-    },
-    {
-      "id": "metaInfo",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn"
-      ],
-      "purpose": "Core version and build details."
-    },
-    {
-      "id": "announce",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn"
-      ],
-      "purpose": "Provider announcement banner."
-    },
-    {
-      "id": "serviceInfo",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn"
-      ],
-      "purpose": "Provider service name and logo."
-    },
-    {
-      "id": "changeServerButton",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn"
-      ],
-      "purpose": "Opens the server picker."
-    },
-    {
-      "id": "smartRouting",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn"
-      ],
-      "purpose": "Smart-routing control."
-    },
-    {
-      "id": "desyncStrategy",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "byedpi"
-      ],
-      "purpose": "DPI-desync strategy selector."
-    },
-    {
-      "id": "desyncTest",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "byedpi"
-      ],
-      "purpose": "DPI-desync strategy test."
-    },
-    {
-      "id": "desyncEngine",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "byedpi"
-      ],
-      "purpose": "DPI-desync engine selector."
-    },
-    {
-      "id": "serviceStatus",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn"
-      ],
-      "purpose": "Connection state and active-server readout."
-    },
-    {
-      "id": "connections",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Active connections list."
-    },
-    {
-      "id": "dnsQueries",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Recent DNS queries."
-    },
-    {
-      "id": "requests",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Recent proxied requests."
-    },
-    {
-      "id": "runTime",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Connection uptime."
-    },
-    {
-      "id": "proxyGroups",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Proxy-group selectors."
-    },
-    {
-      "id": "profiles",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Profile switcher."
-    },
-    {
-      "id": "overrideDnsButton",
-      "platforms": [
-        "Windows",
-        "MacOS",
-        "Linux",
-        "Android"
-      ],
-      "modes": [
-        "vpn",
-        "byedpi"
-      ],
-      "purpose": "Toggles the DNS override."
-    }
-  ],
-  "tokens": {
-    "view": {
-      "type": [
-        "tab",
-        "list"
-      ],
-      "sort": [
-        "default",
-        "none",
-        "delay",
-        "name"
-      ],
-      "layout": [
-        "loose",
-        "standard",
-        "tight"
-      ],
-      "icon": [
-        "none",
-        "standard",
-        "icon"
-      ],
-      "card": [
-        "expand",
-        "shrink",
-        "min",
-        "oneline"
-      ]
-    },
-    "themeVariants": [
-      "tonalspot",
-      "fidelity",
-      "monochrome",
-      "neutral",
-      "vibrant",
-      "expressive",
-      "content"
-    ],
-    "themeFlags": [
-      "pureblack"
-    ],
-    "heroEffect": [
-      "aurora"
-    ],
-    "constraints": {
-      "heroRingColours": 3,
-      "backgroundOpacityMin": 1,
-      "backgroundOpacityMax": 100,
-      "hexDigits": [
-        6,
-        8
-      ]
-    }
-  }
+  ]
 }

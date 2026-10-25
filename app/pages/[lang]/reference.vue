@@ -180,14 +180,16 @@ function reveal(hash: string) {
   const entry = headerReference.find(item => item.id === id)
   if (!entry) return
   if (!isVisible(entry)) { query.value = ''; choose('all', false) }
-  open[entry.id] = true
-  // One frame later than the router's own hash scroll, which ignores scroll-padding and the sticky bar.
-  nextTick(() => requestAnimationFrame(() => {
-    const element = document.getElementById(entry.id)
-    if (!element) return
-    const reduced = document.documentElement.classList.contains('rm') || matchMedia('(prefers-reduced-motion: reduce)').matches
-    element.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' })
-  }))
+  nextTick(() => {
+    open[entry.id] = true
+    // One frame later than the router's own hash scroll, which ignores scroll-padding and the sticky bar.
+    requestAnimationFrame(() => {
+      const element = document.getElementById(entry.id)
+      if (!element) return
+      const reduced = document.documentElement.classList.contains('rm') || matchMedia('(prefers-reduced-motion: reduce)').matches
+      element.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' })
+    })
+  })
 }
 watch(() => route.hash, hash => { if (hash) reveal(hash) })
 
@@ -234,7 +236,7 @@ onBeforeUnmount(() => {
         <span class="tag">{{ countOf('reclash') }} reclash-*</span>
         <span class="tag">{{ t(`${countOf('common')} общих`, `${countOf('common')} common`) }}</span>
         <span class="tag">HWID</span>
-        <span class="tag">{{ countOf('alias') }} flclashx-*</span>
+        <span class="tag">{{ countOf('alias') }} {{ t('псевдонимов', 'aliases') }}</span>
       </template>
       <ProviderTabs page="reference" />
     </PageHero>
@@ -268,7 +270,7 @@ onBeforeUnmount(() => {
             </button>
           </div>
           <p class="ref-hint">
-            {{ t('Имена сравниваются без учёта регистра:', 'Names are case-insensitive:') }} <code>ReClash-Hex</code> {{ t('и', 'and') }} <code>reclash-hex</code> {{ t('— один заголовок.', 'are the same header.') }}
+            {{ t('Имена сравниваются без учёта регистра:', 'Names are case-insensitive:') }} <code>ReClash-View</code> {{ t('и', 'and') }} <code>reclash-view</code> {{ t('— один заголовок.', 'are the same header.') }}
             <SiteLink class="tlink" :to="pagePath(language, 'docs')">{{ t('Как это работает', 'How it works') }}</SiteLink>
           </p>
         </aside>

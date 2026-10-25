@@ -22,11 +22,11 @@ for (const [language, title, contents] of [['ru', 'Документация по
     const references = await page.locator('a.doc-hlink').evaluateAll(links => links.map(link => link.getAttribute('href')))
     expect(references.length).toBeGreaterThan(10)
     for (const href of references) expect(href).toMatch(new RegExp(`^/${language}/reference#h-[a-z0-9-]+$`))
-    expect(references).toContain(`/${language}/reference#h-reclash-hex`)
+    expect(references).toContain(`/${language}/reference#h-reclash-view`)
     expect(references).toContain(`/${language}/reference#h-subscription-userinfo`)
     const ids = new Set(headerReference.map(entry => entry.id))
     for (const href of references) expect(ids.has(href!.split('#')[1]!), href!).toBe(true)
-    await expect(page.locator('.doc-chain .is-win')).toHaveCount(13)
+    await expect(page.locator('.doc-chain .is-win')).toHaveCount(5)
   })
 }
 

@@ -1,8 +1,7 @@
 # ReClash
 
-A bilingual Nuxt 4 site generated for Cloudflare Pages. The home, quick start,
-download, gallery and draft header builder port the supplied static site, with
-English translations of the same content. Fonts and styles are hosted locally.
+A bilingual Nuxt 4 site generated for Cloudflare Pages. The home, quick start, download and provider tools describe the current
+ReClash application in Russian and English. Fonts and styles are hosted locally.
 
 ## Local development
 
@@ -21,15 +20,28 @@ JavaScript it shows plain language links. Each language has `start`,
 `download`, `docs`, `reference`, `builder`, `mock-subs`, `report`, `gallery`
 and `motion` sections; report and motion keep their placeholders. The builder
 shares the site shell and developer tabs, emits raw headers and nginx lines,
-and colours only its preview card. Gallery media retain their eight placeholders.
+and colours only its preview card. Gallery tiles are explicitly labelled schematic illustrations, not app screenshots.
 Routes live in `shared/site/routes.ts`; SEO lives in `shared/site/seo.ts` and
 `app/composables/usePageMeta.ts`.
 
-`shared/provider/builder.ts` contains the imported field schema, validation and
+`shared/provider/builder.ts` contains the form field schema, validation and
 emitters. Preview quotas are sample values. `shared/site/gallery.ts` contains
 the gallery items; add `src` or `video` to replace a placeholder with local media.
 The download page requests release metadata from GitHub only in the browser,
 with a ten-minute session cache. File hashing stays on the device.
+
+The provider reference consumes `shared/provider/standard.json`, copied unchanged
+from the app repository's generated `provider_standard.g.json`. Bilingual prose
+is keyed by field path in `shared/provider/reference.ts`. Refresh the snapshot
+when the app standard changes; do not restore the archived header schema.
+Provider accent colors use `ReClash-View: app.color:RRGGBB`, not `ReClash-Hex`.
+Mock responses, builder output and documentation must agree with that snapshot.
+`ReClash-SubscriptionType` supplies a display-only `test`, `promo` or `dev` badge;
+all mock subscriptions declare `test`, and the builder can export each type.
+Mock import links carry an encoded profile name as well as the subscription URL.
+The client reads native response metadata during import, including YAML responses.
+FlClashX headers require the app's explicit compatibility mode; they are not
+unconditional aliases in the native standard.
 
 `shared/motion/core.ts` contains the original spring presets, integration,
 CSS easing simulation and blob geometry without browser dependencies.

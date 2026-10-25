@@ -9,7 +9,7 @@ const { language, t } = useText()
     <div class="foot-grid">
       <div class="foot-about">
         <SiteLink class="logo" :to="pagePath(language, 'index')"><BrandMark class="logo-mark" />ReClash</SiteLink>
-        <p>{{ t("Клиент для mihomo с обходом DPI. Не продаёт доступ, не выдаёт подписки и не заменяет вашу осторожность.", "A mihomo client with DPI bypass. It does not sell access, provide subscriptions or replace your judgment.") }}</p>
+        <p>{{ t("Открытый клиент для mihomo с маршрутизацией RCX. Не продаёт доступ и не выдаёт подписки.", "An open-source mihomo client with RCX routing. It does not sell access or provide subscriptions.") }}</p>
         <div class="foot-social">
           <SiteLink class="btn btn-ghost btn-s" to="https://github.com/Hoxiee/ReClash">GitHub</SiteLink>
           <SiteLink class="btn btn-ghost btn-s" to="https://t.me/ReClashApp">Telegram</SiteLink>
@@ -22,11 +22,10 @@ const { language, t } = useText()
       </ul></div>
       <div><h4>{{ t("Исходники", "Source") }}</h4><ul>
         <li><SiteLink to="https://github.com/Hoxiee/ReClash">GitHub</SiteLink></li><li><SiteLink to="https://github.com/Hoxiee/ReClash/releases">{{ t("Релизы", "Releases") }}</SiteLink></li>
-        <li><SiteLink to="https://github.com/Hoxiee/ReClash/issues">{{ t("Баг-трекер", "Issue tracker") }}</SiteLink></li><li><SiteLink to="https://github.com/Hoxiee/ReClash/blob/main/LICENSE">GPL-3.0</SiteLink></li>
+        <li><SiteLink to="https://github.com/Hoxiee/ReClash/issues">{{ t("Баг-трекер", "Issue tracker") }}</SiteLink></li><li><SiteLink to="https://github.com/Hoxiee/ReClash/blob/dev/LICENSE">GPL-3.0</SiteLink></li>
       </ul></div>
       <div><h4>{{ t("Стоит на плечах", "Built on") }}</h4><ul>
         <li><SiteLink to="https://github.com/chen08209/FlClash">FlClash</SiteLink></li><li><SiteLink to="https://github.com/MetaCubeX/mihomo">mihomo</SiteLink></li>
-        <li><SiteLink to="https://github.com/hufrea/byedpi">ByeDPI</SiteLink></li>
       </ul></div>
     </div>
     <div class="wordmark" aria-hidden="true"><BrandMark class="wordmark-mark" mono /><span class="wordmark-text">ReClash</span></div>

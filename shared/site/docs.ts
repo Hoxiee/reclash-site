@@ -31,7 +31,7 @@ export type DocBlock =
 
 export type DocSection = { id: string, title: string, keys: string, blocks: DocBlock[] }
 
-export const providerHeadersSource = 'https://github.com/Hoxiee/ReClash/blob/main/PROVIDER_HEADERS.md'
+export const providerHeadersSource = 'https://github.com/Hoxiee/ReClash/blob/dev/PROVIDER_HEADERS.md'
 
 // A header in inline code links to its card when the shared reference catalogue has one.
 export function referenceAnchor(name: string): string | undefined {
@@ -75,7 +75,7 @@ const overviewExample = [
   'Subscription-Userinfo: upload=13421772800; download=83994443776; total=214748364800; expire=1798761600',
   'Profile-Title: Nebula VPN',
   'ReClash-ServiceName: Nebula VPN',
-  'ReClash-Hex: 2FD3B6:vibrant',
+  'ReClash-View: app.color:2FD3B6;app.style:vivid',
   'ReClash-SupportURL: https://nebula.example/help',
 ].join('\n')
 
@@ -90,22 +90,14 @@ const curlTest = (language: Language) => [
 // Priority chains: the first non-empty value wins. {m} and {h} are unit placeholders.
 const aliasChains: Array<{ label: Bi, chain: string[] }> = [
   { label: b('Объявление', 'Announcement'), chain: ['reclash-announce', 'announce'] },
-  { label: b('URL поддержки', 'Support URL'), chain: ['reclash-supporturl', 'support-url', 'flclashx-supporturl'] },
-  { label: b('Интервал обновления', 'Update interval'), chain: ['reclash-autoupdateinterval ({m})', 'profile-update-interval ({h})', 'flclashx-autoupdateinterval ({h})'] },
-  { label: b('Имя сервиса', 'Service name'), chain: ['reclash-servicename', 'flclashx-servicename'] },
-  { label: b('Логотип сервиса', 'Service logo'), chain: ['reclash-servicelogo', 'flclashx-servicelogo'] },
-  { label: b('Группа сервера', 'Server-info group'), chain: ['reclash-serverinfo', 'flclashx-serverinfo'] },
-  { label: b('URL тарифа', 'Plan URL'), chain: ['reclash-buyplan', 'flclashx-buyplan'] },
-  { label: b('URL трафика', 'Traffic URL'), chain: ['reclash-buytraffic', 'flclashx-buytraffic'] },
-  { label: b('URL отчёта', 'Report URL'), chain: ['reclash-reporturl', 'report-url'] },
-  { label: b('Вид прокси', 'Proxy view'), chain: ['reclash-view', 'flclashx-view'] },
-  { label: b('Тема', 'Theme'), chain: ['reclash-hex', 'flclashx-hex'] },
-  { label: b('Фон', 'Background'), chain: ['reclash-background', 'flclashx-background'] },
-  { label: b('Новый домен', 'New domain'), chain: ['reclash-newdomain', 'flclashx-newdomain'] },
+  { label: b('Поддержка', 'Support'), chain: ['reclash-supporturl', 'support-url'] },
+  { label: b('Личный кабинет', 'Account page'), chain: ['reclash-webpageurl', 'profile-web-page-url'] },
+  { label: b('Интервал обновления', 'Update interval'), chain: ['reclash-autoupdateinterval ({m})', 'profile-update-interval ({h})'] },
+  { label: b('Скрытие URL', 'URL visibility'), chain: ['reclash-hideurl', 'hide-url'] },
 ]
 
 const hwidRequest: Array<[string, Bi]> = [
-  ['x-hwid', b('Стабильный 16-символьный хеш устройства', 'Stable 16-character device hash')],
+  ['x-hwid', b('32-символьный шестнадцатеричный идентификатор устройства', '32-character hexadecimal device identifier')],
   ['x-device-os', b('Название ОС', 'Operating-system name')],
   ['x-ver-os', b('Версия ОС', 'Operating-system version')],
   ['x-device-model', b('Модель устройства или имя хоста', 'Device model or host name')],
@@ -155,11 +147,11 @@ const sections: SourceSection[] = [
           'Стандартные заголовки Clash — `subscription-userinfo`, `profile-title` и другие. Если вы их уже отдаёте, менять ничего не нужно.',
           'Standard Clash headers — `subscription-userinfo`, `profile-title` and the rest. If you already send them, nothing changes.') },
         { term: b('ReClash', 'ReClash'), tag: b('reclash-*', 'reclash-*'), body: b(
-          'Заголовки `reclash-*` — всё, что делает панель фирменной: тема, кольцо, виджеты, объявления. Понимает только ReClash.',
-          'The `reclash-*` headers — everything that makes the dashboard yours: theme, ring, widgets, announcements. Only ReClash reads them.') },
-        { term: b('Псевдонимы', 'Aliases'), tag: b('flclashx-*', 'flclashx-*'), body: b(
-          'Заголовки `flclashx-*`, которые ReClash читает ради совместимости — чтобы вам не пришлось ничего переделывать. См. [«Совместимость»](#compat).',
-          'The `flclashx-*` headers ReClash reads for compatibility — so you need not redo anything. See [“Compatibility”](#compat).') },
+          'Заголовки `reclash-*` — всё, что делает панель фирменной: оформление, виджеты, объявления и маршрутизация. Понимает только ReClash.',
+          'The `reclash-*` headers — everything that makes the dashboard yours: appearance, widgets, announcements and routing. Only ReClash reads them.') },
+        { term: b('Псевдонимы', 'Aliases'), tag: b('support-url, announce', 'support-url, announce'), body: b(
+          'Общие заголовки `support-url`, `profile-web-page-url`, `announce`, `profile-update-interval` и `hide-url`. Адаптер FlClashX включается отдельно — см. [«Совместимость»](#compat).',
+          'Common headers: `support-url`, `profile-web-page-url`, `announce`, `profile-update-interval` and `hide-url`. The FlClashX adapter is enabled separately; see [“Compatibility”](#compat).') },
       ] },
       { kind: 'note', tone: 'info', text: b(
         'Заголовки — это подсказки оформления, а не механизм доверия. Пользователь может переопределить почти всё, что вы прислали.',
@@ -176,14 +168,14 @@ const sections: SourceSection[] = [
         'These rules hold for every header at once — keep them in mind as you read the [reference](page:reference).') },
       { kind: 'rules', items: [
         { term: b('Регистр не важен', 'Case does not matter'), body: b(
-          'Имена заголовков сравниваются без учёта регистра: `ReClash-Hex`, `reclash-hex` и `RECLASH-HEX` — одно и то же.',
-          'Header names are compared case-insensitively: `ReClash-Hex`, `reclash-hex` and `RECLASH-HEX` are the same header.') },
+          'Имена заголовков сравниваются без учёта регистра: `ReClash-View`, `reclash-view` и `RECLASH-VIEW` — одно и то же.',
+          'Header names are compared case-insensitively: `ReClash-View`, `reclash-view` and `RECLASH-VIEW` are the same header.') },
         { term: b('Приоритет у reclash-*', 'reclash-* wins'), body: b(
-          'Если пришли и `reclash-*`, и псевдоним, и общий заголовок — побеждает `reclash-*`.',
-          'When `reclash-*`, an alias and a common header all arrive, `reclash-*` wins.') },
-        { term: b('Повторы склеиваются', 'Repeats are joined'), body: b(
-          'Несколько одинаковых заголовков соединяются через запятую — так же, как это делает HTTP.',
-          'Several identical headers are joined with commas, exactly as HTTP does.') },
+          'Каноническое имя проверяется раньше общего псевдонима. Некорректное каноническое значение не заменяется псевдонимом. HTTP-метаданные имеют приоритет над комментариями в теле.',
+          'The canonical name is checked before its common alias. An invalid canonical value does not fall back to the alias. HTTP metadata takes precedence over body comments.') },
+        { term: b('Не дублируйте одиночные поля', 'Do not repeat singleton fields'), body: b(
+          'Одиночное поле с несколькими значениями игнорируется с предупреждением. Задавайте каждый заголовок в одном месте. Лимиты: 8 КиБ на значение, 64 КиБ на все заголовки.',
+          'A singleton field with multiple values is ignored with a warning. Set each header in one place. Limits: 8 KiB per value, 64 KiB for all headers.') },
         { term: b('Пустое игнорируется', 'Empty is ignored'), body: b(
           'Пустые значения и неизвестные токены просто отбрасываются: сломать приложение опечаткой нельзя.',
           'Empty values and unknown tokens are dropped: a typo cannot break the app.') },
@@ -191,8 +183,8 @@ const sections: SourceSection[] = [
           'Текстовые заголовки принимают префикс `base64:` или `base64,`. Для кириллицы и эмодзи это обязательно — в HTTP-заголовке им не место.',
           'Text headers accept a `base64:` or `base64,` prefix. For Cyrillic and emoji it is mandatory — an HTTP header is no place for them.') },
         { term: b('Только HTTPS в ссылках', 'HTTPS only in links'), body: b(
-          'Все URL — абсолютные и по HTTPS. Исключение — фон, который допускает и `http`. Логин и пароль в URL запрещены.',
-          'All URLs are absolute and HTTPS. The one exception is the background, which also accepts `http`. Credentials in URLs are rejected.') },
+          'Для публикуемых ссылок используйте абсолютные HTTPS-адреса без логина и пароля. Не помещайте токен подписки в ссылки на поддержку, изображения или объявления.',
+          'Use absolute HTTPS URLs without credentials for published links. Do not put subscription tokens in support, image or announcement URLs.') },
       ] },
     ],
   },
@@ -202,12 +194,12 @@ const sections: SourceSection[] = [
     keys: 'flclashx алиасы aliases приоритет псевдонимы',
     blocks: [
       { kind: 'p', text: b(
-        'ReClash читает часть заголовков FlClashX, чтобы провайдерам не пришлось ничего переделывать. Порядок в таблице — порядок приоритета: побеждает первый непустой. В [справочнике](page:reference) псевдоним показан прямо на карточке своего заголовка.',
-        'ReClash reads some FlClashX headers so providers do not have to redo anything. The order in the table is the priority order: the first non-empty value wins. In the [reference](page:reference) the alias is shown right on its header\'s card.') },
+        'Таблица показывает общие псевдонимы текущего стандарта. Имена `flclashx-*` не являются общими псевдонимами: их преобразует отдельный адаптер, когда выбран режим совместимости FlClashX. Канонические заголовки ReClash имеют приоритет.',
+        'The table shows common aliases in the current standard. The `flclashx-*` names are not common aliases: a separate adapter transforms them when the FlClashX compatibility mode is selected. Canonical ReClash headers take precedence.') },
       { kind: 'aliases', head: [b('Что задаётся', 'What it sets'), b('Приоритет', 'Priority')] },
       { kind: 'note', tone: 'info', text: b(
-        'У надписи подключения, кольца, виджетов, `reclash-custom`, `reclash-settings` и запасных хостов псевдонимов нет — это возможности ReClash.',
-        'The active-protection text, hero ring, widgets, `reclash-custom`, `reclash-settings` and fallback hosts have no aliases — they are ReClash features.') },
+        'Старые `reclash-hex`, `reclash-heroring`, `reclash-heroeffect`, `reclash-activetext`, `reclash-custom` и `reclash-reporturl` не входят в текущий стандарт. Для цвета используйте `reclash-view` со значением `app.color:2FD3B6;app.style:vivid`. Для ограничений — `reclash-restrictions`.',
+        'The old `reclash-hex`, `reclash-heroring`, `reclash-heroeffect`, `reclash-activetext`, `reclash-custom` and `reclash-reporturl` are not in the current standard. For color use `reclash-view` with `app.color:2FD3B6;app.style:vivid`. For restrictions use `reclash-restrictions`.') },
     ],
   },
   {
@@ -224,11 +216,11 @@ const sections: SourceSection[] = [
         'The output should carry your `reclash-*` and `subscription-userinfo`. If they are missing, the problem is between the panel and the client, not in the values themselves.') },
       { kind: 'problems', items: [
         { term: b('Заголовки не доходят до клиента', 'Headers never reach the client'), body: b(
-          'Почти всегда их срезает обратный прокси или CDN. nginx по умолчанию не пробрасывает произвольные заголовки апстрима — проверьте, что перед `location` подписки нет `proxy_hide_header` на `reclash-*`, а панель отдаёт их до прокси. Соберите готовый фрагмент для nginx или Caddy в [конструкторе](page:builder).',
-          'A reverse proxy or CDN is almost always stripping them. nginx does not forward arbitrary upstream headers by default — check that nothing `proxy_hide_header`s `reclash-*` before the subscription `location`, and that the panel emits them upstream of the proxy. Grab a ready nginx or Caddy snippet in the [builder](page:builder).') },
+          'Сравните ответы источника и публичного URL. Проверьте `proxy_hide_header`, преобразования CDN и правила кэширования. nginx обычно передаёт пользовательские заголовки ответа; `add_header` нужен, только если заголовок задаётся на самом прокси. Фрагмент nginx доступен в [конструкторе](page:builder).',
+          'Compare the origin and public URL responses. Check `proxy_hide_header`, CDN transformations and cache rules. nginx normally forwards custom response headers; use `add_header` only when defining the header at the proxy. The [builder](page:builder) provides an nginx snippet.') },
         { term: b('Кириллица приходит мусором', 'Cyrillic arrives as garbage'), body: b(
-          'HTTP-заголовок несёт только ASCII. Любой не-латинский текст — имя сервиса, объявление, надпись подключения — кодируйте префиксом `base64:`. Конструктор делает это автоматически.',
-          'An HTTP header carries ASCII only. Encode any non-Latin text — service name, announcement, connection headline — with a `base64:` prefix. The builder does this for you.') },
+          'HTTP-заголовок несёт только ASCII. Любой не-латинский текст — имя сервиса или объявление — кодируйте префиксом `base64:`. Конструктор делает это автоматически.',
+          'An HTTP header carries ASCII only. Encode any non-Latin text — service name or announcement — with a `base64:` prefix. The builder does this for you.') },
         { term: b('Значения задвоились', 'Values show up twice'), body: b(
           'Панель уже отдаёт заголовок, а ваш прокси добавляет его ещё раз: `add_header` в nginx дописывает, а не заменяет. Спрячьте исходный через `proxy_hide_header` либо задавайте значение в одном месте.',
           'The panel already sends a header and your proxy adds it again: nginx\'s `add_header` appends rather than replaces. Hide the original with `proxy_hide_header`, or set the value in one place only.') },
@@ -236,8 +228,8 @@ const sections: SourceSection[] = [
           'Если подписка идёт через CDN, он может отдавать закэшированный ответ с прежними заголовками. Исключите путь подписки из кэша или отдавайте `Cache-Control: no-store` на нём.',
           'If the subscription goes through a CDN, it may serve a cached response with the old headers. Exclude the subscription path from the cache, or send `Cache-Control: no-store` on it.') },
         { term: b('Заголовок игнорируется, хотя дошёл', 'The header arrives but is ignored'), body: b(
-          'Проверьте написание и значение по [справочнику](page:reference): неизвестные токены и пустые значения молча отбрасываются. Регистр имени роли не играет, а вот `reclash-view` и `reclash-hex` разбираются по строгим правилам — см. [«Правила разбора»](#rules).',
-          'Check the spelling and value against the [reference](page:reference): unknown tokens and empty values are dropped silently. The name\'s case does not matter, but `reclash-view` and `reclash-hex` parse by strict rules — see [“Parsing rules”](#rules).') },
+          'Проверьте написание и значение по [справочнику](page:reference): неизвестные токены и пустые значения молча отбрасываются. Регистр имени роли не играет, а вот `reclash-view` и `reclash-widgets` разбираются по строгим правилам — см. [«Правила разбора»](#rules).',
+          'Check the spelling and value against the [reference](page:reference): unknown tokens and empty values are dropped silently. The name\'s case does not matter, but `reclash-view` and `reclash-widgets` parse by strict rules — see [“Parsing rules”](#rules).') },
       ] },
     ],
   },
@@ -268,8 +260,8 @@ const sections: SourceSection[] = [
           'Add `reclash-servicename` and a logo: the dashboard stops being nameless.'),
         b('Поставьте `reclash-supporturl` — меньше писем «куда писать».',
           'Set `reclash-supporturl` — fewer “where do I write?” messages.'),
-        b('Выберите цвет через `reclash-hex` и проверьте его в живом превью [конструктора](page:builder).',
-          'Pick a colour via `reclash-hex` and check it in the live preview in the [builder](page:builder).'),
+        b('Выберите цвет через `reclash-view` (`app.color:RRGGBB`) и проверьте его в живом превью [конструктора](page:builder).',
+          'Pick a colour via `reclash-view` (`app.color:RRGGBB`) and check it in the live preview in the [builder](page:builder).'),
         b('Проверьте ответ курлом: `curl -sI \'https://…/sub\' | grep -i reclash`.',
           'Verify with curl: `curl -sI \'https://…/sub\' | grep -i reclash`.'),
         b('Убедитесь, что заголовки доживают до клиента через ваш прокси и CDN.',

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { providerStandard } from '../../shared/provider/standard'
 
 const keys = ['ember', 'aurora', 'nimbus', 'sentinel', 'relay', 'gatekeeper', 'meridian', 'ledger']
 const errors: string[] = []
@@ -19,7 +20,11 @@ for (const [language, heading] of [['ru', 'Мок-подписки'], ['en', 'Mo
       const stand = page.locator(`#mock-${key}`)
       const url = (await stand.locator('.mock-url pre code').textContent())!.trim()
       expect(url).toMatch(new RegExp(`^https?://[^/]+/mock/${key}$`))
-      await expect(stand.locator('.mock-acts a')).toHaveAttribute('href', `reclash://install-config?url=${encodeURIComponent(url)}`)
+      const link = new URL((await stand.locator('.mock-acts a').getAttribute('href'))!)
+      expect(link.protocol).toBe('reclash:')
+      expect(link.host).toBe('install-config')
+      expect(link.searchParams.get('url')).toBe(url)
+      expect(link.searchParams.get('name')).toBe((await stand.locator('h3').textContent())!.trim())
     }
     await expect(page.locator('#mock-ember .mock-pv')).toHaveClass(/theme-scope/)
     const ember = page.locator('#mock-ember .mock-yaml')
@@ -40,7 +45,10 @@ test('mock endpoints serve the YAML body with the headers the page shows', async
     expect(headers['access-control-allow-origin']).toBe('*')
     expect(headers['cache-control']).toBe('no-store')
     expect(headers['content-type']).toBe('text/yaml; charset=utf-8')
+    expect(headers['reclash-subscriptiontype']).toBe('test')
     for (const [name, value] of rows) expect(headers[name!.toLowerCase()], name).toBe(value)
+    const supported = new Set(providerStandard.fields.map(field => field.name))
+    for (const name of Object.keys(headers).filter(name => name.startsWith('reclash-'))) expect(supported.has(name), name).toBe(true)
     const body = await response.text()
     expect(body.startsWith(`# Mock subscription: ${key}. Fake nodes, for testing ReClash only.\n`)).toBe(true)
     expect(body).toContain('proxy-groups:')

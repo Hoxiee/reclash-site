@@ -4,7 +4,7 @@ import type { Language } from '../site/routes'
 
 // Display helpers for the mock-subs page: readable facts and a preview-only brand scope.
 
-/** ReClash's own seed, used when a stand sends no ReClash-Hex. */
+/** ReClash's own seed, used when a stand sends no app.color. */
 export const stockSeed = '7C5CFF'
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -12,12 +12,12 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 
 /** Brand variables for a `.theme-scope` element, clamped like the site theme so text stays readable. */
 export function mockTheme(profile: MockProfile) {
-  const [hex, ...variant] = (profile.response.hex ?? '').split(':')
+  const hex = profile.response.hex ?? ''
   const seed = normHex(hex)
   const { l, c, h } = hexToOklch(seed ?? stockSeed)
   return {
     seed,
-    pureBlack: variant.includes('pureblack'),
+    pureBlack: profile.response.view?.includes('app.black:true') ?? false,
     style: { '--bl': clamp(l, 0.68, 0.84).toFixed(4), '--bc': Math.min(c, 0.19).toFixed(4), '--bh': h.toFixed(2) },
   }
 }
@@ -54,7 +54,7 @@ export function mockFacts(profile: MockProfile, now: number, language: Language)
   return { traffic, expires, share, refresh, nodes: profile.nodes }
 }
 
-/** The client's default hero ring, used when a stand sends no ReClash-HeroRing. */
+/** Decorative ring for the schematic preview, not a provider-controlled app element. */
 export const stockRing = ['10EDF8', '2A8BFD', '6C58FC']
 
 /**
