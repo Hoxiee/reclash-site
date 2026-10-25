@@ -9,6 +9,16 @@ export const portedPages = {
       "en": "Documentation for ReClash subscription response headers: how the mechanism works, parsing rules, FlClashX compatibility, delivery through a proxy and CDN, HWID and a rollout checklist."
     }
   },
+  "rcx": {
+    "title": {
+      "ru": "Маршрутизация RCX — ReClash",
+      "en": "RCX auto routing — ReClash"
+    },
+    "description": {
+      "ru": "Профили, сценарии и маршруты RCX: как ReClash выбирает узлы, объясняет решения и позволяет управлять маршрутизацией.",
+      "en": "RCX profiles, scenarios and routes: how ReClash selects servers, explains decisions and lets you control routing."
+    }
+  },
   "reference": {
     "title": {
       "ru": "Справочник по заголовкам подписки — ReClash",
@@ -65,8 +75,8 @@ export const portedPages = {
       "en": "ReClash — an open-source mihomo client"
     },
     "description": {
-      "ru": "ReClash — открытый клиент для mihomo с маршрутизацией RCX, подписками разных форматов и инструментами диагностики. Windows, macOS, Linux, Android.",
-      "en": "ReClash is an open-source mihomo client with RCX routing, multi-format subscriptions and diagnostic tools. Windows, macOS, Linux, Android."
+      "ru": "ReClash — открытый клиент для mihomo с профилями, сценариями и маршрутами RCX, импортом подписок и отдельных узлов, диагностикой и упрощённой панелью по желанию. Windows, macOS, Linux и Android.",
+      "en": "ReClash is an open-source mihomo client with RCX profiles, scenarios and routes, subscription and node import, diagnostics and an optional simplified dashboard. Windows, macOS, Linux and Android."
     }
   },
   "start": {

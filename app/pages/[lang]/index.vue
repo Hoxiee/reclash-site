@@ -4,7 +4,7 @@ usePageMeta('index')
 const { language, t } = useText()
 const manifesto = computed(() => [
   t('Ядро mihomo целиком.', 'The full mihomo core.'),
-  t('RCX подбирает узлы по вашему профилю маршрутизации.', 'RCX selects nodes using your routing profile.'),
+  t('RCX выбирает узлы по профилям и сценариям.', 'RCX selects nodes with profiles and scenarios.'),
   t('Открытый код на четырёх платформах.', 'Open source on four platforms.'),
 ].join(' ').split(' '))
 </script>
@@ -50,7 +50,7 @@ const manifesto = computed(() => [
             <span class="hl"><span class="slot" :data-words="t('отобрать|купить|отозвать|выключить', 'taken|bought|revoked|switched off')"><span class="slot-in">{{ t("отобрать", "taken") }}</span></span><span class="hero-dot">.</span></span>
           </span>
         </h1>
-        <p class="hero-sub">{{ t("Клиент на ядре mihomo: подписки и отдельные узлы, автоматический выбор сервера RCX, TUN и инструменты диагностики. Открытый код на Windows, macOS, Linux и Android.", "A mihomo client for subscriptions and individual nodes, with RCX automatic server selection, TUN and diagnostic tools. Open source on Windows, macOS, Linux and Android.") }}</p>
+        <p class="hero-sub">{{ t("Клиент на ядре mihomo: подписки и отдельные узлы, автоматический выбор серверов RCX по профилям и сценариям, TUN и инструменты диагностики. Открытый код на Windows, macOS, Linux и Android.", "A mihomo client for subscriptions and individual nodes, with RCX server selection through profiles and scenarios, TUN and diagnostic tools. Open source on Windows, macOS, Linux and Android.") }}</p>
         <div class="hero-cta">
           <SiteLink class="btn btn-primary" :to="pagePath(language, 'download')">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -76,7 +76,7 @@ const manifesto = computed(() => [
   <div class="wrap lineage">
     <div class="lineage-copy">
       <h2 id="about-title" data-words>{{ t("Форк FlClash на ядре mihomo.", "A FlClash fork powered by mihomo.") }}</h2>
-      <p class="lede" data-fade>{{ t("ReClash развивает основу FlClash: добавляет маршрутизацию RCX, импорт подписок разных форматов и метаданные провайдера. Интерфейс на Material You адаптируется к телефону и рабочему столу; соединения, DNS-запросы и логи доступны в инструментах.", "ReClash builds on FlClash with RCX routing, multi-format subscription import and provider metadata. Its Material You interface adapts to phones and desktops, with connections, DNS queries and logs available in Tools.") }}</p>
+      <p class="lede" data-fade>{{ t("ReClash развивает основу FlClash: добавляет маршрутизацию RCX, импорт подписок и отдельных узлов, метаданные провайдера и упрощённую панель, которую можно включить по желанию. На телефоне панель переключается между страницами свайпом; провайдер может задать вид кнопки включения. Интерфейс на Material You адаптируется к телефону и рабочему столу; соединения, DNS-запросы и логи доступны в инструментах.", "ReClash builds on FlClash with RCX routing, subscription and individual-node import, provider metadata and an optional simplified dashboard. On phones, swipe between its pages; providers can set the power button's appearance. The Material You interface adapts to phones and desktops, with connections, DNS queries and logs available in Tools.") }}</p>
       <p class="lineage-note" data-fade style="--d:120ms">{{ t("Проект не аффилирован с FlClash, mihomo или FlClashX.", "The project is not affiliated with FlClash, mihomo or FlClashX.") }} <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-flclash'">{{ t("Чем отличается от FlClash", "How it differs from FlClash") }}</SiteLink></p>
     </div>
 
@@ -140,8 +140,8 @@ const manifesto = computed(() => [
           <circle class="f" cx="12" cy="48" r="4"/><circle cx="52" cy="16" r="4" fill="var(--fg)"/>
         </svg>
         <h3>{{ t("Автоматический выбор RCX", "RCX automatic selection") }}</h3>
-        <p>{{ t("Профиль маршрутизации задаёт проверки, приоритеты и условия переключения. RCX оценивает узлы в группе, объясняет выбор и учитывает бюджет проверок; при желании узел можно закрепить вручную.", "A routing profile defines checks, priorities and switching conditions. RCX evaluates nodes in a group, explains its choice and respects a probe budget. You can also pin a node manually.") }}</p>
-        <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-smart'">{{ t("Как работает RCX", "How RCX works") }}</SiteLink>
+        <p>{{ t("Профили RCX задают порядок серверов и условия выбора для групп. Сценарии могут управлять несколькими группами, режимом подключения, поведением для разных сетей и маршрутами отдельных сайтов. Решение объясняется; сервер можно закрепить или выбрать вручную.", "RCX profiles define server order and selection conditions for groups. Scenarios can coordinate groups, connection mode, network-specific behavior and routes for selected traffic. Decisions are explained, and you can pin a server or choose one manually.") }}</p>
+        <SiteLink class="tlink" :to="pagePath(language, 'rcx')">{{ t("Руководство по RCX", "RCX guide") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-prov" viewBox="0 0 64 64" aria-hidden="true">
@@ -150,7 +150,7 @@ const manifesto = computed(() => [
           <path class="f drop" d="M32 4C32 4 25 12 25 16.5a7 7 0 0 0 14 0C39 12 32 4 32 4Z"/>
         </svg>
         <h3>{{ t("Подписка с контекстом", "Subscriptions with context") }}</h3>
-        <p>{{ t("Имя сервиса, логотип, объявления, остаток трафика, ссылки на поддержку и продление приходят вместе с подпиской. Оформление и настройки провайдера применяются с учётом ваших предпочтений.", "Service name, logo, announcements, remaining traffic, support and renewal links arrive with the subscription. Provider appearance and settings respect your preferences.") }}</p>
+        <p>{{ t("Имя сервиса, логотип, полные объявления, остаток трафика, ссылки на поддержку и продление приходят вместе с подпиской. Оформление и настройки провайдера применяются с учётом ваших предпочтений.", "Service name, logo, full announcements, remaining traffic, support and renewal links arrive with the subscription. Provider appearance and settings respect your preferences.") }}</p>
         <SiteLink class="tlink" to="#providers">{{ t("Попробовать на этой странице", "Try it on this page") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
@@ -161,7 +161,7 @@ const manifesto = computed(() => [
           <rect class="b pb" x="20" y="26" width="11" height="12" rx="3"/>
         </svg>
         <h3>{{ t("Диагностика под рукой", "Diagnostics within reach") }}</h3>
-        <p>{{ t("Смотрите активные соединения, запросы, DNS и логи. Проверяйте задержку узлов и качество выходного IP, прежде чем менять конфигурацию наугад.", "Inspect active connections, requests, DNS and logs. Check node latency and exit IP quality before changing your configuration blindly.") }}</p>
+        <p>{{ t("Смотрите активные соединения, запросы, DNS и логи. Если настройка «Скрыть IP» выключена, адрес выхода виден в заголовке карточки; нажатие открывает оценку качества IP или запускает проверку, если результата ещё нет.", "Inspect active connections, requests, DNS and logs. Unless Hide IP is enabled, the exit address appears in the card header; tap it to see the IP quality details or start a check if no result is available yet.") }}</p>
         <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-trouble'">{{ t("Если не подключается", "Connection troubleshooting") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
@@ -276,7 +276,7 @@ const manifesto = computed(() => [
     <ul class="plats" data-group data-items=".plat" data-cpull="0.03">
       <li class="plat" data-mg><h3>Windows</h3><ul><li>{{ t("Windows 10 и новее", "Windows 10 or later") }}</li><li>{{ t("Установщик и портативная сборка", "Installer and portable build") }}</li><li>{{ t("TUN и системный прокси", "TUN and system proxy") }}</li></ul></li>
       <li class="plat" data-mg><h3>macOS</h3><ul><li>{{ t("macOS 12 и новее · Intel и Apple silicon", "macOS 12 or later · Intel and Apple silicon") }}</li><li>{{ t("DMG-образ", "DMG image") }}</li><li>{{ t("TUN через системного помощника", "TUN through a system helper") }}</li></ul></li>
-      <li class="plat" data-mg><h3>Linux</h3><ul><li>AppImage, deb, rpm</li><li>{{ t("x86_64 и arm64", "x86_64 and arm64") }}</li><li>{{ t("TUN и системный прокси", "TUN and system proxy") }}</li></ul></li>
+      <li class="plat" data-mg><h3>Linux</h3><ul><li>{{ t("AppImage (x86_64), DEB, RPM и pacman", "AppImage (x86_64), DEB, RPM and pacman") }}</li><li>{{ t("Для ARM64 доступны DEB, RPM и pacman", "DEB, RPM and pacman packages are available for ARM64") }}</li><li>{{ t("TUN и системный прокси", "TUN and system proxy") }}</li></ul></li>
       <li class="plat" data-mg><h3>Android</h3><ul><li>{{ t("Android с поддержкой текущей сборки Flutter", "Android supported by the current Flutter build") }}</li><li>{{ t("APK по архитектурам", "APKs for each architecture") }}</li><li>{{ t("Режим VPN-сервиса", "VPN service mode") }}</li></ul></li>
     </ul>
     <p class="plats-foot" data-fade>{{ t("Актуальные файлы всегда на", "Current files are always on the") }} <SiteLink class="tlink" :to="pagePath(language, 'download')">{{ t("странице загрузок", "download page") }}</SiteLink>.</p>

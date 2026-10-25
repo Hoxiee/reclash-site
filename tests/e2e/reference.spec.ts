@@ -52,6 +52,24 @@ test('a fragment opens and reveals its header, also past a filter and on the leg
   await expect(page.locator('#h-x-hwid-max-devices-reached')).toBeInViewport()
 })
 
+test('new provider power-button header documents its allowed values in both languages', async ({ page }) => {
+  for (const [language, noSetting] of [['ru', 'Настройки для пользователя нет'], ['en', 'There is no user setting']] as const) {
+    await page.goto(`/${language}/reference`)
+    const entry = page.locator('#h-reclash-powerbutton')
+    await entry.locator('summary').click()
+    await expect(entry).toHaveAttribute('open', '')
+    await expect(entry.locator('.codeblock pre')).toContainText('reclash-powerbutton: shape:flower;type:outline')
+    await expect(entry).toContainText(noSetting)
+    for (const value of ['cookie', 'circle', 'scallop', 'sunny', 'flower', 'clover', 'burst', 'solid', 'tonal', 'outline']) {
+      await expect(entry.getByText(value, { exact: true })).toBeVisible()
+    }
+
+    const announcement = page.locator('#h-reclash-announce')
+    await announcement.locator('summary').click()
+    await expect(announcement).toContainText(language === 'ru' ? 'показывается на панели' : 'shown in full on the dashboard')
+  }
+})
+
 test('cards toggle from the keyboard and the catalogue is translated', async ({ page }) => {
   await page.goto('/ru/reference')
   await hydrated(page)

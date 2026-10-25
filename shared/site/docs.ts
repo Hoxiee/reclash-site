@@ -147,15 +147,15 @@ const sections: SourceSection[] = [
           'Стандартные заголовки Clash — `subscription-userinfo`, `profile-title` и другие. Если вы их уже отдаёте, менять ничего не нужно.',
           'Standard Clash headers — `subscription-userinfo`, `profile-title` and the rest. If you already send them, nothing changes.') },
         { term: b('ReClash', 'ReClash'), tag: b('reclash-*', 'reclash-*'), body: b(
-          'Заголовки `reclash-*` — всё, что делает панель фирменной: оформление, виджеты, объявления и маршрутизация. Понимает только ReClash.',
-          'The `reclash-*` headers — everything that makes the dashboard yours: appearance, widgets, announcements and routing. Only ReClash reads them.') },
+          'Заголовки `reclash-*` — всё, что делает панель фирменной: оформление, виджеты, кнопка включения, объявления и маршрутизация. `reclash-powerbutton` задаёт вид кнопки только со стороны провайдера; пользовательской настройки нет. Понимает эти заголовки только ReClash.',
+          'The `reclash-*` headers — everything that makes the dashboard yours: appearance, widgets, the power button, announcements and routing. Only the provider can set the look with `reclash-powerbutton`; there is no user setting. Only ReClash reads these headers.') },
         { term: b('Псевдонимы', 'Aliases'), tag: b('support-url, announce', 'support-url, announce'), body: b(
           'Общие заголовки `support-url`, `profile-web-page-url`, `announce`, `profile-update-interval` и `hide-url`. Адаптер FlClashX включается отдельно — см. [«Совместимость»](#compat).',
           'Common headers: `support-url`, `profile-web-page-url`, `announce`, `profile-update-interval` and `hide-url`. The FlClashX adapter is enabled separately; see [“Compatibility”](#compat).') },
       ] },
       { kind: 'note', tone: 'info', text: b(
-        'Заголовки — это подсказки оформления, а не механизм доверия. Пользователь может переопределить почти всё, что вы прислали.',
-        'Headers are presentation hints, not a trust mechanism. The user can override nearly everything you send.') },
+        'Заголовки — это подсказки оформления, а не механизм доверия. Пользователь может переопределить почти всё, что вы прислали. Маршрутизация RCX настраивается отдельно — см. [руководство RCX](page:rcx).',
+        'Headers are presentation hints, not a trust mechanism. The user can override nearly everything you send. RCX routing is configured separately; see the [RCX guide](page:rcx).') },
     ],
   },
   {

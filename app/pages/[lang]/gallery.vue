@@ -21,7 +21,7 @@ const { language, t } = useText()
 
 <section class="sub-sec" style="padding-top:0;border-top:0"><div class="wrap">
   <GalleryGrid />
-  <p class="g-empty">{{ t("Иллюстрации не воспроизводят интерфейс приложения. Возможности текущей сборки описаны на главной странице и в быстром старте.", "These illustrations do not reproduce the app interface. The home page and quick start describe the current build.") }}</p>
+  <p class="g-empty">{{ t("Иллюстрации не воспроизводят интерфейс приложения. Возможности текущей сборки описаны на главной странице, в быстром старте и", "These illustrations do not reproduce the app interface. The current build is described on the home page, in the quick start and in the") }} <SiteLink class="tlink" :to="pagePath(language, 'rcx')">{{ t("руководстве по RCX", "RCX guide") }}</SiteLink>.</p>
 </div></section>
 </div>
 </template>

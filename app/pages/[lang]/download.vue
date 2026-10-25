@@ -52,7 +52,7 @@ const buildScript = computed(() => [
       <li class="pcard" data-mg><h3>macOS</h3><span class="fmt">DMG</span><div class="arch"><span>Apple silicon</span><span>Intel</span></div>
         <p>{{ t("Сборка не из App Store: при первом запуске откройте её через контекстное меню → «Открыть».", "This build is outside the App Store. On first launch, use the context menu → Open.") }}</p></li>
       <li class="pcard" data-mg><h3>Linux</h3><span class="fmt">AppImage, DEB, RPM, pacman</span><div class="arch"><span>x64</span><span>ARM64</span></div>
-        <p>{{ t("AppImage запускается без установки — не забудьте", "AppImage runs without installation. Remember to run") }} <code>chmod +x</code>{{ t(". Для TUN установите системного помощника из приложения.", ". Install the system helper from the app to use TUN.") }}</p></li>
+        <p>{{ t("AppImage доступен для x64 — перед запуском выполните", "AppImage is available for x64; before launching, run") }} <code>chmod +x</code>{{ t(". Для ARM64 доступны DEB, RPM и pacman. Для TUN установите системного помощника из приложения.", ". ARM64 packages are DEB, RPM and pacman. Install the system helper from the app to use TUN.") }}</p></li>
       <li class="pcard" data-mg><h3>Android</h3><span class="fmt">APK</span><div class="arch"><span>arm64-v8a</span><span>armeabi-v7a</span><span>x86_64</span></div>
         <p>{{ t("Для большинства телефонов —", "For most phones, choose") }} <code>arm64-v8a</code>{{ t(". Есть плитка в шторке, виджеты и Always-on VPN.", ". Includes a Quick Settings tile, widgets and Always-on VPN.") }}</p></li>
     </ul>

@@ -1,7 +1,8 @@
 # ReClash
 
-A bilingual Nuxt 4 site generated for Cloudflare Pages. The home, quick start, download and provider tools describe the current
-ReClash application in Russian and English. Fonts and styles are hosted locally.
+A bilingual Nuxt 4 site generated for Cloudflare Pages. The home, quick start,
+download, provider tools and RCX guide describe the current ReClash application
+in Russian and English. Fonts and styles are hosted locally.
 
 ## Local development
 
@@ -16,13 +17,11 @@ npm run dev
 The root page redirects before first paint: an explicit language switch stored
 in `localStorage` wins, otherwise the browser's preferred languages decide
 (Russian-reading locales go to `/ru`, everything else to `/en`). Without
-JavaScript it shows plain language links. Each language has `start`,
-`download`, `docs`, `reference`, `builder`, `mock-subs`, `report`, `gallery`
-and `motion` sections; report and motion keep their placeholders. The builder
-shares the site shell and developer tabs, emits raw headers and nginx lines,
-and colours only its preview card. Gallery tiles are explicitly labelled schematic illustrations, not app screenshots.
-Routes live in `shared/site/routes.ts`; SEO lives in `shared/site/seo.ts` and
-`app/composables/usePageMeta.ts`.
+JavaScript it shows plain language links. Each language has `start`, `download`,
+`docs`, `rcx`, `reference`, `builder`, `mock-subs`, `report`, `gallery` and
+`motion` routes. Report, mock subscriptions and motion are excluded from the
+sitemap. The provider builder, reference and RCX guide share the same routes
+and metadata registry.
 
 `shared/provider/builder.ts` contains the form field schema, validation and
 emitters. Preview quotas are sample values. `shared/site/gallery.ts` contains

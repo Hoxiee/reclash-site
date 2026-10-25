@@ -75,7 +75,7 @@ test('home, keyboard navigation and mobile layout work', async ({ page }) => {
   await page.keyboard.press('Enter')
   await expect(page.locator('#main')).toBeFocused()
   await page.setViewportSize({ width: 390, height: 844 })
-  for (const route of ['/ru', '/en', '/ru/start', '/en/start', '/ru/builder', '/en/builder', '/ru/gallery', '/en/gallery', '/en/reference', '/ru/mock-subs']) {
+  for (const route of ['/ru', '/en', '/ru/start', '/en/start', '/ru/builder', '/en/builder', '/ru/gallery', '/en/gallery', '/en/reference', '/ru/rcx', '/en/rcx', '/ru/mock-subs']) {
     await page.goto(route)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   }

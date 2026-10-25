@@ -35,6 +35,7 @@ function remember(next: 'ru' | 'en') {
         </button>
         <ul class="dd-panel" id="dd-dev" data-group data-items="a" data-cpull="0.04">
           <li><SiteLink data-mg :to="pagePath(language, 'docs')" :aria-current="page === 'docs' ? 'page' : undefined"><b>{{ t("Документация", "Documentation") }}</b><span class="s">{{ t("Как провайдер оформляет клиент заголовками", "How providers brand the client with headers") }}</span></SiteLink></li>
+          <li><SiteLink data-mg :to="pagePath(language, 'rcx')" :aria-current="page === 'rcx' ? 'page' : undefined"><b>{{ t("Маршрутизация RCX", "RCX auto routing") }}</b><span class="s">{{ t("Профили, сценарии и маршруты трафика", "Profiles, scenarios and traffic routes") }}</span></SiteLink></li>
           <li><SiteLink data-mg :to="pagePath(language, 'reference')" :aria-current="page === 'reference' ? 'page' : undefined"><b>{{ t("Заголовки", "Headers") }}</b><span class="s">{{ t("Справочник по всем reclash-* и псевдонимам", "Reference for all reclash-* headers and aliases") }}</span></SiteLink></li>
           <li><SiteLink data-mg :to="pagePath(language, 'builder')" :aria-current="page === 'builder' ? 'page' : undefined"><b>{{ t("Конструктор", "Builder") }}</b><span class="s">{{ t("Собрать заголовки и посмотреть превью", "Build headers and see a preview") }}</span></SiteLink></li>
           <li><SiteLink data-mg :to="pagePath(language, 'mock-subs')" :aria-current="page === 'mock-subs' ? 'page' : undefined"><b>{{ t("Мок-подписки", "Mock subscriptions") }}</b><span class="s">{{ t("Тестовые ответы для проверки клиента", "Sample responses for testing the client") }}</span></SiteLink></li>
@@ -63,6 +64,7 @@ function remember(next: 'ru' | 'en') {
   <h4>{{ t("Разработчикам", "Developers") }}</h4>
   <ul class="sub">
     <li><SiteLink :to="pagePath(language, 'docs')">{{ t("Документация", "Documentation") }}</SiteLink></li>
+    <li><SiteLink :to="pagePath(language, 'rcx')">{{ t("Маршрутизация RCX", "RCX auto routing") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'reference')">{{ t("Заголовки", "Headers") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'builder')">{{ t("Конструктор", "Builder") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'mock-subs')">{{ t("Мок-подписки", "Mock subscriptions") }}</SiteLink></li>

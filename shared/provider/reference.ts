@@ -103,7 +103,7 @@ const fieldProse: Record<string, [string, string, string]> = {
   'provider.webUrl': ['Ссылка на личный кабинет.', 'Account page link.', 'https://nebula.example/account'],
   'provider.buyPlanUrl': ['Продление тарифа. Необязательный суффикс задаёт порог в днях.', 'Plan renewal. An optional suffix sets the days-before-expiry threshold.', 'https://nebula.example/renew,3'],
   'provider.buyTrafficUrl': ['Покупка трафика. Необязательный суффикс задаёт порог остатка в процентах.', 'Traffic top-up. An optional suffix sets the remaining-traffic percentage threshold.', 'https://nebula.example/traffic,10'],
-  'provider.announce': ['Объявление провайдера. Для не-ASCII используйте base64:.', 'Provider announcement. Use base64: for non-ASCII text.', 'Maintenance tonight'],
+  'provider.announce': ['Объявление провайдера целиком показывается на панели. Для не-ASCII используйте base64:.', 'The provider announcement is shown in full on the dashboard. Use base64: for non-ASCII text.', 'Maintenance tonight'],
   'provider.announceUrl': ['Ссылка объявления.', 'Announcement link.', 'https://nebula.example/news'],
   'provider.notice': ['Дополнительное уведомление провайдера.', 'Additional provider notice.', 'Check your account'],
   'provider.noticeUrl': ['Ссылка дополнительного уведомления.', 'Additional notice link.', 'https://nebula.example/account'],
@@ -116,6 +116,7 @@ const fieldProse: Record<string, [string, string, string]> = {
   'presentation.widgets': ['Предлагает набор виджетов панели. Неизвестные имена игнорируются.', 'Suggests dashboard widgets. Unknown names are ignored.', 'currentOutbound,networkSpeed,profiles,proxyGroups'],
   'presentation.background': ['Фоновое изображение и необязательная непрозрачность 1–100. Без суффикса — 8 %.', 'Background image and optional opacity from 1 to 100. Without a suffix: 8%.', 'https://nebula.example/background.png,8'],
   'presentation.view': ['Предлагает оформление приложения и страницы прокси. Цвет задаётся app.color, стиль — app.style.', 'Suggests app and proxy-page appearance. Set color with app.color and style with app.style.', 'app.color:2FD3B6;app.style:vivid;proxies.type:list;proxies.sort:delay'],
+  'presentation.powerButton': ['Задаёт форму и тип кнопки включения упрощённой панели, когда подключение активно. Настройки для пользователя нет; неизвестные ключи и значения игнорируются.', 'Sets the shape and type of the simplified dashboard power button while connected. There is no user setting; unknown keys and values are ignored.', 'shape:flower;type:outline'],
   'reminder.expireDays': ['Пороги напоминаний до окончания подписки, в днях.', 'Reminder thresholds before subscription expiry, in days.', '7,3,1'],
   'reminder.trafficPercent': ['Пороги напоминаний по израсходованному трафику, в процентах.', 'Reminder thresholds for used traffic, in percent.', '80,95'],
   'settings.flags': ['Предлагает настройки приложения. Перечисленные флаги включаются, остальные из этого набора выключаются; пользовательские решения имеют приоритет.', 'Suggests app settings. Listed flags are enabled and other flags in this set disabled; user decisions take precedence.', 'minimize,autoupdate'],
@@ -133,7 +134,7 @@ export const widgetCatalog = [
   ['outboundMode', 'Режим маршрутизации', 'Outbound mode'],
   ['vpnButton', 'Кнопка VPN (Android)', 'VPN button (Android)'],
   ['networkTakeover', 'Перехват трафика (компьютер)', 'Traffic capture (desktop)'],
-  ['serviceStatus', 'Статус сервисов', 'Service status'],
+  ['serviceStatus', 'Менеджер и карточки показывают один набор сервисов; до построения карточек список пуст.', 'The manager and cards show the same services; the list is empty until cards are built.'],
   ['profiles', 'Профили', 'Profiles'],
   ['proxyGroups', 'Группы прокси', 'Proxy groups'],
   ['connectionStats', 'Статистика соединений', 'Connection statistics'],
@@ -142,6 +143,10 @@ export const widgetCatalog = [
   ['announcement', 'Объявление', 'Announcement'],
 ] as const
 
+const powerButtonTokens: TokenRow[] = [
+  { token: 'shape', values: ['cookie', 'circle', 'scallop', 'sunny', 'flower', 'clover', 'burst'], text: bi('Форма активной кнопки', 'Active button shape') },
+  { token: 'type', values: ['solid', 'tonal', 'outline'], text: bi('Заливка активной кнопки', 'Active button fill') },
+]
 const viewTokens: TokenRow[] = [
   { token: 'proxies.type', values: ['tab', 'list'], text: bi('Вид списка прокси', 'Proxy list presentation') },
   { token: 'proxies.sort', values: ['none', 'delay', 'name'], text: bi('Сортировка', 'Sorting') },
@@ -157,6 +162,7 @@ const viewTokens: TokenRow[] = [
 ]
 const tables: Record<string, TokenTable> = {
   'subscription.type': { caption: bi('Типы подписки', 'Subscription types'), columns: [bi('Значение', 'Value'), bi('Бейдж', 'Badge')], rows: Object.entries(subscriptionTypes).map(([token, text]) => ({ token, text })) },
+  'presentation.powerButton': { caption: bi('Вид кнопки включения', 'Power button appearance'), columns: [bi('Ключ', 'Key'), bi('Значения', 'Values'), bi('Назначение', 'Purpose')], rows: powerButtonTokens },
   'presentation.view': { caption: bi('Ключи вида', 'View keys'), columns: [bi('Ключ', 'Key'), bi('Значения', 'Values'), bi('Назначение', 'Purpose')], rows: viewTokens },
   'presentation.widgets': { caption: bi('Виджеты панели', 'Dashboard widgets'), columns: [bi('Токен', 'Token'), bi('Назначение', 'Purpose')], rows: widgetCatalog.map(([token, ru, en]) => ({ token, text: bi(ru, en) })) },
 }

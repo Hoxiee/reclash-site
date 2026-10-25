@@ -7,6 +7,7 @@ export const sitePages = [
   { key: 'start', title: { ru: 'Начало работы', en: 'Quick start' } },
   { key: 'download', title: { ru: 'Скачать', en: 'Download' } },
   { key: 'docs', title: { ru: 'Документация', en: 'Documentation' } },
+  { key: 'rcx', title: { ru: 'Маршрутизация RCX', en: 'RCX auto routing' } },
   { key: 'reference', title: { ru: 'Справочник', en: 'Reference' } },
   { key: 'builder', title: { ru: 'Конструктор', en: 'Builder' } },
   { key: 'mock-subs', title: { ru: 'Примеры подписок', en: 'Mock subscriptions' } },

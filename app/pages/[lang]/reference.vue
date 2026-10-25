@@ -272,6 +272,8 @@ onBeforeUnmount(() => {
           <p class="ref-hint">
             {{ t('Имена сравниваются без учёта регистра:', 'Names are case-insensitive:') }} <code>ReClash-View</code> {{ t('и', 'and') }} <code>reclash-view</code> {{ t('— один заголовок.', 'are the same header.') }}
             <SiteLink class="tlink" :to="pagePath(language, 'docs')">{{ t('Как это работает', 'How it works') }}</SiteLink>
+            <span aria-hidden="true"> · </span>
+            <SiteLink class="tlink" :to="pagePath(language, 'rcx')">{{ t('Документация RCX', 'RCX documentation') }}</SiteLink>
           </p>
         </aside>
 
