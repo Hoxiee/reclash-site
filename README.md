@@ -108,22 +108,51 @@ noindex and excluded from the sitemap.
 
 ## Cloudflare Pages
 
-Configure the existing Pages project with these build settings:
+GitHub Actions in `.github/workflows/ci.yml` owns production deployments to
+https://reclash.pages.dev. Every push and pull request runs TypeScript, static
+output and Chromium browser checks. Only a successful push to `main`, or a
+manual workflow run on `main`, can deploy. Pull requests and other branches
+never publish external previews.
+
+The deployment job downloads the exact static artifact produced by the verified
+job and uses the lockfile-pinned Wrangler to upload it with the repository's
+`functions/`. The mock subscription content-negotiation function must ship along
+with `_headers`, `_redirects`, `robots.txt` and `sitemap.xml`. A deployment marker
+records the commit; post-deployment checks wait for that commit and verify both
+languages, report privacy headers, mock YAML/HTML negotiation and 404 responses.
+Failed checks fail the workflow; they do not automatically roll back production.
+
+Repository configuration:
 
 | Setting | Value |
 | --- | --- |
-| Framework preset | None (static Nuxt generation) |
-| Root directory | Repository root |
-| Build command | `npm run build` |
-| Build output directory | `.output/public` |
-| Node.js version | `24.22.1`, read from `.node-version` |
-| `NUXT_PUBLIC_SITE_ORIGIN` | `https://reclash.pages.dev` or the production origin |
+| Actions secret `CLOUDFLARE_API_TOKEN` | API token with Account / Cloudflare Pages / Edit, scoped to the target account |
+| Account ID | `2adf62c1e0b34e7455eabdde6ee1c817` (workflow) |
+| Pages project / production branch | `reclash` / `main` |
+| Node.js version | `.node-version` |
+| Build origin | `NUXT_PUBLIC_SITE_ORIGIN=https://reclash.pages.dev` (workflow) |
+| GitHub environment | `production` |
 
-The v3 build image reads `.node-version`. If `NODE_VERSION` is already set in the
-Pages dashboard, set it to the same version or remove the override.
-`wrangler.toml` sets the Pages project name and output directory. The generated
-`_headers`, `_redirects`, `robots.txt` and `sitemap.xml` must ship with the output.
-Environment variables affecting static pages must be set before the build.
+Set the token without putting it in shell history or committing it:
+
+```sh
+gh secret set CLOUDFLARE_API_TOKEN --repo Hoxiee/reclash-site
+```
+
+Disable Cloudflare's Git-triggered production and preview builds for this project:
+GitHub Actions is the sole publisher, so an old dashboard build cannot overwrite
+its deployment. Keep the existing Pages project and deployment history. The
+obsolete dashboard build command is not used by Direct Upload.
+
+To publish again, rerun the CI workflow on `main` from GitHub Actions or run
+`gh workflow run ci.yml --repo Hoxiee/reclash-site --ref main`.
+For an emergency rollback, select a previous successful production deployment
+in the Cloudflare Pages dashboard. The next successful `main` deployment replaces
+that rollback.
+
+`wrangler.toml` sets the project name and static output directory. Environment
+variables affecting static pages must be set before the build. No Cloudflare
+credential is included in the build artifact or exposed to pull request code.
 
 Cloudflare documentation:
 [Nuxt](https://developers.cloudflare.com/pages/framework-guides/deploy-a-nuxt-site/),
