@@ -6,9 +6,10 @@ const query = ref('')
 // The filter needs the client; it stays disabled in the prerendered page until hydration.
 const ready = ref(false)
 onMounted(() => { ready.value = true })
-const needle = computed(() => query.value.trim().toLowerCase())
+const normalize = (value: string) => value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase()
+const terms = computed(() => normalize(query.value.trim()).split(/\s+/).filter(Boolean))
 const visible = (section: { title: string, keys: string }) =>
-  !needle.value || `${section.title} ${section.keys}`.toLowerCase().includes(needle.value)
+  terms.value.every(term => normalize(`${section.title} ${section.keys}`).includes(term))
 const matches = computed(() => props.sections.filter(visible).length)
 const pad = (index: number) => String(index + 1).padStart(2, '0')
 </script>
@@ -18,7 +19,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0')
     <p class="doc-toc-title">{{ t('Содержание', 'Contents') }}</p>
     <label class="doc-toc-filter">
       <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9 3.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Zm4 9.5 3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" /></svg>
-      <input v-model="query" :disabled="!ready" type="search" :placeholder="t('фильтр…', 'filter…')" :aria-label="t('Фильтр по разделам', 'Filter sections')" autocomplete="off" spellcheck="false">
+      <input v-model="query" :disabled="!ready" type="search" maxlength="160" :placeholder="t('поиск по руководству…', 'search this guide…')" :aria-label="t('Поиск по руководству', 'Search this guide')" autocomplete="off" spellcheck="false">
     </label>
     <ol class="doc-toc-list">
       <li v-for="(section, index) in sections" v-show="visible(section)" :key="section.id">

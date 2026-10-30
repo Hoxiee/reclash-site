@@ -234,6 +234,54 @@ const sections: SourceSection[] = [
     ],
   },
   {
+    id: 'policy',
+    title: b('Обязательная политика безопасности', 'Required safety policy'),
+    keys: 'policy global allowlist noglobal android vpn exclude apps правила исключения приложения безопасность',
+    blocks: [
+      { kind: 'p', text: b(
+        'Рекомендации в HTTP-заголовках и обязательная политика — разные контракты. `reclash-policy` передаётся внутри native Clash YAML, а не в заголовке ответа и не в профиле RCX. Подписки без этого блока сохраняют прежнее поведение.',
+        'HTTP header recommendations and required policy are different contracts. `reclash-policy` lives inside native Clash YAML, not in a response header or an RCX profile. Subscriptions without this block keep their previous behavior.') },
+      { kind: 'code', label: b('Фрагмент подписки', 'Subscription fragment'), code: () => [
+        'reclash-policy:',
+        '  version: 1',
+        '  global:',
+        '    allow: [safe-01]',
+        '  apps:',
+        '    android:',
+        '      exclude: [com.example.bank]',
+        'proxies:',
+        '  - name: Global-safe',
+        '    reclash-id: safe-01',
+        '    type: socks5',
+        '    server: safe.example.test',
+        '    port: 1080',
+      ].join('\n') },
+      { kind: 'rules', items: [
+        { term: b('GLOBAL разрешается явно', 'GLOBAL is explicitly allowed'), body: b(
+          'Если секция `global` есть, разрешены только ID из `allow`. Пустой `allow: []` запрещает GLOBAL целиком; отсутствие секции не добавляет ограничений. Существующий `noglobal` остаётся абсолютным запретом, в том числе для RCX.',
+          'When `global` is present, only IDs in `allow` are permitted. An empty `allow: []` forbids GLOBAL entirely; omitting the section adds no restriction. Existing `noglobal` remains an absolute veto, including for RCX.') },
+        { term: b('ID привязан к исходной ноде', 'An ID is bound to its original node'), body: b(
+          '`reclash-id` регистрозависим и уникален в исходных inline-прокси. Разрешение привязано к параметрам подключения, а не к названию: переименование допустимо, копирование ID на другой сервер — нет. Версия 1 не выдаёт независимых разрешений динамическим proxy-provider.',
+          '`reclash-id` is case-sensitive and unique among the original inline proxies. Permission binds to connection parameters, not a label: renaming is allowed; copying the ID onto another server is not. Version 1 does not grant independent permissions to dynamic proxy-provider payloads.') },
+        { term: b('Реальные подключения проверяет Core', 'Core checks actual connections'), body: b(
+          'Ручной выбор, RCX, API, вложенные группы, fallback и TCP/UDP-подключения подчиняются политике. Группа подходит для GLOBAL, только если разрешены все её возможные участники. Отказ не превращается автоматически в DIRECT или другую ноду.',
+          'Manual selection, RCX, API changes, nested groups, fallback and TCP/UDP connections obey the policy. A group is eligible for GLOBAL only when all possible members are permitted. A refusal never automatically becomes DIRECT or another node.') },
+        { term: b('Исключение обязательно', 'Exclusion is required'), body: b(
+          '`apps.android.exclude` нельзя отменить снятием рекомендации, whitelist, выключением Access control или сменой режима. В общем списке приложений остаётся бейдж обязательного требования и недоступный чекбокс; отдельного окна согласия нет. Пользовательские списки не перезаписываются.',
+          '`apps.android.exclude` cannot be overridden by releasing a recommendation, using a whitelist, disabling Access control or changing modes. The ordinary application list shows a required-provider badge and a disabled checkbox, without a separate consent dialog. Personal lists are not overwritten.') },
+        { term: b('Только Android VPN', 'Android VPN only'), body: b(
+          'Обязательные исключения требуют Android VPN; desktop и proxy-only их не имитируют. Изменение системного списка требует перезапуска VPN через обычное уведомление. Пока исключения не применены, Core отказывает в применении политики. Неизвестные приложения и обход через локальный прокси не получают разрешение по умолчанию.',
+          'Required exclusions need Android VPN; desktop and proxy-only mode do not pretend to enforce them. Changing the native list requires a VPN restart through the ordinary notification. Until exclusions are applied, Core refuses the policy. Unknown applications and local-proxy bypasses do not receive permission by default.') },
+      ] },
+      { kind: 'note', tone: 'warn', text: b(
+        'Исключение не блокирует Интернет: приложение может использовать прямое соединение и реальный IP. Android lockdown может вместо этого запретить доступ. Список пакетов не защищает от открытия того же сервиса в браузере; другой или модифицированный клиент может проигнорировать политику.',
+        'Exclusion does not block the Internet: an application may use the direct connection and the real IP. Android lockdown may prevent access instead. Package lists do not cover opening the same service in a browser; another or modified client can ignore the policy.') },
+      { kind: 'p', text: b(
+        'Неизвестные поля и версии, неверные списки и отсутствующие или повторяющиеся ID отклоняют импорт без подбора другого client identity. Неудачное обновление сохраняет старый профиль; успешное обновление без политики снимает требование. Лимиты: 4096 ID и 512 пакетов. [JSON Schema](/schemas/provider-policy.schema.json) и [полный контракт](https://github.com/Hoxiee/ReClash/blob/dev/docs/en/PROVIDER_FEATURES.md#required-safety-policy).',
+        'Unknown fields or versions, malformed lists and missing or duplicate IDs reject the import without retrying another client identity. A failed update preserves the old profile; a successful update without the policy withdraws it. Limits: 4096 IDs and 512 packages. See the [JSON Schema](/schemas/provider-policy.schema.json) and [complete contract](https://github.com/Hoxiee/ReClash/blob/dev/docs/en/PROVIDER_FEATURES.md#required-safety-policy).') },
+    ],
+  },
+  {
     id: 'hwid',
     title: b('Устройства и HWID', 'Devices and HWID'),
     keys: 'x-hwid x-device-os лимит limit устройства',
@@ -270,8 +318,8 @@ const sections: SourceSection[] = [
           'Do not send `reclash-settings` without a reason.'),
       ] },
       { kind: 'p', text: b(
-        `Первоисточник этой страницы — [PROVIDER_HEADERS.md](${providerHeadersSource}) в репозитории. Если он разойдётся с этой страницей — прав репозиторий.`,
-        `The source of truth for this page is [PROVIDER_HEADERS.md](${providerHeadersSource}) in the repository. If the two ever disagree, the repository is right.`) },
+        `Исходные контракты — [PROVIDER_HEADERS.md](${providerHeadersSource}) и [PROVIDER_FEATURES.md](https://github.com/Hoxiee/ReClash/blob/dev/docs/en/PROVIDER_FEATURES.md) в репозитории приложения. Руководство обновляется вместе с ними.`,
+        `The source contracts are [PROVIDER_HEADERS.md](${providerHeadersSource}) and [PROVIDER_FEATURES.md](https://github.com/Hoxiee/ReClash/blob/dev/docs/en/PROVIDER_FEATURES.md) in the application repository. This guide is maintained alongside them.`) },
     ],
   },
 ]
@@ -309,17 +357,36 @@ function resolveBlock(block: SourceBlock, language: Language): DocBlock {
   }
 }
 
+function blockSearchText(block: DocBlock): string {
+  const text = (value: Rich) => value.map(item => item.text).join(' ')
+  switch (block.kind) {
+    case 'p':
+    case 'note': return text(block.text)
+    case 'h3': return block.text
+    case 'code': return `${block.label} ${block.code}`
+    case 'layers':
+    case 'rules':
+    case 'problems': return block.items.map(item => `${item.term} ${text(item.body)}`).join(' ')
+    case 'aliases': return `${block.head.join(' ')} ${block.rows.map(row => `${row.label} ${text(row.chain)}`).join(' ')}`
+    case 'table': return `${block.head.join(' ')} ${block.rows.flat().map(text).join(' ')}`
+    case 'steps': return block.items.map(text).join(' ')
+  }
+}
+
 const cache = new Map<Language, DocSection[]>()
 
 export function docsSections(language: Language): DocSection[] {
   let resolved = cache.get(language)
   if (!resolved) {
-    resolved = sections.map(section => ({
-      id: section.id,
-      title: section.title[language],
-      keys: `${section.title.ru} ${section.title.en} ${section.keys}`.toLowerCase(),
-      blocks: section.blocks.map(block => resolveBlock(block, language)),
-    }))
+    resolved = sections.map(section => {
+      const blocks = section.blocks.map(block => resolveBlock(block, language))
+      return {
+        id: section.id,
+        title: section.title[language],
+        keys: `${section.title.ru} ${section.title.en} ${section.keys} ${blocks.map(blockSearchText).join(' ')}`,
+        blocks,
+      }
+    })
     cache.set(language, resolved)
   }
   return resolved

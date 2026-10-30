@@ -45,8 +45,8 @@ function follow(event: MouseEvent) {
 <template>
   <div ref="root" class="doc-page">
     <PageHero
-      :title="t('Документация по заголовкам', 'Header documentation')"
-      :lede="t('Как ваша панель управляет оформлением клиента через обычные HTTP-заголовки ответа: механизм, правила разбора, совместимость, доставка через прокси и CDN, чеклист внедрения. Полный список заголовков — в справочнике.', 'How your panel drives the client\'s presentation through plain HTTP response headers: the mechanism, the parsing rules, compatibility, delivery through a proxy and a CDN, a rollout checklist. The full header list is in the reference.')"
+      :title="t('Документация провайдера', 'Provider documentation')"
+      :lede="t('Заголовки ответа управляют оформлением и метаданными, а обязательная политика внутри YAML ограничивает GLOBAL и исключает приложения. Здесь — механизмы, совместимость, доставка и условия безопасности. Полный список заголовков — в справочнике.', 'Response headers control presentation and metadata; required policy inside YAML restricts GLOBAL and excludes applications. Learn the mechanisms, compatibility, delivery and safety conditions. The full header list is in the reference.')"
       glyph="M150 150h100M150 190h100M150 230h56"
     >
       <template #eyebrow>{{ t('Для провайдеров', 'For providers') }}</template>

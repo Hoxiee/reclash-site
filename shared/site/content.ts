@@ -1,12 +1,12 @@
 export const portedPages = {
   "docs": {
     "title": {
-      "ru": "Документация по заголовкам подписки — ReClash",
-      "en": "Subscription header documentation — ReClash"
+      "ru": "Документация провайдера — ReClash",
+      "en": "Provider documentation — ReClash"
     },
     "description": {
-      "ru": "Документация по заголовкам ответа подписки для ReClash: как работает механизм, правила разбора, совместимость с FlClashX, доставка через прокси и CDN, HWID и чеклист внедрения.",
-      "en": "Documentation for ReClash subscription response headers: how the mechanism works, parsing rules, FlClashX compatibility, delivery through a proxy and CDN, HWID and a rollout checklist."
+      "ru": "Заголовки подписки и обязательная политика ReClash: метаданные, оформление, совместимость, GLOBAL-allowlist, исключения Android-приложений и безопасная доставка.",
+      "en": "Subscription headers and required ReClash policy: metadata, presentation, compatibility, GLOBAL allowlists, Android app exclusions and safe delivery."
     }
   },
   "rcx": {

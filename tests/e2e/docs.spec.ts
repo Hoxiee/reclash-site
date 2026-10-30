@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { headerReference } from '../../shared/provider/reference'
 
-const sections = ['overview', 'rules', 'compat', 'delivery', 'hwid', 'checklist']
+const sections = ['overview', 'rules', 'compat', 'delivery', 'policy', 'hwid', 'checklist']
 const errors: string[] = []
 test.beforeEach(async ({ page }) => {
   errors.length = 0
@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 })
 test.afterEach(() => { expect(errors).toEqual([]) })
 
-for (const [language, title, contents] of [['ru', 'Документация по заголовкам', 'Содержание'], ['en', 'Header documentation', 'Contents']] as const) {
+for (const [language, title, contents] of [['ru', 'Документация провайдера', 'Содержание'], ['en', 'Provider documentation', 'Contents']] as const) {
   test(`documentation renders in ${language} with contents and reference links`, async ({ page }) => {
     await page.goto(`/${language}/docs`)
     await expect(page.locator('h1')).toHaveText(title)
@@ -35,8 +35,9 @@ test('contents filter, in-page navigation and scroll-spy', async ({ page }) => {
   const toc = page.locator('.doc-toc')
   await expect(toc.getByRole('searchbox')).toBeEnabled()
   await toc.getByRole('searchbox').fill('cdn')
-  await expect(toc.locator('.doc-toc-list li:visible')).toHaveCount(1)
-  await expect(toc.locator('.doc-toc-list li:visible a')).toHaveAttribute('href', '#delivery')
+  await expect(toc.locator('.doc-toc-list li:visible')).toHaveCount(2)
+  await expect(toc.locator('li:visible a[href="#delivery"]')).toBeVisible()
+  await expect(toc.locator('li:visible a[href="#checklist"]')).toBeVisible()
   await toc.getByRole('searchbox').fill('кэш')
   await expect(toc.locator('.doc-toc-list li:visible a')).toHaveAttribute('href', '#delivery')
   await toc.getByRole('searchbox').fill('no such section')
