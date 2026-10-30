@@ -58,15 +58,29 @@ test('new provider power-button header documents its allowed values in both lang
     const entry = page.locator('#h-reclash-powerbutton')
     await entry.locator('summary').click()
     await expect(entry).toHaveAttribute('open', '')
-    await expect(entry.locator('.codeblock pre')).toContainText('reclash-powerbutton: shape:flower;type:outline')
+    await expect(entry.locator('.codeblock pre')).toContainText('reclash-powerbutton: shape:puffy,puffyDiamond,clover8Leaf;type:outline')
     await expect(entry).toContainText(noSetting)
-    for (const value of ['cookie', 'circle', 'scallop', 'sunny', 'flower', 'clover', 'burst', 'solid', 'tonal', 'outline']) {
+    for (const value of ['cookie', 'circle', 'scallop', 'sunny', 'flower', 'clover', 'burst', 'puffy', 'puffyDiamond', 'clover8Leaf', 'cookie4Sided', 'cookie6Sided', 'verySunny', 'square', 'diamond', 'pentagon', 'gem', 'pixelCircle', 'softBoom', 'boom', 'sharpBurst', 'random', 'solid', 'tonal', 'outline']) {
       await expect(entry.getByText(value, { exact: true })).toBeVisible()
     }
+    await expect(entry).toContainText(language === 'ru' ? 'список через запятую' : 'comma-separated pool')
+    await expect(entry).toContainText(language === 'ru' ? 'переподключение его не сбрасывают' : 'reconnecting do not reroll it')
 
     const announcement = page.locator('#h-reclash-announce')
     await announcement.locator('summary').click()
     await expect(announcement).toContainText(language === 'ru' ? 'показывается на панели' : 'shown in full on the dashboard')
+  }
+})
+
+test('power-button pools stay readable on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  for (const language of ['ru', 'en']) {
+    await page.goto(`/${language}/reference#h-reclash-powerbutton`)
+    const entry = page.locator('#h-reclash-powerbutton')
+    await expect(entry).toHaveAttribute('open', '')
+    await expect(entry.getByText('random', { exact: true })).toBeVisible()
+    await expect(entry.locator('.codeblock pre')).toContainText('shape:puffy,puffyDiamond,clover8Leaf')
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
   }
 })
 
