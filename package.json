@@ -9,7 +9,11 @@
     "preview": "wrangler pages dev .output/public --ip 127.0.0.1 --port 4173",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
-    "check": "npm run typecheck && npm run build && node scripts/check-static.mjs",
+    "check": "npm run docs:check && npm run docs:test && npm run typecheck && npm run build && node scripts/check-static.mjs",
+    "docs:sync": "node scripts/rcx.mjs sync",
+    "docs:check": "node scripts/rcx.mjs check",
+    "docs:diagrams": "node scripts/rcx-diagrams.mjs",
+    "docs:test": "node --test tests/rcx-content.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
@@ -25,6 +29,8 @@
   "devDependencies": {
     "@playwright/test": "1.64.1",
     "@types/node": "24.19.2",
+    "marked": "18.1.1",
+    "mermaid": "12.2.0",
     "typescript": "5.9.3",
     "vue-tsc": "3.3.13",
     "wrangler": "4.151.3"

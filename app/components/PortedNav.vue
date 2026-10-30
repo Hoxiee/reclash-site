@@ -2,12 +2,14 @@
 import { pagePath, pageFromPath, switchLanguage } from '~~/shared/site/routes'
 import { languageKey } from '~~/shared/site/boot'
 const route = useRoute()
+const router = useRouter()
 const { language, t } = useText()
 const page = computed(() => pageFromPath(route.path))
 const otherLanguage = computed(() => language.value === 'ru' ? 'en' : 'ru')
 const mounted = ref(false)
 onMounted(() => { mounted.value = true })
-const fullPath = computed(() => mounted.value ? route.fullPath : route.path)
+// Language links follow hash-only navigation even when the page instance is reused.
+const fullPath = computed(() => mounted.value ? router.currentRoute.value.fullPath : route.path)
 const languageLink = computed(() => switchLanguage(fullPath.value, otherLanguage.value))
 // An explicit switch becomes the preference the root page redirects to.
 function remember(next: 'ru' | 'en') {

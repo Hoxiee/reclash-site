@@ -1,4 +1,4 @@
-import { pageFromPath, languageFromPath } from '~~/shared/site/routes'
+import { pageKeyFromPath } from '~~/shared/site/routes'
 
 /*
  * Route changes run inside a same-document view transition: the old page recedes and the new
@@ -7,7 +7,6 @@ import { pageFromPath, languageFromPath } from '~~/shared/site/routes'
  * Reduced motion, hidden documents and browsers without the API swap pages instantly.
  */
 type Pending = { finish: () => void, abort: () => void }
-const keyOf = (path: string) => `${languageFromPath(path)}/${pageFromPath(path)}`
 
 export default defineNuxtPlugin((nuxtApp) => {
   const html = document.documentElement
@@ -30,7 +29,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   router.beforeResolve((to, from) => {
     const fromHistory = popstate
     popstate = false
-    if (!to.matched.length || keyOf(to.path) === keyOf(from.path)) return
+    if (!to.matched.length || pageKeyFromPath(to.path) === pageKeyFromPath(from.path)) return
     if (!document.startViewTransition || document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     pending?.finish()
     const point = !fromHistory && origin ? origin : { x: innerWidth / 2, y: 0 }

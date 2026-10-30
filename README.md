@@ -1,8 +1,9 @@
 # ReClash
 
 A bilingual Nuxt 4 site generated for Cloudflare Pages. The home, quick start,
-download, provider tools and RCX guide describe the current ReClash application
-in Russian and English. Fonts and styles are hosted locally.
+download and provider tools describe the current ReClash application in Russian
+and English. The complete RCX handbook also supports Simplified Chinese.
+Fonts and styles are hosted locally.
 
 ## Local development
 
@@ -81,6 +82,62 @@ lineage slabs, scroll-filled setup rail, provider studio, hover blobs and footer
 letter springs. Inner pages keep the smaller jelly ring, accordion height
 springs, deep-link opening, copy feedback and gallery FLIP filtering. Reduced
 motion snaps springs and removes hero pinning.
+
+## RCX handbook
+
+`/{ru|en|zh-CN}/rcx` is the complete handbook, with one prerendered route per
+chapter. Chinese is scoped to the handbook; the rest of the site remains
+Russian/English. The chapter language switch preserves the document, query and
+section. English heading IDs are stable across translations; localized source
+anchors remain aliases. Former introductory anchors such as `/en/rcx#profiles`
+lead to the corresponding full chapter. Nested `.html` aliases remain usable.
+
+The source of truth is `docs/{en,ru,zh-CN}/auto-routing/` in ReClash. A committed
+snapshot lives in `content/rcx/`, alongside its source revision and checksums in
+`catalogue.json`. Refresh it from a clean, committed application checkout:
+
+```sh
+npm run docs:sync -- ../ReClash
+npm run docs:diagrams
+npm run check
+```
+
+The sync command preserves Markdown verbatim and requires the same files and
+heading structure in all three languages. Do not edit the copied prose or
+catalogue by hand. `scripts/rcx-content.mjs` compiles it into a typed document
+through the Vite plugin; Markdown and Mermaid parsers never enter the browser
+bundle. Each document and each language's full-text search index is loaded
+independently. Search stays in the browser and sends no queries externally.
+
+Diagrams are local SVG files in `public/assets/rcx/diagrams/`. Regenerate them
+after changing Mermaid fences; the check rejects missing or stale diagrams.
+Generation uses Playwright's Chromium with intercepted local module requests,
+not a remote renderer. Install Chromium with `npx playwright install chromium`
+if it is not already available. Regular site builds use the committed SVGs and
+do not start a browser.
+
+### Screenshot slots
+
+Each `images/README.md` source manifest owns the screenshot IDs, demo setup,
+dimensions, captions and capture instructions. Every slot renders a labelled
+placeholder rather than a broken image, and the screenshot-manifest page links
+to the exact place where each image belongs. Capture instructions are available
+beside each placeholder.
+
+Add the real image at `public/assets/rcx/screenshots/<language>/<id>.png` and
+rebuild; the placeholder is replaced automatically without changing Vue or
+Markdown. WebP, PNG, AVIF and JPEG (`.jpg`) are supported, in that preference
+order. Images never silently fall back to another language. For example:
+
+```text
+public/assets/rcx/screenshots/ru/route-editor-ladder.png
+public/assets/rcx/screenshots/en/hub-overview.webp
+public/assets/rcx/screenshots/zh-CN/studio-yaml.png
+```
+
+PNG files supplied in the application's `auto-routing/images/` directory are
+also copied by `docs:sync`. Follow the manifest's dimensions and demo data; do
+not use browser-test screenshots as documentation assets.
 
 ## Build and verify
 

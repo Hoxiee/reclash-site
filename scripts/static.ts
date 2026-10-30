@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { languages, legacyPath, pagePath, privatePages, sitePages } from '../shared/site/routes'
+import { rcxRoutes } from '../shared/site/rcx'
 import { mockBody, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
 import { mockPage, mockPagePath, mockPreview, mockPreviewPath } from '../shared/provider/mockpreview'
 
@@ -42,9 +43,19 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
       headers.push(path, ...Object.entries(reportPolicy).map(([key, value]) => `  ${key}: ${value}`))
     }
   }
-  const routes = languages.flatMap(language => sitePages
-    .filter(page => !privatePages.includes(page.key))
-    .map(page => `${origin}${pagePath(language, page.key)}`))
+  for (const canonical of rcxRoutes) {
+    const legacy = `${canonical}.html`
+    if (!redirects.includes(`${legacy} ${canonical} 200`)) {
+      redirects.push(`${legacy} ${canonical} 200`)
+      headers.push(legacy, `  Link: <${origin}${canonical}>; rel="canonical"`)
+    }
+  }
+  const routes = [...new Set([
+    ...languages.flatMap(language => sitePages
+      .filter(page => !privatePages.includes(page.key))
+      .map(page => `${origin}${pagePath(language, page.key)}`)),
+    ...rcxRoutes.map(path => `${origin}${path}`),
+  ])]
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map(url => `  <url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`
   await Promise.all([
     writeFile(join(output, '_headers'), `${headers.join('\n')}\n`),

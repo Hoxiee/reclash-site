@@ -1,3 +1,5 @@
+import { rcxLanguageFromPath, rcxRoutes, rcxSlugFromPath } from './rcx.ts'
+
 export const languages = ['ru', 'en'] as const
 export type Language = typeof languages[number]
 export type BilingualText = Record<Language, string>
@@ -28,7 +30,7 @@ export function legacyPath(language: Language, page: PageKey = 'index'): string 
 }
 
 export function languageFromPath(path: string): Language {
-  return /^\/en(?:\/|$)/.test(path) ? 'en' : 'ru'
+  return /^\/(?:en|zh-CN)(?:\/|$)/.test(path) ? 'en' : 'ru'
 }
 
 export function pageFromPath(path: string): PageKey {
@@ -36,12 +38,19 @@ export function pageFromPath(path: string): PageKey {
   return sitePages.find(page => page.key === key)?.key || 'index'
 }
 
+export function pageKeyFromPath(path: string): string {
+  const page = pageFromPath(path)
+  return page === 'rcx'
+    ? `${rcxLanguageFromPath(path)}/rcx/${rcxSlugFromPath(path)}`
+    : `${languageFromPath(path)}/${page}`
+}
+
 export function switchLanguage(fullPath: string, language: Language): string {
-  return fullPath.replace(/^\/(?:ru|en)(?=\/|\?|#|$)/, `/${language}`)
+  return fullPath.replace(/^\/(?:ru|en|zh-CN)(?=\/|\?|#|$)/, `/${language}`)
 }
 
 export function isReportPath(path: string): boolean {
   return /^\/(?:ru|en)\/report(?:\.html)?\/?(?:[?#]|$)/.test(path)
 }
 
-export const prerenderRoutes = ['/', ...languages.flatMap(language => sitePages.map(page => pagePath(language, page.key)))]
+export const prerenderRoutes = [...new Set(['/', ...languages.flatMap(language => sitePages.map(page => pagePath(language, page.key))), ...rcxRoutes])]

@@ -31,7 +31,7 @@ export type DocBlock =
 
 export type DocSection = { id: string, title: string, keys: string, blocks: DocBlock[] }
 
-export const providerHeadersSource = 'https://github.com/Hoxiee/ReClash/blob/dev/PROVIDER_HEADERS.md'
+export const providerHeadersSource = 'https://github.com/Hoxiee/ReClash/blob/dev/docs/en/PROVIDER_HEADERS.md'
 
 // A header in inline code links to its card when the shared reference catalogue has one.
 export function referenceAnchor(name: string): string | undefined {

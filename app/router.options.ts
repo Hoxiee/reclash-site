@@ -13,7 +13,7 @@ export default <RouterConfig>{
   scrollBehavior(to, from, savedPosition) {
     const samePage = to.path.replace(/(?:\.html|\/)$/, '') === from.path.replace(/(?:\.html|\/)$/, '')
     const target = () => savedPosition
-      ?? (to.hash ? { el: to.hash, top: hashOffset(to.hash), behavior: samePage ? 'smooth' as const : 'instant' as const } : { left: 0, top: 0 })
+      ?? (to.hash ? { el: to.hash, top: hashOffset(to.hash), behavior: samePage && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' as const : 'instant' as const } : { left: 0, top: 0 })
     if (samePage) return to.hash ? target() : false
     if (!from.matched.length) return target()
     return new Promise(resolve => useNuxtApp().hooks.hookOnce('page:finish', () => resolve(target())))

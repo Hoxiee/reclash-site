@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import { languageFromPath, pageFromPath } from '~~/shared/site/routes'
+import { pageKeyFromPath } from '~~/shared/site/routes'
 // Legacy .html aliases and trailing slashes render the same page instance.
-const pageKey = (route: RouteLocationNormalizedLoaded) => `${languageFromPath(route.path)}/${pageFromPath(route.path)}`
+const pageKey = (route: RouteLocationNormalizedLoaded) => pageKeyFromPath(route.path)
 </script>
 
 <template>

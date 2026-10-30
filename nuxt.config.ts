@@ -2,6 +2,7 @@ import { prerenderRoutes, sitePages } from './shared/site/routes'
 import { normalizeOrigin } from './shared/site/seo'
 import { writeStaticFiles } from './scripts/static'
 import { bootScript } from './shared/site/boot'
+import { rcxDocumentation } from './scripts/rcx-vite'
 
 const siteOrigin = normalizeOrigin(process.env.NUXT_PUBLIC_SITE_ORIGIN)
 
@@ -9,6 +10,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-10-22',
   devtools: { enabled: false },
   ssr: true,
+  vite: { plugins: [rcxDocumentation()] },
   css: ['~/assets/css/site.css', '~/assets/css/shell.css', '~/assets/css/brand.css'],
   runtimeConfig: { public: { siteOrigin } },
   experimental: { appManifest: false, payloadExtraction: 'client', prerenderErrorPages: true },
@@ -23,10 +25,11 @@ export default defineNuxtConfig({
     'pages:extend'(pages) {
       for (const page of pages) {
         if (!page.path.startsWith('/:lang')) continue
-        page.path = page.path.replace(/^\/:lang(?:\([^)]*\))?/, '/:lang(ru|en)')
         const key = page.path.split('/')[2] || 'index'
-        if (sitePages.some(item => item.key === key)) {
-          page.alias = [`/:lang(ru|en)/${key}.html`]
+        const locales = key === 'rcx' ? 'ru|en|zh-CN' : 'ru|en'
+        page.path = page.path.replace(/^\/:lang(?:\([^)]*\))?/, `/:lang(${locales})`)
+        if (sitePages.some(item => item.key === key) && page.path.split('/').length <= 3) {
+          page.alias = [`/:lang(${locales})/${key}.html`]
         }
       }
     },

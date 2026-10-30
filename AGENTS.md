@@ -6,6 +6,11 @@ TypeScript animation engine.
 - Canonical routes are `/ru`, `/en` and each language's `start`, `download`,
   `docs`, `reference`, `builder`, `mock-subs` and `report`. Keep legacy `.html`
   aliases and query/fragment state usable. The lab is `/{lang}/motion`.
+- RCX lives at `/{ru|en|zh-CN}/rcx` and its chapter paths. Keep the committed
+  Markdown snapshot and source revision in `content/rcx/`; update them with
+  `npm run docs:sync -- <ReClash checkout>`, not hand-edited parallel prose.
+  Compile Markdown into typed components at build time. Mermaid stays build-only.
+  Screenshot IDs and capture instructions come from each language's manifest.
 - Keep routes and SEO in `shared/site/`; prerender all supported destinations.
   Home and `index.html` share an output file: do not render it twice.
 - `shared/provider/` owns the provider standard, header aliases, fields, tokens,
