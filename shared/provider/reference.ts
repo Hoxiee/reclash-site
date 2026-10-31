@@ -113,7 +113,9 @@ const fieldProse: Record<string, [string, string, string]> = {
   'routing.bundleUrl': ['URL набора профилей маршрутизации RCX. Это подсказка: доверие к проверочным хостам остаётся под контролем пользователя.', 'URL of an RCX routing profile bundle. This is a hint: trust in probe hosts remains under user control.', 'https://nebula.example/routing.json'],
   'presentation.hideUrl': ['Скрывает URL подписки в интерфейсе, но не делает его секретным для сервера.', 'Hides the subscription URL in the interface; it does not hide it from the server.', 'true'],
   'presentation.serverGroup': ['Имя группы, из которой панель берёт активный сервер.', 'Group used by the dashboard to resolve the active server.', 'Proxy'],
-  'presentation.widgets': ['Предлагает набор виджетов панели. Неизвестные имена игнорируются.', 'Suggests dashboard widgets. Unknown names are ignored.', 'currentOutbound,networkSpeed,profiles,proxyGroups'],
+  'presentation.widgets': ['Общий список: каждая панель применяет совместимые карточки. Псевдонимы: speed для speedTest, services для serviceStatus.', 'Shared list: each dashboard applies compatible cards. Aliases: speed for speedTest, services for serviceStatus.', 'health,outboundMode,speedTest,serviceStatus,path'],
+  'presentation.widgetsDetailed': ['Список узкой подробной панели с приоритетом над общим. currentOutbound обязателен.', 'Narrow detailed selection, taking precedence over the shared list. currentOutbound is required.', 'currentOutbound,networkSpeed,speedTest,profiles,connectionStats,proxyGroups'],
+  'presentation.widgetsSimple': ['Список простой панели с приоритетом над общим. Ручное изменение освобождает этот список от управления провайдером.', 'Simple selection, taking precedence over the shared list. A manual edit releases this list from provider management.', 'speedTest,serviceStatus,ipQuality,trustedNetworks,path'],
   'presentation.background': ['Фоновое изображение и необязательная непрозрачность 1–100. Без суффикса — 8 %.', 'Background image and optional opacity from 1 to 100. Without a suffix: 8%.', 'https://nebula.example/background.png,8'],
   'presentation.view': ['Предлагает оформление приложения и страницы прокси. Цвет задаётся app.color, стиль — app.style.', 'Suggests app and proxy-page appearance. Set color with app.color and style with app.style.', 'app.color:2FD3B6;app.style:vivid;proxies.type:list;proxies.sort:delay'],
   'presentation.powerButton': ['Задаёт форму и заливку активной кнопки упрощённой панели. Настройки для пользователя нет. Выбор из списка или всех форм сохраняется в рамках сеанса приложения до смены профиля или набора допустимых форм; обновление метаданных, смена заливки и переподключение его не сбрасывают. Прежний burst остаётся мягким; sharpBurst — новый вариант с острыми лучами.', 'Sets the shape and fill of the active simplified-dashboard button. There is no user setting. A choice from a pool or all shapes stays stable in the app session until the profile or valid pool changes; metadata refreshes, fill changes and reconnecting do not reroll it. The existing burst stays soft; sharpBurst is the new sharp silhouette.', 'shape:puffy,puffyDiamond,clover8Leaf;type:outline'],
@@ -130,17 +132,22 @@ const fieldProse: Record<string, [string, string, string]> = {
 
 export const widgetCatalog = [
   ['currentOutbound', 'Текущий узел', 'Current outbound'],
+  ['health', 'Состояние приложения и диагностика', 'App health and diagnostics'],
   ['networkSpeed', 'Скорость сети', 'Network speed'],
   ['outboundMode', 'Режим маршрутизации', 'Outbound mode'],
   ['vpnButton', 'Кнопка VPN (Android)', 'VPN button (Android)'],
   ['networkTakeover', 'Перехват трафика (компьютер)', 'Traffic capture (desktop)'],
-  ['serviceStatus', 'Менеджер и карточки показывают один набор сервисов; до построения карточек список пуст.', 'The manager and cards show the same services; the list is empty until cards are built.'],
+  ['serviceStatus', 'Проверки доступности сервисов', 'Service availability checks'],
   ['profiles', 'Профили', 'Profiles'],
   ['proxyGroups', 'Группы прокси', 'Proxy groups'],
   ['connectionStats', 'Статистика соединений', 'Connection statistics'],
   ['intranetIp', 'Локальный IP', 'Local IP'],
   ['memoryInfo', 'Память', 'Memory'],
   ['announcement', 'Объявление', 'Announcement'],
+  ['speedTest', 'Замер скорости, задержки и джиттера', 'Bandwidth, latency and jitter test'],
+  ['ipQuality', 'Внешний IP и его качество', 'Outbound IP and quality'],
+  ['trustedNetworks', 'Доверенные сети', 'Trusted networks'],
+  ['path', 'Путь соединения и диагностика', 'Connection path and diagnostics'],
 ] as const
 
 const powerButtonTokens: TokenRow[] = [
@@ -160,11 +167,14 @@ const viewTokens: TokenRow[] = [
   { token: 'app.tabs', values: ['slide', 'fade'], text: bi('Анимация вкладок', 'Tab animation') },
   { token: 'app.glass', values: ['none', 'standard', 'ultra'], text: bi('Эффект стекла', 'Glass effect') },
 ]
+const widgetTable: TokenTable = { caption: bi('Каталог карточек', 'Card catalog'), columns: [bi('Токен', 'Token'), bi('Назначение', 'Purpose')], rows: widgetCatalog.map(([token, ru, en]) => ({ token, text: bi(ru, en) })) }
 const tables: Record<string, TokenTable> = {
   'subscription.type': { caption: bi('Типы подписки', 'Subscription types'), columns: [bi('Значение', 'Value'), bi('Бейдж', 'Badge')], rows: Object.entries(subscriptionTypes).map(([token, text]) => ({ token, text })) },
   'presentation.powerButton': { caption: bi('Вид кнопки включения', 'Power button appearance'), columns: [bi('Ключ', 'Key'), bi('Значения', 'Values'), bi('Назначение', 'Purpose')], rows: powerButtonTokens },
   'presentation.view': { caption: bi('Ключи вида', 'View keys'), columns: [bi('Ключ', 'Key'), bi('Значения', 'Values'), bi('Назначение', 'Purpose')], rows: viewTokens },
-  'presentation.widgets': { caption: bi('Виджеты панели', 'Dashboard widgets'), columns: [bi('Токен', 'Token'), bi('Назначение', 'Purpose')], rows: widgetCatalog.map(([token, ru, en]) => ({ token, text: bi(ru, en) })) },
+  'presentation.widgets': widgetTable,
+  'presentation.widgetsDetailed': widgetTable,
+  'presentation.widgetsSimple': { ...widgetTable, rows: widgetTable.rows.filter(row => ['health', 'outboundMode', 'speedTest', 'serviceStatus', 'ipQuality', 'trustedNetworks', 'path'].includes(row.token)) },
 }
 export const referenceAnchor = (name: string): string => `h-${name.toLowerCase()}`
 

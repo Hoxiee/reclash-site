@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { MockProfile } from '~~/shared/provider/mocks'
+import { subscriptionTypeText } from '~~/shared/provider/standard'
 import { mockStrip, mockTheme, stockRing } from '~~/shared/provider/mockview'
 
 // A schematic subscription-data preview, not a replica of the app interface.
@@ -9,7 +10,8 @@ const { language, t } = useText()
 const response = computed(() => props.profile.response)
 const theme = computed(() => mockTheme(props.profile))
 const strip = computed(() => mockStrip(props.profile, props.now, language.value))
-const name = computed(() => response.value.serviceName ?? props.profile.name[language.value])
+const name = computed(() => response.value.serviceName ?? response.value.title ?? props.profile.name[language.value])
+const subscriptionType = computed(() => response.value.subscriptionType && subscriptionTypeText(response.value.subscriptionType)?.[language.value])
 const server = computed(() => response.value.serverInfo ?? `${name.value} 01`)
 const announce = computed(() => response.value.announce?.[language.value])
 const ring = computed(() => {
@@ -29,7 +31,7 @@ const ring = computed(() => {
         :style="{ backgroundImage: `url(/assets/mock/${response.background.file})`, opacity: response.background.opacity / 100 }"
       />
 
-      <div class="mock-orb" :style="ring" aria-hidden="true">
+      <div v-if="response.logo || theme.seed" class="mock-orb" :style="ring" aria-hidden="true">
         <span class="mock-orb-halo" />
         <span class="mock-orb-ring" />
         <span class="mock-orb-core">
@@ -41,24 +43,17 @@ const ring = computed(() => {
         </span>
       </div>
       <div class="mock-app-words">
-        <b>{{ t('Тестовая подписка', 'Test subscription') }}</b>
+        <b>{{ name }}</b>
+        <span v-if="subscriptionType" class="mock-app-type">{{ subscriptionType }}</span>
         <span class="mock-app-server"><i aria-hidden="true" />{{ server }}</span>
       </div>
 
-      <div v-if="response.hwidLimit" class="mock-app-note is-warn">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 14.5 13.5h-13Zm0 4.5v3m0 2v.1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-        <span>{{ t('Достигнут лимит устройств. Отключите одно из устройств или напишите в поддержку.', 'Device limit reached. Remove one of your devices or contact support.') }}</span>
-      </div>
-      <div v-if="announce" class="mock-app-note">
+      <div v-if="announce" class="mock-app-note" :class="{ 'is-warn': profile.tone === 'warn' }">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm0 3.2v4.1m0 2.4v.1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
         <span>{{ announce }}</span>
       </div>
-      <div v-if="response.newDomain" class="mock-app-note is-move">
-        <span>{{ t('Новый адрес подписки', 'New subscription address') }}</span>
-        <code>{{ response.newDomain }}</code>
-      </div>
 
-      <div class="mock-strip">
+      <div v-if="profile.quota" class="mock-strip">
         <div class="mock-strip-top">
           <span class="mock-strip-name">{{ name }}</span>
           <span class="mock-strip-pill" :class="`is-${strip.pill.tone}`">{{ strip.pill.text }}</span>
@@ -77,7 +72,7 @@ const ring = computed(() => {
     <figcaption class="mock-pv-cap">
       {{ theme.seed
         ? t(`Цвет ${theme.seed} из ReClash-View: app.color. Схема данных, не скриншот приложения.`, `Color ${theme.seed} from ReClash-View: app.color. A data illustration, not an app screenshot.`)
-        : t('Без ReClash-View: app.color клиент остаётся в стоковых цветах.', 'Without ReClash-View: app.color the client keeps its stock colors.') }}
+        : t('Только переданные данные: без выдуманной квоты или срока. Схема, не скриншот приложения.', 'Only supplied data: no invented quota or expiry. An illustration, not an app screenshot.') }}
     </figcaption>
   </figure>
 </template>

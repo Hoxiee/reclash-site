@@ -19,12 +19,12 @@ const switcher = computed(() => stands.map(({ profile, swatch }) => ({ key: prof
   <div class="mock-page">
     <PageHero
       :title="t('Мок-подписки', 'Mock subscriptions')"
-      :lede="t('Фейковые подписки, чтобы гонять клиент: импорт, показ квоты и срока, оформление под провайдера и объявления — без настоящего провайдера и без реального доступа.', 'Fake subscriptions for exercising the client: import, quota and expiry display, provider theming and announcements, with no real provider and no real access.')"
+      :lede="t('Четыре контрастных сценария: максимум оформления, только название и узлы, лёгкий брендинг и пробный тариф на исходе. Импортируйте и сравните — настоящего доступа здесь нет.', 'Four contrasting scenarios: full customization, just a name and nodes, light branding, and a trial at its limits. Import and compare — none provides real access.')"
       glyph="M150 168h100M150 200h100M150 232h60"
     >
       <template #eyebrow>{{ t('Для тестирования', 'For testing') }}</template>
       <template #tags>
-        <span class="tag">{{ t(`${count} стендов`, `${count} stands`) }}</span>
+        <span class="tag">{{ t(`${count} сценария`, `${count} scenarios`) }}</span>
         <span class="tag">{{ t('Тестовые данные', 'Test data') }}</span>
         <span class="tag">{{ t('Ничего настоящего', 'Nothing real') }}</span>
         <span class="tag">reclash://</span>
@@ -61,7 +61,7 @@ const switcher = computed(() => stands.map(({ profile, swatch }) => ({ key: prof
             <a v-for="{ profile, swatch } in stands" :key="profile.key" :href="`#mock-${profile.key}`" class="mock-index-item theme-scope" :style="swatch.style">
               <span class="mock-index-dot" :class="{ 'is-stock': !swatch.seed }" aria-hidden="true" />
               <span class="mock-index-name">{{ profile.name[language] }}</span>
-              <span class="mock-index-blurb">{{ profile.blurb[language] }}</span>
+              <span class="mock-index-blurb">{{ profile.scenario[language] }}</span>
             </a>
           </nav>
         </div>

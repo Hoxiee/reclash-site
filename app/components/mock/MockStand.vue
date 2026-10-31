@@ -12,7 +12,7 @@ const facts = computed(() => mockFacts(props.profile, props.now, language.value)
 const headers = computed(() => [
   ...mockTransportHeaders.map(([key, value]) => ({ key, value, kind: 'host' })),
   ...mockHeaders(props.profile, props.origin, props.now).map(([key, value]) => ({
-    key, value, kind: key.startsWith('ReClash-') ? 'reclash' : key.startsWith('X-Hwid-') ? 'service' : 'common',
+    key, value, kind: key.startsWith('ReClash-') ? 'reclash' : 'common',
   })),
 ])
 const body = computed(() => mockBody(props.profile))
@@ -23,9 +23,6 @@ const bodyLines = computed(() => {
   return t(`${count} ${ru}`, `${count} lines`)
 })
 const number = computed(() => String(props.index + 1).padStart(2, '0'))
-const tone = computed(() => props.profile.tone === 'themed'
-  ? t('Оформление', 'Theming')
-  : props.profile.tone === 'warn' ? t('Предупреждение', 'Warning') : '')
 </script>
 
 <template>
@@ -34,7 +31,7 @@ const tone = computed(() => props.profile.tone === 'themed'
       <p class="mock-stand-meta">
         <span class="mock-stand-n">{{ number }}</span>
         <code>/mock/{{ profile.key }}</code>
-        <span v-if="tone" class="mock-stand-tone">{{ tone }}</span>
+        <span class="mock-stand-tone">{{ profile.scenario[language] }}</span>
       </p>
       <h3 :id="`mock-${profile.key}-name`" class="mock-stand-name" tabindex="-1">{{ profile.name[language] }}</h3>
       <p class="mock-stand-blurb">{{ profile.blurb[language] }}</p>
@@ -48,10 +45,10 @@ const tone = computed(() => props.profile.tone === 'themed'
       <p class="mock-stand-teaches" data-fade>{{ profile.teaches[language] }}</p>
 
       <dl class="mock-facts" data-fade>
-        <div><dt>{{ t('Трафик', 'Traffic') }}</dt><dd>{{ facts.traffic }}</dd></div>
-        <div><dt>{{ t('Срок', 'Expires') }}</dt><dd>{{ facts.expires }}</dd></div>
+        <div v-if="facts.traffic"><dt>{{ t('Трафик', 'Traffic') }}</dt><dd>{{ facts.traffic }}</dd></div>
+        <div v-if="facts.expires"><dt>{{ t('Срок', 'Expires') }}</dt><dd>{{ facts.expires }}</dd></div>
         <div><dt>{{ t('Узлов', 'Nodes') }}</dt><dd>{{ facts.nodes }}</dd></div>
-        <div><dt>{{ t('Обновление', 'Refresh') }}</dt><dd>{{ facts.refresh }}</dd></div>
+        <div v-if="facts.refresh"><dt>{{ t('Обновление', 'Refresh') }}</dt><dd>{{ facts.refresh }}</dd></div>
       </dl>
 
       <div class="mock-acts" data-fade>

@@ -2,10 +2,7 @@ import data from './mocks.json' with { type: 'json' }
 import type { BilingualText } from '../site/routes'
 import type { SubscriptionType } from './standard'
 
-// Mock subscriptions: one record per stand. The mock-subs page, the static
-// /mock/<key> bodies and their _headers block are all derived from this data,
-// so a card can never claim something the served response does not carry.
-
+// The page, static responses and previews share one record per stand.
 export type MockTone = '' | 'warn' | 'themed'
 
 /** Sample traffic figures. Real panels send Subscription-Userinfo per user. */
@@ -13,13 +10,11 @@ export type MockQuota = {
   uploadGb: number
   downloadGb: number
   totalGb: number
-  /** Fixed Unix expiry in seconds. */
   expireAt?: number
   /** Relative expiry, recomputed at build time so the stand never goes stale. */
   expireInDays?: number
 }
 
-/** Header-level settings of a stand, stored readable; mockHeaders() encodes them. */
 export type MockResponse = {
   subscriptionType?: SubscriptionType
   title?: string
@@ -30,27 +25,28 @@ export type MockResponse = {
   logo?: string
   background?: { file: string, opacity: number }
   widgets?: string
+  widgetsDetailed?: string
+  widgetsSimple?: string
+  powerButton?: string
   settings?: string
+  restrictions?: string
   view?: string
   supportUrl?: string
   webPageUrl?: string
   buyPlan?: string
   buyTraffic?: string
-  /** The header carries the Russian text, as the archived stands did. */
+  /** The HTTP header carries the Russian text. */
   announce?: BilingualText
   announceUrl?: string
   updateMinutes?: number
   expireDays?: string
   trafficPercent?: string
-  newDomain?: string
-  fallbackHosts?: string
-  /** A service header the server sets; providers do not configure it. */
-  hwidLimit?: boolean
 }
 
 export type MockProfile = {
   key: string
   tone: MockTone
+  scenario: BilingualText
   name: BilingualText
   blurb: BilingualText
   teaches: BilingualText
@@ -102,7 +98,11 @@ export function mockHeaders(profile: MockProfile, origin: string, now = Date.now
     ['ReClash-ServiceLogo', r.logo && mockAsset(origin, r.logo)],
     ['ReClash-Background', r.background && `${mockAsset(origin, r.background.file)},${r.background.opacity}`],
     ['ReClash-Widgets', r.widgets],
+    ['ReClash-Widgets-Detailed', r.widgetsDetailed],
+    ['ReClash-Widgets-Simple', r.widgetsSimple],
+    ['ReClash-PowerButton', r.powerButton],
     ['ReClash-Settings', r.settings],
+    ['ReClash-Restrictions', r.restrictions],
     ['ReClash-View', [r.hex && `app.color:${r.hex}`, r.view].filter(Boolean).join(';')],
     ['ReClash-SupportURL', r.supportUrl],
     ['ReClash-WebPageURL', r.webPageUrl],
@@ -113,9 +113,6 @@ export function mockHeaders(profile: MockProfile, origin: string, now = Date.now
     ['ReClash-AutoUpdateInterval', r.updateMinutes ? String(r.updateMinutes) : undefined],
     ['ReClash-ExpireDays', r.expireDays],
     ['ReClash-TrafficPercent', r.trafficPercent],
-    ['ReClash-NewDomain', r.newDomain],
-    ['ReClash-FallbackHosts', r.fallbackHosts],
-    ['X-Hwid-Max-Devices-Reached', r.hwidLimit ? '1' : undefined],
   ]
   const q = profile.quota
   if (q) {
@@ -135,7 +132,7 @@ export const mockTransportHeaders: Array<[string, string]> = [
 export function mockBody(profile: MockProfile): string {
   const head = `# Mock subscription: ${profile.key}. Fake nodes, for testing ReClash only.\n`
   if (profile.body) return head + profile.body
-  const group = profile.response.serviceName ?? profile.key
+  const group = profile.response.serviceName ?? profile.response.title ?? profile.key
   const names = Array.from({ length: profile.nodes }, (_, i) => `${group} ${String(i + 1).padStart(2, '0')}`)
   const nodes = names.map((name, i) =>
     `  - {name: "${name}", type: ss, server: 127.0.0.1, port: ${8388 + i}, cipher: aes-256-gcm, password: mock}`)

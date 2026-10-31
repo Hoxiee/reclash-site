@@ -2,25 +2,18 @@
   {
     "key": "ember",
     "tone": "themed",
-    "name": {
-      "ru": "Ember Line",
-      "en": "Ember Line"
-    },
+    "scenario": { "ru": "Максимум", "en": "Full customization" },
+    "name": { "ru": "Ember Line", "en": "Ember Line" },
     "blurb": {
-      "ru": "полный стенд: квота, виджеты, тема, фон и объявление",
-      "en": "the full stand: quota, widgets, theme, background and announce"
+      "ru": "Яркая тема, фон, формы кнопки и отдельные наборы виджетов.",
+      "en": "Vivid theme, wallpaper, power-button shapes and per-dashboard widgets."
     },
     "teaches": {
-      "ru": "Проверяет: полный стенд: квота, виджеты, тема, фон и объявление. Превью — схема данных, не скриншот приложения.",
-      "en": "Tests: the full stand: quota, widgets, theme, background and announce. The preview illustrates data; it is not an app screenshot."
+      "ru": "Проверьте весь набор оформления: логотип, чёрный фон с обоями, стекло, навигацию и выбор формы кнопки. В настройках оформления переключите простую и подробную панели — каждой задан свой набор карточек. Есть квота, кабинет, оплата, объявления и напоминания; автозапуск VPN не включается.",
+      "en": "Try the full presentation set: logo, black wallpaper background, glass, navigation and a pool of power-button shapes. Switch between simple and detailed dashboards in Appearance to see their separate card selections. Includes quota, account, billing, announcements and reminders; VPN autostart stays off."
     },
     "nodes": 3,
-    "quota": {
-      "uploadGb": 1,
-      "downloadGb": 20,
-      "totalGb": 100,
-      "expireAt": 1924992000
-    },
+    "quota": { "uploadGb": 1, "downloadGb": 20, "totalGb": 100, "expireInDays": 30 },
     "response": {
       "subscriptionType": "test",
       "title": "Ember Line",
@@ -28,255 +21,98 @@
       "serverInfo": "Ember Select",
       "hex": "FF6B1A",
       "logo": "logo-ember.svg",
-      "background": {
-        "file": "bg-ember.svg",
-        "opacity": 22
-      },
-      "widgets": "currentOutbound,networkSpeed,profiles,proxyGroups,connectionStats,announcement",
-      "settings": "autorun,autoupdate,minimize",
-      "view": "proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
+      "background": { "file": "bg-ember.svg", "opacity": 22 },
+      "powerButton": "shape:sharpBurst,puffyDiamond,clover8Leaf;type:tonal",
+      "widgets": "health,outboundMode,speedTest,serviceStatus,ipQuality,trustedNetworks,path",
+      "widgetsDetailed": "currentOutbound,networkSpeed,speedTest,profiles,proxyGroups,connectionStats,health,ipQuality,trustedNetworks,path,serviceStatus,outboundMode,networkTakeover,vpnButton,intranetIp,memoryInfo,announcement",
+      "widgetsSimple": "speedTest,ipQuality,serviceStatus,trustedNetworks,path,health,outboundMode",
+      "settings": "autoupdate,minimize",
+      "view": "app.style:vivid;app.black:true;app.navbar:floating;app.tabs:slide;app.glass:ultra;proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
       "supportUrl": "https://example.com/support",
+      "webPageUrl": "https://example.com/account",
       "buyPlan": "https://example.com/plans",
       "buyTraffic": "https://example.com/traffic",
       "announce": {
-        "ru": "Капитан, стенд Ember Line развёрнут: квота, виджеты, тема и фон в одной фикстуре.",
-        "en": "Captain, the Ember Line stand is live: quota, widgets, theme, and background in one fixture."
+        "ru": "Ember Line: всё оформление под провайдера — от обоев до кнопки подключения. Это демонстрация, узлы не дают доступа в сеть.",
+        "en": "Ember Line: provider styling from wallpaper to the connect button. This is a demo; the nodes do not provide network access."
       },
-      "updateMinutes": 60
+      "announceUrl": "https://example.com/news",
+      "updateMinutes": 60,
+      "expireDays": "7,3,1",
+      "trafficPercent": "80,95"
     },
     "body": "mixed-port: 7890\nmode: rule\nlog-level: info\nproxies:\n  - name: Ember Berlin\n    type: ss\n    server: 127.0.0.1\n    port: 8395\n    cipher: aes-256-gcm\n    password: ember-berlin\n  - name: Ember Tokyo\n    type: ss\n    server: 127.0.0.1\n    port: 8396\n    cipher: aes-256-gcm\n    password: ember-tokyo\n  - name: Ember Seattle\n    type: ss\n    server: 127.0.0.1\n    port: 8397\n    cipher: aes-256-gcm\n    password: ember-seattle\nproxy-groups:\n  - name: Ember Select\n    type: select\n    proxies: [Ember Berlin, Ember Tokyo, Ember Seattle, DIRECT]\n  - name: Ember Fastest\n    type: url-test\n    url: http://www.gstatic.com/generate_204\n    interval: 300\n    proxies: [Ember Berlin, Ember Tokyo, Ember Seattle]\nrules:\n  - MATCH,Ember Select\n"
   },
   {
-    "key": "aurora",
-    "tone": "themed",
-    "name": {
-      "ru": "Aurora Pass",
-      "en": "Aurora Pass"
-    },
+    "key": "nimbus",
+    "tone": "",
+    "scenario": { "ru": "Минимум", "en": "Bare minimum" },
+    "name": { "ru": "Nimbus", "en": "Nimbus" },
     "blurb": {
-      "ru": "оформление: цвет, вид списка и фон",
-      "en": "appearance: accent, list presentation and background"
+      "ru": "Только название и два узла. Ни одного заголовка ReClash.",
+      "en": "Just a name and two nodes. Not a single ReClash header."
     },
     "teaches": {
-      "ru": "Проверяет: оформление: цвет, вид списка и фон. Превью — схема данных, не скриншот приложения.",
-      "en": "Tests: appearance: accent, list presentation and background. The preview illustrates data; it is not an app screenshot."
+      "ru": "Чистый импорт без подсказок провайдера: только Profile-Title и профиль mihomo. Нет логотипа, темы, типа подписки, квоты, срока, объявлений, ссылок или настроек. Отсутствие квоты не означает безлимит.",
+      "en": "A plain import with no provider hints: only Profile-Title and a mihomo profile. No logo, theme, subscription type, quota, expiry, announcements, links or settings. An absent quota does not mean unlimited traffic."
+    },
+    "nodes": 2,
+    "quota": null,
+    "response": { "title": "Nimbus" }
+  },
+  {
+    "key": "aurora",
+    "tone": "themed",
+    "scenario": { "ru": "Лёгкий брендинг", "en": "Light branding" },
+    "name": { "ru": "Aurora Pass", "en": "Aurora Pass" },
+    "blurb": {
+      "ru": "Фиолетовый акцент и логотип — остальные настройки ваши.",
+      "en": "A violet accent and a logo — the other settings stay yours."
+    },
+    "teaches": {
+      "ru": "Сравните с Nimbus: провайдер добавляет имя сервиса, логотип и цвет, но не задаёт фон, кнопку, виджеты или параметры приложения. Квота, срок и объявления не передаются.",
+      "en": "Compare with Nimbus: the provider adds a service name, logo and accent, but no wallpaper, power-button, widget or app-setting overrides. No quota, expiry or announcements are sent."
     },
     "nodes": 4,
     "quota": null,
     "response": {
-      "subscriptionType": "test",
       "title": "Aurora Pass",
       "serviceName": "Aurora Pass",
       "hex": "6E55F5",
-      "logo": "logo-aurora.svg",
-      "background": {
-        "file": "bg-aurora.svg",
-        "opacity": 30
-      }
-    }
-  },
-  {
-    "key": "nimbus",
-    "tone": "",
-    "name": {
-      "ru": "Nimbus Free",
-      "en": "Nimbus Free"
-    },
-    "blurb": {
-      "ru": "безлимит без оформления: только имя и узлы",
-      "en": "unlimited and unstyled: just a name and nodes"
-    },
-    "teaches": {
-      "ru": "Проверяет: безлимит без оформления: только имя и узлы. Превью — схема данных, не скриншот приложения.",
-      "en": "Tests: unlimited and unstyled: just a name and nodes. The preview illustrates data; it is not an app screenshot."
-    },
-    "nodes": 6,
-    "quota": null,
-    "response": {
-      "subscriptionType": "test",
-      "title": "Nimbus Free",
-      "serviceName": "Nimbus Free",
-      "view": "proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact"
+      "logo": "logo-aurora.svg"
     }
   },
   {
     "key": "sentinel",
     "tone": "warn",
-    "name": {
-      "ru": "Sentinel Trial",
-      "en": "Sentinel Trial"
-    },
+    "scenario": { "ru": "Лимиты и продление", "en": "Limits and renewal" },
+    "name": { "ru": "Sentinel Trial", "en": "Sentinel Trial" },
     "blurb": {
-      "ru": "пробный тариф на исходе: квота, срок и оплата",
-      "en": "trial running out: quota, expiry and billing"
+      "ru": "Пробный тариф: 94 % квоты израсходовано, срок на исходе.",
+      "en": "A trial at its limits: 94% of traffic used, expiry approaching."
     },
     "teaches": {
-      "ru": "Проверяет: пробный тариф на исходе: квота, срок и оплата. Превью — схема данных, не скриншот приложения.",
-      "en": "Tests: trial running out: quota, expiry and billing. The preview illustrates data; it is not an app screenshot."
+      "ru": "Проверьте предупреждения о трафике и сроке, кнопки продления и докупки, кабинет и поддержку. Промоподписка запрещает режим Global, но не меняет оформление. Напоминания приходят за 3 и 1 день и при расходе 80 и 95 % квоты.",
+      "en": "Check traffic and expiry warnings, renewal and top-up offers, account and support links. This promotional subscription disables Global mode without changing the appearance. Reminders are set for 3 and 1 days remaining and 80% and 95% traffic usage."
     },
     "nodes": 2,
-    "quota": {
-      "uploadGb": 9,
-      "downloadGb": 38,
-      "totalGb": 50,
-      "expireInDays": 2
-    },
+    "quota": { "uploadGb": 9, "downloadGb": 38, "totalGb": 50, "expireInDays": 2 },
     "response": {
-      "subscriptionType": "test",
+      "subscriptionType": "promo",
       "title": "Sentinel Trial",
       "serviceName": "Sentinel Trial",
-      "widgets": "currentOutbound,networkSpeed,profiles,proxyGroups,connectionStats,announcement",
+      "restrictions": "noglobal",
       "supportUrl": "https://example.com/support",
+      "webPageUrl": "https://example.com/account",
       "buyPlan": "https://example.com/renew",
       "buyTraffic": "https://example.com/topup",
       "announce": {
-        "ru": "Пробный период почти закончился. Продлите, чтобы не потерять доступ.",
-        "en": "Your trial is almost over. Renew to keep your access."
+        "ru": "Осталось 3 ГБ, пробный период заканчивается. В демонстрации доступны продление и докупка трафика; режим Global отключён.",
+        "en": "3 GB remain and the trial is ending. This demo offers renewal and traffic top-ups; Global mode is disabled."
       },
-      "updateMinutes": 720
-    }
-  },
-  {
-    "key": "relay",
-    "tone": "",
-    "name": {
-      "ru": "Relay Shift",
-      "en": "Relay Shift"
-    },
-    "blurb": {
-      "ru": "миграция домена и запасные хосты",
-      "en": "domain migration and fallback hosts"
-    },
-    "teaches": {
-      "ru": "Проверяет: миграция домена и запасные хосты. Превью — схема данных, не скриншот приложения.",
-      "en": "Tests: domain migration and fallback hosts. The preview illustrates data; it is not an app screenshot."
-    },
-    "nodes": 4,
-    "quota": {
-      "uploadGb": 5,
-      "downloadGb": 60,
-      "totalGb": 300,
-      "expireInDays": 60
-    },
-    "response": {
-      "subscriptionType": "test",
-      "title": "Relay Shift",
-      "serviceName": "Relay Shift",
-      "supportUrl": "https://example.com/support",
-      "announce": {
-        "ru": "Мы переезжаем на новый домен. Клиент предложит обновить адрес подписки.",
-        "en": "We are moving to a new domain. The client will offer to update your subscription address."
-      },
-      "updateMinutes": 180,
-      "newDomain": "relay-new.example.com",
-      "fallbackHosts": "relay-b.example.com,relay-c.example.com"
-    }
-  },
-  {
-    "key": "gatekeeper",
-    "tone": "warn",
-    "name": {
-      "ru": "Gatekeeper",
-      "en": "Gatekeeper"
-    },
-    "blurb": {
-      "ru": "сервисный ответ: достигнут лимит устройств",
-      "en": "service response: device limit reached"
-    },
-    "teaches": {
-      "ru": "Проверяет: сервисный ответ: достигнут лимит устройств. Превью — схема данных, не скриншот приложения.",
-      "en": "Tests: service response: device limit reached. The preview illustrates data; it is not an app screenshot."
-    },
-    "nodes": 2,
-    "quota": null,
-    "response": {
-      "subscriptionType": "test",
-      "title": "Gatekeeper",
-      "serviceName": "Gatekeeper",
-      "supportUrl": "https://example.com/support",
-      "hwidLimit": true
-    }
-  },
-  {
-    "key": "meridian",
-    "tone": "",
-    "name": {
-      "ru": "Meridian",
-      "en": "Meridian"
-    },
-    "blurb": {
-      "ru": "средний тариф: квота, виджеты и ссылки без оформления",
-      "en": "the average plan: quota, widgets and links with no theming"
-    },
-    "teaches": {
-      "ru": "Проверяет: средний тариф: квота, виджеты и ссылки без оформления. Превью — схема данных, не скриншот приложения.",
-      "en": "Tests: the average plan: quota, widgets and links with no theming. The preview illustrates data; it is not an app screenshot."
-    },
-    "nodes": 5,
-    "quota": {
-      "uploadGb": 8,
-      "downloadGb": 27,
-      "totalGb": 100,
-      "expireInDays": 27
-    },
-    "response": {
-      "subscriptionType": "test",
-      "title": "Meridian",
-      "serviceName": "Meridian",
-      "serverInfo": "Meridian",
-      "widgets": "currentOutbound,networkSpeed,profiles,proxyGroups,connectionStats,announcement",
-      "settings": "autorun,autoupdate",
-      "view": "proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
-      "supportUrl": "https://example.com/support",
-      "buyPlan": "https://example.com/plans",
-      "announce": {
-        "ru": "Тариф Meridian активен. Новости провайдера появятся здесь.",
-        "en": "Your Meridian plan is active. Provider news will appear here."
-      },
-      "updateMinutes": 360
-    }
-  },
-  {
-    "key": "ledger",
-    "tone": "",
-    "name": {
-      "ru": "Ledger",
-      "en": "Ledger"
-    },
-    "blurb": {
-      "ru": "напоминания, личный кабинет, дни и проценты",
-      "en": "reminders, account page, days and percentages"
-    },
-    "teaches": {
-      "ru": "Проверяет: напоминания, личный кабинет, дни и проценты. Превью — схема данных, не скриншот приложения.",
-      "en": "Tests: reminders, account page, days and percentages. The preview illustrates data; it is not an app screenshot."
-    },
-    "nodes": 4,
-    "quota": {
-      "uploadGb": 10,
-      "downloadGb": 20,
-      "totalGb": 120,
-      "expireInDays": 30
-    },
-    "response": {
-      "subscriptionType": "test",
-      "title": "Ledger",
-      "serviceName": "Ledger",
-      "serverInfo": "Ledger",
-      "logo": "logo-standard.svg",
-      "widgets": "currentOutbound,networkSpeed,profiles,proxyGroups,connectionStats,announcement",
-      "settings": "shadowstart,autostart,openlogs,closeconnections",
-      "view": "proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
-      "supportUrl": "https://example.com/support",
-      "webPageUrl": "https://example.com/account",
-      "buyPlan": "https://example.com/plans",
-      "announce": {
-        "ru": "Напоминания настроены провайдером. Подробности — по ссылке.",
-        "en": "Reminders are set by the provider. Follow the link for details."
-      },
-      "announceUrl": "https://example.com/news",
-      "updateMinutes": 1440,
-      "expireDays": "7,3,1",
+      "announceUrl": "https://example.com/trial",
+      "updateMinutes": 720,
+      "expireDays": "3,1",
       "trafficPercent": "80,95"
     }
   }

@@ -354,6 +354,42 @@
       "available": true
     },
     {
+      "path": "presentation.widgetsDetailed",
+      "name": "reclash-widgets-detailed",
+      "type": "tokens",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-tokens",
+      "multiplicity": "singleton",
+      "limit": 32,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "appearance",
+      "available": true
+    },
+    {
+      "path": "presentation.widgetsSimple",
+      "name": "reclash-widgets-simple",
+      "type": "tokens",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "comma-separated-tokens",
+      "multiplicity": "singleton",
+      "limit": 32,
+      "trust": "hint",
+      "introduced": 1,
+      "absence": "retain-last-known-stale",
+      "consumer": "appearance",
+      "available": true
+    },
+    {
       "path": "presentation.background",
       "name": "reclash-background",
       "type": "url",

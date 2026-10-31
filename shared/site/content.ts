@@ -75,8 +75,8 @@ export const portedPages = {
       "en": "ReClash — an open-source mihomo client"
     },
     "description": {
-      "ru": "ReClash — открытый клиент для mihomo с профилями, сценариями и маршрутами RCX, импортом подписок и отдельных узлов, диагностикой и упрощённой панелью по желанию. Windows, macOS, Linux и Android.",
-      "en": "ReClash is an open-source mihomo client with RCX profiles, scenarios and routes, subscription and node import, diagnostics and an optional simplified dashboard. Windows, macOS, Linux and Android."
+      "ru": "ReClash — открытый клиент для mihomo с профилями, сценариями и маршрутами RCX, импортом подписок и отдельных узлов, диагностикой и простой панелью по умолчанию и подробной панелью в настройках. Windows, macOS, Linux и Android.",
+      "en": "ReClash is an open-source mihomo client with RCX profiles, scenarios and routes, subscription and node import, diagnostics and a simple dashboard by default and a detailed layout in settings. Windows, macOS, Linux and Android."
     }
   },
   "start": {

@@ -27,8 +27,8 @@ export function mockFacts(profile: MockProfile, now: number, language: Language)
   const ru = language === 'ru'
   const q = profile.quota
   const minutes = profile.response.updateMinutes
-  let traffic = ru ? 'без лимита' : 'unlimited'
-  let expires = ru ? 'бессрочно' : 'never'
+  let traffic: string | null = null
+  let expires: string | null = null
   let share: number | null = null
   if (q) {
     const used = q.uploadGb + q.downloadGb
@@ -47,7 +47,7 @@ export function mockFacts(profile: MockProfile, now: number, language: Language)
     }
   }
   const refresh = !minutes
-    ? (ru ? 'по умолчанию' : 'default')
+    ? null
     : minutes % 60
       ? (ru ? `${minutes} мин` : `${minutes} min`)
       : (ru ? `${minutes / 60} ч` : `${minutes / 60} h`)

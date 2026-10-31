@@ -15,6 +15,12 @@ npm ci
 npm run dev
 ```
 
+For joint development, keep this checkout at `../reclash-site/` beside the
+`ReClash/` application checkout. The application's `site` symlink points here;
+Git history, branches, commits and deployment stay independent. From this
+repository, `node ../ReClash/tool/site_docs.mjs --check` checks shared exports and
+RCX snapshots; `--sync` copies the app's provider standard and JSON schemas.
+
 The root page redirects before first paint: an explicit language switch stored
 in `localStorage` wins, otherwise the browser's preferred languages decide
 (Russian-reading locales go to `/ru`, everything else to `/en`). Without
@@ -37,11 +43,25 @@ when the app standard changes; do not restore the archived header schema.
 Provider accent colors use `ReClash-View: app.color:RRGGBB`, not `ReClash-Hex`.
 Mock responses, builder output and documentation must agree with that snapshot.
 `ReClash-SubscriptionType` supplies a display-only `test`, `promo` or `dev` badge;
-all mock subscriptions declare `test`, and the builder can export each type.
+Ember declares `test`, Sentinel declares `promo`, and Nimbus and Aurora omit
+the type. The builder can export each type.
 Mock import links carry an encoded profile name as well as the subscription URL.
 The client reads native response metadata during import, including YAML responses.
 FlClashX headers require the app's explicit compatibility mode; they are not
 unconditional aliases in the native standard.
+
+`shared/provider/mocks.json` defines four deliberately different mock subscriptions:
+
+- **Ember Line:** full presentation controls, per-dashboard widget lists, a
+  power-button shape pool, quota, account links and announcements.
+- **Nimbus:** only `Profile-Title` and two fake nodes; no provider metadata or quota.
+- **Aurora Pass:** a service name, logo and violet accent, with no other overrides.
+- **Sentinel Trial:** a nearly exhausted promotional quota, expiry warnings,
+  renewal and top-up offers, reminders and a Global-mode restriction.
+
+All nodes use loopback addresses and all account links are examples. The page,
+YAML responses, response headers and pre-import previews share these records.
+Missing quota metadata is not represented as an unlimited plan.
 
 `shared/motion/core.ts` contains the original spring presets, integration,
 CSS easing simulation and blob geometry without browser dependencies.

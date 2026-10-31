@@ -153,6 +153,9 @@ const sections: SourceSection[] = [
           'Общие заголовки `support-url`, `profile-web-page-url`, `announce`, `profile-update-interval` и `hide-url`. Адаптер FlClashX включается отдельно — см. [«Совместимость»](#compat).',
           'Common headers: `support-url`, `profile-web-page-url`, `announce`, `profile-update-interval` and `hide-url`. The FlClashX adapter is enabled separately; see [“Compatibility”](#compat).') },
       ] },
+      { kind: 'p', text: b(
+        '`reclash-widgets` задаёт совместимые карточки каждой панели. `reclash-widgets-simple` и `reclash-widgets-detailed` имеют приоритет для простой и узкой подробной панелей. Пустой или несовместимый список возвращает к общему, затем к пользовательскому. `speedTest` (`speed`) — замер скорости; `networkSpeed` — текущий трафик подробной панели.',
+        '`reclash-widgets` selects compatible cards for each dashboard. `reclash-widgets-simple` and `reclash-widgets-detailed` take precedence for simple and narrow detailed. Empty or incompatible lists fall back to the shared list, then the local selection. `speedTest` (`speed`) measures bandwidth; `networkSpeed` is live traffic on detailed.') },
       { kind: 'note', tone: 'info', text: b(
         'Заголовки — это подсказки оформления, а не механизм доверия. Пользователь может переопределить почти всё, что вы прислали. Маршрутизация RCX настраивается отдельно — см. [руководство RCX](page:rcx).',
         'Headers are presentation hints, not a trust mechanism. The user can override nearly everything you send. RCX routing is configured separately; see the [RCX guide](page:rcx).') },

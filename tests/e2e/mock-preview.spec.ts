@@ -19,8 +19,8 @@ for (const profile of mockProfiles) {
     expect(api.headers()['content-type'].split(';')[0]).toBe('application/json')
     const body = await api.json()
     expect(body.version).toBe(1)
-    expect(body.provider.name).toBe(profile.response.serviceName)
-    expect(body.subscription).toEqual({ type: profile.response.subscriptionType })
+    expect(body.provider.name).toBe(profile.response.serviceName ?? profile.response.title)
+    expect(body.subscription).toEqual(profile.response.subscriptionType ? { type: profile.response.subscriptionType } : undefined)
     if (body.provider.logoUrl) {
       const logo = await request.get(body.provider.logoUrl)
       expect(logo.status()).toBe(200)

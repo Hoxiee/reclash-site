@@ -11,9 +11,9 @@ TypeScript animation engine.
   `npm run docs:sync -- <ReClash checkout>`, not hand-edited parallel prose.
   Compile Markdown into typed components at build time. Mermaid stays build-only.
   Screenshot IDs and capture instructions come from each language's manifest.
-- When this repository is checked out as ReClash's `site/` submodule, keep website documentation aligned with public
-  application behavior in the same task. The parent `.agents/site-documentation.md` defines ownership and checks.
-  Run `node ../tool/site_docs.mjs --check` there; `--sync` copies the canonical provider registry and JSON schemas.
+- When working alongside the sibling `../ReClash/` checkout, keep website documentation aligned with public application
+  behavior in the same task. `../ReClash/.agents/site-documentation.md` defines ownership and checks.
+  Run `node ../ReClash/tool/site_docs.mjs --check`; `--sync` copies the canonical provider registry and JSON schemas.
   Do not hand-edit those exports. Application and website commits, pushes and deployment need separate authority.
 - Keep routes and SEO in `shared/site/`; prerender all supported destinations.
   Home and `index.html` share an output file: do not render it twice.
