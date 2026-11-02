@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { pagePath } from '~~/shared/site/routes'
+import { docPath } from '~~/shared/docs/catalogue'
 const { language, t } = useText()
 </script>
 
@@ -17,8 +18,8 @@ const { language, t } = useText()
       </div>
       <div><h4>{{ t("Сайт", "Site") }}</h4><ul>
         <li><SiteLink :to="pagePath(language, 'index')">{{ t("Клиент", "Client") }}</SiteLink></li><li><SiteLink :to="pagePath(language, 'download')">{{ t("Загрузки", "Downloads") }}</SiteLink></li>
-        <li><SiteLink :to="pagePath(language, 'start')">{{ t("Быстрый старт и FAQ", "Quick start and FAQ") }}</SiteLink></li><li><SiteLink :to="pagePath(language, 'docs')">{{ t("Документация по заголовкам", "Header documentation") }}</SiteLink></li>
-        <li><SiteLink :to="pagePath(language, 'rcx')">{{ t("Документация RCX", "RCX documentation") }}</SiteLink></li>
+        <li><SiteLink :to="pagePath(language, 'start')">{{ t("Быстрый старт и FAQ", "Quick start and FAQ") }}</SiteLink></li><li><SiteLink :to="pagePath(language, 'docs')">{{ t("Документация", "Documentation") }}</SiteLink></li>
+        <li><SiteLink :to="docPath(language, 'rcx')">{{ t("Автомаршрутизация RCX", "RCX auto routing") }}</SiteLink></li>
         <li><SiteLink :to="pagePath(language, 'reference')">{{ t("Справочник по заголовкам", "Header reference") }}</SiteLink></li><li><SiteLink :to="pagePath(language, 'builder')">{{ t("Конструктор заголовков", "Header builder") }}</SiteLink></li>
       </ul></div>
       <div><h4>{{ t("Исходники", "Source") }}</h4><ul>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { pagePath } from '~~/shared/site/routes'
+import { docPath } from '~~/shared/docs/catalogue'
 usePageMeta('index')
 const { language, t } = useText()
 const manifesto = computed(() => [
@@ -141,7 +142,7 @@ const manifesto = computed(() => [
         </svg>
         <h3>{{ t("Автоматический выбор RCX", "RCX automatic selection") }}</h3>
         <p>{{ t("Профили RCX задают порядок серверов и условия выбора для групп. Сценарии могут управлять несколькими группами, режимом подключения, поведением для разных сетей и маршрутами отдельных сайтов. Решение объясняется; сервер можно закрепить или выбрать вручную.", "RCX profiles define server order and selection conditions for groups. Scenarios can coordinate groups, connection mode, network-specific behavior and routes for selected traffic. Decisions are explained, and you can pin a server or choose one manually.") }}</p>
-        <SiteLink class="tlink" :to="pagePath(language, 'rcx')">{{ t("Руководство по RCX", "RCX guide") }}</SiteLink>
+        <SiteLink class="tlink" :to="docPath(language, 'rcx')">{{ t("Руководство по RCX", "RCX guide") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-prov" viewBox="0 0 64 64" aria-hidden="true">

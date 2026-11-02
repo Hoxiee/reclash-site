@@ -19,7 +19,7 @@ async function verify() {
     assert.equal(JSON.parse(body).commit, expectedCommit, 'Production has not converged to this commit')
   }
   for (const language of ['ru', 'en']) {
-    const { response, body } = await get(`/${language}/rcx`)
+    const { response, body } = await get(`/${language}/docs`)
     assert.equal(response.status, 200)
     assert.match(body, new RegExp(`<html\\b[^>]*\\blang="${language}"`))
     assert.match(body, /<h1[ >]/)

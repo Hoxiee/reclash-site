@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { pagePath, type PageKey } from '~~/shared/site/routes'
+import { docPath } from '~~/shared/docs/catalogue'
 // Shared sub-navigation of the developer section; the active tab keeps the magnet indicator.
 defineProps<{ page: PageKey }>()
 const { language, t } = useText()
@@ -21,7 +22,7 @@ onMounted(() => {
 <template>
   <nav ref="strip" class="dev-tabs" data-fade style="--d:180ms" :aria-label="t('Разделы для провайдеров', 'Provider sections')">
     <div class="dev-tabs-in" data-group data-sticky data-items="a" data-cpull="0.04">
-      <SiteLink v-for="tab in tabs" :key="tab.key" :to="pagePath(language, tab.key)" :aria-current="page === tab.key ? 'page' : undefined">{{ tab.text }}</SiteLink>
+      <SiteLink v-for="tab in tabs" :key="tab.key" :to="tab.key === 'docs' ? docPath(language, 'providers') : pagePath(language, tab.key)" :aria-current="page === tab.key ? 'page' : undefined">{{ tab.text }}</SiteLink>
     </div>
   </nav>
 </template>

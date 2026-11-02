@@ -117,13 +117,12 @@ test('Aurora adds only branding while Sentinel exposes limits without theming', 
   expect(sentinel['subscription-userinfo']).toContain(`upload=${9 * GB}; download=${38 * GB}; total=${50 * GB}`)
 })
 
-test('Ember serves full presentation hints including both native widget lists', async ({ request }) => {
+test('Ember serves full presentation hints and a shared widget list', async ({ request }) => {
   const headers = (await request.get('/mock/ember')).headers()
   expect(headers['reclash-view']).toContain('app.style:vivid;app.black:true;app.navbar:floating;app.tabs:slide;app.glass:ultra')
   expect(headers['reclash-background']).toMatch(/\/assets\/mock\/bg-ember\.svg,22$/)
   expect(headers['reclash-powerbutton']).toBe('shape:sharpBurst,puffyDiamond,clover8Leaf;type:tonal')
-  expect(headers['reclash-widgets-detailed']!.split(',')).toEqual(expect.arrayContaining(['currentOutbound', 'networkSpeed', 'speedTest', 'announcement']))
-  expect(headers['reclash-widgets-simple']!.split(',')).toEqual(['speedTest', 'ipQuality', 'serviceStatus', 'trustedNetworks', 'path', 'health', 'outboundMode'])
+  expect(headers['reclash-widgets']!.split(',')).toEqual(['health', 'outboundMode', 'speedTest', 'serviceStatus', 'ipQuality', 'trustedNetworks', 'path'])
   for (const flag of ['autorun', 'autostart']) expect(headers['reclash-settings']!.split(',')).not.toContain(flag)
   expect(headers['reclash-webpageurl']).toBe('https://example.com/account')
   expect(headers['reclash-announceurl']).toBe('https://example.com/news')

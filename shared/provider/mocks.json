@@ -5,12 +5,12 @@
     "scenario": { "ru": "Максимум", "en": "Full customization" },
     "name": { "ru": "Ember Line", "en": "Ember Line" },
     "blurb": {
-      "ru": "Яркая тема, фон, формы кнопки и отдельные наборы виджетов.",
-      "en": "Vivid theme, wallpaper, power-button shapes and per-dashboard widgets."
+      "ru": "Яркая тема, фон, формы кнопки и общий набор виджетов.",
+      "en": "Vivid theme, wallpaper, power-button shapes and a shared widget list."
     },
     "teaches": {
-      "ru": "Проверьте весь набор оформления: логотип, чёрный фон с обоями, стекло, навигацию и выбор формы кнопки. В настройках оформления переключите простую и подробную панели — каждой задан свой набор карточек. Есть квота, кабинет, оплата, объявления и напоминания; автозапуск VPN не включается.",
-      "en": "Try the full presentation set: logo, black wallpaper background, glass, navigation and a pool of power-button shapes. Switch between simple and detailed dashboards in Appearance to see their separate card selections. Includes quota, account, billing, announcements and reminders; VPN autostart stays off."
+      "ru": "Проверьте весь набор оформления: логотип, чёрный фон с обоями, стекло, навигацию и выбор формы кнопки. В настройках оформления переключите простую и подробную панели — каждая применит совместимые карточки из общего списка. Есть квота, кабинет, оплата, объявления и напоминания; автозапуск VPN не включается.",
+      "en": "Try the full presentation set: logo, black wallpaper background, glass, navigation and a pool of power-button shapes. Switch between simple and detailed dashboards in Appearance: each applies compatible cards from the shared list. Includes quota, account, billing, announcements and reminders; VPN autostart stays off."
     },
     "nodes": 3,
     "quota": { "uploadGb": 1, "downloadGb": 20, "totalGb": 100, "expireInDays": 30 },
@@ -24,8 +24,6 @@
       "background": { "file": "bg-ember.svg", "opacity": 22 },
       "powerButton": "shape:sharpBurst,puffyDiamond,clover8Leaf;type:tonal",
       "widgets": "health,outboundMode,speedTest,serviceStatus,ipQuality,trustedNetworks,path",
-      "widgetsDetailed": "currentOutbound,networkSpeed,speedTest,profiles,proxyGroups,connectionStats,health,ipQuality,trustedNetworks,path,serviceStatus,outboundMode,networkTakeover,vpnButton,intranetIp,memoryInfo,announcement",
-      "widgetsSimple": "speedTest,ipQuality,serviceStatus,trustedNetworks,path,health,outboundMode",
       "settings": "autoupdate,minimize",
       "view": "app.style:vivid;app.black:true;app.navbar:floating;app.tabs:slide;app.glass:ultra;proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
       "supportUrl": "https://example.com/support",

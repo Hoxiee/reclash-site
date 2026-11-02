@@ -6,11 +6,11 @@ TypeScript animation engine.
 - Canonical routes are `/ru`, `/en` and each language's `start`, `download`,
   `docs`, `reference`, `builder`, `mock-subs` and `report`. Keep legacy `.html`
   aliases and query/fragment state usable. The lab is `/{lang}/motion`.
-- RCX lives at `/{ru|en|zh-CN}/rcx` and its chapter paths. Keep the committed
-  Markdown snapshot and source revision in `content/rcx/`; update them with
-  `npm run docs:sync -- <ReClash checkout>`, not hand-edited parallel prose.
-  Compile Markdown into typed components at build time. Mermaid stays build-only.
-  Screenshot IDs and capture instructions come from each language's manifest.
+- Documentation lives at `/{ru|en}/docs` and its page paths; `docs/manifest.json` in ReClash sets sections, groups,
+  slugs and published languages (an unpublished language redirects to English). Keep the committed snapshot and
+  source revision in `content/docs/`; update them with `npm run docs:sync -- <ReClash checkout>`, never hand-edited
+  prose. `scripts/docs/` compiles Markdown into typed blocks at build time; Mermaid stays build-only. Former
+  `/{lang}/rcx` paths and `/docs#section` fragments redirect to their new pages.
 - When working alongside the sibling `../ReClash/` checkout, keep website documentation aligned with public application
   behavior in the same task. `../ReClash/.agents/site-documentation.md` defines ownership and checks.
   Run `node ../ReClash/tool/site_docs.mjs --check`; `--sync` copies the canonical provider registry and JSON schemas.

@@ -1,0 +1,531 @@
+{
+  "source": {
+    "repository": "https://github.com/Hoxiee/ReClash",
+    "commit": "f0125c6141c2d99ab23682db959fc1b694459dc7"
+  },
+  "languages": [
+    "ru",
+    "en"
+  ],
+  "sections": [
+    {
+      "id": "providers",
+      "slug": "providers",
+      "title": {
+        "ru": "Для провайдеров",
+        "en": "Providers"
+      },
+      "groups": [
+        {
+          "title": {
+            "ru": "Основы",
+            "en": "Fundamentals"
+          },
+          "pages": [
+            "providers",
+            "providers/rollout"
+          ]
+        },
+        {
+          "title": {
+            "ru": "Справочник",
+            "en": "Reference"
+          },
+          "pages": [
+            "providers/headers",
+            "providers/request",
+            "providers/policy",
+            "providers/routing",
+            "providers/app-settings",
+            "providers/preview-api",
+            "providers/standard"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rcx",
+      "slug": "rcx",
+      "title": {
+        "ru": "Автомаршрутизация RCX",
+        "en": "RCX auto routing"
+      },
+      "groups": [
+        {
+          "title": {
+            "ru": "Концепции",
+            "en": "Concepts"
+          },
+          "pages": [
+            "rcx",
+            "rcx/engine"
+          ]
+        },
+        {
+          "title": {
+            "ru": "Справочник языка",
+            "en": "Language reference"
+          },
+          "pages": [
+            "rcx/profiles",
+            "rcx/conditions",
+            "rcx/scenarios",
+            "rcx/sharing"
+          ]
+        },
+        {
+          "title": {
+            "ru": "Рецепты",
+            "en": "Recipes"
+          },
+          "pages": [
+            "rcx/cookbook"
+          ]
+        },
+        {
+          "title": {
+            "ru": "Редактор в приложении",
+            "en": "In-app editor"
+          },
+          "pages": [
+            "rcx/editor/hub",
+            "rcx/editor/routes",
+            "rcx/editor/groups",
+            "rcx/editor/studio"
+          ]
+        },
+        {
+          "title": {
+            "ru": "Приложения",
+            "en": "Appendix"
+          },
+          "pages": [
+            "rcx/screenshots"
+          ]
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "slug": "",
+      "file": "README.md",
+      "section": "",
+      "titles": {
+        "ru": "Документация ReClash",
+        "en": "ReClash documentation"
+      },
+      "descriptions": {
+        "ru": "Технический справочник для провайдеров подписок, которые интегрируются с ReClash, и для RCX — языка автомаршрутизации клиента.",
+        "en": "Technical reference for subscription providers integrating with ReClash and for RCX, the client's auto-routing language."
+      },
+      "minutes": {
+        "ru": 1,
+        "en": 1
+      }
+    },
+    {
+      "slug": "providers",
+      "file": "providers/README.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Интеграция провайдера",
+        "en": "Provider integration"
+      },
+      "descriptions": {
+        "ru": "Как провайдер подписки передаёт ReClash конфигурацию, метаданные, маршрутизацию и политику. Начните отсюда, затем откройте страницу нужной области.",
+        "en": "How a subscription provider delivers configuration, metadata, routing and policy to ReClash. Start here, then open the page for your area."
+      },
+      "minutes": {
+        "ru": 4,
+        "en": 4
+      }
+    },
+    {
+      "slug": "providers/rollout",
+      "file": "providers/rollout.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Доставка и отладка",
+        "en": "Delivery and debugging"
+      },
+      "descriptions": {
+        "ru": "Отдача заголовков, проверка того, что получил ReClash, разбор частых сбоев и выкатка изменений.",
+        "en": "Serving headers, verifying what ReClash received, diagnosing failures, and rolling out changes."
+      },
+      "minutes": {
+        "ru": 3,
+        "en": 3
+      }
+    },
+    {
+      "slug": "providers/headers",
+      "file": "providers/headers.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Заголовки ответа",
+        "en": "Response headers"
+      },
+      "descriptions": {
+        "ru": "Правила разбора, форматы значений и поля аккаунта, панели, сообщений и напоминаний, которые может нести ответ подписки.",
+        "en": "Parsing rules, value formats and the account, panel, message and reminder fields a subscription response can carry."
+      },
+      "minutes": {
+        "ru": 6,
+        "en": 6
+      }
+    },
+    {
+      "slug": "providers/request",
+      "file": "providers/request.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Заголовки запроса",
+        "en": "Request headers"
+      },
+      "descriptions": {
+        "ru": "Что ReClash отправляет при загрузке подписки, как выбирает клиентскую идентичность и как обрабатывает редиректы, статусы и резервные хосты.",
+        "en": "What ReClash sends when it fetches a subscription, how it picks a client identity, and how it handles redirects, statuses and fallback hosts."
+      },
+      "minutes": {
+        "ru": 4,
+        "en": 4
+      }
+    },
+    {
+      "slug": "providers/policy",
+      "file": "providers/policy.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Обязательная политика безопасности",
+        "en": "Required safety policy"
+      },
+      "descriptions": {
+        "ru": "Версионированная секция reclash-policy в нативной подписке Clash: ограничивает трафик GLOBAL перечисленными узлами и держит перечисленные приложения Android вне VPN.",
+        "en": "A versioned reclash-policy section in a native Clash subscription that limits GLOBAL traffic to listed nodes and keeps listed Android apps outside the VPN."
+      },
+      "minutes": {
+        "ru": 3,
+        "en": 4
+      }
+    },
+    {
+      "slug": "providers/routing",
+      "file": "providers/routing.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Доставка маршрутизации",
+        "en": "Routing delivery"
+      },
+      "descriptions": {
+        "ru": "Как подписка предлагает профили и сценарии автомаршрутизации: прямо в конфиге или в отдельном бандле маршрутизации.",
+        "en": "How a subscription offers auto-routing profiles and scenarios: inline in the config or in a separate routing bundle."
+      },
+      "minutes": {
+        "ru": 3,
+        "en": 4
+      }
+    },
+    {
+      "slug": "providers/app-settings",
+      "file": "providers/app-settings.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Настройки приложения",
+        "en": "App settings"
+      },
+      "descriptions": {
+        "ru": "Настройки, раскладка дашборда, ограничения и списки приложений Android, которые может задать подписка, и то, как они уступают пользователю.",
+        "en": "Settings, layout, restrictions and Android app lists a subscription can set, and how they yield to the user."
+      },
+      "minutes": {
+        "ru": 5,
+        "en": 5
+      }
+    },
+    {
+      "slug": "providers/preview-api",
+      "file": "providers/preview-api.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Preview API",
+        "en": "Preview API"
+      },
+      "descriptions": {
+        "ru": "Эндпоинт JSON только для чтения, версия 1: даёт оформление провайдера до того, как пользователь подтвердит импорт со страницы подписки в браузере.",
+        "en": "A read-only JSON endpoint, version 1, that supplies the provider's presentation before the user confirms an import from a browser subscription page."
+      },
+      "minutes": {
+        "ru": 3,
+        "en": 4
+      }
+    },
+    {
+      "slug": "providers/standard",
+      "file": "providers/standard.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Реестр стандарта",
+        "en": "Standard registry"
+      },
+      "descriptions": {
+        "ru": "Ограничения, поля метаданных и HTTP-заголовки стандарта провайдеров версии 1, сгенерированные из реестра, по которому декодирует приложение.",
+        "en": "Limits, metadata fields and HTTP headers of provider standard version 1, generated from the registry the app decodes with."
+      },
+      "minutes": {
+        "ru": 2,
+        "en": 2
+      }
+    },
+    {
+      "slug": "rcx",
+      "file": "auto-routing/README.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Автомаршрутизация",
+        "en": "Auto routing"
+      },
+      "descriptions": {
+        "ru": "RCX — движок выбора серверов ReClash: умные группы сами выбирают сервер по профилю, а сценарий управляет всем подключением.",
+        "en": "RCX is the ReClash server-selection engine: smart groups pick their own server by profile, and a scenario steers the whole connection."
+      },
+      "minutes": {
+        "ru": 4,
+        "en": 5
+      }
+    },
+    {
+      "slug": "rcx/engine",
+      "file": "auto-routing/engine.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Движок",
+        "en": "Engine"
+      },
+      "descriptions": {
+        "ru": "Как RCX собирает свидетельства, распознаёт сети, принимает решения, переключается и тратит пробы, с точными правилами и значениями по умолчанию.",
+        "en": "How RCX gathers evidence, recognizes networks, decides, switches and spends probes, with the exact rules and defaults."
+      },
+      "minutes": {
+        "ru": 9,
+        "en": 11
+      }
+    },
+    {
+      "slug": "rcx/profiles",
+      "file": "auto-routing/profiles.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Профили",
+        "en": "Profiles"
+      },
+      "descriptions": {
+        "ru": "Справочник формата профиля RCX: ключи, значения по умолчанию, наследование, привязки и лимиты.",
+        "en": "Reference for the RCX profile format: keys, defaults, inheritance, bindings and limits."
+      },
+      "minutes": {
+        "ru": 7,
+        "en": 8
+      }
+    },
+    {
+      "slug": "rcx/conditions",
+      "file": "auto-routing/conditions.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Условия",
+        "en": "Conditions"
+      },
+      "descriptions": {
+        "ru": "Справочник языка условий RCX: грамматика, поля, функции, трёхзначная логика и лимиты.",
+        "en": "Reference for the RCX condition language: grammar, fields, functions, three-valued logic and limits."
+      },
+      "minutes": {
+        "ru": 4,
+        "en": 4
+      }
+    },
+    {
+      "slug": "rcx/scenarios",
+      "file": "auto-routing/scenarios.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Сценарии",
+        "en": "Scenarios"
+      },
+      "descriptions": {
+        "ru": "Справочник формата сценария RCX: программы для групп, маршруты, типы сетей и режим туннеля.",
+        "en": "Reference for the RCX scenario format: programs for groups, routes, network kinds and the tunnel mode."
+      },
+      "minutes": {
+        "ru": 5,
+        "en": 6
+      }
+    },
+    {
+      "slug": "rcx/sharing",
+      "file": "auto-routing/sharing.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Обмен",
+        "en": "Sharing"
+      },
+      "descriptions": {
+        "ru": "Пакеты, экспорт и импорт, ссылки reclash://routing, доставка от провайдера, согласие, rcxlint и JSON-схема.",
+        "en": "Bundles, export and import, reclash://routing links, provider delivery, consent, rcxlint and the JSON schema."
+      },
+      "minutes": {
+        "ru": 5,
+        "en": 5
+      }
+    },
+    {
+      "slug": "rcx/cookbook",
+      "file": "auto-routing/cookbook.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Рецепты",
+        "en": "Cookbook"
+      },
+      "descriptions": {
+        "ru": "Готовые профили и сценарии для частых задач. Каждый проходит rcxlint в том виде, как написан.",
+        "en": "Complete profiles and scenarios for common tasks. Each one passes rcxlint as written."
+      },
+      "minutes": {
+        "ru": 3,
+        "en": 3
+      }
+    },
+    {
+      "slug": "rcx/editor/hub",
+      "file": "auto-routing/editor/hub.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Центр",
+        "en": "Hub"
+      },
+      "descriptions": {
+        "ru": "Центр автомаршрутизации: работающий сценарий, его маршруты и группы, библиотека, импорт и экспорт.",
+        "en": "The auto routing hub: the running scenario, its routes and groups, the library, and import and export."
+      },
+      "minutes": {
+        "ru": 5,
+        "en": 6
+      }
+    },
+    {
+      "slug": "rcx/editor/routes",
+      "file": "auto-routing/editor/routes.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Редактор маршрута",
+        "en": "Route editor"
+      },
+      "descriptions": {
+        "ru": "Редактор маршрута и его средства выбора: трафик, порядок серверов, шаги, страны и условия.",
+        "en": "The route editor and its pickers: traffic, server order, steps, countries and conditions."
+      },
+      "minutes": {
+        "ru": 4,
+        "en": 4
+      }
+    },
+    {
+      "slug": "rcx/editor/groups",
+      "file": "auto-routing/editor/groups.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Лист группы",
+        "en": "Group sheet"
+      },
+      "descriptions": {
+        "ru": "Лист группы в «Прокси»: состояние, управление, пул, поведение, объяснение, история и сообщения.",
+        "en": "The per-group sheet in Proxies: status, control, pool, behaviour, explanation, history and messages."
+      },
+      "minutes": {
+        "ru": 5,
+        "en": 6
+      }
+    },
+    {
+      "slug": "rcx/editor/studio",
+      "file": "auto-routing/editor/studio.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Студия",
+        "en": "Studio"
+      },
+      "descriptions": {
+        "ru": "Редактор поведения (профиля): форма и YAML, живой предпросмотр на группе, предупреждения, слияние и прежние версии.",
+        "en": "The behaviour (profile) editor: form and YAML, a live preview on a group, warnings, merging and earlier versions."
+      },
+      "minutes": {
+        "ru": 3,
+        "en": 3
+      }
+    },
+    {
+      "slug": "rcx/screenshots",
+      "file": "auto-routing/images/README.md",
+      "section": "rcx",
+      "titles": {
+        "ru": "Снимки экрана",
+        "en": "Screenshots"
+      },
+      "descriptions": {
+        "ru": "Места для снимков на страницах редактора в приложении и настройка для их съёмки.",
+        "en": "The screenshot slots of the in-app editor pages and the setup for capturing them."
+      },
+      "minutes": {
+        "ru": 7,
+        "en": 8
+      }
+    }
+  ],
+  "files": {
+    "ru/README.md": "3f70e5db7bd3bcddc370cec6d83b85b73b34d30d994a95a69e834f9b32d29348",
+    "ru/providers/README.md": "4f9497df09201203d7115f0101a80ef14f126cf8904b1f54285bc4ce2f5af144",
+    "ru/providers/rollout.md": "f28c59991c9dda2d1abbaa8522652dc30f7bc4327fe94bd49329c8ed31b2d678",
+    "ru/providers/headers.md": "847d4decf23d571dfa3a81af76a29ce1ae04537d7ac6890bf125c0f96a209ee8",
+    "ru/providers/request.md": "c2886ccdd4202dc35da6214b12cc2aaece707517d42066a9a626ad619b08c51b",
+    "ru/providers/policy.md": "a1ea1833217809633816dac86eba194c067674cecc018bccac9a6bb975b8a143",
+    "ru/providers/routing.md": "1e52bf6ec93369b7fa78f19db964d8915301321287566b750e921080bbef7800",
+    "ru/providers/app-settings.md": "78adeb605a5ad2d9f94de5d06d8afa60cbfb43097d618ff0d07c0170a4155648",
+    "ru/providers/preview-api.md": "4e195bac02fc796a9e85dc11c84e5a727f95d2c8f717f7df0d6ddb0aede6cbe2",
+    "ru/providers/standard.md": "eddb60ffdea97c75074bac852ed4762258854175cf775d02a8deb8da1849aff4",
+    "ru/auto-routing/README.md": "003aed583e43c6e240e4a6d0466ba1a929b34e650b336df8f5b71c179eaf8250",
+    "ru/auto-routing/engine.md": "4918e9c53a96c8c6ed2892eff962441d1afb9a52605a8be6a61d5ca14aeee401",
+    "ru/auto-routing/profiles.md": "fb7a3613629321223ea47e3cf93712c2cde56ed7998c7105a0390d58f09001e8",
+    "ru/auto-routing/conditions.md": "221652ad3fa308a71e9296d487f8808e52bd60bc1cd4950d0d7aebd545b845ef",
+    "ru/auto-routing/scenarios.md": "31d608b1d03164155b0b859c22d6a357ba76380ddf6717905f3520f8906cb067",
+    "ru/auto-routing/sharing.md": "090eff9afd41c1271bcf623f14381a3d957ab43fc9cfc1d0feffb259776f084b",
+    "ru/auto-routing/cookbook.md": "2b2945553ceeef298fe230a3639d91f8af2b229d5513098db78850e57763eda2",
+    "ru/auto-routing/editor/hub.md": "ea169b834bb54093f2b746502db31e2819695693d7b8ab97bc7360885f4e2c6c",
+    "ru/auto-routing/editor/routes.md": "c5536b9a0d8089081f9fb85122920dcc08ae0a0a4c91b604049600ecb999c9dd",
+    "ru/auto-routing/editor/groups.md": "e635d00254e0521dc052b5b5ee287f64ad0081e481c11629205b4141aa1963df",
+    "ru/auto-routing/editor/studio.md": "1306e486b0194e33d58d50a4f23b14ea24670d8486d06dc2f80e49ad51b2d2c7",
+    "ru/auto-routing/images/README.md": "ec90b0cec5edffc5a5dd850418746da02f6dbd5e194087ad20fc5fcc76bb1c0f",
+    "en/README.md": "d783f6ef3b643de8d663ba4fa312b6500ef195c585dab10fbca07e09dc0126ab",
+    "en/providers/README.md": "73bbe304198e5951e8363364224f6224d46e89d7d13fcc7eb149977abc49bea7",
+    "en/providers/rollout.md": "ae821e555b39fbf4548ffaec64fef3d1f2bdc3a420ec1ba7d6c8fa3c51ddbea3",
+    "en/providers/headers.md": "e24180e970a1dcbc052597984aad0de1858af0870fcb2266a0112ab773854eb0",
+    "en/providers/request.md": "9b8e1e0e91ac3410df7a63300d39dcba21d772844d2653d1a09b6b020a6e222b",
+    "en/providers/policy.md": "376a0b898fa74d90ba25fb45d73966eec5519dc43e8a3ed0c96095707528bbf9",
+    "en/providers/routing.md": "7e80a5cddc4b58d752703f8bf8a0e4dc686ba6ce27b9e6b5a61ef6f17f1848ec",
+    "en/providers/app-settings.md": "9115e37bbae56e5dc64cc43190390c63ee4ccba3d4b76ab08f3aa7c211d9ede8",
+    "en/providers/preview-api.md": "f28e1e8d05c909e4e37b5f8f611bbbd7c470f22bf3895c630bb4031fcfd858d7",
+    "en/providers/standard.md": "eea5a5087f3d26c3aca400fa5161c6cc002ce48e1bd0f2300c2de486bfdddf4a",
+    "en/auto-routing/README.md": "41422076cc5b3996c89d60f46efc256971f2022abf902c672152b67169ad2e1f",
+    "en/auto-routing/engine.md": "3611557ebae5faf8e9c9a54d9c879be41152d3dadfbc1221ce727d19631c6442",
+    "en/auto-routing/profiles.md": "b66638987b4e93a94cd7560c9293900a881cb00cd44a7fc0ebbf00ac390be607",
+    "en/auto-routing/conditions.md": "5e7932329b493616cfdf7590151de2822239f0d6149b94f342ed729e3c6fb389",
+    "en/auto-routing/scenarios.md": "f000fa0b516aaa5d01e903626ca20c9e7a54ede9507a25390a9ebf5c4d11e476",
+    "en/auto-routing/sharing.md": "754c5d3ef6ca77eea6a92b5f6db6a7dfada9f82378bf422380484a00dbf8eaa9",
+    "en/auto-routing/cookbook.md": "71741eeaafb6feb3a3d65cbdf4cf6bf2ce65b55cbbc7a95cb69d3cdf8273f452",
+    "en/auto-routing/editor/hub.md": "148a3796c38890a236826eacf98b824e5e876ea2a1b514f37bb69dca874ff146",
+    "en/auto-routing/editor/routes.md": "66735cb26390a163823fc983fb856105f2f325b095ddf1c854c6c5298a2ace6f",
+    "en/auto-routing/editor/groups.md": "2b1ef1df7d07c0a96098c4048e17b61b3addb50c5f3a87f605ab2fb5f9f80b23",
+    "en/auto-routing/editor/studio.md": "ff54492c94e8b9c91a79064c39c0d3c41e27e13ad30200910fee0f74977eeaa2",
+    "en/auto-routing/images/README.md": "caf11fb07ad795494975a58789867fd99e39a108ca83e7177f58e9e426ef00a1"
+  }
+}

@@ -10,10 +10,10 @@
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
     "check": "npm run docs:check && npm run docs:test && npm run typecheck && npm run build && node scripts/check-static.mjs",
-    "docs:sync": "node scripts/rcx.mjs sync",
-    "docs:check": "node scripts/rcx.mjs check",
-    "docs:diagrams": "node scripts/rcx-diagrams.mjs",
-    "docs:test": "node --test tests/rcx-content.test.mjs",
+    "docs:sync": "node scripts/docs/cli.mjs sync",
+    "docs:check": "node scripts/docs/cli.mjs check",
+    "docs:diagrams": "node scripts/docs/diagrams.mjs",
+    "docs:test": "node --test tests/docs-engine.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { languages, legacyPath, pagePath, privatePages, sitePages } from '../shared/site/routes'
-import { rcxRoutes } from '../shared/site/rcx'
+import { docLanguages, docPages, docPath, docRoutes } from '../shared/docs/catalogue'
 import { mockBody, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
 import { mockPage, mockPagePath, mockPreview, mockPreviewPath } from '../shared/provider/mockpreview'
 
@@ -43,18 +43,28 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
       headers.push(path, ...Object.entries(reportPolicy).map(([key, value]) => `  ${key}: ${value}`))
     }
   }
-  for (const canonical of rcxRoutes) {
+  for (const canonical of docRoutes) {
     const legacy = `${canonical}.html`
     if (!redirects.includes(`${legacy} ${canonical} 200`)) {
       redirects.push(`${legacy} ${canonical} 200`)
       headers.push(legacy, `  Link: <${origin}${canonical}>; rel="canonical"`)
     }
   }
+  // The RCX handbook moved under the documentation; Chinese pages wait for a new translation.
+  for (const language of ['ru', 'en', 'zh-CN'] as const) {
+    const target = docLanguages.includes(language) ? language : 'en'
+    for (const page of docPages.filter(item => item.section === 'rcx')) {
+      const old = page.slug.replace(/^rcx/, `/${language}/rcx`)
+      redirects.push(`${old} ${docPath(target, page.slug)} 301`, `${old}.html ${docPath(target, page.slug)} 301`)
+    }
+    redirects.push(`/${language}/rcx/* ${docPath(target, 'rcx')} 301`)
+    if (target !== language) redirects.push(`${docPath(language)} ${docPath(target)} 301`, `${docPath(language)}/* ${docPath(target)}/:splat 301`)
+  }
   const routes = [...new Set([
     ...languages.flatMap(language => sitePages
       .filter(page => !privatePages.includes(page.key))
       .map(page => `${origin}${pagePath(language, page.key)}`)),
-    ...rcxRoutes.map(path => `${origin}${path}`),
+    ...docRoutes.map(path => `${origin}${path}`),
   ])]
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map(url => `  <url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`
   await Promise.all([

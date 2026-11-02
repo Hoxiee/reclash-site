@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { headerCategories, headerReference, searchText, type HeaderCategory, type HeaderEntry } from '~~/shared/provider/reference'
 import { pagePath } from '~~/shared/site/routes'
+import { docPath } from '~~/shared/docs/catalogue'
 import type { Magnet } from '~/motion/types'
 import type { PageMotion } from '~/composables/usePageMotion'
 import '~/assets/css/reference.css'
@@ -271,9 +272,9 @@ onBeforeUnmount(() => {
           </div>
           <p class="ref-hint">
             {{ t('Имена сравниваются без учёта регистра:', 'Names are case-insensitive:') }} <code>ReClash-View</code> {{ t('и', 'and') }} <code>reclash-view</code> {{ t('— один заголовок.', 'are the same header.') }}
-            <SiteLink class="tlink" :to="pagePath(language, 'docs')">{{ t('Как это работает', 'How it works') }}</SiteLink>
+            <SiteLink class="tlink" :to="docPath(language, 'providers/headers')">{{ t('Документация по заголовкам', 'Header documentation') }}</SiteLink>
             <span aria-hidden="true"> · </span>
-            <SiteLink class="tlink" :to="pagePath(language, 'rcx')">{{ t('Документация RCX', 'RCX documentation') }}</SiteLink>
+            <SiteLink class="tlink" :to="docPath(language, 'rcx')">{{ t('Документация RCX', 'RCX documentation') }}</SiteLink>
           </p>
         </aside>
 

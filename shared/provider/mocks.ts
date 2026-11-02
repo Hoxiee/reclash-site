@@ -25,8 +25,6 @@ export type MockResponse = {
   logo?: string
   background?: { file: string, opacity: number }
   widgets?: string
-  widgetsDetailed?: string
-  widgetsSimple?: string
   powerButton?: string
   settings?: string
   restrictions?: string
@@ -98,8 +96,6 @@ export function mockHeaders(profile: MockProfile, origin: string, now = Date.now
     ['ReClash-ServiceLogo', r.logo && mockAsset(origin, r.logo)],
     ['ReClash-Background', r.background && `${mockAsset(origin, r.background.file)},${r.background.opacity}`],
     ['ReClash-Widgets', r.widgets],
-    ['ReClash-Widgets-Detailed', r.widgetsDetailed],
-    ['ReClash-Widgets-Simple', r.widgetsSimple],
     ['ReClash-PowerButton', r.powerButton],
     ['ReClash-Settings', r.settings],
     ['ReClash-Restrictions', r.restrictions],

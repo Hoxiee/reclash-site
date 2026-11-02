@@ -2,7 +2,8 @@ import { prerenderRoutes, sitePages } from './shared/site/routes'
 import { normalizeOrigin } from './shared/site/seo'
 import { writeStaticFiles } from './scripts/static'
 import { bootScript } from './shared/site/boot'
-import { rcxDocumentation } from './scripts/rcx-vite'
+import { documentation } from './scripts/docs/vite'
+import { docLanguages } from './shared/docs/catalogue'
 
 const siteOrigin = normalizeOrigin(process.env.NUXT_PUBLIC_SITE_ORIGIN)
 
@@ -10,7 +11,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-10-22',
   devtools: { enabled: false },
   ssr: true,
-  vite: { plugins: [rcxDocumentation()] },
+  vite: { plugins: [documentation()] },
   css: ['~/assets/css/site.css', '~/assets/css/shell.css', '~/assets/css/brand.css'],
   runtimeConfig: { public: { siteOrigin } },
   experimental: { appManifest: false, payloadExtraction: 'client', prerenderErrorPages: true },
@@ -26,9 +27,9 @@ export default defineNuxtConfig({
       for (const page of pages) {
         if (!page.path.startsWith('/:lang')) continue
         const key = page.path.split('/')[2] || 'index'
-        const locales = key === 'rcx' ? 'ru|en|zh-CN' : 'ru|en'
+        const locales = key === 'docs' ? docLanguages.join('|') : 'ru|en'
         page.path = page.path.replace(/^\/:lang(?:\([^)]*\))?/, `/:lang(${locales})`)
-        if (sitePages.some(item => item.key === key) && page.path.split('/').length <= 3) {
+        if (sitePages.some(item => item.key === key) && (page.path.split('/').length <= 3 || key === 'docs')) {
           page.alias = [`/:lang(${locales})/${key}.html`]
         }
       }

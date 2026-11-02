@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { pagePath } from '~~/shared/site/routes'
+import { docPath } from '~~/shared/docs/catalogue'
 usePageMeta('gallery')
 const { language, t } = useText()
 </script>
@@ -21,7 +21,7 @@ const { language, t } = useText()
 
 <section class="sub-sec" style="padding-top:0;border-top:0"><div class="wrap">
   <GalleryGrid />
-  <p class="g-empty">{{ t("Иллюстрации не воспроизводят интерфейс приложения. Возможности текущей сборки описаны на главной странице, в быстром старте и", "These illustrations do not reproduce the app interface. The current build is described on the home page, in the quick start and in the") }} <SiteLink class="tlink" :to="pagePath(language, 'rcx')">{{ t("руководстве по RCX", "RCX guide") }}</SiteLink>.</p>
+  <p class="g-empty">{{ t("Иллюстрации не воспроизводят интерфейс приложения. Возможности текущей сборки описаны на главной странице, в быстром старте и", "These illustrations do not reproduce the app interface. The current build is described on the home page, in the quick start and in the") }} <SiteLink class="tlink" :to="docPath(language, 'rcx')">{{ t("руководстве по RCX", "RCX guide") }}</SiteLink>.</p>
 </div></section>
 </div>
 </template>

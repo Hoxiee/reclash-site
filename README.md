@@ -2,7 +2,7 @@
 
 A bilingual Nuxt 4 site generated for Cloudflare Pages. The home, quick start,
 download and provider tools describe the current ReClash application in Russian
-and English. The complete RCX handbook also supports Simplified Chinese.
+and English; the documentation engine also supports Simplified Chinese once it is published.
 Fonts and styles are hosted locally.
 
 ## Local development
@@ -19,15 +19,15 @@ For joint development, keep this checkout at `../reclash-site/` beside the
 `ReClash/` application checkout. The application's `site` symlink points here;
 Git history, branches, commits and deployment stay independent. From this
 repository, `node ../ReClash/tool/site_docs.mjs --check` checks shared exports and
-RCX snapshots; `--sync` copies the app's provider standard and JSON schemas.
+the documentation snapshot; `--sync` copies the app's provider standard and JSON schemas.
 
 The root page redirects before first paint: an explicit language switch stored
 in `localStorage` wins, otherwise the browser's preferred languages decide
 (Russian-reading locales go to `/ru`, everything else to `/en`). Without
 JavaScript it shows plain language links. Each language has `start`, `download`,
-`docs`, `rcx`, `reference`, `builder`, `mock-subs`, `report`, `gallery` and
+`docs` (with page paths), `reference`, `builder`, `mock-subs`, `report`, `gallery` and
 `motion` routes. Report, mock subscriptions and motion are excluded from the
-sitemap. The provider builder, reference and RCX guide share the same routes
+sitemap. The provider builder, reference and documentation share the same routes
 and metadata registry.
 
 `shared/provider/builder.ts` contains the form field schema, validation and
@@ -103,18 +103,18 @@ letter springs. Inner pages keep the smaller jelly ring, accordion height
 springs, deep-link opening, copy feedback and gallery FLIP filtering. Reduced
 motion snaps springs and removes hero pinning.
 
-## RCX handbook
+## Documentation
 
-`/{ru|en|zh-CN}/rcx` is the complete handbook, with one prerendered route per
-chapter. Chinese is scoped to the handbook; the rest of the site remains
-Russian/English. The chapter language switch preserves the document, query and
-section. English heading IDs are stable across translations; localized source
-anchors remain aliases. Former introductory anchors such as `/en/rcx#profiles`
-lead to the corresponding full chapter. Nested `.html` aliases remain usable.
+`/{lang}/docs` is one handbook with a page per Markdown file: provider standard
+and RCX auto routing. The source of truth is `docs/` in ReClash:
+`docs/manifest.json` sets sections, sidebar groups, slugs and published languages,
+and `docs/<lang>/` holds the pages. An unpublished language redirects to English.
+English heading IDs are stable across translations; localized anchors remain
+aliases. Former `/{lang}/rcx/...` paths and `/{lang}/docs#section` fragments lead
+to the new pages.
 
-The source of truth is `docs/{en,ru,zh-CN}/auto-routing/` in ReClash. A committed
-snapshot lives in `content/rcx/`, alongside its source revision and checksums in
-`catalogue.json`. Refresh it from a clean, committed application checkout:
+Refresh the committed snapshot in `content/docs/` from a clean application
+checkout (`--draft` accepts uncommitted prose for a local preview only):
 
 ```sh
 npm run docs:sync -- ../ReClash
@@ -122,42 +122,24 @@ npm run docs:diagrams
 npm run check
 ```
 
-The sync command preserves Markdown verbatim and requires the same files and
-heading structure in all three languages. Do not edit the copied prose or
-catalogue by hand. `scripts/rcx-content.mjs` compiles it into a typed document
-through the Vite plugin; Markdown and Mermaid parsers never enter the browser
-bundle. Each document and each language's full-text search index is loaded
-independently. Search stays in the browser and sends no queries externally.
+`scripts/docs/engine.mjs` validates the inventory against the manifest, heading
+parity, links, anchors, code languages and screenshot slots, then compiles each
+page into typed blocks through a Vite plugin; Markdown and Mermaid never enter
+the browser bundle. Pages and each language's search index load on demand, and
+search stays in the browser. Code spans that name a provider header link to the
+reference.
 
-Diagrams are local SVG files in `public/assets/rcx/diagrams/`. Regenerate them
-after changing Mermaid fences; the check rejects missing or stale diagrams.
-Generation uses Playwright's Chromium with intercepted local module requests,
-not a remote renderer. Install Chromium with `npx playwright install chromium`
-if it is not already available. Regular site builds use the committed SVGs and
-do not start a browser.
+Diagrams are content-addressed SVGs in `public/assets/docs/diagrams/`, rendered
+by Playwright's Chromium from local modules; the check rejects missing ones.
+Install Chromium with `npx playwright install chromium` if needed.
 
 ### Screenshot slots
 
-Each `images/README.md` source manifest owns the screenshot IDs, demo setup,
-dimensions, captions and capture instructions. Every slot renders a labelled
-placeholder rather than a broken image, and the screenshot-manifest page links
-to the exact place where each image belongs. Capture instructions are available
-beside each placeholder.
-
-Add the real image at `public/assets/rcx/screenshots/<language>/<id>.png` and
-rebuild; the placeholder is replaced automatically without changing Vue or
-Markdown. WebP, PNG, AVIF and JPEG (`.jpg`) are supported, in that preference
-order. Images never silently fall back to another language. For example:
-
-```text
-public/assets/rcx/screenshots/ru/route-editor-ladder.png
-public/assets/rcx/screenshots/en/hub-overview.webp
-public/assets/rcx/screenshots/zh-CN/studio-yaml.png
-```
-
-PNG files supplied in the application's `auto-routing/images/` directory are
-also copied by `docs:sync`. Follow the manifest's dimensions and demo data; do
-not use browser-test screenshots as documentation assets.
+`auto-routing/images/README.md` owns screenshot IDs, dimensions, captions and
+capture notes. A slot without an image renders a labelled placeholder. Put the
+image at `docs/<lang>/auto-routing/images/<id>.png` in ReClash; `docs:sync`
+copies it to `public/assets/docs/screenshots/<lang>/`. Images never fall back to
+another language.
 
 ## Build and verify
 

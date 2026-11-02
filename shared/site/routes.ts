@@ -1,4 +1,4 @@
-import { rcxLanguageFromPath, rcxRoutes, rcxSlugFromPath } from './rcx.ts'
+import { docLanguageFromPath, docRoutes } from '../docs/catalogue.ts'
 
 export const languages = ['ru', 'en'] as const
 export type Language = typeof languages[number]
@@ -9,7 +9,6 @@ export const sitePages = [
   { key: 'start', title: { ru: 'Начало работы', en: 'Quick start' } },
   { key: 'download', title: { ru: 'Скачать', en: 'Download' } },
   { key: 'docs', title: { ru: 'Документация', en: 'Documentation' } },
-  { key: 'rcx', title: { ru: 'Маршрутизация RCX', en: 'RCX auto routing' } },
   { key: 'reference', title: { ru: 'Справочник', en: 'Reference' } },
   { key: 'builder', title: { ru: 'Конструктор', en: 'Builder' } },
   { key: 'mock-subs', title: { ru: 'Примеры подписок', en: 'Mock subscriptions' } },
@@ -40,8 +39,8 @@ export function pageFromPath(path: string): PageKey {
 
 export function pageKeyFromPath(path: string): string {
   const page = pageFromPath(path)
-  return page === 'rcx'
-    ? `${rcxLanguageFromPath(path)}/rcx/${rcxSlugFromPath(path)}`
+  return page === 'docs'
+    ? `${docLanguageFromPath(path)}/docs`
     : `${languageFromPath(path)}/${page}`
 }
 
@@ -53,4 +52,4 @@ export function isReportPath(path: string): boolean {
   return /^\/(?:ru|en)\/report(?:\.html)?\/?(?:[?#]|$)/.test(path)
 }
 
-export const prerenderRoutes = [...new Set(['/', ...languages.flatMap(language => sitePages.map(page => pagePath(language, page.key))), ...rcxRoutes])]
+export const prerenderRoutes = [...new Set(['/', ...languages.flatMap(language => sitePages.map(page => pagePath(language, page.key))), ...docRoutes])]

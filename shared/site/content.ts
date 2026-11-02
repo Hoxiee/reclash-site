@@ -1,22 +1,12 @@
 export const portedPages = {
   "docs": {
     "title": {
-      "ru": "Документация провайдера — ReClash",
-      "en": "Provider documentation — ReClash"
+      "ru": "Документация — ReClash",
+      "en": "Documentation — ReClash"
     },
     "description": {
-      "ru": "Заголовки подписки и обязательная политика ReClash: метаданные, оформление, совместимость, GLOBAL-allowlist, исключения Android-приложений и безопасная доставка.",
-      "en": "Subscription headers and required ReClash policy: metadata, presentation, compatibility, GLOBAL allowlists, Android app exclusions and safe delivery."
-    }
-  },
-  "rcx": {
-    "title": {
-      "ru": "Маршрутизация RCX — ReClash",
-      "en": "RCX auto routing — ReClash"
-    },
-    "description": {
-      "ru": "Профили, сценарии и маршруты RCX: как ReClash выбирает узлы, объясняет решения и позволяет управлять маршрутизацией.",
-      "en": "RCX profiles, scenarios and routes: how ReClash selects servers, explains decisions and lets you control routing."
+      "ru": "Техническая документация ReClash: стандарт провайдера подписок и автомаршрутизация RCX.",
+      "en": "ReClash technical documentation: the subscription provider standard and RCX auto routing."
     }
   },
   "reference": {
