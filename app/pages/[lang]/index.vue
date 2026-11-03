@@ -184,7 +184,7 @@ const manifesto = computed(() => [
           <circle class="f" cx="32" cy="38" r="3.5"/>
         </svg>
         <h3>{{ t("Трафик и срок на виду", "Traffic and expiry at a glance") }}</h3>
-        <p>{{ t("Клиент читает остаток трафика и дату окончания прямо из подписки и держит их на главном экране — без захода в личный кабинет.", "The client reads remaining traffic and expiry directly from your subscription and shows them on the main screen, without visiting your account page.") }}</p>
+        <p>{{ t("Клиент читает остаток трафика и дату окончания прямо из подписки и держит их на главном экране — без захода в личный кабинет. Карточка трафика по темпу последней недели показывает, когда закончится квота.", "The client reads remaining traffic and expiry directly from your subscription and shows them on the main screen, without visiting your account page. The traffic card uses the pace of the last week to show when the quota runs out.") }}</p>
       </li>
     </ul>
   </div>
