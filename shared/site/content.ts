@@ -45,8 +45,8 @@ export const portedPages = {
       "en": "Header builder — ReClash"
     },
     "description": {
-      "ru": "Конструктор заголовков ответа подписки для ReClash с живым превью.",
-      "en": "Build subscription response headers for ReClash with a live preview."
+      "ru": "Конструктор заголовков ответа подписки для ReClash. Раздел готовится.",
+      "en": "Subscription response header builder for ReClash. This section is coming soon."
     }
   },
   "download": {

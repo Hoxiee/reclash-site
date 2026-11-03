@@ -72,44 +72,17 @@ test('import links, provider theme, FAQ deep links and Nuxt transitions retain a
   await expect(page.locator('.g-item:not(.is-hidden)')).toHaveCount(8)
 })
 
-test('builder validates, emits both archive formats and restores shared state across languages', async ({ page }) => {
-  await page.goto('/ru/builder')
-  await page.locator('#f-name').fill('Тест <service>')
-  await expect(page.locator('#b-card .sc-name')).toHaveText('Тест <service>')
-  await expect(page.locator('#b-code')).toContainText('ReClash-ServiceName: base64:0KLQtdGB0YIgPHNlcnZpY2U+')
-  await page.getByRole('button', { name: 'nginx', exact: true }).click()
-  await expect(page.locator('#b-code')).toContainText('add_header ReClash-ServiceName "base64:0KLQtdGB0YIgPHNlcnZpY2U+" always;')
-  await page.getByRole('button', { name: /^Ссылки/ }).click()
-  await page.locator('#f-buy').fill('http://example.com/renew')
-  await expect(page.locator('#f-buy')).toHaveAttribute('aria-invalid', 'true')
-  await expect(page.locator('#b-code')).not.toContainText('ReClash-BuyPlan')
-  await page.locator('#f-buy').fill('https://example.com/renew')
-  await expect(page.locator('#b-code')).toContainText('ReClash-BuyPlan')
-  await expect.poll(() => page.evaluate(() => {
-    try { return JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1))))).buy } catch { return '' }
-  })).toBe('https://example.com/renew')
-  const hash = new URL(page.url()).hash
-  await page.evaluate(() => window.scrollTo(0, 0))
-  await page.getByRole('link', { name: 'Переключить на английский' }).click()
-  await expect(page).toHaveURL(new RegExp('/en/builder'))
-  await expect(page.locator('#f-name')).toHaveValue('Тест <service>')
-  expect(new URL(page.url()).hash).toBe(hash)
-  await expect(page.locator('#b-card .sc-btn')).toHaveText('Renew')
-  await expect(page.locator('#b-card .sc-btn')).toBeVisible()
-})
-
-test('builder colour stays inside the preview card', async ({ page }) => {
-  await page.goto('/en/builder')
-  await expect(page.locator('html')).toHaveClass(/is-loaded/)
-  const siteHue = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bh').trim())
-  const before = await siteHue()
-  await page.getByRole('button', { name: /^Theme/ }).click()
-  await page.locator('#f-hex').fill('2FD3B6')
-  await expect.poll(() => page.locator('#b-card').evaluate(el => getComputedStyle(el).getPropertyValue('--bh').trim())).not.toBe(before)
-  expect(await siteHue()).toBe(before)
-  expect(await page.evaluate(() => localStorage.getItem('reclash-brand'))).toBeNull()
-  await expect(page.locator('#b-code')).toContainText('ReClash-View: app.color:2FD3B6')
-})
+for (const language of ['ru', 'en'] as const) {
+  for (const suffix of ['', '.html']) {
+    test(`builder shows a coming-soon placeholder (${language}${suffix})`, async ({ page }) => {
+      await page.goto(`/${language}/builder${suffix}`)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(language === 'ru' ? 'Конструктор' : 'Builder')
+      await expect(page.locator('.ph .lede')).toHaveText(language === 'ru' ? 'Раздел готовится.' : 'This section is coming soon.')
+      await expect(page.locator('.ph .lede')).toBeVisible()
+      await expect(page.locator('.b-page, #f-name, #b-card, #b-code')).toHaveCount(0)
+    })
+  }
+}
 
 test('releases load only on download and SHA256 stays local', async ({ page }) => {
   const requests: string[] = []

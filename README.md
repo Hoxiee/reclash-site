@@ -28,7 +28,8 @@ JavaScript it shows plain language links. Each language has `start`, `download`,
 `docs` (with page paths), `reference`, `builder`, `mock-subs`, `report`, `gallery` and
 `motion` routes. Report, mock subscriptions and motion are excluded from the
 sitemap. The provider builder, reference and documentation share the same routes
-and metadata registry.
+and metadata registry. The builder and report pages show a bilingual coming-soon
+placeholder.
 
 `shared/provider/builder.ts` contains the form field schema, validation and
 emitters. Preview quotas are sample values. `shared/site/gallery.ts` contains
@@ -44,7 +45,7 @@ Provider accent colors use `ReClash-View: app.color:RRGGBB`, not `ReClash-Hex`.
 Mock responses, builder output and documentation must agree with that snapshot.
 `ReClash-SubscriptionType` supplies a display-only `test`, `promo` or `dev` badge;
 Ember declares `test`, Sentinel declares `promo`, and Nimbus and Aurora omit
-the type. The builder can export each type.
+the type.
 Mock import links carry an encoded profile name as well as the subscription URL.
 The client reads native response metadata during import, including YAML responses.
 FlClashX headers require the app's explicit compatibility mode; they are not

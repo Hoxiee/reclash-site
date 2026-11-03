@@ -28,10 +28,12 @@ test('all canonical and legacy pages serve prerendered bilingual HTML', async ({
 
 test('language navigation preserves legacy query and fragment state', async ({ page }) => {
   await page.goto('/ru/builder.html?mode=example#cfg=sample')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Соберите заголовки и сразу посмотрите, что увидит пользователь.')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Конструктор')
+  await expect(page.locator('.ph .lede')).toHaveText('Раздел готовится.')
   await page.getByRole('link', { name: 'Переключить на английский' }).click()
   await expect(page).toHaveURL(/\/en\/builder(?:\.html|\/)?\?mode=example#cfg=sample$/)
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Build headers and see what your users will see.')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Builder')
+  await expect(page.locator('.ph .lede')).toHaveText('This section is coming soon.')
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 })
 
