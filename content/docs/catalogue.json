@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "f0125c6141c2d99ab23682db959fc1b694459dc7"
+    "commit": "fc029c5b8513acd2ccceb0e84005e224436cdbc0"
   },
   "languages": [
     "ru",
@@ -38,6 +38,7 @@
             "providers/routing",
             "providers/app-settings",
             "providers/preview-api",
+            "providers/support",
             "providers/standard"
           ]
         }
@@ -258,6 +259,23 @@
       "minutes": {
         "ru": 3,
         "en": 4
+      }
+    },
+    {
+      "slug": "providers/support",
+      "file": "providers/support.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Отчёты и ссылки-исправления",
+        "en": "Support reports and fix links"
+      },
+      "descriptions": {
+        "ru": "Как пользователь одной кнопкой присылает всё о своей проблеме и как ответить ему ссылкой, которая её исправит.",
+        "en": "How a user sends you everything about their problem with one button, and how you answer with a link that fixes it."
+      },
+      "minutes": {
+        "ru": 4,
+        "en": 5
       }
     },
     {
@@ -484,7 +502,7 @@
   ],
   "files": {
     "ru/README.md": "3f70e5db7bd3bcddc370cec6d83b85b73b34d30d994a95a69e834f9b32d29348",
-    "ru/providers/README.md": "4f9497df09201203d7115f0101a80ef14f126cf8904b1f54285bc4ce2f5af144",
+    "ru/providers/README.md": "b99d30cd7c6ebb450778ed2d04aad19d033296d3d4a62377b62775c5be6b6e6b",
     "ru/providers/rollout.md": "f28c59991c9dda2d1abbaa8522652dc30f7bc4327fe94bd49329c8ed31b2d678",
     "ru/providers/headers.md": "847d4decf23d571dfa3a81af76a29ce1ae04537d7ac6890bf125c0f96a209ee8",
     "ru/providers/request.md": "c2886ccdd4202dc35da6214b12cc2aaece707517d42066a9a626ad619b08c51b",
@@ -492,6 +510,7 @@
     "ru/providers/routing.md": "1e52bf6ec93369b7fa78f19db964d8915301321287566b750e921080bbef7800",
     "ru/providers/app-settings.md": "78adeb605a5ad2d9f94de5d06d8afa60cbfb43097d618ff0d07c0170a4155648",
     "ru/providers/preview-api.md": "4e195bac02fc796a9e85dc11c84e5a727f95d2c8f717f7df0d6ddb0aede6cbe2",
+    "ru/providers/support.md": "6e6f0bc8e29e234258cdcc18014bc5601dee39061db7556ed509d5fe98f061f3",
     "ru/providers/standard.md": "eddb60ffdea97c75074bac852ed4762258854175cf775d02a8deb8da1849aff4",
     "ru/auto-routing/README.md": "003aed583e43c6e240e4a6d0466ba1a929b34e650b336df8f5b71c179eaf8250",
     "ru/auto-routing/engine.md": "4918e9c53a96c8c6ed2892eff962441d1afb9a52605a8be6a61d5ca14aeee401",
@@ -506,7 +525,7 @@
     "ru/auto-routing/editor/studio.md": "1306e486b0194e33d58d50a4f23b14ea24670d8486d06dc2f80e49ad51b2d2c7",
     "ru/auto-routing/images/README.md": "ec90b0cec5edffc5a5dd850418746da02f6dbd5e194087ad20fc5fcc76bb1c0f",
     "en/README.md": "d783f6ef3b643de8d663ba4fa312b6500ef195c585dab10fbca07e09dc0126ab",
-    "en/providers/README.md": "73bbe304198e5951e8363364224f6224d46e89d7d13fcc7eb149977abc49bea7",
+    "en/providers/README.md": "245ef088035f2e5440d874404299187ea69be6c411b9afe49d0f0e056144bc97",
     "en/providers/rollout.md": "ae821e555b39fbf4548ffaec64fef3d1f2bdc3a420ec1ba7d6c8fa3c51ddbea3",
     "en/providers/headers.md": "e24180e970a1dcbc052597984aad0de1858af0870fcb2266a0112ab773854eb0",
     "en/providers/request.md": "9b8e1e0e91ac3410df7a63300d39dcba21d772844d2653d1a09b6b020a6e222b",
@@ -514,7 +533,8 @@
     "en/providers/routing.md": "7e80a5cddc4b58d752703f8bf8a0e4dc686ba6ce27b9e6b5a61ef6f17f1848ec",
     "en/providers/app-settings.md": "9115e37bbae56e5dc64cc43190390c63ee4ccba3d4b76ab08f3aa7c211d9ede8",
     "en/providers/preview-api.md": "f28e1e8d05c909e4e37b5f8f611bbbd7c470f22bf3895c630bb4031fcfd858d7",
-    "en/providers/standard.md": "eea5a5087f3d26c3aca400fa5161c6cc002ce48e1bd0f2300c2de486bfdddf4a",
+    "en/providers/support.md": "bc4309635e74b3666b3f301fc56b54e7ef7895250c336c38ab96fad929ca4510",
+    "en/providers/standard.md": "26d1e1e14aa38fff19ac1484cf3c0399b5f4b87a46763dbbfedda559d53043ae",
     "en/auto-routing/README.md": "41422076cc5b3996c89d60f46efc256971f2022abf902c672152b67169ad2e1f",
     "en/auto-routing/engine.md": "3611557ebae5faf8e9c9a54d9c879be41152d3dadfbc1221ce727d19631c6442",
     "en/auto-routing/profiles.md": "b66638987b4e93a94cd7560c9293900a881cb00cd44a7fc0ebbf00ac390be607",

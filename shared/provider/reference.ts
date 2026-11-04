@@ -100,6 +100,8 @@ const fieldProse: Record<string, [string, string, string]> = {
   'provider.name': ['Имя сервиса на панели.', 'Provider name on the dashboard.', 'Nebula'],
   'provider.logo': ['Логотип сервиса. Используйте абсолютный HTTPS-URL изображения.', 'Provider logo. Use an absolute HTTPS image URL.', 'https://nebula.example/logo.png'],
   'provider.supportUrl': ['Ссылка на поддержку.', 'Support link.', 'https://nebula.example/help'],
+  'support.keys': ['Ключи Ed25519 для подписанных ссылок поддержки, не больше двух.', 'Ed25519 keys for signed support fix links, at most two.', 'ed25519:O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik'],
+  'support.uploadUrl': ['HTTPS-адрес, куда приложение отправляет отчёт о проблеме.', 'HTTPS address the app uploads problem reports to.', 'https://nebula.example/reports'],
   'provider.webUrl': ['Ссылка на личный кабинет.', 'Account page link.', 'https://nebula.example/account'],
   'provider.buyPlanUrl': ['Продление тарифа. Необязательный суффикс задаёт порог в днях.', 'Plan renewal. An optional suffix sets the days-before-expiry threshold.', 'https://nebula.example/renew,3'],
   'provider.buyTrafficUrl': ['Покупка трафика. Необязательный суффикс задаёт порог остатка в процентах.', 'Traffic top-up. An optional suffix sets the remaining-traffic percentage threshold.', 'https://nebula.example/traffic,10'],
