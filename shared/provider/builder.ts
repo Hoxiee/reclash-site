@@ -26,8 +26,8 @@ export const builderSchema: Array<{ id: string, title: BilingualText, open?: boo
       hint: { ru: 'До 1024 символов; не-ASCII и переносы кодируются в base64:.', en: 'Up to 1024 characters; non-ASCII text and line breaks are encoded as base64:.' } },
   ] },
   { id: 'theme', title: { ru: 'Тема', en: 'Theme' }, fields: [
-    { key: 'hex', header: 'ReClash-View', label: { ru: 'Цвет', en: 'Color' }, type: 'color', value: '7C5CFF',
-      hint: { ru: 'Цвет передаётся через ReClash-View: app.color:RRGGBB. Превью — схема данных, не скриншот.', en: 'The color is sent as ReClash-View: app.color:RRGGBB. The preview illustrates data; it is not a screenshot.' },
+    { key: 'hex', label: { ru: 'Цвет', en: 'Color' }, type: 'color', value: '7C5CFF',
+      hint: { ru: 'Цвет задаётся не заголовком, а view.app.color в файле, который назван в ReClash-Config. Превью — схема данных, не скриншот.', en: 'Color is set by view.app.color in the file ReClash-Config names, not by a header. The preview illustrates data; it is not a screenshot.' },
       validate: value => !value || normHex(value) ? null : { ru: 'Нужно 6 или 8 шестнадцатеричных символов', en: 'Use 6 or 8 hexadecimal characters' } },
   ] },
   { id: 'links', title: { ru: 'Ссылки', en: 'Links' }, fields: [
@@ -49,7 +49,7 @@ export function headerPairs(state: BuilderState): Array<[string, string]> {
   if (state.used || state.total) out.push(['subscription-userinfo', `upload=0; download=${Math.round(Number(state.used) * 1024 ** 3)}; total=${Math.round(Number(state.total) * 1024 ** 3)}`])
   for (const field of builderFields) {
     const value = String(state[field.key] ?? '').trim()
-    if (field.header && value && !field.validate?.(value)) out.push([field.header, field.type === 'color' ? `app.color:${normHex(value)!}` : headerValue(value)])
+    if (field.header && value && !field.validate?.(value)) out.push([field.header, headerValue(value)])
   }
   return out
 }

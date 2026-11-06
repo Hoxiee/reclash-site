@@ -19,6 +19,7 @@ Machine-readable copy: [`provider_standard.g.json`](../../../provider_standard.g
 | --- | --- | --- | --- | --- | --- |
 | `provider.name` | `reclash-servicename` | text | display | panel |  |
 | `provider.logo` | `reclash-servicelogo` | url | display | panel |  |
+| `provider.logoDark` | `reclash-servicelogodark` | url | display | panel |  |
 | `provider.supportUrl` | `reclash-supporturl` | url | display | panel | alias `support-url` |
 | `provider.webUrl` | `reclash-webpageurl` | url | display | panel | alias `profile-web-page-url` |
 | `provider.buyPlanUrl` | `reclash-buyplan` | url | display | panel | suffix `provider.buyPlanDays` 1-3650 |
@@ -33,10 +34,7 @@ Machine-readable copy: [`provider_standard.g.json`](../../../provider_standard.g
 | `routing.bundleUrl` | `reclash-routing` | url | hint | routing |  |
 | `presentation.hideUrl` | `reclash-hideurl` | boolean | display | panel | alias `hide-url` |
 | `presentation.serverGroup` | `reclash-serverinfo` | text | display | panel |  |
-| `presentation.widgets` | `reclash-widgets` | tokens | hint | appearance |  |
-| `presentation.background` | `reclash-background` | url | hint | appearance | suffix `presentation.backgroundOpacity` 1-100 |
-| `presentation.view` | `reclash-view` | pairs | hint | appearance |  |
-| `presentation.powerButton` | `reclash-powerbutton` | pairs | hint | appearance |  |
+| `presentation.config` | `reclash-config` | url | hint | appearance | HTTPS response only |
 | `reminder.expireDays` | `reclash-expiredays` | numbers | hint | reminder |  |
 | `reminder.trafficPercent` | `reclash-trafficpercent` | numbers | hint | reminder |  |
 | `settings.flags` | `reclash-settings` | tokens | hint | settings |  |

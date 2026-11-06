@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { languages, legacyPath, pagePath, privatePages, sitePages } from '../shared/site/routes'
 import { docLanguages, docPages, docPath, docRoutes } from '../shared/docs/catalogue'
-import { mockBody, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
+import { mockBody, mockConfig, mockConfigPath, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
 import { mockPage, mockPagePath, mockPreview, mockPreviewPath } from '../shared/provider/mockpreview'
 
 const reportPolicy = {
@@ -20,15 +20,18 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
   await mkdir(join(output, 'mock'), { recursive: true })
   await mkdir(join(output, 'mock-page'), { recursive: true })
   await mkdir(join(output, 'mock-preview'), { recursive: true })
+  await mkdir(join(output, 'mock-config'), { recursive: true })
   await Promise.all(mockProfiles.flatMap(profile => [
     writeFile(join(output, 'mock', profile.key), mockBody(profile)),
     writeFile(join(output, 'mock-page', profile.key), mockPage(profile)),
     writeFile(join(output, 'mock-preview', `${profile.key}.json`), `${JSON.stringify(mockPreview(profile), null, 2)}\n`),
+    ...(mockConfig(profile, origin) ? [writeFile(join(output, 'mock-config', `${profile.key}.yaml`), mockConfig(profile, origin)!)] : []),
   ]))
   for (const profile of mockProfiles) {
     headers.push(mockPath(profile.key), ...[...mockTransportHeaders, ...mockHeaders(profile, origin, now)].map(([key, value]) => `  ${key}: ${value}`))
     // The page and the preview JSON are what ReClash's confirmation reads before a stand is added.
     headers.push(mockPagePath(profile.key), '  Content-Type: text/html; charset=utf-8', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
+    if (mockConfig(profile, origin)) headers.push(mockConfigPath(profile.key), '  Content-Type: text/yaml; charset=utf-8', '  Access-Control-Allow-Origin: *', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
     headers.push(mockPreviewPath(profile.key), '  Content-Type: application/json; charset=utf-8', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
   }
   for (const language of languages) {

@@ -131,7 +131,7 @@ test('public copy and provider tools match the current application', async ({ re
     expect(home).not.toContain('Встроенный обход DPI')
     const reference = await (await request.get(`/${language}/reference`)).text()
     expect(reference).toContain('h-reclash-routing')
-    expect(reference).toContain('app.color')
+    expect(reference).toContain('reclash-config')
     expect(reference).not.toContain('id="h-reclash-hex"')
     expect(reference).not.toContain('id="h-flclashx-hex"')
   }

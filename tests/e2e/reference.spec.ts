@@ -19,11 +19,11 @@ test('reference prerenders every header and filters by search and category', asy
   await expect(cards(page)).toHaveCount(headerReference.length)
   await expect(page.getByRole('status')).toHaveText(`All ${headerReference.length} headers`)
 
-  await page.getByRole('searchbox', { name: 'Search headers' }).fill('app.color')
+  await page.getByRole('searchbox', { name: 'Search headers' }).fill('wallpaper')
   await expect(cards(page)).toHaveCount(1)
-  await expect(page.locator('#h-reclash-view')).toBeVisible()
+  await expect(page.locator('#h-reclash-config')).toBeVisible()
   await expect(page.getByRole('status')).toHaveText(`1 of ${headerReference.length} headers`)
-  await expect(page).toHaveURL(/\?q=app.color$/)
+  await expect(page).toHaveURL(/\?q=wallpaper$/)
 
   await page.getByRole('button', { name: /^Aliases/ }).click()
   await expect(cards(page)).toHaveCount(0)
@@ -39,49 +39,32 @@ test('reference prerenders every header and filters by search and category', asy
 })
 
 test('a fragment opens and reveals its header, also past a filter and on the legacy path', async ({ page }) => {
-  await page.goto('/ru/reference?q=zzz#h-reclash-view')
-  const hex = page.locator('#h-reclash-view')
+  await page.goto('/ru/reference?q=zzz#h-reclash-subscriptiontype')
+  const hex = page.locator('#h-reclash-subscriptiontype')
   await expect(hex).toHaveAttribute('open', '')
   await expect(hex).toBeInViewport()
   await expect(page.getByRole('searchbox', { name: 'Поиск заголовков' })).toHaveValue('')
-  await expect(hex.getByText('Ключи вида')).toBeVisible()
-  await expect(hex.locator('.codeblock pre')).toContainText('reclash-view: app.color:2FD3B6;app.style:vivid')
+  await expect(hex.getByText('Типы подписки')).toBeVisible()
+  await expect(hex.locator('.codeblock pre')).toContainText('reclash-subscriptiontype: test')
 
   await page.goto('/en/reference.html#h-x-hwid-max-devices-reached')
   await expect(page.locator('#h-x-hwid-max-devices-reached')).toHaveAttribute('open', '')
   await expect(page.locator('#h-x-hwid-max-devices-reached')).toBeInViewport()
 })
 
-test('new provider power-button header documents its allowed values in both languages', async ({ page }) => {
-  for (const [language, noSetting] of [['ru', 'Настройки для пользователя нет'], ['en', 'There is no user setting']] as const) {
+test('the announcement header is documented in both languages', async ({ page }) => {
+  for (const [language, text] of [['ru', 'показывается на панели'], ['en', 'shown in full on the dashboard']] as const) {
     await page.goto(`/${language}/reference`)
-    const entry = page.locator('#h-reclash-powerbutton')
-    await entry.locator('summary').click()
-    await expect(entry).toHaveAttribute('open', '')
-    await expect(entry.locator('.codeblock pre')).toContainText('reclash-powerbutton: shape:puffy,puffyDiamond,clover8Leaf;type:outline')
-    await expect(entry).toContainText(noSetting)
-    for (const value of ['cookie', 'circle', 'scallop', 'sunny', 'flower', 'clover', 'burst', 'puffy', 'puffyDiamond', 'clover8Leaf', 'cookie4Sided', 'cookie6Sided', 'verySunny', 'square', 'diamond', 'pentagon', 'gem', 'pixelCircle', 'softBoom', 'boom', 'sharpBurst', 'random', 'solid', 'tonal', 'outline']) {
-      await expect(entry.getByText(value, { exact: true })).toBeVisible()
-    }
-    await expect(entry).toContainText(language === 'ru' ? 'список через запятую' : 'comma-separated pool')
-    await expect(entry).toContainText(language === 'ru' ? 'переподключение его не сбрасывают' : 'reconnecting do not reroll it')
-
     const announcement = page.locator('#h-reclash-announce')
     await announcement.locator('summary').click()
-    await expect(announcement).toContainText(language === 'ru' ? 'показывается на панели' : 'shown in full on the dashboard')
+    await expect(announcement).toContainText(text)
   }
 })
 
-test('power-button pools stay readable on narrow screens', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 })
-  for (const language of ['ru', 'en']) {
-    await page.goto(`/${language}/reference#h-reclash-powerbutton`)
-    const entry = page.locator('#h-reclash-powerbutton')
-    await expect(entry).toHaveAttribute('open', '')
-    await expect(entry.getByText('random', { exact: true })).toBeVisible()
-    await expect(entry.locator('.codeblock pre')).toContainText('shape:puffy,puffyDiamond,clover8Leaf')
-    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
-  }
+test('removed appearance headers have no reference entry and the config header replaces them', async ({ page }) => {
+  await page.goto('/en/reference')
+  for (const name of ['view', 'powerbutton', 'background', 'widgets']) await expect(page.locator(`#h-reclash-${name}`)).toHaveCount(0)
+  await expect(page.locator('#h-reclash-config')).toHaveCount(1)
 })
 
 test('cards toggle from the keyboard and the catalogue is translated', async ({ page }) => {
@@ -89,11 +72,11 @@ test('cards toggle from the keyboard and the catalogue is translated', async ({ 
   await hydrated(page)
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Справочник по заголовкам')
   await expect(page.getByRole('heading', { name: 'Общие псевдонимы' })).toBeVisible()
-  const view = page.locator('#h-reclash-view')
+  const view = page.locator('#h-reclash-subscriptiontype')
   await view.locator('summary').focus()
   await page.keyboard.press('Enter')
   await expect(view).toHaveAttribute('open', '')
-  await expect(view.getByText('Ключи вида')).toBeVisible()
+  await expect(view.getByText('Типы подписки')).toBeVisible()
   await page.keyboard.press('Enter')
   await expect(view).not.toHaveAttribute('open', '')
 
@@ -101,7 +84,7 @@ test('cards toggle from the keyboard and the catalogue is translated', async ({ 
   await expect(page.getByRole('searchbox', { name: 'Поиск заголовков' })).toBeFocused()
   await page.keyboard.type('устройств')
   await expect(page.locator('#h-x-hwid-max-devices-reached')).toBeVisible()
-  await expect(page.locator('#h-reclash-view')).toBeHidden()
+  await expect(page.locator('#h-reclash-subscriptiontype')).toBeHidden()
 })
 
 test('cards collapse before closing and a category switch shows only that category', async ({ page }) => {
@@ -110,10 +93,10 @@ test('cards collapse before closing and a category switch shows only that catego
   // The sliding plate marks the selected filter once the page motion runtime is mounted.
   await expect(page.locator('.ref-filters .mg-ind')).toBeAttached()
 
-  const hex = page.locator('#h-reclash-view')
+  const hex = page.locator('#h-reclash-subscriptiontype')
   await hex.locator('summary').click()
   await expect(hex).toHaveAttribute('open', '')
-  await expect(hex.locator('.codeblock pre')).toContainText('reclash-view: app.color:2FD3B6;app.style:vivid')
+  await expect(hex.locator('.codeblock pre')).toContainText('reclash-subscriptiontype: test')
   await hex.locator('summary').click()
   // The card keeps [open] while its height collapses and drops it once the spring rests.
   await expect(hex).toHaveClass(/is-closing/)
@@ -137,9 +120,9 @@ test('cards collapse before closing and a category switch shows only that catego
 
 test('reference fits a phone screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/en/reference#h-reclash-widgets')
-  await expect(page.locator('#h-reclash-widgets')).toHaveAttribute('open', '')
+  await page.goto('/en/reference#h-reclash-subscriptiontype')
+  await expect(page.locator('#h-reclash-subscriptiontype')).toHaveAttribute('open', '')
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
-  const table = page.locator('#h-reclash-widgets .ref-table-wrap')
+  const table = page.locator('#h-reclash-subscriptiontype .ref-table-wrap')
   expect(await table.evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1)
 })

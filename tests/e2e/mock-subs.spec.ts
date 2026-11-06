@@ -101,15 +101,14 @@ test('Nimbus serves a name and nodes without optional subscription metadata', as
 test('Aurora adds only branding while Sentinel exposes limits without theming', async ({ request }) => {
   const aurora = (await request.get('/mock/aurora')).headers()
   expect(Object.keys(aurora).filter(name => name.startsWith('reclash-')).sort()).toEqual([
-    'reclash-servicelogo', 'reclash-servicename', 'reclash-view',
+    'reclash-config', 'reclash-servicelogo', 'reclash-servicename',
   ])
-  expect(aurora['reclash-view']).toBe('app.color:6E55F5')
+  expect(await (await request.get(new URL(aurora['reclash-config']!).pathname)).text()).toBe('version: 1\nview:\n  app:\n    color: "#6E55F5"\n')
   expect(aurora['subscription-userinfo']).toBeUndefined()
   const sentinel = (await request.get('/mock/sentinel')).headers()
   expect(sentinel['reclash-subscriptiontype']).toBe('promo')
   expect(sentinel['reclash-restrictions']).toBe('noglobal')
-  expect(sentinel['reclash-view']).toBeUndefined()
-  expect(sentinel['reclash-background']).toBeUndefined()
+  expect(sentinel['reclash-config']).toBeUndefined()
   expect(sentinel['reclash-buyplan']).toBe('https://example.com/renew')
   expect(sentinel['reclash-buytraffic']).toBe('https://example.com/topup')
   expect(sentinel['reclash-expiredays']).toBe('3,1')
@@ -117,12 +116,15 @@ test('Aurora adds only branding while Sentinel exposes limits without theming', 
   expect(sentinel['subscription-userinfo']).toContain(`upload=${9 * GB}; download=${38 * GB}; total=${50 * GB}`)
 })
 
-test('Ember serves full presentation hints and a shared widget list', async ({ request }) => {
+test('Ember serves its appearance through a hosted config', async ({ request }) => {
   const headers = (await request.get('/mock/ember')).headers()
-  expect(headers['reclash-view']).toContain('app.style:vivid;app.black:true;app.navbar:floating;app.tabs:slide;app.glass:ultra')
-  expect(headers['reclash-background']).toMatch(/\/assets\/mock\/bg-ember\.svg,22$/)
-  expect(headers['reclash-powerbutton']).toBe('shape:sharpBurst,puffyDiamond,clover8Leaf;type:tonal')
-  expect(headers['reclash-widgets']!.split(',')).toEqual(['health', 'outboundMode', 'speedTest', 'serviceStatus', 'ipQuality', 'trustedNetworks', 'path'])
+  for (const removed of ['reclash-view', 'reclash-background', 'reclash-powerbutton', 'reclash-widgets']) expect(headers[removed]).toBeUndefined()
+  const config = await (await request.get(new URL(headers['reclash-config']!).pathname)).text()
+  expect(config).toContain('    style: "vivid"')
+  expect(config).toContain('    color: "#FF6B1A"')
+  expect(config).toMatch(/wallpaper:\n  url: "[^"]+\/assets\/mock\/bg-ember\.svg"\n  opacity: 22/)
+  expect(config).toContain('power-button:\n  shape: ["sharpBurst","puffyDiamond","clover8Leaf"]\n  type: "tonal"')
+  expect(config).toContain('widgets: ["health","outboundMode","serviceStatus"]')
   for (const flag of ['autorun', 'autostart']) expect(headers['reclash-settings']!.split(',')).not.toContain(flag)
   expect(headers['reclash-webpageurl']).toBe('https://example.com/account')
   expect(headers['reclash-announceurl']).toBe('https://example.com/news')

@@ -13,7 +13,7 @@ Every field, alias and limit is in the [Standard registry](standard.md). App-set
 - An unknown `reclash-*` or `flclashx-*` header warns: `Unsupported provider field`.
 - A header value over 8 KiB, or over 64 KiB of headers in total, fails the fetch.
 - A field missing from the response is withdrawn, except usage fields, which go stale ([Metadata lifetime](README.md#metadata-lifetime)).
-- An empty value is valid for `text`, `tokens`, `pairs`, `numbers`, `hosts` and `packages` and replaces the stored value. `url`, `integer` and `boolean` fields cannot be cleared.
+- An empty value is valid for `text`, `tokens`, `numbers`, `hosts` and `packages` and replaces the stored value. `url`, `integer` and `boolean` fields cannot be cleared.
 
 ### Body comments
 
@@ -41,12 +41,11 @@ proxies:
 | `integer` | Decimal | Multiplied by the alias scale, then range-checked. |
 | `boolean` | `1`, `true`, `yes` / `0`, `false`, `no` | Case-insensitive. |
 | `tokens` | Comma-separated | Lowercased, deduplicated. Each token matches `^[a-z0-9._:#-]{1,64}$`; one bad token invalidates the field. |
-| `pairs` | `key:value;key:value` | Lowercased. Items without a colon are skipped. Keys and values follow the token rule. |
 | `numbers` | Comma-separated integers | Sorted, deduplicated, max 8. One invalid or out-of-range number invalidates the field. |
 | `hosts` | Comma-separated `host[:port]` | Lowercased; a leading `https://` and trailing `/` are dropped. One invalid entry invalidates the field. |
 | `packages` | Android package names, separated by commas or whitespace | An invalid name is dropped alone, with a warning. Max 255 characters per name; over 512 names invalidates the field. |
 
-`reclash-buyplan`, `reclash-buytraffic` and `reclash-background` take an optional integer after the last comma. An out-of-range integer is dropped with a warning; the main value still applies.
+`reclash-buyplan` and `reclash-buytraffic` take an optional integer after the last comma. An out-of-range integer is dropped with a warning; the main value still applies.
 
 ## Subscription-Userinfo
 
@@ -79,6 +78,7 @@ A name the user set is never replaced.
 | --- | --- | --- |
 | `reclash-servicename` | text, 160 B | Service name on the dashboard card and in the import dialog. |
 | `reclash-servicelogo` | url | Logo on the simple dashboard. |
+| `reclash-servicelogodark` | url | Logo in the dark theme. Falls back to `reclash-servicelogo`. |
 | `reclash-supporturl` | url | Support action. Also accepts `https://t.me/…`, `https://telegram.me/…` and `tg://` links, such as `tg://resolve?domain=…`. |
 | `reclash-webpageurl` | url | Website action. |
 | `reclash-subscriptiontype` | text, 32 B | Badge in the import dialog and profile list: `test`, `promo` or `dev`. Other values show none. |
@@ -89,7 +89,7 @@ A name the user set is never replaced.
 
 | Header | Type | Behavior |
 | --- | --- | --- |
-| `reclash-announce` | text, multiline, 1024 B | Description. Shown in the import dialog and in a dashboard card the user can move but not remove. |
+| `reclash-announce` | text, multiline, 1024 B | Description. Shown in the import dialog and in a dashboard card above the widgets that the user can neither move nor remove. |
 | `reclash-announceurl` | url | Link on the description card. |
 | `reclash-notice` | text, multiline, 1024 B | Dismissible dashboard notice. A dismissal is remembered for that exact text and link; a change shows it again. |
 | `reclash-noticeurl` | url | Link on the notice. |
@@ -124,12 +124,13 @@ reclash-noticeurl: https://status.example.net
 
 | Header | Page |
 | --- | --- |
-| `reclash-view`, `reclash-powerbutton`, `reclash-widgets`, `reclash-background` | [Appearance](app-settings.md#appearance) |
+| `reclash-config` | [Hosted config](config.md) |
 | `reclash-settings` | [Settings flags](app-settings.md#settings-flags) |
 | `reclash-restrictions` | [Restrictions](app-settings.md#restrictions) |
 | `reclash-excludeapps`, `reclash-includeapps`, `reclash-approuting` | [Android apps](app-settings.md#android-apps) |
 | `reclash-fallbackhosts`, `reclash-newdomain` | [Fallback hosts](request.md#fallback-hosts) |
 | `reclash-routing` | [Routing bundle](routing.md#routing-bundle) |
+| `reclash-config` | [Hosted config](config.md) |
 | `x-hwid-max-devices-reached`, `x-hwid-not-supported` | [Device status](request.md#device-status) |
 
 ## FlClashX names

@@ -452,7 +452,7 @@ export function initSite(scope, M, Theme, t, helpers) {
     const apply = (hex, from) => {
       if (!Theme.set(hex)) return;
       const h = Theme.get();
-      lines.hex.textContent = 'app.color:' + h;
+      lines.hex.textContent = 'view.app.color: "#' + h + '"';
       tick('hex');
       mark(h);
       splash(from);
@@ -475,7 +475,7 @@ export function initSite(scope, M, Theme, t, helpers) {
       tick('name');
     });
 
-    lines.hex.textContent = 'app.color:' + Theme.get();
+    lines.hex.textContent = 'view.app.color: "#' + Theme.get() + '"';
     scope.frame(() => mark(Theme.get()));
   }
 

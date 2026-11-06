@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "fc029c5b8513acd2ccceb0e84005e224436cdbc0"
+    "commit": "a1146023e660fc8b02bf1094ee7d6ba1ddb102de"
   },
   "languages": [
     "ru",
@@ -37,6 +37,7 @@
             "providers/policy",
             "providers/routing",
             "providers/app-settings",
+            "providers/config",
             "providers/preview-api",
             "providers/support",
             "providers/standard"
@@ -155,8 +156,8 @@
         "en": "Serving headers, verifying what ReClash received, diagnosing failures, and rolling out changes."
       },
       "minutes": {
-        "ru": 3,
-        "en": 3
+        "ru": 4,
+        "en": 4
       }
     },
     {
@@ -189,8 +190,8 @@
         "en": "What ReClash sends when it fetches a subscription, how it picks a client identity, and how it handles redirects, statuses and fallback hosts."
       },
       "minutes": {
-        "ru": 4,
-        "en": 4
+        "ru": 5,
+        "en": 5
       }
     },
     {
@@ -236,12 +237,29 @@
         "en": "App settings"
       },
       "descriptions": {
-        "ru": "Настройки, раскладка дашборда, ограничения и списки приложений Android, которые может задать подписка, и то, как они уступают пользователю.",
-        "en": "Settings, layout, restrictions and Android app lists a subscription can set, and how they yield to the user."
+        "ru": "Оформление, флаги настроек, ограничения и списки приложений Android, которые может задать подписка, и то, как они уступают пользователю.",
+        "en": "Appearance, settings flags, restrictions and Android app lists a subscription can set, and how they yield to the user."
       },
       "minutes": {
-        "ru": 5,
-        "en": 5
+        "ru": 3,
+        "en": 3
+      }
+    },
+    {
+      "slug": "providers/config",
+      "file": "providers/config.md",
+      "section": "providers",
+      "titles": {
+        "ru": "Размещённый конфиг",
+        "en": "Hosted config"
+      },
+      "descriptions": {
+        "ru": "Статический YAML-файл, на который ссылается reclash-config: карточки, подписи кнопки питания и оформление. Он задаёт только представление.",
+        "en": "A static YAML file named by reclash-config that carries cards, power-button labels and appearance. It is presentation only."
+      },
+      "minutes": {
+        "ru": 9,
+        "en": 10
       }
     },
     {
@@ -501,17 +519,18 @@
     }
   ],
   "files": {
-    "ru/README.md": "3f70e5db7bd3bcddc370cec6d83b85b73b34d30d994a95a69e834f9b32d29348",
-    "ru/providers/README.md": "b99d30cd7c6ebb450778ed2d04aad19d033296d3d4a62377b62775c5be6b6e6b",
-    "ru/providers/rollout.md": "f28c59991c9dda2d1abbaa8522652dc30f7bc4327fe94bd49329c8ed31b2d678",
-    "ru/providers/headers.md": "847d4decf23d571dfa3a81af76a29ce1ae04537d7ac6890bf125c0f96a209ee8",
-    "ru/providers/request.md": "c2886ccdd4202dc35da6214b12cc2aaece707517d42066a9a626ad619b08c51b",
+    "ru/README.md": "fc16c6ddb3a66236b8c151d5d9366c1745baccdd2bc9656d4106b4e35e8ed626",
+    "ru/providers/README.md": "f95c8ac907995a7bf7519f6770c9fe5b1e93855dc35ca419aae25f5e105233f6",
+    "ru/providers/rollout.md": "1f1ef8fafe3305e89be091942ecb704b5417f09975830c699bdd6c1c378943d6",
+    "ru/providers/headers.md": "0cfe98e12d8a812b5c8073208dc9c54efe585a9937b5830d882c6ee3bf7bccde",
+    "ru/providers/request.md": "87b9691448651088e81f58290d823c9a04dde56414fda27721978445f101230a",
     "ru/providers/policy.md": "a1ea1833217809633816dac86eba194c067674cecc018bccac9a6bb975b8a143",
     "ru/providers/routing.md": "1e52bf6ec93369b7fa78f19db964d8915301321287566b750e921080bbef7800",
-    "ru/providers/app-settings.md": "78adeb605a5ad2d9f94de5d06d8afa60cbfb43097d618ff0d07c0170a4155648",
+    "ru/providers/app-settings.md": "2481f4f5b6aa0b77054097a8b7f7973748ca5740b57cfe7cc0f0ab6b4cbf0236",
+    "ru/providers/config.md": "1269d740b8f169361132074c9fcd152a1fbcea3a18ae649896fdfbca10eb73c3",
     "ru/providers/preview-api.md": "4e195bac02fc796a9e85dc11c84e5a727f95d2c8f717f7df0d6ddb0aede6cbe2",
     "ru/providers/support.md": "6e6f0bc8e29e234258cdcc18014bc5601dee39061db7556ed509d5fe98f061f3",
-    "ru/providers/standard.md": "eddb60ffdea97c75074bac852ed4762258854175cf775d02a8deb8da1849aff4",
+    "ru/providers/standard.md": "080afcec969b5766da0c4ebcc9a430086ce4f843cc11cbe065ab30a8bbeff77d",
     "ru/auto-routing/README.md": "003aed583e43c6e240e4a6d0466ba1a929b34e650b336df8f5b71c179eaf8250",
     "ru/auto-routing/engine.md": "4918e9c53a96c8c6ed2892eff962441d1afb9a52605a8be6a61d5ca14aeee401",
     "ru/auto-routing/profiles.md": "fb7a3613629321223ea47e3cf93712c2cde56ed7998c7105a0390d58f09001e8",
@@ -524,17 +543,18 @@
     "ru/auto-routing/editor/groups.md": "e635d00254e0521dc052b5b5ee287f64ad0081e481c11629205b4141aa1963df",
     "ru/auto-routing/editor/studio.md": "1306e486b0194e33d58d50a4f23b14ea24670d8486d06dc2f80e49ad51b2d2c7",
     "ru/auto-routing/images/README.md": "ec90b0cec5edffc5a5dd850418746da02f6dbd5e194087ad20fc5fcc76bb1c0f",
-    "en/README.md": "d783f6ef3b643de8d663ba4fa312b6500ef195c585dab10fbca07e09dc0126ab",
-    "en/providers/README.md": "245ef088035f2e5440d874404299187ea69be6c411b9afe49d0f0e056144bc97",
-    "en/providers/rollout.md": "ae821e555b39fbf4548ffaec64fef3d1f2bdc3a420ec1ba7d6c8fa3c51ddbea3",
-    "en/providers/headers.md": "e24180e970a1dcbc052597984aad0de1858af0870fcb2266a0112ab773854eb0",
-    "en/providers/request.md": "9b8e1e0e91ac3410df7a63300d39dcba21d772844d2653d1a09b6b020a6e222b",
+    "en/README.md": "26877d0e7932cad6c181acf4a3481d0b38f14ba5bf2a5ebd0f8896198ac10186",
+    "en/providers/README.md": "639405c6fa2a523f641ea9090b096bd83bbd9b4aec483f24583e1e94a1cda784",
+    "en/providers/rollout.md": "8777d1b48e443d8b765745df7752b77f52c70cc78a475e998703b1b52a814ee7",
+    "en/providers/headers.md": "df579196e77a1ac66aa9547dfafc592156877ccccfb396fbbf75dc1ca2352252",
+    "en/providers/request.md": "924e186aa6d67a391c3e1d0c8daf6dacabb78f863fd25a5504a8df9b9c4b0e76",
     "en/providers/policy.md": "376a0b898fa74d90ba25fb45d73966eec5519dc43e8a3ed0c96095707528bbf9",
     "en/providers/routing.md": "7e80a5cddc4b58d752703f8bf8a0e4dc686ba6ce27b9e6b5a61ef6f17f1848ec",
-    "en/providers/app-settings.md": "9115e37bbae56e5dc64cc43190390c63ee4ccba3d4b76ab08f3aa7c211d9ede8",
+    "en/providers/app-settings.md": "40e0964f29bdcfaba7d9c6710edd2c47f2e7914c6176182e820773fb51f5ce1b",
+    "en/providers/config.md": "6b150b4db7f6689ace9f42915cf1db541009fdfdbfda2607e3f8d71484c4fc9f",
     "en/providers/preview-api.md": "f28e1e8d05c909e4e37b5f8f611bbbd7c470f22bf3895c630bb4031fcfd858d7",
     "en/providers/support.md": "bc4309635e74b3666b3f301fc56b54e7ef7895250c336c38ab96fad929ca4510",
-    "en/providers/standard.md": "26d1e1e14aa38fff19ac1484cf3c0399b5f4b87a46763dbbfedda559d53043ae",
+    "en/providers/standard.md": "1684594a61c2449041f4e92474d48a63496e6080ca7bca58357c9ad16e110db5",
     "en/auto-routing/README.md": "41422076cc5b3996c89d60f46efc256971f2022abf902c672152b67169ad2e1f",
     "en/auto-routing/engine.md": "3611557ebae5faf8e9c9a54d9c879be41152d3dadfbc1221ce727d19631c6442",
     "en/auto-routing/profiles.md": "b66638987b4e93a94cd7560c9293900a881cb00cd44a7fc0ebbf00ac390be607",

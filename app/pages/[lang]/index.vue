@@ -243,7 +243,7 @@ const manifesto = computed(() => [
         </div>
       </div>
       <div class="studio-body">
-<pre class="http" :aria-label="t('Ответ подписки', 'Subscription response')"><span class="line"><span class="k">HTTP/2 200</span></span><span class="line"><span class="k">subscription-userinfo:</span> <span class="v">upload=0; download=66571993088; total=214748364800</span></span><span class="line" data-line="name"><span class="rk">reclash-servicename:</span> <span class="v">ReClash</span></span><span class="line" data-line="hex"><span class="rk">reclash-view:</span> <span class="v">app.color:FF7A2F</span></span><span class="line"><span class="rk">reclash-announce:</span> <span class="v">{{ t("Профиль импортирован по ссылке.", "Profile imported from a link.") }}</span></span><span class="line"><span class="rk">reclash-buyplan:</span> <span class="v">https://sub.example/renew</span></span></pre>
+<pre class="http" :aria-label="t('Ответ подписки', 'Subscription response')"><span class="line"><span class="k">HTTP/2 200</span></span><span class="line"><span class="k">subscription-userinfo:</span> <span class="v">upload=0; download=66571993088; total=214748364800</span></span><span class="line" data-line="name"><span class="rk">reclash-servicename:</span> <span class="v">ReClash</span></span><span class="line"><span class="rk">reclash-config:</span> <span class="v">https://sub.example/reclash.yaml</span></span><span class="line" data-line="hex"><span class="rk">  # reclash.yaml</span> <span class="v">view.app.color: "#FF7A2F"</span></span><span class="line"><span class="rk">reclash-announce:</span> <span class="v">{{ t("Профиль импортирован по ссылке.", "Profile imported from a link.") }}</span></span><span class="line"><span class="rk">reclash-buyplan:</span> <span class="v">https://sub.example/renew</span></span></pre>
         <div class="preview">
           <span class="preview-cap">{{ t("Карточка подписки в клиенте", "Subscription card in the client") }}</span>
           <div class="subcard">
@@ -261,7 +261,7 @@ const manifesto = computed(() => [
         </div>
       </div>
       <div class="studio-foot">
-        <span>{{ t("Схема данных, не скриншот. Цвет задаётся через reclash-view: app.color; точные оттенки считает приложение.", "A data illustration, not a screenshot. Set color with reclash-view: app.color; the app derives the exact shades.") }}</span>
+        <span>{{ t("Схема данных, не скриншот. Цвет задаётся в файле из reclash-config: view.app.color; точные оттенки считает приложение.", "A data illustration, not a screenshot. Set color in the reclash-config file with view.app.color; the app derives the exact shades.") }}</span>
         <button class="linkbtn" type="button" data-reset>{{ t("Вернуть цвет ReClash", "Restore the ReClash color") }}</button>
       </div>
     </div>

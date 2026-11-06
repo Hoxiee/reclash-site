@@ -99,6 +99,7 @@ export const transformLabels: Record<Exclude<HeaderTransform, 'none'>, { short: 
 const fieldProse: Record<string, [string, string, string]> = {
   'provider.name': ['Имя сервиса на панели.', 'Provider name on the dashboard.', 'Nebula'],
   'provider.logo': ['Логотип сервиса. Используйте абсолютный HTTPS-URL изображения.', 'Provider logo. Use an absolute HTTPS image URL.', 'https://nebula.example/logo.png'],
+  'provider.logoDark': ['Логотип сервиса для тёмной темы; без него используется provider.logo.', 'Provider logo for the dark theme; provider.logo is used without it.', 'https://nebula.example/logo-dark.png'],
   'provider.supportUrl': ['Ссылка на поддержку.', 'Support link.', 'https://nebula.example/help'],
   'support.keys': ['Ключи Ed25519 для подписанных ссылок поддержки, не больше двух.', 'Ed25519 keys for signed support fix links, at most two.', 'ed25519:O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik'],
   'support.uploadUrl': ['HTTPS-адрес, куда приложение отправляет отчёт о проблеме.', 'HTTPS address the app uploads problem reports to.', 'https://nebula.example/reports'],
@@ -114,13 +115,8 @@ const fieldProse: Record<string, [string, string, string]> = {
   'update.intervalMinutes': ['Интервал обновления в минутах. Общий псевдоним profile-update-interval задаётся в часах.', 'Update interval in minutes. The common profile-update-interval alias uses hours.', '60'],
   'routing.bundleUrl': ['URL набора профилей маршрутизации RCX. Это подсказка: доверие к проверочным хостам остаётся под контролем пользователя.', 'URL of an RCX routing profile bundle. This is a hint: trust in probe hosts remains under user control.', 'https://nebula.example/routing.json'],
   'presentation.hideUrl': ['Скрывает URL подписки в интерфейсе, но не делает его секретным для сервера.', 'Hides the subscription URL in the interface; it does not hide it from the server.', 'true'],
+  'presentation.config': ['HTTPS-адрес YAML-файла с оформлением: вид, кнопка включения, обои, виджеты и карточки. Других заголовков оформления нет.', 'HTTPS address of a YAML file carrying appearance: view, power button, wallpaper, widgets and cards. No other header sets appearance.', 'https://nebula.example/reclash.yaml'],
   'presentation.serverGroup': ['Имя группы, из которой панель берёт активный сервер.', 'Group used by the dashboard to resolve the active server.', 'Proxy'],
-  'presentation.widgets': ['Общий список: каждая панель применяет совместимые карточки. Псевдонимы: speed для speedTest, services для serviceStatus.', 'Shared list: each dashboard applies compatible cards. Aliases: speed for speedTest, services for serviceStatus.', 'health,outboundMode,speedTest,serviceStatus,path'],
-  'presentation.widgetsDetailed': ['Список узкой подробной панели с приоритетом над общим. currentOutbound обязателен.', 'Narrow detailed selection, taking precedence over the shared list. currentOutbound is required.', 'currentOutbound,networkSpeed,speedTest,profiles,connectionStats,proxyGroups'],
-  'presentation.widgetsSimple': ['Список простой панели с приоритетом над общим. Ручное изменение освобождает этот список от управления провайдером.', 'Simple selection, taking precedence over the shared list. A manual edit releases this list from provider management.', 'speedTest,serviceStatus,ipQuality,trustedNetworks,path'],
-  'presentation.background': ['Фоновое изображение и необязательная непрозрачность 1–100. Без суффикса — 8 %.', 'Background image and optional opacity from 1 to 100. Without a suffix: 8%.', 'https://nebula.example/background.png,8'],
-  'presentation.view': ['Предлагает оформление приложения и страницы прокси. Цвет задаётся app.color, стиль — app.style.', 'Suggests app and proxy-page appearance. Set color with app.color and style with app.style.', 'app.color:2FD3B6;app.style:vivid;proxies.type:list;proxies.sort:delay'],
-  'presentation.powerButton': ['Задаёт форму и заливку активной кнопки упрощённой панели. Настройки для пользователя нет. Выбор из списка или всех форм сохраняется в рамках сеанса приложения до смены профиля или набора допустимых форм; обновление метаданных, смена заливки и переподключение его не сбрасывают. Прежний burst остаётся мягким; sharpBurst — новый вариант с острыми лучами.', 'Sets the shape and fill of the active simplified-dashboard button. There is no user setting. A choice from a pool or all shapes stays stable in the app session until the profile or valid pool changes; metadata refreshes, fill changes and reconnecting do not reroll it. The existing burst stays soft; sharpBurst is the new sharp silhouette.', 'shape:puffy,puffyDiamond,clover8Leaf;type:outline'],
   'reminder.expireDays': ['Пороги напоминаний до окончания подписки, в днях.', 'Reminder thresholds before subscription expiry, in days.', '7,3,1'],
   'reminder.trafficPercent': ['Пороги напоминаний по израсходованному трафику, в процентах.', 'Reminder thresholds for used traffic, in percent.', '80,95'],
   'settings.flags': ['Предлагает настройки приложения. Перечисленные флаги включаются, остальные из этого набора выключаются; пользовательские решения имеют приоритет.', 'Suggests app settings. Listed flags are enabled and other flags in this set disabled; user decisions take precedence.', 'minimize,autoupdate'],
@@ -132,51 +128,8 @@ const fieldProse: Record<string, [string, string, string]> = {
   'apps.routing': ['Региональное исключение приложений Android: domestic или domestic:<cc>.', 'Regional Android app bypass: domestic or domestic:<cc>.', 'domestic:ru'],
 }
 
-export const widgetCatalog = [
-  ['currentOutbound', 'Текущий узел', 'Current outbound'],
-  ['health', 'Состояние приложения и диагностика', 'App health and diagnostics'],
-  ['networkSpeed', 'Скорость сети', 'Network speed'],
-  ['outboundMode', 'Режим маршрутизации', 'Outbound mode'],
-  ['vpnButton', 'Кнопка VPN (Android)', 'VPN button (Android)'],
-  ['networkTakeover', 'Перехват трафика (компьютер)', 'Traffic capture (desktop)'],
-  ['serviceStatus', 'Проверки доступности сервисов', 'Service availability checks'],
-  ['profiles', 'Профили', 'Profiles'],
-  ['proxyGroups', 'Группы прокси', 'Proxy groups'],
-  ['connectionStats', 'Статистика соединений', 'Connection statistics'],
-  ['intranetIp', 'Локальный IP', 'Local IP'],
-  ['memoryInfo', 'Память', 'Memory'],
-  ['announcement', 'Объявление', 'Announcement'],
-  ['speedTest', 'Замер скорости, задержки и джиттера', 'Bandwidth, latency and jitter test'],
-  ['ipQuality', 'Внешний IP и его качество', 'Outbound IP and quality'],
-  ['trustedNetworks', 'Доверенные сети', 'Trusted networks'],
-  ['path', 'Путь соединения и диагностика', 'Connection path and diagnostics'],
-] as const
-
-const powerButtonTokens: TokenRow[] = [
-  { token: 'shape', values: ['cookie', 'circle', 'scallop', 'sunny', 'flower', 'clover', 'burst', 'puffy', 'puffyDiamond', 'clover8Leaf', 'cookie4Sided', 'cookie6Sided', 'verySunny', 'square', 'diamond', 'pentagon', 'gem', 'pixelCircle', 'softBoom', 'boom', 'sharpBurst', 'random'], text: bi('Одна форма, random для выбора из всех или список через запятую, например puffy,puffyDiamond,clover8Leaf. Выбор равновероятный, без учёта регистра и повторов. Неизвестные имена игнорируются; пустой набор заменяется на cookie. random действует только как отдельное значение.', 'One shape, random to choose from all, or a comma-separated pool such as puffy,puffyDiamond,clover8Leaf. Choices are uniform; case and duplicates do not matter. Unknown names are ignored; an empty valid pool falls back to cookie. random applies only as a standalone value.') },
-  { token: 'type', values: ['solid', 'tonal', 'outline'], text: bi('Заливка активной кнопки; по умолчанию solid', 'Active button fill; defaults to solid') },
-]
-const viewTokens: TokenRow[] = [
-  { token: 'proxies.type', values: ['tab', 'list'], text: bi('Вид списка прокси', 'Proxy list presentation') },
-  { token: 'proxies.sort', values: ['none', 'delay', 'name'], text: bi('Сортировка', 'Sorting') },
-  { token: 'proxies.layout', values: ['loose', 'standard', 'tight'], text: bi('Плотность', 'Density') },
-  { token: 'proxies.icon', values: ['filled', 'plain', 'hidden'], text: bi('Иконки узлов', 'Node icons') },
-  { token: 'proxies.card', values: ['loose', 'standard', 'compact'], text: bi('Карточки', 'Cards') },
-  { token: 'app.color', values: ['RRGGBB', 'AARRGGBB'], text: bi('Цвет акцента', 'Accent color') },
-  { token: 'app.style', values: ['vivid', 'tinted', 'soft', 'monochrome'], text: bi('Стиль палитры', 'Palette style') },
-  { token: 'app.black', values: ['true', 'false'], text: bi('Чёрный фон', 'Black background') },
-  { token: 'app.navbar', values: ['floating', 'docked'], text: bi('Навигация', 'Navigation') },
-  { token: 'app.tabs', values: ['slide', 'fade'], text: bi('Анимация вкладок', 'Tab animation') },
-  { token: 'app.glass', values: ['none', 'standard', 'ultra'], text: bi('Эффект стекла', 'Glass effect') },
-]
-const widgetTable: TokenTable = { caption: bi('Каталог карточек', 'Card catalog'), columns: [bi('Токен', 'Token'), bi('Назначение', 'Purpose')], rows: widgetCatalog.map(([token, ru, en]) => ({ token, text: bi(ru, en) })) }
 const tables: Record<string, TokenTable> = {
   'subscription.type': { caption: bi('Типы подписки', 'Subscription types'), columns: [bi('Значение', 'Value'), bi('Бейдж', 'Badge')], rows: Object.entries(subscriptionTypes).map(([token, text]) => ({ token, text })) },
-  'presentation.powerButton': { caption: bi('Вид кнопки включения', 'Power button appearance'), columns: [bi('Ключ', 'Key'), bi('Значения', 'Values'), bi('Назначение', 'Purpose')], rows: powerButtonTokens },
-  'presentation.view': { caption: bi('Ключи вида', 'View keys'), columns: [bi('Ключ', 'Key'), bi('Значения', 'Values'), bi('Назначение', 'Purpose')], rows: viewTokens },
-  'presentation.widgets': widgetTable,
-  'presentation.widgetsDetailed': widgetTable,
-  'presentation.widgetsSimple': { ...widgetTable, rows: widgetTable.rows.filter(row => ['health', 'outboundMode', 'speedTest', 'serviceStatus', 'ipQuality', 'trustedNetworks', 'path'].includes(row.token)) },
 }
 export const referenceAnchor = (name: string): string => `h-${name.toLowerCase()}`
 

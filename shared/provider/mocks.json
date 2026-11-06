@@ -5,12 +5,12 @@
     "scenario": { "ru": "Максимум", "en": "Full customization" },
     "name": { "ru": "Ember Line", "en": "Ember Line" },
     "blurb": {
-      "ru": "Яркая тема, фон, формы кнопки и общий набор виджетов.",
-      "en": "Vivid theme, wallpaper, power-button shapes and a shared widget list."
+      "ru": "Яркая тема, фон, формы кнопки и набор виджетов из размещённого конфига.",
+      "en": "Vivid theme, wallpaper, power-button shapes and a widget list from the hosted config."
     },
     "teaches": {
-      "ru": "Проверьте весь набор оформления: логотип, чёрный фон с обоями, стекло, навигацию и выбор формы кнопки. В настройках оформления переключите простую и подробную панели — каждая применит совместимые карточки из общего списка. Есть квота, кабинет, оплата, объявления и напоминания; автозапуск VPN не включается.",
-      "en": "Try the full presentation set: logo, black wallpaper background, glass, navigation and a pool of power-button shapes. Switch between simple and detailed dashboards in Appearance: each applies compatible cards from the shared list. Includes quota, account, billing, announcements and reminders; VPN autostart stays off."
+      "ru": "Проверьте весь набор оформления: логотип, чёрный фон с обоями, стекло, навигацию и выбор формы кнопки. Тема, обои, формы кнопки и виджеты приходят из размещённого конфига, на который указывает ReClash-Config. Есть квота, кабинет, оплата, объявления и напоминания; автозапуск VPN не включается.",
+      "en": "Try the full presentation set: logo, black wallpaper background, glass, navigation and a pool of power-button shapes. The theme, wallpaper, button shapes and widgets come from the hosted config that ReClash-Config names. Includes quota, account, billing, announcements and reminders; VPN autostart stays off."
     },
     "nodes": 3,
     "quota": { "uploadGb": 1, "downloadGb": 20, "totalGb": 100, "expireInDays": 30 },
@@ -23,7 +23,7 @@
       "logo": "logo-ember.svg",
       "background": { "file": "bg-ember.svg", "opacity": 22 },
       "powerButton": "shape:sharpBurst,puffyDiamond,clover8Leaf;type:tonal",
-      "widgets": "health,outboundMode,speedTest,serviceStatus,ipQuality,trustedNetworks,path",
+      "widgets": "health,outboundMode,serviceStatus",
       "settings": "autoupdate,minimize",
       "view": "app.style:vivid;app.black:true;app.navbar:floating;app.tabs:slide;app.glass:ultra;proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
       "supportUrl": "https://example.com/support",

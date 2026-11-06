@@ -45,6 +45,24 @@
       "available": true
     },
     {
+      "path": "provider.logoDark",
+      "name": "reclash-servicelogodark",
+      "type": "url",
+      "direction": "response",
+      "context": [
+        "http-response",
+        "body-comment"
+      ],
+      "encoding": "url",
+      "multiplicity": "singleton",
+      "limit": 1024,
+      "trust": "display",
+      "introduced": 1,
+      "absence": "restore-local",
+      "consumer": "panel",
+      "available": true
+    },
+    {
       "path": "provider.supportUrl",
       "name": "reclash-supporturl",
       "type": "url",
@@ -336,76 +354,16 @@
       "available": true
     },
     {
-      "path": "presentation.widgets",
-      "name": "reclash-widgets",
-      "type": "tokens",
-      "direction": "response",
-      "context": [
-        "http-response",
-        "body-comment"
-      ],
-      "encoding": "comma-separated-tokens",
-      "multiplicity": "singleton",
-      "limit": 32,
-      "trust": "hint",
-      "introduced": 1,
-      "absence": "restore-local",
-      "consumer": "appearance",
-      "available": true
-    },
-    {
-      "path": "presentation.background",
-      "name": "reclash-background",
+      "path": "presentation.config",
+      "name": "reclash-config",
       "type": "url",
       "direction": "response",
       "context": [
-        "http-response",
-        "body-comment"
+        "https-response"
       ],
-      "encoding": "url-with-suffix",
+      "encoding": "url",
       "multiplicity": "singleton",
       "limit": 1024,
-      "suffix": {
-        "path": "presentation.backgroundOpacity",
-        "minimum": 1,
-        "maximum": 100
-      },
-      "trust": "hint",
-      "introduced": 1,
-      "absence": "restore-local",
-      "consumer": "appearance",
-      "available": true
-    },
-    {
-      "path": "presentation.view",
-      "name": "reclash-view",
-      "type": "pairs",
-      "direction": "response",
-      "context": [
-        "http-response",
-        "body-comment"
-      ],
-      "encoding": "semicolon-separated-pairs",
-      "multiplicity": "singleton",
-      "limit": 32,
-      "trust": "hint",
-      "introduced": 1,
-      "absence": "restore-local",
-      "consumer": "appearance",
-      "available": true
-    },
-    {
-      "path": "presentation.powerButton",
-      "name": "reclash-powerbutton",
-      "type": "pairs",
-      "direction": "response",
-      "context": [
-        "http-response",
-        "body-comment"
-      ],
-      "encoding": "semicolon-separated-pairs",
-      "multiplicity": "singleton",
-      "limit": 8,
       "trust": "hint",
       "introduced": 1,
       "absence": "restore-local",

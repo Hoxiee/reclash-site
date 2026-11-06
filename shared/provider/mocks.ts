@@ -23,6 +23,7 @@ export type MockResponse = {
   hex?: string
   /** File name under /assets/mock/. */
   logo?: string
+  /** Appearance goes out through the hosted config, not headers. */
   background?: { file: string, opacity: number }
   widgets?: string
   powerButton?: string
@@ -64,6 +65,7 @@ export function mockImportLink(origin: string, key: string): string {
   const name = response?.title ?? response?.serviceName
   return `reclash://install-config?url=${encodeURIComponent(mockUrl(origin, key))}${name ? `&name=${encodeURIComponent(name)}` : ''}`
 }
+export const mockConfigPath = (key: string) => `/mock-config/${key}.yaml`
 export const mockAsset = (origin: string, file: string) => `${origin}/assets/mock/${file}`
 
 export const GB = 1024 ** 3
@@ -94,12 +96,9 @@ export function mockHeaders(profile: MockProfile, origin: string, now = Date.now
     ['ReClash-ServiceName', r.serviceName && headerValue(r.serviceName)],
     ['ReClash-ServerInfo', r.serverInfo && headerValue(r.serverInfo)],
     ['ReClash-ServiceLogo', r.logo && mockAsset(origin, r.logo)],
-    ['ReClash-Background', r.background && `${mockAsset(origin, r.background.file)},${r.background.opacity}`],
-    ['ReClash-Widgets', r.widgets],
-    ['ReClash-PowerButton', r.powerButton],
+    ['ReClash-Config', mockConfig(profile, origin) && `${origin}${mockConfigPath(profile.key)}`],
     ['ReClash-Settings', r.settings],
     ['ReClash-Restrictions', r.restrictions],
-    ['ReClash-View', [r.hex && `app.color:${r.hex}`, r.view].filter(Boolean).join(';')],
     ['ReClash-SupportURL', r.supportUrl],
     ['ReClash-WebPageURL', r.webPageUrl],
     ['ReClash-BuyPlan', r.buyPlan],
@@ -116,6 +115,48 @@ export function mockHeaders(profile: MockProfile, origin: string, now = Date.now
       `upload=${q.uploadGb * GB}; download=${q.downloadGb * GB}; total=${q.totalGb * GB}; expire=${mockExpire(q, now)}`])
   }
   return pairs.filter((pair): pair is [string, string] => Boolean(pair[1]))
+}
+
+function nest(pairs: string, root: Record<string, unknown>): void {
+  for (const pair of pairs.split(';')) {
+    const [path = '', value = ''] = pair.split(/:(.*)/s)
+    const keys = path.split('.')
+    const leaf = keys.pop()!
+    const parent = keys.reduce<Record<string, unknown>>((node, key) => (node[key] ??= {}) as Record<string, unknown>, root)
+    parent[leaf] = value === 'true' ? true : value === 'false' ? false : value
+  }
+}
+
+/** Block YAML for nested objects, flow lists and JSON-quoted scalars (valid YAML). */
+function yamlLines(node: Record<string, unknown>, indent = ''): string[] {
+  return Object.entries(node).flatMap(([key, value]) =>
+    value && typeof value === 'object' && !Array.isArray(value)
+      ? [`${indent}${key}:`, ...yamlLines(value as Record<string, unknown>, `${indent}  `)]
+      : [`${indent}${key}: ${JSON.stringify(value)}`])
+}
+
+const configWidgets = new Set(['currentOutbound', 'health', 'networkSpeed', 'outboundMode', 'vpnButton', 'networkTakeover', 'serviceStatus', 'profiles', 'proxyGroups', 'connectionStats', 'intranetIp', 'memoryInfo'])
+
+/** The hosted YAML config a stand names with ReClash-Config; undefined when the stand carries no appearance. */
+export function mockConfig(profile: MockProfile, origin: string): string | undefined {
+  const r = profile.response
+  const view: Record<string, unknown> = {}
+  if (r.hex) nest(`app.color:#${r.hex}`, view)
+  if (r.view) nest(r.view, view)
+  const power: Record<string, unknown> = {}
+  if (r.powerButton) {
+    nest(r.powerButton, power)
+    power.shape = String(power.shape).split(',')
+  }
+  const widgets = r.widgets?.split(',').filter(token => configWidgets.has(token))
+  const config = {
+    version: 1,
+    ...(Object.keys(view).length && { view }),
+    ...(r.powerButton && { 'power-button': power }),
+    ...(r.background && { wallpaper: { url: mockAsset(origin, r.background.file), opacity: r.background.opacity } }),
+    ...(widgets?.length && { widgets }),
+  }
+  return Object.keys(config).length > 1 ? `${yamlLines(config).join('\n')}\n` : undefined
 }
 
 /** Response headers that only the static host adds: any origin may fetch a stand, nothing is cached. */
