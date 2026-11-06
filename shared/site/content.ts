@@ -15,8 +15,8 @@ export const portedPages = {
       "en": "Subscription header reference — ReClash"
     },
     "description": {
-      "ru": "Справочник по заголовкам ответа подписки для ReClash: имя, формат, псевдонимы, назначение и пример каждого. Поиск и фильтр по категориям.",
-      "en": "Reference for ReClash subscription response headers: name, format, aliases, purpose and an example for each. Searchable and filterable by category."
+      "ru": "Справочник по заголовкам ответа подписки для ReClash: имя, формат, назначение и пример каждого. Поиск и фильтр по категориям.",
+      "en": "Reference for ReClash subscription response headers: name, format, purpose and an example for each. Searchable and filterable by category."
     }
   },
   "mock-subs": {

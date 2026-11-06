@@ -76,7 +76,7 @@ test('mock endpoints serve the YAML body with the headers the page shows', async
     expect(headers['content-type']).toBe('text/yaml; charset=utf-8')
     expect(headers['reclash-subscriptiontype']).toBe(profile.response.subscriptionType)
     for (const [name, value] of rows) expect(headers[name!.toLowerCase()], name).toBe(value)
-    const supported = new Set(providerStandard.fields.map(field => field.name))
+    const supported = new Set(providerStandard.headers.map(header => header.name.toLowerCase()))
     for (const name of Object.keys(headers).filter(name => name.startsWith('reclash-'))) expect(supported.has(name), name).toBe(true)
     const body = await response.text()
     expect(body.startsWith(`# Mock subscription: ${profile.key}. Fake nodes, for testing ReClash only.\n`)).toBe(true)

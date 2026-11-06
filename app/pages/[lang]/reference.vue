@@ -229,7 +229,7 @@ onBeforeUnmount(() => {
   <div>
     <PageHero
       :title="t('Справочник по заголовкам', 'The header reference')"
-      :lede="t('Каждый заголовок ответа, который читает ReClash: имя, формат, псевдонимы, что делает и пример. Ищите по имени или описанию, фильтруйте по категории.', 'Every response header ReClash reads: name, format, aliases, what it does and an example. Search by name or description, filter by category.')"
+      :lede="t('Каждый заголовок ответа, который читает ReClash: имя, формат, что делает и пример. Ищите по имени или описанию, фильтруйте по категории.', 'Every response header ReClash reads: name, format, aliases, what it does and an example. Search by name or description, filter by category.')"
       glyph="M168 160v80M232 160v80M168 200h64"
     >
       <template #eyebrow>{{ t('Для провайдеров', 'For providers') }}</template>
@@ -237,7 +237,6 @@ onBeforeUnmount(() => {
         <span class="tag">{{ countOf('reclash') }} reclash-*</span>
         <span class="tag">{{ t(`${countOf('common')} общих`, `${countOf('common')} common`) }}</span>
         <span class="tag">HWID</span>
-        <span class="tag">{{ countOf('alias') }} {{ t('псевдонимов', 'aliases') }}</span>
       </template>
       <ProviderTabs page="reference" />
     </PageHero>

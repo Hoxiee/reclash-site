@@ -1,5 +1,5 @@
 import type { BilingualText, Language } from '../site/routes'
-import { providerStandard, readOrderFor, standardHeaderFor, subscriptionTypes, transformFor, type HeaderTransform } from './standard'
+import { providerStandard, type HeaderTransform } from './standard'
 
 // The header reference: every header ReClash reads, with bilingual format,
 // purpose, details, example and search terms. The page, the docs and the
@@ -8,7 +8,7 @@ import { providerStandard, readOrderFor, standardHeaderFor, subscriptionTypes, t
 // Prose is light markup: `code` and **strong**. Render it with
 // <ReferenceRich>, never as HTML; `plainText` strips it for search.
 
-export type HeaderCategory = 'common' | 'reclash' | 'hwid' | 'alias'
+export type HeaderCategory = 'common' | 'reclash' | 'hwid'
 export type HeaderDirection = 'response' | 'request'
 
 export type TokenRow = {
@@ -32,15 +32,7 @@ export type HeaderEntry = {
   name: string
   category: HeaderCategory
   direction: HeaderDirection
-  /** Provider-standard setting this header feeds, when it is part of the standard. */
-  canonical?: string
   transform: HeaderTransform
-  /** Every wire name that feeds the same setting, in priority order (includes `name`). */
-  readOrder: readonly string[]
-  /** Other wire names for the same setting, shown as alias chips. */
-  aliases: readonly string[]
-  /** For compatibility aliases: the reclash-* header they stand in for. */
-  aliasOf?: string
   /** Value format; empty for request headers the client sends itself. */
   format?: BilingualText
   /** One line, shown while the entry is collapsed. */
@@ -75,9 +67,6 @@ export const headerCategories: readonly CategoryInfo[] = [
   { key: 'hwid', label: bi('HWID', 'HWID'), badge: bi('HWID', 'HWID'), title: bi('Устройства и HWID', 'Devices and HWID'),
     lede: bi('Заголовки запроса от клиента и ответы на них.',
       'Request headers from the client and the responses to them.') },
-  { key: 'alias', label: bi('Псевдонимы', 'Aliases'), badge: bi('Псевдоним', 'Alias'), title: bi('Общие псевдонимы', 'Common aliases'),
-    lede: bi('Общие имена заголовков, которые принимает стандарт подписок. Заголовки FlClashX преобразуются отдельно, только в соответствующем режиме совместимости.',
-      'Common header names accepted by the subscription standard. FlClashX headers are adapted separately, only in the corresponding compatibility mode.') },
 ]
 
 export const transformLabels: Record<Exclude<HeaderTransform, 'none'>, { short: BilingualText, long: BilingualText }> = {
@@ -96,56 +85,8 @@ export const transformLabels: Record<Exclude<HeaderTransform, 'none'>, { short: 
 }
 
 
-const fieldProse: Record<string, [string, string, string]> = {
-  'provider.name': ['Имя сервиса на панели.', 'Provider name on the dashboard.', 'Nebula'],
-  'provider.logo': ['Логотип сервиса. Используйте абсолютный HTTPS-URL изображения.', 'Provider logo. Use an absolute HTTPS image URL.', 'https://nebula.example/logo.png'],
-  'provider.logoDark': ['Логотип сервиса для тёмной темы; без него используется provider.logo.', 'Provider logo for the dark theme; provider.logo is used without it.', 'https://nebula.example/logo-dark.png'],
-  'provider.supportUrl': ['Ссылка на поддержку.', 'Support link.', 'https://nebula.example/help'],
-  'support.keys': ['Ключи Ed25519 для подписанных ссылок поддержки, не больше двух.', 'Ed25519 keys for signed support fix links, at most two.', 'ed25519:O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik'],
-  'support.uploadUrl': ['HTTPS-адрес, куда приложение отправляет отчёт о проблеме.', 'HTTPS address the app uploads problem reports to.', 'https://nebula.example/reports'],
-  'provider.webUrl': ['Ссылка на личный кабинет.', 'Account page link.', 'https://nebula.example/account'],
-  'provider.buyPlanUrl': ['Продление тарифа. Необязательный суффикс задаёт порог в днях.', 'Plan renewal. An optional suffix sets the days-before-expiry threshold.', 'https://nebula.example/renew,3'],
-  'provider.buyTrafficUrl': ['Покупка трафика. Необязательный суффикс задаёт порог остатка в процентах.', 'Traffic top-up. An optional suffix sets the remaining-traffic percentage threshold.', 'https://nebula.example/traffic,10'],
-  'provider.announce': ['Объявление провайдера целиком показывается на панели. Для не-ASCII используйте base64:.', 'The provider announcement is shown in full on the dashboard. Use base64: for non-ASCII text.', 'Maintenance tonight'],
-  'provider.announceUrl': ['Ссылка объявления.', 'Announcement link.', 'https://nebula.example/news'],
-  'provider.notice': ['Дополнительное уведомление провайдера.', 'Additional provider notice.', 'Check your account'],
-  'provider.noticeUrl': ['Ссылка дополнительного уведомления.', 'Additional notice link.', 'https://nebula.example/account'],
-  'subscription.type': ['Тип подписки для бейджа: test, promo или dev. Только отображение; неизвестные значения не показывают бейдж. HTTP-заголовок также читается в предпросмотре YAML, а в теле допустим начальный комментарий # ReClash-SubscriptionType: test.', 'Subscription badge type: test, promo or dev. Display only; unknown values show no badge. The HTTP header is also read in the YAML import preview; a leading # ReClash-SubscriptionType: test body comment is supported.', 'test'],
-  'account.title': ['Имя профиля подписки.', 'Subscription profile name.', 'Nebula subscription'],
-  'update.intervalMinutes': ['Интервал обновления в минутах. Общий псевдоним profile-update-interval задаётся в часах.', 'Update interval in minutes. The common profile-update-interval alias uses hours.', '60'],
-  'routing.bundleUrl': ['URL набора профилей маршрутизации RCX. Это подсказка: доверие к проверочным хостам остаётся под контролем пользователя.', 'URL of an RCX routing profile bundle. This is a hint: trust in probe hosts remains under user control.', 'https://nebula.example/routing.json'],
-  'presentation.hideUrl': ['Скрывает URL подписки в интерфейсе, но не делает его секретным для сервера.', 'Hides the subscription URL in the interface; it does not hide it from the server.', 'true'],
-  'presentation.config': ['HTTPS-адрес YAML-файла с оформлением: вид, кнопка включения, обои, виджеты и карточки. Других заголовков оформления нет.', 'HTTPS address of a YAML file carrying appearance: view, power button, wallpaper, widgets and cards. No other header sets appearance.', 'https://nebula.example/reclash.yaml'],
-  'presentation.serverGroup': ['Имя группы, из которой панель берёт активный сервер.', 'Group used by the dashboard to resolve the active server.', 'Proxy'],
-  'reminder.expireDays': ['Пороги напоминаний до окончания подписки, в днях.', 'Reminder thresholds before subscription expiry, in days.', '7,3,1'],
-  'reminder.trafficPercent': ['Пороги напоминаний по израсходованному трафику, в процентах.', 'Reminder thresholds for used traffic, in percent.', '80,95'],
-  'settings.flags': ['Предлагает настройки приложения. Перечисленные флаги включаются, остальные из этого набора выключаются; пользовательские решения имеют приоритет.', 'Suggests app settings. Listed flags are enabled and other flags in this set disabled; user decisions take precedence.', 'minimize,autoupdate'],
-  'settings.restrictions': ['Ограничения профиля: noGlobal, androidSecure, denyWidgets.', 'Profile restrictions: noGlobal, androidSecure, denyWidgets.', 'noGlobal'],
-  'transport.fallbackHosts': ['Запасные адреса сервера подписки для повторной попытки после ошибки.', 'Fallback subscription server addresses for retry after failure.', 'backup.nebula.example'],
-  'transport.newDomain': ['Предлагает перенос подписки на другой домен. Не передавайте полный URL с токеном.', 'Suggests moving the subscription to another domain. Do not send a full URL containing the token.', 'new.nebula.example'],
-  'apps.exclude': ['Пакеты Android, исключаемые из VPN.', 'Android packages excluded from the VPN.', 'org.example.local'],
-  'apps.include': ['Пакеты Android, включаемые в VPN.', 'Android packages included in the VPN.', 'org.example.browser'],
-  'apps.routing': ['Региональное исключение приложений Android: domestic или domestic:<cc>.', 'Regional Android app bypass: domestic or domestic:<cc>.', 'domestic:ru'],
-}
-
-const tables: Record<string, TokenTable> = {
-  'subscription.type': { caption: bi('Типы подписки', 'Subscription types'), columns: [bi('Значение', 'Value'), bi('Бейдж', 'Badge')], rows: Object.entries(subscriptionTypes).map(([token, text]) => ({ token, text })) },
-}
 export const referenceAnchor = (name: string): string => `h-${name.toLowerCase()}`
 
-const primaries: HeaderEntry[] = providerStandard.fields.map(field => {
-  const [ru, en, example] = fieldProse[field.path]!
-  const readOrder = readOrderFor(field.name)
-  const format = `${field.encoding}; limit: ${field.limit}${'unit' in field ? ` ${field.unit}` : ''}`
-  return {
-    id: referenceAnchor(field.name), name: field.name,
-    category: field.name.startsWith('reclash-') ? 'reclash' : 'common',
-    direction: 'response', canonical: field.path, transform: transformFor(field.name),
-    readOrder, aliases: readOrder.slice(1), format: bi(format, format),
-    summary: bi(ru, en), body: bi(ru, en), example: `${field.name}: ${example}`,
-    table: tables[field.path], keywords: bi(field.path, field.path),
-  }
-})
 const wireProse: Record<string, [string, string, string]> = {
   'x-hwid': ['Идентификатор устройства: 32 шестнадцатеричных символа.', 'Device identifier: 32 hexadecimal characters.', '0123456789abcdef0123456789abcdef'],
   'x-device-os': ['Операционная система устройства.', 'Device operating system.', 'android'],
@@ -160,22 +101,25 @@ const wireProse: Record<string, [string, string, string]> = {
   'x-client': ['Идентификатор клиента запроса.', 'Request client identifier.', 'ReClash'],
   'x-app-version': ['Версия приложения.', 'App version.', '0.1.0-pre.1'],
   'x-device-locale': ['Локаль устройства; чувствительные данные.', 'Device locale; sensitive data.', 'ru-RU'],
+  'support-url': ['Ссылка на поддержку. Манифест перекрывает её значением `provider.support-url`.', 'Support link. The manifest overrides it with `provider.support-url`.', 'https://nebula.example/help'],
+  'profile-web-page-url': ['Ссылка на личный кабинет. Манифест перекрывает её значением `provider.web-url`.', 'Account page link. The manifest overrides it with `provider.web-url`.', 'https://nebula.example/account'],
+  'announce': ['Объявление провайдера. Для не-ASCII используйте `base64:`. Манифест перекрывает его значением `provider.announce.text`.', 'Provider announcement. Use `base64:` for non-ASCII text. The manifest overrides it with `provider.announce.text`.', 'base64:0J/RgNC40LLQtdGC'],
+  'profile-title': ['Имя профиля подписки.', 'Subscription profile name.', 'Nebula subscription'],
+  'profile-update-interval': ['Интервал обновления профиля в часах.', 'Profile update interval in hours.', '12'],
+  'hide-url': ['Скрывает URL подписки в интерфейсе, но не делает его секретным для сервера. Манифест перекрывает его значением `provider.hide-url`.', 'Hides the subscription URL in the interface without making it secret from the server. The manifest overrides it with `provider.hide-url`.', 'true'],
+  'reclash-config': ['HTTPS-адрес манифеста провайдера: YAML-файла, который описывает всё остальное. Подробности — в разделе «Манифест провайдера».', 'HTTPS address of the provider manifest, the YAML file that describes everything else. See the Provider manifest guide.', 'https://nebula.example/reclash.yaml'],
 }
+const transforms: Record<string, HeaderTransform> = { 'announce': 'base64', 'profile-title': 'base64', 'profile-update-interval': 'hours-to-minutes' }
 const wireEntries: HeaderEntry[] = providerStandard.headers.map(header => {
   const [ru, en, example] = wireProse[header.name]!
   const name = header.name.toLowerCase()
-  return { id: referenceAnchor(name), name, category: name.startsWith('x-hwid') || ['x-device-os', 'x-ver-os', 'x-device-model', 'x-device-locale'].includes(name) ? 'hwid' : 'common',
-    direction: header.direction as HeaderDirection, transform: 'none', readOrder: [name], aliases: [],
+  return { id: referenceAnchor(name), name,
+    category: name === 'reclash-config' ? 'reclash' : name.startsWith('x-hwid') || ['x-device-os', 'x-ver-os', 'x-device-model', 'x-device-locale'].includes(name) ? 'hwid' : 'common',
+    direction: header.direction as HeaderDirection, transform: transforms[name] ?? 'none',
     format: bi(header.encoding, header.encoding), summary: bi(ru, en), body: bi(ru, en),
     example: `${header.name}: ${example}`, keywords: bi(ru, en) }
 })
-const aliasEntries: HeaderEntry[] = primaries.flatMap(primary => primary.aliases.map(name => ({
-  ...primary, id: referenceAnchor(name), name, category: 'alias' as const,
-  aliasOf: primary.name, aliases: [], transform: transformFor(name),
-  summary: bi(`Общее имя для \`${primary.name}\`.`, `Common name for \`${primary.name}\`.`),
-  example: name === 'profile-update-interval' ? `${name}: 1` : primary.example?.replace(/^[^:]+:/, `${name}:`),
-})))
-export const headerReference: readonly HeaderEntry[] = [...primaries, ...wireEntries, ...aliasEntries]
+export const headerReference: readonly HeaderEntry[] = wireEntries
 const byName = new Map(headerReference.map(entry => [entry.name, entry]))
 export function findHeaderEntry(name: string): HeaderEntry | undefined {
   return byName.get(name.toLowerCase())
@@ -189,7 +133,7 @@ export function plainText(text: string): string {
 /** Lowercased haystack for search: names, both-language keywords and the prose in `language`. */
 export function searchText(entry: HeaderEntry, language: Language): string {
   return [
-    entry.name, ...entry.readOrder, entry.canonical ?? '',
+    entry.name,
     entry.keywords.ru, entry.keywords.en,
     entry.format ? plainText(entry.format[language]) : '',
     plainText(entry.summary[language]), plainText(entry.body[language]),

@@ -152,7 +152,6 @@ onBeforeUnmount(() => { halt(); stopFades() })
             <span class="ref-cat" :data-cat="entry.category">{{ category.badge[language] }}</span>
             <span v-if="entry.direction === 'request'" class="ref-chip">{{ t('запрос', 'request') }}</span>
             <span v-if="transform" class="ref-chip ref-chip-tf">{{ transform.short[language] }}</span>
-            <span v-for="alias in entry.aliases" :key="alias" class="ref-chip ref-chip-alias" :title="t('псевдоним', 'alias')"><code>{{ alias }}</code></span>
           </span>
         </span>
         <span class="ref-lead"><ReferenceRich :text="entry.summary[language]" /></span>
@@ -168,21 +167,6 @@ onBeforeUnmount(() => { halt(); stopFades() })
         <div v-if="entry.direction === 'request'">
           <dt>{{ t('Направление', 'Direction') }}</dt>
           <dd>{{ t('Отправляет клиент в запросе подписки', 'Sent by the client with the subscription request') }}</dd>
-        </div>
-        <div v-if="entry.aliasOf">
-          <dt>{{ t('Основной', 'Primary') }}</dt>
-          <dd><a class="tlink" :href="`#${referenceAnchor(entry.aliasOf)}`"><code>{{ entry.aliasOf }}</code></a></dd>
-        </div>
-        <div v-if="entry.readOrder.length > 1">
-          <dt>{{ t('Порядок чтения', 'Read order') }}</dt>
-          <dd>
-            <ol class="ref-chain">
-              <li v-for="wire in entry.readOrder" :key="wire">
-                <code v-if="wire === entry.name" class="is-self">{{ wire }}</code>
-                <a v-else class="tlink" :href="`#${referenceAnchor(wire)}`"><code>{{ wire }}</code></a>
-              </li>
-            </ol>
-          </dd>
         </div>
         <div v-if="transform">
           <dt>{{ t('Преобразование', 'Transform') }}</dt>

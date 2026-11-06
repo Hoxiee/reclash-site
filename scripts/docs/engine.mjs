@@ -175,10 +175,7 @@ function headerNames() {
   const file = join(siteRoot, 'shared/provider/standard.json')
   if (!existsSync(file)) return new Set()
   const standard = JSON.parse(readFileSync(file, 'utf8'))
-  return new Set([
-    ...standard.fields.flatMap(field => [field.name, ...(field.aliases ?? []).map(alias => alias.name)]),
-    ...standard.headers.map(header => header.name),
-  ].map(name => name.toLowerCase()))
+  return new Set(standard.headers.map(header => header.name.toLowerCase()))
 }
 
 function resolveLink(href, document, library, catalogue) {
