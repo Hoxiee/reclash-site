@@ -67,12 +67,6 @@
                 "docked"
               ]
             },
-            "tabs": {
-              "enum": [
-                "slide",
-                "fade"
-              ]
-            },
             "glass": {
               "enum": [
                 "none",
@@ -191,6 +185,18 @@
           "$ref": "#/$defs/powerLabelState"
         },
         "paused": {
+          "$ref": "#/$defs/powerLabelState"
+        },
+        "expired": {
+          "$ref": "#/$defs/powerLabelState"
+        },
+        "exhausted": {
+          "$ref": "#/$defs/powerLabelState"
+        },
+        "ending": {
+          "$ref": "#/$defs/powerLabelState"
+        },
+        "grace": {
           "$ref": "#/$defs/powerLabelState"
         }
       }

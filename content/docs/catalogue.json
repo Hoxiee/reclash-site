@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "724fb4946272c659e17c566798eab1558221d471"
+    "commit": "b4e249e8d54b3fdde2a48b1f4f0b403b55a08907"
   },
   "languages": [
     "ru",
@@ -171,8 +171,8 @@
         "en": "The provider manifest is one static YAML file that a provider hosts once for all users and points to with the reclash-config response header. It carries everything ReClash shows or applies beyond the standard headers:…"
       },
       "minutes": {
-        "ru": 20,
-        "en": 22
+        "ru": 22,
+        "en": 25
       }
     },
     {
@@ -223,7 +223,7 @@
       },
       "minutes": {
         "ru": 6,
-        "en": 7
+        "en": 6
       }
     },
     {
@@ -486,10 +486,10 @@
     "ru/README.md": "84646860924b9f74d16e0ed75c159d0e4f9ad3a42f1b1a17931480d81de9949b",
     "ru/providers/README.md": "8ccbe3e27c17ed982261c5580a2888b509c3cc94ffe18004aecb16a0af2f7be4",
     "ru/providers/rollout.md": "06ce8dd6fcc9049e62842e855864ebf3e1b1266324226ac77292d05f2889a92f",
-    "ru/providers/manifest.md": "e72dbec94d7a8719ec30f3f617606cc13265a92ae4f00ae4b7a356f64557b1b4",
+    "ru/providers/manifest.md": "7ecde5a7eefc412e67b4a1ec84ccfbb2a6731d58f818677ab1e9a0b805e6cc9c",
     "ru/providers/headers.md": "a4a062cd669e19fd0cb1dc649ec8e3ce1b1aa2f9555d72e2f0caf1d04d5915b9",
-    "ru/providers/request.md": "49611851fbc7c7ca734d99d95c5f013a759b5e50288e029cb3e1b666e530a5d2",
-    "ru/providers/policy.md": "409bf1d4b1c8eea7e11173f2b8011f394579b0b2503a9e4544f8ef498b8aca71",
+    "ru/providers/request.md": "8713002af77551d9df350497bdb0c10cc0eb0e925da605769aae2d2bead4ea69",
+    "ru/providers/policy.md": "2ef378e89b306021cf7ef9521283d21964f5838eb31a96ddfd923cd3a346663e",
     "ru/providers/preview-api.md": "7f0fc203887a710e648af12fb5c2daf71ded816e7368bdcb4c42d6a58e9c2c2a",
     "ru/providers/support.md": "ac2291449469d5164641db62e7e186a468e484d5271d0fd9b3bae042d4e39c56",
     "ru/providers/standard.md": "b29acb5389f2227b1861173025c5470551799a58853ea1b2d14c05e960d0d5bc",
@@ -508,10 +508,10 @@
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
     "en/providers/rollout.md": "47330d4c845cd4e6252cca7cbca84b6fd8b42972c00667762cd93b538a8d8b3e",
-    "en/providers/manifest.md": "f25301c3ae12977ddeb2fa4f61a14738449571c454920bd3b663e30edae85270",
+    "en/providers/manifest.md": "70ab6c60e9a6021012519539117501034a1a84d2e13fdefacf439fa014b3a055",
     "en/providers/headers.md": "fa5f53a91f308988dd893d7e33dfd38948f39ed0897db89713dba963ce23e87e",
-    "en/providers/request.md": "4d4ab0f01babc8073e864a62adb069fc6e0bf0342b6abfd14a735d1146549a8a",
-    "en/providers/policy.md": "2c778d4e2fd4ed1f6f35651b0c502f43b2f0fffdd8b2101f71cdfa425010ddc2",
+    "en/providers/request.md": "7d9d5bc848acacdbdf75a0982e5bff170562e08d7aea18aaae241cb4fc5c5ac7",
+    "en/providers/policy.md": "a57ba0e4ce732f01763ab0341555ae7156abe91303b69b24d9f6c10f8cc06ddd",
     "en/providers/preview-api.md": "310adc40fe5231705bff6be2cba27a8765f8b22c7bd6b3a7c720c8d5a5268efc",
     "en/providers/support.md": "cf6932f61ca2715ab126fe6e5cdb8cd81ff358ca6d217a9c4fa2fae31e2b31ad",
     "en/providers/standard.md": "add32fdf9d98d1ef25b51d0cb07853b92435aaa37da213debbd6a5589d8dc8ca",

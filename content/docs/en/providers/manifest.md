@@ -223,13 +223,13 @@ cards:
 | Key | Type | Shown as |
 | --- | --- | --- |
 | `name` | text, 160 | Service name on the dashboard card and in the import dialog. |
-| `logo` | url | Logo on the simple dashboard. |
+| `logo` | url | Logo on the simple dashboard and the profile's card. |
 | `logo-dark` | url | Logo in the dark theme. Falls back to `logo`. |
 | `support-url` | url | Support action. Also accepts `https://t.me/…`, `https://telegram.me/…` and `tg://` links, such as `tg://resolve?domain=…`. |
 | `web-url` | url | Website action. |
 | `type` | text, 32 | Badge in the import dialog and profile list: `test`, `promo` or `dev`. Other values show none. |
 | `hide-url` | boolean | Masks the URL in the profile editor and import dialog. It does not make the URL secret. |
-| `server-group` | text, 256 | Proxy group whose selected node the simple dashboard shows. Matched case-insensitively. |
+| `server-group` | text, 256 | Proxy group whose selected node the simple dashboard shows; the user's proxy chains are offered in it too. Matched case-insensitively. |
 | `announce` | `{text, url}` | Description. `text` is multiline, 1024. Shown in the import dialog and in a dashboard card above the widgets that the user can neither move nor remove. `url` is the link on the card. |
 | `notice` | `{text, url}` | Dismissible dashboard notice. `text` is multiline, 1024. A dismissal is remembered for that exact text and link; a change shows it again. |
 | `renew` | `{url, days}` | Renew action, offered from `days` left (1–3650). |
@@ -379,7 +379,6 @@ support:
 | `proxies.icon` | `filled`, `plain`, `hidden` |
 | `proxies.card` | `loose`, `standard`, `compact`, `oneline` |
 | `app.navbar` | `floating`, `docked` |
-| `app.tabs` | `slide`, `fade` |
 | `app.glass` | `none`, `standard`, `ultra` |
 | `app.color` | Quoted `RRGGBB` or `AARRGGBB`, optional `#` |
 | `app.color-dark` | Same as `app.color`. Replaces it in the dark theme; ignored without `app.color`. |
@@ -430,7 +429,7 @@ power-button:
 | `url` | `https` image URL. Required: without it the section is invalid. | — |
 | `opacity` | Integer 1–100 | 8 |
 
-The image is downloaded once per URL and cached.
+The image is downloaded once per URL and cached. The user can replace it with their own image but cannot turn it off: while the provider sets a background, it is the first tile in the gallery, and removing the user's active image brings the provider's back.
 
 ```yaml
 wallpaper:
@@ -585,7 +584,7 @@ cards:
 
 ### Power labels
 
-`power-labels` replaces the text under the power button. States: `off`, `connecting`, `on`, `paused`. Each state takes one of:
+`power-labels` replaces the title under the power button. States: `off`, `connecting`, `on`, `paused`, and for the plan: `expired` (the plan ended, connected or not), `exhausted` (the traffic ran out), `ending` (the plan nears its end by the `reminder` thresholds), `grace` (connected on a plan that ended). Problems the app found itself, such as no network or a broken connection, always keep the app's own title. Each state takes one of:
 
 - a string or a locale map,
 - `{title, hint}`, where each part may be a locale map,
@@ -598,7 +597,7 @@ cards:
 
 Entries outside the limits are dropped; a state with none left uses the localized label.
 
-Placeholders: `{daysLeft}`, `{trafficLeft}`, `{server}`. A placeholder without a value makes the whole entry fall back to the localized label. A `hint` on `on` is not shown: the live connection line stays there. Labels never change semantics, color or shape.
+Placeholders: `{daysLeft}`, `{trafficLeft}`, `{server}`. A placeholder without a value makes the whole entry fall back to the localized label. A `hint` is shown only where the button offers no action under the title: not on `on`, where the live connection line stays, and not beside a Renew or Top up button. Labels never change semantics, color or shape.
 
 ```yaml
 power-labels:
@@ -676,6 +675,21 @@ The linter accepts a profile, a scenario, a document with `profiles` or `scenari
 
 > [!NOTE]
 > An image request exposes the user's IP address to the image host, and a per-user URL identifies the viewer. The client sends no telemetry of its own.
+
+### Profile logo
+
+The client picks the logo on the profile's card once, when the profile is added, and takes the first that works:
+
+1. `logo` and `logo-dark`.
+2. The logo the subscription page itself declares when opened in a browser: its `og:image`, its icon link, or the panel's branding logo.
+3. An icon from the `web-url` page, or from the subscription host's `https` root when `web-url` is not set: `apple-touch-icon` and `icon` links on that site, then `/apple-touch-icon.png`.
+4. The `og:image` of the Telegram page that `support-url` points to.
+5. A monogram of the profile name.
+
+- Logos are `https` only, at most 512 KiB, in a format the platform decodes or SVG. Site and Telegram icons smaller than 48 px are skipped.
+- Site icons come only from the page's own site, so no third-party icon service is asked. Telegram images come only from Telegram's hosts.
+- The logo and its dominant color are stored with the profile. Later updates do not open the provider's pages again; they only fetch `logo` and `logo-dark` again when their links change, so a provider changes its logo through the manifest. The color tints the card's background; text stays neutral. Local and custom profiles stay neutral.
+- These requests carry no device ID and no `Authorization`. The only cookie is a panel's own session cookie, sent back to that panel to read its branding.
 
 ## Boundaries
 
