@@ -129,9 +129,8 @@ code, .mono { font-family: var(--mono); font-size: 0.9em; }
   border-radius: 999px; background: var(--bg-3); }
 /* Light plates: the label under the plate turns dark, and the selected label lets go of its
    dark color while the plate visits a neighbour, so no label ever sits light-on-light. */
-.lang a.is-mg, .b-tabs button.is-mg, .plat-tabs button.is-mg { color: var(--bg); }
+.lang a.is-mg, .plat-tabs button.is-mg { color: var(--bg); }
 .lang:has(.is-mg) a[aria-current='true']:not(.is-mg),
-.b-tabs:has(.is-mg) button[aria-pressed='true']:not(.is-mg),
 .plat-tabs:has(.is-mg) button[aria-pressed='true']:not(.is-mg) { color: var(--fg-2); }
 [data-mg] .mg-c { display: inline-block; transform: translate(var(--mx, 0), var(--my, 0));
   transition: transform var(--dur-smooth) var(--ease-smooth); }
@@ -533,43 +532,6 @@ a.tag:hover { color: var(--fg); }
 
 /* ---------- reduced motion: kill decorative transitions, keep state changes instant ---------- */
 .rm *, .rm *::before, .rm *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-delay: 0s !important; }
-
-/* ==========================================================================
-   BUILDER (draft scaffold)
-   ========================================================================== */
-.b-head { padding: 150px 0 56px; display: grid; gap: 22px; max-width: 900px; }
-.b-head h1 { font-size: clamp(2.2rem, 4.6vw, 4rem); line-height: 1.04; letter-spacing: -0.03em; }
-.draft { display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; border-radius: 18px; background: var(--brand-soft); color: var(--fg); font-size: 0.95rem; max-width: 70ch; }
-.draft svg { width: 20px; height: 20px; flex: none; color: var(--brand); margin-top: 1px; }
-.b-grid { display: grid; grid-template-columns: 1fr 440px; gap: clamp(24px, 4vw, 56px); align-items: start; padding-bottom: 140px; }
-.b-form { display: grid; gap: 14px; }
-.b-sec { border-radius: var(--r-m); background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line); }
-.b-sec > button { width: 100%; display: flex; align-items: center; gap: 14px; padding: 20px 22px; background: none; border: 0; cursor: pointer; text-align: left; }
-.b-sec > button b { font: 600 1.05rem var(--display); letter-spacing: -0.01em; }
-.b-sec > button span.h { color: var(--fg-3); font: 400 0.8rem var(--mono); margin-left: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 50%; }
-.b-sec > button svg { width: 14px; height: 14px; flex: none; transition: transform var(--dur-bouncy) var(--ease-bouncy); }
-.b-sec[data-open] > button svg { transform: rotate(180deg); }
-.b-body { overflow: hidden; height: 0; }
-.b-sec[data-open] .b-body { height: auto; }
-.b-fields { padding: 0 22px 22px; display: grid; gap: 16px; }
-.b-fields .hint { color: var(--fg-3); font-size: 0.85rem; }
-.b-fields textarea.input { height: auto; min-height: 84px; padding: 14px 18px; resize: vertical; line-height: 1.5; }
-.b-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.b-color { display: flex; gap: 10px; align-items: center; }
-.b-color input[type=color] { width: 54px; height: 54px; border: 0; padding: 0; border-radius: 16px; background: none; cursor: pointer; flex: none; }
-.b-color input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
-.b-color input[type=color]::-webkit-color-swatch { border: 0; border-radius: 16px; }
-.b-aside { position: sticky; top: 100px; display: grid; gap: 16px; }
-.b-tabs { position: relative; isolation: isolate; display: inline-flex; padding: 4px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); justify-self: start; }
-.b-tabs .mg-ind { background: var(--fg); }
-.b-tabs button { position: relative; border: 0; background: none; cursor: pointer; padding: 9px 16px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; color: var(--fg-2); transition: color 0.25s; }
-.b-tabs button[aria-pressed='true'] { color: var(--bg); }
-.b-code { margin: 0; padding: 18px; border-radius: 18px; background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line);
-  font: 400 0.8rem/1.7 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg-2); max-height: 360px; overflow: auto; }
-.b-code .k { color: var(--brand-2); }
-.b-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-@media (max-width: 1000px) { .b-grid { grid-template-columns: 1fr; } .b-aside { position: relative; top: 0; } }
-@media (max-width: 560px) { .b-row { grid-template-columns: 1fr; } }
 
 /* ==========================================================================
    INNER PAGES — shared page head with a small jelly ring

@@ -214,10 +214,10 @@ const manifesto = computed(() => [
   <div class="wrap prov">
     <div class="prov-copy">
       <h2 id="prov-title" data-words>{{ t("Ваше приложение. Писать его не нужно.", "Your app, without writing one.") }}</h2>
-      <p class="lede" data-fade>{{ t("Никаких SDK, плагинов и договорённостей. Несколько HTTP-заголовков в ответе подписки — и клиент у пользователя показывает ваш логотип, цвет, остаток трафика и кнопку продления.", "No SDKs, plugins or agreements. A few HTTP headers in the subscription response give users your logo, color, remaining traffic and a renewal button.") }}</p>
-      <p class="muted" data-fade style="--d:100ms">{{ t("Конструктор выдаёт HTTP-заголовки и фрагмент nginx, а", "The builder produces HTTP headers and an nginx snippet, and") }} <SiteLink class="tlink" :to="pagePath(language, 'mock-subs')">{{ t("мок-подписки", "mock subscriptions") }}</SiteLink> {{ t("помогут проверить результат.", "help you test the result.") }}</p>
+      <p class="lede" data-fade>{{ t("Никаких SDK, плагинов и договорённостей. Один заголовок reclash-config в ответе подписки указывает на манифест — и клиент у пользователя показывает ваш логотип, цвет, объявления, остаток трафика и кнопку продления.", "No SDKs, plugins or agreements. One reclash-config header in the subscription response points to a manifest, and users see your logo, color, announcements, remaining traffic and a renewal button.") }}</p>
+      <p class="muted" data-fade style="--d:100ms">{{ t("Конструктор собирает reclash.yaml и заголовок, который на него указывает, а", "The builder assembles reclash.yaml and the header that points to it, and") }} <SiteLink class="tlink" :to="pagePath(language, 'mock-subs')">{{ t("мок-подписки", "mock subscriptions") }}</SiteLink> {{ t("помогут проверить результат.", "help you test the result.") }}</p>
       <div class="row" data-fade style="--d:180ms">
-        <SiteLink class="btn btn-primary" :to="pagePath(language, 'builder')">{{ t("Собрать заголовки", "Build headers") }}</SiteLink>
+        <SiteLink class="btn btn-primary" :to="pagePath(language, 'builder')">{{ t("Собрать манифест", "Build the manifest") }}</SiteLink>
         <SiteLink class="btn btn-ghost" :to="pagePath(language, 'docs')">{{ t("Открыть документацию", "Open documentation") }}</SiteLink>
       </div>
     </div>
@@ -243,7 +243,7 @@ const manifesto = computed(() => [
         </div>
       </div>
       <div class="studio-body">
-<pre class="http" :aria-label="t('Ответ подписки', 'Subscription response')"><span class="line"><span class="k">HTTP/2 200</span></span><span class="line"><span class="k">subscription-userinfo:</span> <span class="v">upload=0; download=66571993088; total=214748364800</span></span><span class="line" data-line="name"><span class="rk">reclash-servicename:</span> <span class="v">ReClash</span></span><span class="line"><span class="rk">reclash-config:</span> <span class="v">https://sub.example/reclash.yaml</span></span><span class="line" data-line="hex"><span class="rk">  # reclash.yaml</span> <span class="v">view.app.color: "#FF7A2F"</span></span><span class="line"><span class="rk">reclash-announce:</span> <span class="v">{{ t("Профиль импортирован по ссылке.", "Profile imported from a link.") }}</span></span><span class="line"><span class="rk">reclash-buyplan:</span> <span class="v">https://sub.example/renew</span></span></pre>
+<pre class="http" :aria-label="t('Ответ подписки', 'Subscription response')"><span class="line"><span class="k">HTTP/2 200</span></span><span class="line"><span class="k">subscription-userinfo:</span> <span class="v">upload=0; download=66571993088; total=214748364800</span></span><span class="line"><span class="k">profile-update-interval:</span> <span class="v">12</span></span><span class="line"><span class="rk">reclash-config:</span> <span class="v">https://example.com/reclash.yaml</span></span><span class="line"><span class="k"># reclash.yaml</span></span><span class="line" data-line="name"><span class="rk">provider.name:</span> <span class="v">ReClash</span></span><span class="line" data-line="hex"><span class="v">view.app.color: "#FF7A2F"</span></span><span class="line"><span class="rk">provider.announce.text:</span> <span class="v">{{ t("Профиль импортирован по ссылке.", "Profile imported from a link.") }}</span></span><span class="line"><span class="rk">provider.renew.url:</span> <span class="v">https://example.com/renew</span></span><span class="line"><span class="rk">cards:</span> <span class="v">[ banner, note, actions ]</span></span></pre>
         <div class="preview">
           <span class="preview-cap">{{ t("Карточка подписки в клиенте", "Subscription card in the client") }}</span>
           <div class="subcard">
@@ -320,9 +320,9 @@ const manifesto = computed(() => [
         <span class="mg-c" style="display:grid;gap:16px">
           <span class="who">{{ t("Вы продаёте доступ", "You sell access") }}</span>
           <h3>{{ t("Сделайте клиент своим", "Make the client your own") }}</h3>
-          <p>{{ t("Несколько заголовков в ответе подписки — и приложение носит ваш логотип, цвет и кнопку продления. Своего приложения не нужно.", "A few subscription response headers bring your logo, color and renewal button to the app. No need to build your own client.") }}</p>
+          <p>{{ t("Один манифест по ссылке из заголовка reclash-config — и приложение носит ваш логотип, цвет, объявления и кнопку продления. Своего приложения не нужно.", "One manifest linked from the reclash-config header brings your logo, color, announcements and renewal button to the app. No need to build your own client.") }}</p>
         </span>
-        <span class="go"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12m0 0-5-5m5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ t("Собрать заголовки", "Build headers") }}</span>
+        <span class="go"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h12m0 0-5-5m5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ t("Собрать манифест", "Build the manifest") }}</span>
       </SiteLink>
     </div>
   </div>

@@ -41,12 +41,12 @@ export const portedPages = {
   },
   "builder": {
     "title": {
-      "ru": "Конструктор заголовков — ReClash",
-      "en": "Header builder — ReClash"
+      "ru": "Конструктор манифеста — ReClash",
+      "en": "Manifest builder — ReClash"
     },
     "description": {
-      "ru": "Конструктор заголовков ответа подписки для ReClash. Раздел готовится.",
-      "en": "Subscription response header builder for ReClash. This section is coming soon."
+      "ru": "Соберите reclash.yaml для своей подписки, проверьте его парсером ReClash и посмотрите на результат в приложении.",
+      "en": "Build reclash.yaml for your subscription, check it with the ReClash parser and see the result in the app."
     }
   },
   "download": {

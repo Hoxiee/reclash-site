@@ -11,10 +11,10 @@ const sections = docSections.map(section => ({
 }))
 const tools = [
   { to: pagePath(site, 'reference'), label: t('Каталог заголовков', 'Header catalogue', '响应头目录') },
-  { to: pagePath(site, 'builder'), label: t('Конструктор заголовков', 'Header builder', '响应头生成器') },
+  { to: pagePath(site, 'builder'), label: t('Конструктор манифеста', 'Manifest builder', '清单生成器') },
   { to: pagePath(site, 'mock-subs'), label: t('Тестовые подписки', 'Mock subscriptions', '模拟订阅') },
   { to: '/schemas/rcx-profile.schema.json', label: 'rcx-profile.schema.json' },
-  { to: '/schemas/provider-policy.schema.json', label: 'provider-policy.schema.json' },
+  { to: '/schemas/provider-config.schema.json', label: 'provider-config.schema.json' },
 ]
 const current = (slug: string) => slug === props.slug ? 'page' : undefined
 const within = (section: { slug: string }) => props.slug === section.slug || props.slug.startsWith(`${section.slug}/`)

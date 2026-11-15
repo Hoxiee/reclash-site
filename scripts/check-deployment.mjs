@@ -23,11 +23,6 @@ async function verify() {
     assert.equal(response.status, 200)
     assert.match(body, new RegExp(`<html\\b[^>]*\\blang="${language}"`))
     assert.match(body, /<h1[ >]/)
-    const report = await get(`/${language}/report`)
-    assert.equal(report.response.status, 200)
-    assert.ok(report.response.headers.get('content-security-policy')?.includes("connect-src 'none'"))
-    assert.equal(report.response.headers.get('referrer-policy'), 'no-referrer')
-    assert.equal(report.response.headers.get('cache-control'), 'no-store')
   }
   const yaml = await get('/mock/ember', 'text/yaml')
   assert.equal(yaml.response.status, 200)
@@ -45,7 +40,7 @@ async function verify() {
 for (let attempt = 1; ; attempt++) {
   try {
     await verify()
-    console.log(`Verified production pages, report privacy, mock negotiation and 404 at ${origin}`)
+    console.log(`Verified production pages, mock negotiation and 404 at ${origin}`)
     break
   } catch (error) {
     if (attempt === 12) throw error

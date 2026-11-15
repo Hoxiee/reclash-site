@@ -1,6 +1,6 @@
 import data from './mocks.json' with { type: 'json' }
 import type { BilingualText } from '../site/routes'
-import type { SubscriptionType } from './standard'
+import { providerStandard, type SubscriptionType } from './standard'
 
 // The page, static responses and previews share one record per stand.
 export type MockTone = '' | 'warn' | 'themed'
@@ -85,36 +85,24 @@ export function mockExpire(quota: MockQuota, now: number): number {
   return Math.floor(now / 1000 / DAY) * DAY + (quota.expireInDays ?? 0) * DAY
 }
 
-/** Ordered response headers for one stand, exactly as the static host serves them. */
+/** Ordered response headers for one stand: registry headers plus reclash-config; everything else is in the manifest. */
 export function mockHeaders(profile: MockProfile, origin: string, now = Date.now()): Array<[string, string]> {
   const r = profile.response
   const pairs: Array<[string, string | undefined]> = [
     ['Content-Type', 'text/yaml; charset=utf-8'],
     ['Content-Disposition', `attachment; filename="${profile.key}.yaml"`],
     ['Profile-Title', r.title && headerValue(r.title)],
-    ['ReClash-SubscriptionType', r.subscriptionType],
-    ['ReClash-ServiceName', r.serviceName && headerValue(r.serviceName)],
-    ['ReClash-ServerInfo', r.serverInfo && headerValue(r.serverInfo)],
-    ['ReClash-ServiceLogo', r.logo && mockAsset(origin, r.logo)],
-    ['ReClash-Config', mockConfig(profile, origin) && `${origin}${mockConfigPath(profile.key)}`],
-    ['ReClash-Settings', r.settings],
-    ['ReClash-Restrictions', r.restrictions],
-    ['ReClash-SupportURL', r.supportUrl],
-    ['ReClash-WebPageURL', r.webPageUrl],
-    ['ReClash-BuyPlan', r.buyPlan],
-    ['ReClash-BuyTraffic', r.buyTraffic],
-    ['ReClash-Announce', r.announce && headerValue(r.announce.ru)],
-    ['ReClash-AnnounceURL', r.announceUrl],
-    ['ReClash-AutoUpdateInterval', r.updateMinutes ? String(r.updateMinutes) : undefined],
-    ['ReClash-ExpireDays', r.expireDays],
-    ['ReClash-TrafficPercent', r.trafficPercent],
+    ['Profile-Update-Interval', r.updateMinutes ? String(r.updateMinutes / 60) : undefined],
+    ['reclash-config', mockConfig(profile, origin) && `${origin}${mockConfigPath(profile.key)}`],
   ]
   const q = profile.quota
   if (q) {
     pairs.push(['Subscription-Userinfo',
       `upload=${q.uploadGb * GB}; download=${q.downloadGb * GB}; total=${q.totalGb * GB}; expire=${mockExpire(q, now)}`])
   }
-  return pairs.filter((pair): pair is [string, string] => Boolean(pair[1]))
+  const standard = new Set(providerStandard.headers.map(header => header.name.toLowerCase()))
+  return pairs.filter((pair): pair is [string, string] =>
+    Boolean(pair[1]) && (pair[0].startsWith('Content-') || standard.has(pair[0].toLowerCase())))
 }
 
 function nest(pairs: string, root: Record<string, unknown>): void {
@@ -135,9 +123,12 @@ function yamlLines(node: Record<string, unknown>, indent = ''): string[] {
       : [`${indent}${key}: ${JSON.stringify(value)}`])
 }
 
+const settingFlags: Record<string, string> = { autoupdate: 'check-app-updates', minimize: 'minimize-on-exit' }
+const csvNumbers = (list: string) => list.split(',').map(Number)
+
 const configWidgets = new Set(['currentOutbound', 'health', 'networkSpeed', 'outboundMode', 'vpnButton', 'networkTakeover', 'serviceStatus', 'profiles', 'proxyGroups', 'connectionStats', 'intranetIp', 'memoryInfo'])
 
-/** The hosted YAML config a stand names with ReClash-Config; undefined when the stand carries no appearance. */
+/** The hosted manifest a stand names with reclash-config; undefined when the stand carries nothing beyond standard headers. */
 export function mockConfig(profile: MockProfile, origin: string): string | undefined {
   const r = profile.response
   const view: Record<string, unknown> = {}
@@ -149,8 +140,27 @@ export function mockConfig(profile: MockProfile, origin: string): string | undef
     power.shape = String(power.shape).split(',')
   }
   const widgets = r.widgets?.split(',').filter(token => configWidgets.has(token))
+  const provider = {
+    ...(r.serviceName && { name: r.serviceName }),
+    ...(r.logo && { logo: mockAsset(origin, r.logo) }),
+    ...(r.supportUrl && { 'support-url': r.supportUrl }),
+    ...(r.webPageUrl && { 'web-url': r.webPageUrl }),
+    ...(r.subscriptionType && { type: r.subscriptionType }),
+    ...(r.announce && { announce: { text: r.announce, ...(r.announceUrl && { url: r.announceUrl }) } }),
+    ...(r.buyPlan && { renew: { url: r.buyPlan } }),
+    ...(r.buyTraffic && { 'top-up': { url: r.buyTraffic } }),
+  }
+  const reminders = {
+    ...(r.expireDays && { 'expire-days': csvNumbers(r.expireDays) }),
+    ...(r.trafficPercent && { 'traffic-percent': csvNumbers(r.trafficPercent) }),
+  }
+  const settings = Object.fromEntries(r.settings?.split(',').filter(flag => flag in settingFlags).map(flag => [settingFlags[flag]!, true]) ?? [])
   const config = {
     version: 1,
+    ...(Object.keys(provider).length && { provider }),
+    ...(Object.keys(reminders).length && { reminders }),
+    ...(Object.keys(settings).length && { settings }),
+    ...(r.restrictions?.split(',').includes('noglobal') && { policy: { global: 'off' } }),
     ...(Object.keys(view).length && { view }),
     ...(r.powerButton && { 'power-button': power }),
     ...(r.background && { wallpaper: { url: mockAsset(origin, r.background.file), opacity: r.background.opacity } }),

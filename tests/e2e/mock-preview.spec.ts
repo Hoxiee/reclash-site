@@ -34,7 +34,7 @@ test('mock stand keeps serving YAML to clients that do not ask for a page', asyn
     const response = await request.get('/mock/ember', accept ? { headers: { Accept: accept } } : {})
     expect(response.headers()['content-type']).toBe('text/yaml; charset=utf-8')
     expect(response.headers()['vary']).toContain('Accept')
-    expect(response.headers()['reclash-subscriptiontype']).toBe('test')
+    expect(response.headers()['reclash-config']).toMatch(/\/mock-config\/ember\.yaml$/)
     expect(await response.text()).toContain('proxy-groups:')
   }
 })

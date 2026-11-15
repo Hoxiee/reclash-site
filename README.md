@@ -28,11 +28,20 @@ JavaScript it shows plain language links. Each language has `start`, `download`,
 `docs` (with page paths), `reference`, `builder`, `mock-subs`, `report`, `gallery` and
 `motion` routes. Report, mock subscriptions and motion are excluded from the
 sitemap. The provider builder, reference and documentation share the same routes
-and metadata registry. The builder and report pages show a bilingual coming-soon
-placeholder.
+and metadata registry. The report page shows a bilingual coming-soon placeholder.
 
-`shared/provider/builder.ts` contains the form field schema, validation and
-emitters. Preview quotas are sample values. `shared/site/gallery.ts` contains
+The manifest builder lives in `shared/provider/builder/`: types, enums and limits
+come from `public/schemas/provider-config.schema.json`, and `form.ts` adds only
+labels, help, grouping and order (`npm run builder:test` keeps both in step). The
+app's parser is `public/runtime/kernel.js`, copied from the app build like the
+schemas and loaded lazily. The live preview is the app's web build in
+`public/runtime/preview/`, git-ignored. Both runtime loads have deadlines and
+can be retried without clearing the form. Preview images stay same-origin or
+inline; provider image hosts are never requested. The phone preview is a native
+modal that contains keyboard focus and restores its trigger on close. Drafts
+live only in the compressed URL fragment, with a 1 MiB decoded JSON limit and
+bounded nesting; an older save cannot overwrite a newer edit or reset.
+`shared/site/gallery.ts` contains
 the gallery items; add `src` or `video` to replace a placeholder with local media.
 The download page requests release metadata from GitHub only in the browser,
 with a ten-minute session cache. File hashing stays on the device.

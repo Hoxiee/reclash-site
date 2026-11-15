@@ -39,6 +39,6 @@ for (const file of ['_headers', '_redirects', 'robots.txt', 'sitemap.xml', '404.
   assert.ok((await stat(resolve(output, file))).size, `Missing static host artifact: ${file}`)
 }
 const sitemap = await readFile(resolve(output, 'sitemap.xml'), 'utf8')
-assert.ok(!/\/(report|mock-subs|motion)<\/loc>/.test(sitemap), 'Private sections must not enter the sitemap')
+assert.ok(!/\/(mock-subs|motion)<\/loc>/.test(sitemap), 'Private sections must not enter the sitemap')
 await assert.rejects(stat(resolve(output, '_worker.js')), 'Static build must not require a Worker')
 console.log(`Verified ${routes.length} prerendered routes and Pages artifacts; largest initial JS: ${(largest / 1024).toFixed(2)} KiB gzip.`)

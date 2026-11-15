@@ -5,13 +5,6 @@ import { docLanguages, docPages, docPath, docRoutes } from '../shared/docs/catal
 import { mockBody, mockConfig, mockConfigPath, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
 import { mockPage, mockPagePath, mockPreview, mockPreviewPath } from '../shared/provider/mockpreview'
 
-const reportPolicy = {
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'",
-  'Referrer-Policy': 'no-referrer',
-  'Cache-Control': 'no-store',
-  'X-Robots-Tag': 'noindex, nofollow',
-}
-
 export async function writeStaticFiles(output: string, origin: string): Promise<void> {
   const headers = ['/*', '  X-Content-Type-Options: nosniff', '/_nuxt/*', '  Cache-Control: public, max-age=31536000, immutable']
   const redirects: string[] = []
@@ -41,9 +34,6 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
       // A proxy preserves query/fragment state and avoids rendering home twice.
       redirects.push(`${legacy} ${canonical} 200`)
       headers.push(legacy, `  Link: <${origin}${canonical}>; rel="canonical"`)
-    }
-    for (const path of [pagePath(language, 'report'), `${pagePath(language, 'report')}/`, legacyPath(language, 'report')]) {
-      headers.push(path, ...Object.entries(reportPolicy).map(([key, value]) => `  ${key}: ${value}`))
     }
   }
   for (const canonical of docRoutes) {

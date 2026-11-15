@@ -9,7 +9,6 @@ const tabs = computed(() => [
   { key: 'reference', text: t('Заголовки', 'Headers') },
   { key: 'builder', text: t('Конструктор', 'Builder') },
   { key: 'mock-subs', text: t('Мок-подписки', 'Mock subscriptions') },
-  { key: 'report', text: t('Отчёт', 'Report') },
 ] as const)
 // On narrow screens the strip scrolls; start it with the current section in view.
 const strip = useTemplateRef<HTMLElement>('strip')

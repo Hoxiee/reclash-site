@@ -29,11 +29,9 @@ test('all canonical and legacy pages serve prerendered bilingual HTML', async ({
 test('language navigation preserves legacy query and fragment state', async ({ page }) => {
   await page.goto('/ru/builder.html?mode=example#cfg=sample')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Конструктор')
-  await expect(page.locator('.ph .lede')).toHaveText('Раздел готовится.')
   await page.getByRole('link', { name: 'Переключить на английский' }).click()
   await expect(page).toHaveURL(/\/en\/builder(?:\.html|\/)?\?mode=example#cfg=sample$/)
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Builder')
-  await expect(page.locator('.ph .lede')).toHaveText('This section is coming soon.')
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 })
 
@@ -83,37 +81,6 @@ test('home, keyboard navigation and mobile layout work', async ({ page }) => {
   }
 })
 
-test('report policies apply to canonical, trailing-slash and legacy responses', async ({ request }) => {
-  for (const language of languages) {
-    for (const route of [pagePath(language, 'report'), `${pagePath(language, 'report')}/`, legacyPath(language, 'report')]) {
-      const response = await request.get(route)
-      expect(response.status()).toBe(200)
-      expect(response.headers()['content-security-policy']).toContain("connect-src 'none'")
-      expect(response.headers()['referrer-policy']).toBe('no-referrer')
-      expect(response.headers()['cache-control']).toBe('no-store')
-      expect(response.headers()['x-robots-tag']).toContain('noindex')
-    }
-  }
-})
-
-test('report entry and exit navigate documents without prefetching', async ({ page }) => {
-  const reports: string[] = []
-  page.on('request', request => {
-    if (/\/report(?:[/?#.]|$)/.test(request.url())) reports.push(request.url())
-  })
-  await page.goto('/en/reference')
-  await page.getByRole('link', { name: 'Report', exact: true }).hover()
-  await expect.poll(() => reports.length).toBe(0)
-  await page.evaluate(() => { (window as Window & { documentMarker?: string }).documentMarker = 'home' })
-  await page.getByRole('link', { name: 'Report', exact: true }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Report')
-  expect(await page.evaluate(() => (window as Window & { documentMarker?: string }).documentMarker)).toBeUndefined()
-  await page.evaluate(() => { (window as Window & { documentMarker?: string }).documentMarker = 'report' })
-  await page.locator('.logo').first().click()
-  await expect(page.locator('#hero-title')).toContainText('Freedom')
-  expect(await page.evaluate(() => (window as Window & { documentMarker?: string }).documentMarker)).toBeUndefined()
-})
-
 test('unknown routes return a real prerendered 404', async ({ request }) => {
   for (const route of ['/missing', '/fr', '/ru/missing', '/ru/missing.html']) {
     const response = await request.get(route)
@@ -130,7 +97,7 @@ test('public copy and provider tools match the current application', async ({ re
     expect(home).not.toContain('Built-in DPI bypass')
     expect(home).not.toContain('Встроенный обход DPI')
     const reference = await (await request.get(`/${language}/reference`)).text()
-    expect(reference).toContain('h-reclash-routing')
+    expect(reference).toContain('h-profile-title')
     expect(reference).toContain('reclash-config')
     expect(reference).not.toContain('id="h-reclash-hex"')
     expect(reference).not.toContain('id="h-flclashx-hex"')

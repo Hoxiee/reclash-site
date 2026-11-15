@@ -12,3 +12,6 @@ test-results/
 .env.*
 !.env.example
 .DS_Store
+
+# Produced by ReClash tool/site_preview.dart; delivery is decided separately.
+public/runtime/preview/

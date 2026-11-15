@@ -38,9 +38,8 @@ function remember(next: 'ru' | 'en') {
         </button>
         <ul class="dd-panel" id="dd-dev" data-group data-items="a" data-cpull="0.04">
           <li><SiteLink data-mg :to="pagePath(language, 'reference')" :aria-current="page === 'reference' ? 'page' : undefined"><b>{{ t("Заголовки", "Headers") }}</b><span class="s">{{ t("Справочник по всем reclash-* и псевдонимам", "Reference for all reclash-* headers and aliases") }}</span></SiteLink></li>
-          <li><SiteLink data-mg :to="pagePath(language, 'builder')" :aria-current="page === 'builder' ? 'page' : undefined"><b>{{ t("Конструктор", "Builder") }}</b><span class="s">{{ t("Собрать заголовки и посмотреть превью", "Build headers and see a preview") }}</span></SiteLink></li>
+          <li><SiteLink data-mg :to="pagePath(language, 'builder')" :aria-current="page === 'builder' ? 'page' : undefined"><b>{{ t("Конструктор", "Builder") }}</b><span class="s">{{ t("Собрать reclash.yaml и посмотреть его в приложении", "Build reclash.yaml and see it in the app") }}</span></SiteLink></li>
           <li><SiteLink data-mg :to="pagePath(language, 'mock-subs')" :aria-current="page === 'mock-subs' ? 'page' : undefined"><b>{{ t("Мок-подписки", "Mock subscriptions") }}</b><span class="s">{{ t("Тестовые ответы для проверки клиента", "Sample responses for testing the client") }}</span></SiteLink></li>
-          <li><SiteLink data-mg :to="pagePath(language, 'report')" :aria-current="page === 'report' ? 'page' : undefined"><b>{{ t("Отчёт подписки", "Subscription report") }}</b><span class="s">{{ t("Что клиент прочитает из вашего ответа", "What the client reads from your response") }}</span></SiteLink></li>
         </ul>
       </li>
     </ul>
@@ -68,7 +67,6 @@ function remember(next: 'ru' | 'en') {
     <li><SiteLink :to="pagePath(language, 'reference')">{{ t("Заголовки", "Headers") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'builder')">{{ t("Конструктор", "Builder") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'mock-subs')">{{ t("Мок-подписки", "Mock subscriptions") }}</SiteLink></li>
-    <li><SiteLink :to="pagePath(language, 'report')">{{ t("Отчёт подписки", "Subscription report") }}</SiteLink></li>
     <li><SiteLink :to="languageLink" :lang="otherLanguage" @click="remember(otherLanguage)">{{ t('English version', 'Русская версия') }}</SiteLink></li>
   </ul>
 </div>

@@ -74,11 +74,11 @@ test('import links, provider theme, FAQ deep links and Nuxt transitions retain a
 
 for (const language of ['ru', 'en'] as const) {
   for (const suffix of ['', '.html']) {
-    test(`builder shows a coming-soon placeholder (${language}${suffix})`, async ({ page }) => {
+    test(`builder renders the manifest form (${language}${suffix})`, async ({ page }) => {
       await page.goto(`/${language}/builder${suffix}`)
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(language === 'ru' ? 'Конструктор' : 'Builder')
-      await expect(page.locator('.ph .lede')).toHaveText(language === 'ru' ? 'Раздел готовится.' : 'This section is coming soon.')
-      await expect(page.locator('.ph .lede')).toBeVisible()
+      await expect(page.locator('#b-provider')).toBeVisible()
+      await expect(page.locator('#bf-provider-name')).toBeAttached()
       await expect(page.locator('.b-page, #f-name, #b-card, #b-code')).toHaveCount(0)
     })
   }

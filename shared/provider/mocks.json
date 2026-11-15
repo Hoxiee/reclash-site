@@ -25,7 +25,7 @@
       "powerButton": "shape:sharpBurst,puffyDiamond,clover8Leaf;type:tonal",
       "widgets": "health,outboundMode,serviceStatus",
       "settings": "autoupdate,minimize",
-      "view": "app.style:vivid;app.black:true;app.navbar:floating;app.tabs:slide;app.glass:ultra;proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
+      "view": "app.style:vivid;app.black:true;app.navbar:floating;app.glass:ultra;proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
       "supportUrl": "https://example.com/support",
       "webPageUrl": "https://example.com/account",
       "buyPlan": "https://example.com/plans",

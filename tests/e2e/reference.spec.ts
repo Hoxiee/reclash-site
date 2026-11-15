@@ -19,13 +19,13 @@ test('reference prerenders every header and filters by search and category', asy
   await expect(cards(page)).toHaveCount(headerReference.length)
   await expect(page.getByRole('status')).toHaveText(`All ${headerReference.length} headers`)
 
-  await page.getByRole('searchbox', { name: 'Search headers' }).fill('wallpaper')
+  await page.getByRole('searchbox', { name: 'Search headers' }).fill('reclash-config')
   await expect(cards(page)).toHaveCount(1)
   await expect(page.locator('#h-reclash-config')).toBeVisible()
   await expect(page.getByRole('status')).toHaveText(`1 of ${headerReference.length} headers`)
-  await expect(page).toHaveURL(/\?q=wallpaper$/)
+  await expect(page).toHaveURL(/\?q=reclash-config$/)
 
-  await page.getByRole('button', { name: /^Aliases/ }).click()
+  await page.getByRole('button', { name: /^HWID/ }).click()
   await expect(cards(page)).toHaveCount(0)
 
   await page.getByRole('searchbox', { name: 'Search headers' }).fill('nothing-like-this')
@@ -39,23 +39,23 @@ test('reference prerenders every header and filters by search and category', asy
 })
 
 test('a fragment opens and reveals its header, also past a filter and on the legacy path', async ({ page }) => {
-  await page.goto('/ru/reference?q=zzz#h-reclash-subscriptiontype')
-  const hex = page.locator('#h-reclash-subscriptiontype')
+  await page.goto('/ru/reference?q=zzz#h-reclash-config')
+  const hex = page.locator('#h-reclash-config')
   await expect(hex).toHaveAttribute('open', '')
   await expect(hex).toBeInViewport()
   await expect(page.getByRole('searchbox', { name: 'Поиск заголовков' })).toHaveValue('')
-  await expect(hex.getByText('Типы подписки')).toBeVisible()
-  await expect(hex.locator('.codeblock pre')).toContainText('reclash-subscriptiontype: test')
+  await expect(hex).toContainText('HTTPS-адрес манифеста')
+  await expect(hex.locator('.codeblock pre')).toContainText('reclash-config: https://nebula.example/reclash.yaml')
 
   await page.goto('/en/reference.html#h-x-hwid-max-devices-reached')
   await expect(page.locator('#h-x-hwid-max-devices-reached')).toHaveAttribute('open', '')
   await expect(page.locator('#h-x-hwid-max-devices-reached')).toBeInViewport()
 })
 
-test('the announcement header is documented in both languages', async ({ page }) => {
-  for (const [language, text] of [['ru', 'показывается на панели'], ['en', 'shown in full on the dashboard']] as const) {
+test('the announce header names its manifest override in both languages', async ({ page }) => {
+  for (const [language, text] of [['ru', 'Манифест перекрывает'], ['en', 'The manifest overrides']] as const) {
     await page.goto(`/${language}/reference`)
-    const announcement = page.locator('#h-reclash-announce')
+    const announcement = page.locator('#h-announce')
     await announcement.locator('summary').click()
     await expect(announcement).toContainText(text)
   }
@@ -71,12 +71,12 @@ test('cards toggle from the keyboard and the catalogue is translated', async ({ 
   await page.goto('/ru/reference')
   await hydrated(page)
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Справочник по заголовкам')
-  await expect(page.getByRole('heading', { name: 'Общие псевдонимы' })).toBeVisible()
-  const view = page.locator('#h-reclash-subscriptiontype')
+  await expect(page.getByRole('heading', { name: 'Общие заголовки' })).toBeVisible()
+  const view = page.locator('#h-reclash-config')
   await view.locator('summary').focus()
   await page.keyboard.press('Enter')
   await expect(view).toHaveAttribute('open', '')
-  await expect(view.getByText('Типы подписки')).toBeVisible()
+  await expect(view).toContainText('HTTPS-адрес манифеста')
   await page.keyboard.press('Enter')
   await expect(view).not.toHaveAttribute('open', '')
 
@@ -84,7 +84,7 @@ test('cards toggle from the keyboard and the catalogue is translated', async ({ 
   await expect(page.getByRole('searchbox', { name: 'Поиск заголовков' })).toBeFocused()
   await page.keyboard.type('устройств')
   await expect(page.locator('#h-x-hwid-max-devices-reached')).toBeVisible()
-  await expect(page.locator('#h-reclash-subscriptiontype')).toBeHidden()
+  await expect(page.locator('#h-reclash-config')).toBeHidden()
 })
 
 test('cards collapse before closing and a category switch shows only that category', async ({ page }) => {
@@ -93,10 +93,10 @@ test('cards collapse before closing and a category switch shows only that catego
   // The sliding plate marks the selected filter once the page motion runtime is mounted.
   await expect(page.locator('.ref-filters .mg-ind')).toBeAttached()
 
-  const hex = page.locator('#h-reclash-subscriptiontype')
+  const hex = page.locator('#h-reclash-config')
   await hex.locator('summary').click()
   await expect(hex).toHaveAttribute('open', '')
-  await expect(hex.locator('.codeblock pre')).toContainText('reclash-subscriptiontype: test')
+  await expect(hex.locator('.codeblock pre')).toContainText('reclash-config: https://nebula.example/reclash.yaml')
   await hex.locator('summary').click()
   // The card keeps [open] while its height collapses and drops it once the spring rests.
   await expect(hex).toHaveClass(/is-closing/)
@@ -120,9 +120,9 @@ test('cards collapse before closing and a category switch shows only that catego
 
 test('reference fits a phone screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/en/reference#h-reclash-subscriptiontype')
-  await expect(page.locator('#h-reclash-subscriptiontype')).toHaveAttribute('open', '')
+  await page.goto('/en/reference#h-reclash-config')
+  await expect(page.locator('#h-reclash-config')).toHaveAttribute('open', '')
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
-  const table = page.locator('#h-reclash-subscriptiontype .ref-table-wrap')
-  expect(await table.evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1)
+  const code = page.locator('#h-reclash-config .codeblock pre')
+  expect(await code.evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1)
 })

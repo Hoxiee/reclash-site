@@ -12,13 +12,12 @@ export const sitePages = [
   { key: 'reference', title: { ru: 'Справочник', en: 'Reference' } },
   { key: 'builder', title: { ru: 'Конструктор', en: 'Builder' } },
   { key: 'mock-subs', title: { ru: 'Примеры подписок', en: 'Mock subscriptions' } },
-  { key: 'report', title: { ru: 'Отчёт', en: 'Report' } },
   { key: 'gallery', title: { ru: 'Галерея', en: 'Gallery' } },
   { key: 'motion', title: { ru: 'Лаборатория движения', en: 'Motion laboratory' } },
 ] as const satisfies ReadonlyArray<{ key: string, title: BilingualText }>
 
 export type PageKey = typeof sitePages[number]['key']
-export const privatePages: ReadonlyArray<PageKey> = ['report', 'mock-subs', 'motion']
+export const privatePages: ReadonlyArray<PageKey> = ['mock-subs', 'motion']
 
 export function pagePath(language: Language, page: PageKey = 'index'): string {
   return page === 'index' ? `/${language}` : `/${language}/${page}`
@@ -46,10 +45,6 @@ export function pageKeyFromPath(path: string): string {
 
 export function switchLanguage(fullPath: string, language: Language): string {
   return fullPath.replace(/^\/(?:ru|en|zh-CN)(?=\/|\?|#|$)/, `/${language}`)
-}
-
-export function isReportPath(path: string): boolean {
-  return /^\/(?:ru|en)\/report(?:\.html)?\/?(?:[?#]|$)/.test(path)
 }
 
 export const prerenderRoutes = [...new Set(['/', ...languages.flatMap(language => sitePages.map(page => pagePath(language, page.key))), ...docRoutes])]

@@ -174,10 +174,10 @@ for (const language of docLanguages) {
   })
 }
 
-test('the policy schema link serves the published JSON Schema', async ({ page, request }) => {
-  await page.goto(docPath('en', 'providers/policy'))
-  await expect(page.locator('.hb-prose a[href="/schemas/provider-policy.schema.json"]').first()).toBeVisible()
-  const schema = await request.get('/schemas/provider-policy.schema.json')
+test('the manifest schema link serves the published JSON Schema', async ({ page, request }) => {
+  await page.goto(docPath('en', 'providers/manifest'))
+  await expect(page.locator('a[href="/schemas/provider-config.schema.json"]').first()).toBeAttached()
+  const schema = await request.get('/schemas/provider-config.schema.json')
   expect(schema.status()).toBe(200)
   expect((await schema.json()).properties.version.const).toBe(1)
 })

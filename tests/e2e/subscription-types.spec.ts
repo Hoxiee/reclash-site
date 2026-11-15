@@ -1,17 +1,12 @@
 import { test, expect } from '@playwright/test'
+import { docPath } from '../../shared/docs/catalogue'
 import { subscriptionTypes } from '../../shared/provider/standard'
 
 for (const language of ['ru', 'en'] as const) {
-  test(`provider reference describes the shared subscription type field (${language})`, async ({ page }) => {
-    await page.goto(`/${language}/reference`)
-    await expect(page.locator('.ref-sec[data-ready]')).toBeAttached()
-    const entry = page.locator('#h-reclash-subscriptiontype')
-    await entry.locator('summary').click()
-    await expect(entry).toHaveAttribute('open', '')
-    await expect(entry.locator('.codeblock pre')).toContainText('reclash-subscriptiontype: test')
-    for (const [type, label] of Object.entries(subscriptionTypes)) {
-      await expect(entry.getByText(type, { exact: true })).toBeVisible()
-      await expect(entry.getByText(label[language], { exact: true })).toBeVisible()
-    }
+  test(`manifest docs describe the provider type field (${language})`, async ({ page }) => {
+    await page.goto(docPath(language, 'providers/manifest'))
+    const row = page.locator('.hb-prose [role="row"]', { has: page.locator('code', { hasText: /^type$/ }) }).first()
+    await expect(row).toBeVisible()
+    for (const type of Object.keys(subscriptionTypes)) await expect(row.locator('code', { hasText: new RegExp(`^${type}$`) })).toBeVisible()
   })
 }

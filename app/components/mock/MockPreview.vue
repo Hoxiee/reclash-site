@@ -71,7 +71,7 @@ const ring = computed(() => {
     </div>
     <figcaption class="mock-pv-cap">
       {{ theme.seed
-        ? t(`Цвет ${theme.seed} из ReClash-View: app.color. Схема данных, не скриншот приложения.`, `Color ${theme.seed} from ReClash-View: app.color. A data illustration, not an app screenshot.`)
+        ? t(`Цвет ${theme.seed} из манифеста (reclash-config): view.app.color. Схема данных, не скриншот приложения.`, `Color ${theme.seed} from the manifest (reclash-config): view.app.color. A data illustration, not an app screenshot.`)
         : t('Только переданные данные: без выдуманной квоты или срока. Схема, не скриншот приложения.', 'Only supplied data: no invented quota or expiry. An illustration, not an app screenshot.') }}
     </figcaption>
   </figure>
