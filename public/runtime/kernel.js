@@ -3174,7 +3174,7 @@ p=B.K
 o=B.K
 n=null
 m=null
-l=B.ab
+l=B.ac
 k=B.ae
 a5=t.N
 a8=t.X
@@ -3252,7 +3252,7 @@ s=new A.hE(b,c)
 r=A.a9(t.N,t.X)
 for(q=a.gW(),q=q.gu(q),p=t.j;q.n();){o=q.gq()
 n=o.a
-if(!B.b.E(B.ac,n)){B.b.m(c,"Unknown key "+n+" in power-labels")
+if(!B.b.E(B.ab,n)){B.b.m(c,"Unknown key "+n+" in power-labels")
 continue}m=o.b
 if(p.b(m)){o=[]
 for(l=J.a_(m);l.n();)o.push(s.$1(l.gq()))}else o=s.$1(m)
@@ -3414,7 +3414,7 @@ if(!t.f.b(a))return B.ae
 s=t.N
 r=t.af
 q=A.a9(s,r)
-for(p=t.x,o=t.j,n=t.gv,m=0;m<4;++m){l=B.ac[m]
+for(p=t.x,o=t.j,n=t.gv,m=0;m<8;++m){l=B.ab[m]
 k=a.j(0,l)
 j=o.b(k)?k:[k]
 i=A.i([],p)
@@ -8895,6 +8895,7 @@ B.x=new A.an(7,"sequenceEnd")
 B.a9=new A.an(8,"mappingStart")
 B.y=new A.an(9,"mappingEnd")
 B.b0=new A.fv(null)
+B.ab=s(["off","connecting","on","paused","expired","exhausted","ending","grace"],t.s)
 B.b1=s(["from","until","days-left-below","traffic-above"],t.s)
 B.al=new A.aY(0,"surface")
 B.bN=new A.aY(1,"primary")
@@ -8915,10 +8916,9 @@ B.bG=new A.ar(5,"speedTest")
 B.bH=new A.ar(6,"doctor")
 B.bI=new A.ar(7,"updateApp")
 B.b4=s([B.ai,B.bC,B.bD,B.bE,B.bF,B.bG,B.bH,B.bI],A.a7("q<ar>"))
-B.ab=s([],t.l)
+B.ac=s([],t.l)
 B.J=s([],t.s)
 B.b5=s(["from","until"],t.s)
-B.ac=s(["off","connecting","on","paused"],t.s)
 B.am=new A.bd(0,"info")
 B.bQ=new A.bd(1,"warning")
 B.bR=new A.bd(2,"critical")
@@ -8996,7 +8996,7 @@ B.K=new A.Q(B.z,[],t.w)
 B.n=new A.Q(B.z,[],A.a7("Q<e,k?>"))
 B.bS=new A.cg(-1,null)
 B.b6=s(["Cards must be a list"],t.s)
-B.bT=new A.cf(B.ab,B.b6)
+B.bT=new A.cf(B.ac,B.b6)
 B.an=new A.bB("DOUBLE_QUOTED")
 B.bU=new A.bB("FOLDED")
 B.bV=new A.bB("LITERAL")
