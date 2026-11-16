@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "b4e249e8d54b3fdde2a48b1f4f0b403b55a08907"
+    "commit": "1ec76d72f2715dfb0d0da27201f5cf7c9d27ad2c"
   },
   "languages": [
     "ru",
@@ -485,9 +485,9 @@
   "files": {
     "ru/README.md": "84646860924b9f74d16e0ed75c159d0e4f9ad3a42f1b1a17931480d81de9949b",
     "ru/providers/README.md": "8ccbe3e27c17ed982261c5580a2888b509c3cc94ffe18004aecb16a0af2f7be4",
-    "ru/providers/rollout.md": "06ce8dd6fcc9049e62842e855864ebf3e1b1266324226ac77292d05f2889a92f",
+    "ru/providers/rollout.md": "e06542f91923e1101954494ea8e987a45821ff447a3b60478759821a4ab8aa16",
     "ru/providers/manifest.md": "7ecde5a7eefc412e67b4a1ec84ccfbb2a6731d58f818677ab1e9a0b805e6cc9c",
-    "ru/providers/headers.md": "a4a062cd669e19fd0cb1dc649ec8e3ce1b1aa2f9555d72e2f0caf1d04d5915b9",
+    "ru/providers/headers.md": "e1063c02cbb6bf04e43bbc95c78e51782e0fa232e74c8cb7a9802fa580810bb7",
     "ru/providers/request.md": "8713002af77551d9df350497bdb0c10cc0eb0e925da605769aae2d2bead4ea69",
     "ru/providers/policy.md": "2ef378e89b306021cf7ef9521283d21964f5838eb31a96ddfd923cd3a346663e",
     "ru/providers/preview-api.md": "7f0fc203887a710e648af12fb5c2daf71ded816e7368bdcb4c42d6a58e9c2c2a",
@@ -507,9 +507,9 @@
     "ru/auto-routing/images/README.md": "ec90b0cec5edffc5a5dd850418746da02f6dbd5e194087ad20fc5fcc76bb1c0f",
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
-    "en/providers/rollout.md": "47330d4c845cd4e6252cca7cbca84b6fd8b42972c00667762cd93b538a8d8b3e",
+    "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
     "en/providers/manifest.md": "70ab6c60e9a6021012519539117501034a1a84d2e13fdefacf439fa014b3a055",
-    "en/providers/headers.md": "fa5f53a91f308988dd893d7e33dfd38948f39ed0897db89713dba963ce23e87e",
+    "en/providers/headers.md": "eb4d69a9d2a160eeeadbe00db5085f5a28bc2015cadf0dad6c8c88daf257d175",
     "en/providers/request.md": "7d9d5bc848acacdbdf75a0982e5bff170562e08d7aea18aaae241cb4fc5c5ac7",
     "en/providers/policy.md": "a57ba0e4ce732f01763ab0341555ae7156abe91303b69b24d9f6c10f8cc06ddd",
     "en/providers/preview-api.md": "310adc40fe5231705bff6be2cba27a8765f8b22c7bd6b3a7c720c8d5a5268efc",
