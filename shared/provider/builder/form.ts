@@ -27,7 +27,7 @@ export const formSections: FormSection[] = [
   ] },
   { key: 'provider', title: { ru: 'Провайдер', en: 'Provider' }, summary: { ru: 'Имя, логотипы, ссылки и сообщения', en: 'Name, logos, links and messages' }, entries: [
     e('provider.name', 'Название сервиса', 'Service name', ['На карточке панели и в окне импорта.', 'On the dashboard card and in the import dialog.']),
-    e('provider.logo', 'Логотип', 'Logo', ['На простой панели.', 'On the simple dashboard.'], { placeholder: 'https://' }),
+    e('provider.logo', 'Логотип', 'Logo', ['На простой панели, в кошельке профилей и при импорте.', 'On the simple dashboard, in the profile wallet and during import.'], { placeholder: 'https://' }),
     e('provider.logo-dark', 'Логотип для тёмной темы', 'Dark theme logo', ['Без него берётся logo.', 'Falls back to logo.'], { placeholder: 'https://' }),
     e('provider.support-url', 'Поддержка', 'Support', ['Также https://t.me/…, https://telegram.me/… и tg://.', 'Also https://t.me/…, https://telegram.me/… and tg:// links.'], { placeholder: 'https://t.me/example_support' }),
     e('provider.web-url', 'Сайт', 'Website', undefined, { placeholder: 'https://' }),

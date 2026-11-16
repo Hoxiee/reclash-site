@@ -10,7 +10,7 @@ const ready = ref(false)
   <div class="bpage">
     <PageHero
       :title="title"
-      :lede="t('Соберите reclash.yaml по разделам, проверьте его тем же парсером, что в приложении, и посмотрите, как подписка будет выглядеть у пользователя.', 'Build reclash.yaml section by section, check it with the same parser the app uses, and see how the subscription will look to the user.')"
+      :lede="t('Соберите reclash.yaml, проверьте парсером ReClash и посмотрите подписку в предпросмотре.', 'Build reclash.yaml, check it with the ReClash parser and preview the subscription.')"
       glyph="M150 160h100M150 200h70M150 240h100"
     >
       <template #eyebrow>{{ t('Для провайдеров', 'For providers') }}</template>

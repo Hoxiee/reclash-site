@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { docPath } from '~~/shared/docs/catalogue'
 import { formSections } from '~~/shared/provider/builder/form'
-import { decodeFragment, emitManifest, isBuilderFragment, encodeFragment, type Imported, type Manifest } from '~~/shared/provider/builder/document'
+import { DraftHistory } from '~~/shared/provider/builder/history'
+import { mergeStarter, starters } from '~~/shared/provider/builder/workbench'
+import { cloneValue, decodeFragment, emitManifest, isBuilderFragment, encodeFragment, type Fragment, type Imported, type Manifest } from '~~/shared/provider/builder/document'
 import { validateManifest, type Issue } from '~~/shared/provider/builder/validate'
 import type { KernelResult, KernelView, ReclashKernel } from '~/composables/useBuilder'
 
@@ -20,18 +22,70 @@ const issues = computed(() => {
   return map
 })
 const reveal = ref<{ path: string, at: number }>()
+const expansion = ref<{ open: boolean, at: number }>()
 const kernel = ref<KernelView>({ state: 'idle' })
 const warnings = computed(() => kernel.value.state === 'done' ? kernel.value.result.warnings : [])
-provide(builderKey, { manifest, issues, reveal, warnings })
+provide(builderKey, { manifest, issues, reveal, expansion, warnings })
 
 const sections = formSections.filter(section => section.key !== 'version')
 const yaml = computed(() => emitManifest(manifest, routing.value))
 const preview = ref<{ highlight: (path: string | null) => void }>()
 const form = ref<HTMLElement>()
+const workspace = ref<{ focus: () => void }>()
+const empty = computed(() => yaml.value.trim() === 'version: 1')
 
 function replace(next: Manifest) {
+  const copy = cloneValue(next)
   for (const key of Object.keys(manifest)) delete manifest[key]
-  Object.assign(manifest, structuredClone(toRaw(next)))
+  Object.assign(manifest, copy)
+}
+
+const snapshot = (): Fragment => ({ manifest: toRaw(manifest), routing: routing.value, url: url.value })
+let history: DraftHistory | undefined
+const historyRevision = ref(0)
+const canUndo = computed(() => { void historyRevision.value; return history?.canUndo ?? false })
+const canRedo = computed(() => { void historyRevision.value; return history?.canRedo ?? false })
+function editGroup() {
+  const active = document.activeElement
+  return active instanceof HTMLElement && active.matches('input, textarea') && form.value?.contains(active) ? `${pathOf(active)}:${active.id}` : ''
+}
+watch([manifest, routing, url], () => {
+  if (!history) return
+  history.record(snapshot(), editGroup())
+  historyRevision.value++
+}, { deep: true, flush: 'post' })
+function changeHistory(direction: 'undo' | 'redo') {
+  if (!history) return
+  history.record(snapshot(), editGroup())
+  const state = history[direction]()
+  if (!state) return
+  replace(state.manifest)
+  routing.value = state.routing
+  url.value = state.url
+  confirmReset.value = false
+  imported.value = undefined
+  historyRevision.value++
+  notify(direction === 'undo' ? t('Изменение отменено', 'Change undone') : t('Изменение возвращено', 'Change redone'))
+}
+function applyStarter(key: string) {
+  const starter = starters.find(starter => starter.key === key)
+  if (!starter) return
+  const next = mergeStarter(toRaw(manifest), starter.value(language.value))
+  if (!next.added.length) { notify(t('Поля заготовки уже заданы — ничего не изменено', 'Template fields are already set; nothing changed')); return }
+  replace(next.manifest)
+  notify(t('Заготовка добавлена; ваши значения сохранены', 'Template added; your values were kept'))
+}
+function shortcuts(event: KeyboardEvent) {
+  if (event.defaultPrevented || event.isComposing || document.querySelector('dialog:modal')) return
+  if (event.target instanceof Element && event.target.closest('input, textarea, [contenteditable="true"]')) return
+  if (event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault()
+    workspace.value?.focus()
+  } else if ((event.ctrlKey || event.metaKey) && !event.altKey) {
+    const key = event.key.toLowerCase()
+    const direction = key === 'z' ? (event.shiftKey ? 'redo' : 'undo') : key === 'y' ? 'redo' : undefined
+    if (direction && (direction === 'undo' ? canUndo.value : canRedo.value)) { event.preventDefault(); changeHistory(direction) }
+  }
 }
 
 /* Kernel: the app's parser, loaded on the first edit, import or restored draft, then run on a short debounce. */
@@ -69,6 +123,7 @@ let saveTimer: ReturnType<typeof setTimeout> | undefined
 let saveRevision = 0
 const linkProblem = ref(false)
 const saveProblem = ref(false)
+const saved = ref<'idle' | 'saving' | 'saved' | 'failed'>('idle')
 async function save(): Promise<boolean> {
   clearTimeout(saveTimer)
   const revision = ++saveRevision
@@ -80,15 +135,17 @@ async function save(): Promise<boolean> {
     if (hash !== route.hash) await router.replace({ path: route.path, query: route.query, hash })
     if (disposed || revision !== saveRevision) return false
     saveProblem.value = false
+    saved.value = empty ? 'idle' : 'saved'
     linkProblem.value = false
     return true
   } catch {
-    if (!disposed && revision === saveRevision) saveProblem.value = true
+    if (!disposed && revision === saveRevision) { saveProblem.value = true; saved.value = 'failed' }
     return false
   }
 }
 watch([manifest, routing, url], () => {
   if (restoring) return
+  saved.value = 'saving'
   saveRevision++
   clearTimeout(saveTimer)
   saveTimer = setTimeout(() => { void save() }, 400)
@@ -101,6 +158,7 @@ async function restore() {
     replace(state.manifest)
     routing.value = state.routing
     url.value = state.url
+    saved.value = 'saved'
   } catch {
     if (!disposed) linkProblem.value = true
   }
@@ -110,8 +168,11 @@ function load(result: Imported) {
   replace(result.manifest)
   routing.value = result.routing
   importOpen.value = false
+  imported.value = { dropped: result.dropped, routing: !!result.routing }
+  notify(t('Файл загружен; импорт можно отменить', 'File loaded; the import can be undone'))
 }
 const importOpen = ref(false)
+const imported = ref<{ dropped: string[], routing: boolean }>()
 const confirmReset = ref(false)
 let resetTimer: ReturnType<typeof setTimeout> | undefined
 function reset() {
@@ -122,6 +183,7 @@ function reset() {
     return
   }
   confirmReset.value = false
+  imported.value = undefined
   replace({})
   routing.value = ''
   url.value = ''
@@ -131,6 +193,11 @@ const copied = ref<'idle' | 'done' | 'failed'>('idle')
 const copying = ref(false)
 const toast = ref<{ text: string, bad: boolean, at: number }>()
 let copyTimer: ReturnType<typeof setTimeout> | undefined
+function notify(text: string, bad = false) {
+  toast.value = { text, bad, at: Date.now() }
+  clearTimeout(copyTimer)
+  copyTimer = setTimeout(() => { copied.value = 'idle'; toast.value = undefined }, 2200)
+}
 async function copyLink() {
   if (copying.value) return
   copying.value = true
@@ -147,11 +214,7 @@ async function copyLink() {
   }
   if (disposed) return
   copied.value = done ? 'done' : 'failed'
-  toast.value = copied.value === 'done'
-    ? { text: t('Ссылка на черновик скопирована', 'Draft link copied'), bad: false, at: Date.now() }
-    : { text: t('Не удалось скопировать ссылку', 'Could not copy the link'), bad: true, at: Date.now() }
-  clearTimeout(copyTimer)
-  copyTimer = setTimeout(() => { copied.value = 'idle'; toast.value = undefined }, 2200)
+  notify(done ? t('Ссылка на черновик скопирована', 'Draft link copied') : t('Не удалось скопировать ссылку', 'Could not copy the link'), !done)
 }
 
 /* Form <-> preview: a focused or hovered field is outlined in the preview; a click there finds the field. */
@@ -188,7 +251,10 @@ function select(path: string) {
     if (!element) return
     const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches
     element.scrollIntoView({ block: 'center', behavior: smooth ? 'smooth' : 'auto' })
-    const control = element.matches('input, select, textarea, button') ? element : element.querySelector<HTMLElement>('input:not([type=hidden]):not(:disabled), select, textarea, button')
+    const direct = document.getElementById(fieldId(path))
+    const scope = element.classList.contains('bsec') ? element.querySelector('.bsec-body') ?? element : element
+    const available = (selector: string) => [...scope.querySelectorAll<HTMLElement>(selector)].find(control => !control.closest('[inert]'))
+    const control = direct && form.value?.contains(direct) && !direct.closest('[inert]') ? direct : available('input:not([type=hidden]):not(:disabled), select:not(:disabled), textarea:not(:disabled)') ?? available('button:not(:disabled)')
     control?.focus({ preventScroll: true })
     element.classList.remove('is-picked')
     void element.offsetWidth
@@ -240,6 +306,9 @@ onMounted(async () => {
   await nextTick()
   if (disposed) return
   restoring = false
+  history = new DraftHistory(snapshot())
+  historyRevision.value++
+  window.addEventListener('keydown', shortcuts)
   spyOn()
   emit('ready')
 })
@@ -247,6 +316,7 @@ onBeforeUnmount(() => {
   disposed = true
   saveRevision++
   spy?.disconnect()
+  window.removeEventListener('keydown', shortcuts)
   for (const timer of [parseTimer, saveTimer, resetTimer, copyTimer]) clearTimeout(timer)
 })
 </script>
@@ -265,11 +335,15 @@ onBeforeUnmount(() => {
             </button>
           </nav>
           <div class="btop-actions">
-            <button type="button" class="btn btn-ghost btn-s" :aria-expanded="importOpen" aria-controls="bimport" :title="t('Импорт', 'Import')" @click="importOpen = !importOpen">
+            <div class="bhistory" role="group" :aria-label="t('История изменений', 'Edit history')">
+              <button type="button" class="bicon" :disabled="!canUndo" :aria-label="t('Отменить изменение', 'Undo change')" :title="t('Ctrl/⌘+Z вне текстового поля', 'Ctrl/⌘+Z outside text fields')" @click="changeHistory('undo')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5-5 5 5 5M3 10h11a6 6 0 0 1 0 12" /></svg></button>
+              <button type="button" class="bicon" :disabled="!canRedo" :aria-label="t('Вернуть изменение', 'Redo change')" :title="t('Ctrl/⌘+Shift+Z вне текстового поля', 'Ctrl/⌘+Shift+Z outside text fields')" @click="changeHistory('redo')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 5 5 5-5 5M21 10H10a6 6 0 0 0 0 12" /></svg></button>
+            </div>
+            <button type="button" class="btn btn-ghost btn-s" :aria-label="t('Импорт', 'Import')" :aria-expanded="importOpen" aria-controls="bimport" :title="t('Импорт', 'Import')" @click="importOpen = !importOpen">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m-4.5 4.5L12 4l4.5 4.5M5 14v5h14v-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
               <span class="btop-label">{{ t('Импорт', 'Import') }}</span>
             </button>
-            <button type="button" class="btn btn-ghost btn-s" :class="{ 'is-done': copied === 'done' }" :disabled="copying" :title="t('Ссылка на черновик', 'Draft link')" @click="copyLink">
+            <button type="button" class="btn btn-ghost btn-s" :aria-label="t('Ссылка на черновик', 'Draft link')" :class="{ 'is-done': copied === 'done' }" :disabled="copying" :title="t('Ссылка на черновик', 'Draft link')" @click="copyLink">
               <svg v-if="copied === 'done'" class="bok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
               <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
               <span class="btop-label">{{ t('Ссылка на черновик', 'Draft link') }}</span>
@@ -277,13 +351,22 @@ onBeforeUnmount(() => {
             <button type="button" class="btn btn-ghost btn-s bdanger" :class="{ 'is-armed': confirmReset }" @click="reset">
               {{ confirmReset ? t('Точно очистить?', 'Clear everything?') : t('Сбросить', 'Reset') }}
             </button>
+            <button type="button" class="btn btn-primary btn-s" :disabled="empty" :aria-label="t('Перейти к экспорту YAML', 'Go to YAML export')" @click="goTo('output')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg><span class="btop-label">YAML</span></button>
           </div>
         </div>
 
-        <p class="bf-help bintro">{{ t('Черновик живёт в адресе страницы и не уходит с устройства. Проверка полей — по схеме, итог — парсером приложения.', 'The draft lives in the page address and never leaves your device. Fields are checked against the schema; the verdict comes from the app parser.') }}</p>
         <p v-if="linkProblem" class="bf-err" role="alert">{{ t('Ссылка повреждена, слишком велика или из другой версии конструктора — форма открыта пустой.', 'The link is damaged, too large or from another builder version; the form opened empty.') }}</p>
         <p v-if="saveProblem" class="bf-err" role="alert">{{ t('Не удалось сохранить черновик в адресе страницы. Уменьшите его размер или скачайте YAML — данные в форме не потеряны.', 'Could not save the draft in the page address. Reduce its size or download the YAML; the form data is unchanged.') }}</p>
 
+        <BuilderWorkspace ref="workspace" :saved="saved" @starter="applyStarter" @select="select" @expand="expansion = { open: $event, at: Date.now() }" />
+        <div v-if="imported" class="note bimport-result" role="status" data-test="imported">
+          <span>
+            {{ t('Файл загружен. Импорт можно отменить.', 'File loaded. The import can be undone.') }}
+            <template v-if="imported.routing">{{ t(' Routing сохранён как есть.', ' Routing is kept as written.') }}</template>
+            <template v-if="imported.dropped.length">{{ t(' Неизвестные ключи отброшены:', ' Unknown keys were dropped:') }} <code v-for="key in imported.dropped" :key="key" class="bdropped">{{ key }}</code></template>
+          </span>
+          <button type="button" class="bicon" :aria-label="t('Закрыть результат импорта', 'Dismiss the import result')" @click="imported = undefined"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 4.5 7 7m0-7-7 7" /></svg></button>
+        </div>
         <div id="bimport" class="bfold bimport-fold" :data-open="importOpen ? '' : undefined" :inert="!importOpen"><div class="bfold-in"><div class="bimport-card"><BuilderImport @imported="load" /></div></div></div>
 
         <div class="bsecs">

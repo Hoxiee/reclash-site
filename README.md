@@ -40,7 +40,18 @@ can be retried without clearing the form. Preview images stay same-origin or
 inline; provider image hosts are never requested. The phone preview is a native
 modal that contains keyboard focus and restores its trigger on close. Drafts
 live only in the compressed URL fragment, with a 1 MiB decoded JSON limit and
-bounded nesting; an older save cannot overwrite a newer edit or reset.
+bounded nesting; an older save cannot overwrite a newer edit or reset. The workspace
+searches field keys and labels in both languages and opens the exact field, card or
+label variant. Templates fill only missing fields and never replace existing values
+or lists. Undo and redo keep complete draft snapshots in memory, grouping typing
+and respecting native text-field undo; the history is capped at 50 entries and an
+8 MiB string budget; oversized snapshots are not retained for redo. Fields and sections can be cleared individually. Explicit
+empty lists remain distinct from omitted fields. New cards start with valid example
+content and can be duplicated with a unique ID; power-label variants can be copied
+and reordered. Import results stay visible after the import panel closes, unsupported
+file versions are rejected, and the 512 KiB file limit is checked before reading.
+Malformed card entries stay in the draft until replaced or removed individually;
+editing through a malformed parent repairs its mapping/list container.
 `shared/site/gallery.ts` contains
 the gallery items; add `src` or `video` to replace a placeholder with local media.
 The download page requests release metadata from GitHub only in the browser,

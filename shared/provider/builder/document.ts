@@ -1,4 +1,4 @@
-import { excludedRoot, nodeAt, propertyOrder, providerSchema, type SchemaNode } from './schema.ts'
+import { excludedRoot, nodeAt, propertyOrder, providerSchema, resolve, type SchemaNode } from './schema.ts'
 import { formSections } from './form.ts'
 import { parseYaml, rawSection, stringifyYaml } from './yaml.ts'
 
@@ -15,25 +15,33 @@ export function getAt(root: unknown, path: Path): unknown {
   return value
 }
 
+// A spread reactive list can retain nested proxies, which structuredClone cannot copy.
+export function cloneValue<T>(value: T): T {
+  if (Array.isArray(value)) return value.map(item => cloneValue(item)) as T
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, cloneValue(item)])) as T
+  return value
+}
+
 const isEmpty = (value: unknown) => value === undefined || value === '' || (value !== null && typeof value === 'object' && !Array.isArray(value) && !Object.keys(value).length)
 
 /** Sets a value; `undefined`, an empty string or an empty object removes the key and prunes empty parents. List items stay. */
 export function setAt(root: Manifest, path: Path, value: unknown): void {
   const chain: unknown[] = [root]
   let node: unknown = root
-  for (const segment of path.slice(0, -1)) {
+  for (const [index, segment] of path.slice(0, -1).entries()) {
     const holder = node as Record<string | number, unknown>
-    if (holder[segment] === undefined || holder[segment] === null || typeof holder[segment] !== 'object') {
+    const array = typeof path[index + 1] === 'number'
+    if (holder[segment] === null || typeof holder[segment] !== 'object' || Array.isArray(holder[segment]) !== array) {
       if (isEmpty(value)) return
-      holder[segment] = {}
+      holder[segment] = array ? [] : {}
     }
     node = holder[segment]
     chain.push(node)
   }
   const last = path.at(-1)!
   const holder = node as Record<string | number, unknown>
-  const empty = isEmpty(value) || (Array.isArray(value) && !value.length && typeof last === 'string')
-  if (!empty) { holder[last] = value; return }
+  const empty = isEmpty(value)
+  if (!empty) { holder[last] = cloneValue(value); return }
   if (Array.isArray(holder)) return
   delete holder[last]
   for (let index = chain.length - 1; index > 0; index--) {
@@ -89,11 +97,21 @@ function compactLabels(states: Record<string, unknown>): Record<string, unknown>
 
 export type Imported = { manifest: Manifest, routing: string, dropped: string[] }
 
+export class ManifestVersionError extends Error {
+  readonly expected: unknown
+  constructor(expected: unknown) {
+    super(`Unsupported manifest version; expected ${expected}`)
+    this.expected = expected
+  }
+}
+
 /** Reads an existing manifest. Keys outside the schema are dropped and listed; routing stays as written. */
 export function importManifest(source: string): Imported {
   const { value, spans } = parseYaml(source)
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('The file is not a YAML mapping')
   const record = value as Manifest
+  const version = resolve(providerSchema.properties?.version)?.const
+  if (record.version !== undefined && record.version !== version) throw new ManifestVersionError(version)
   const dropped: string[] = []
   const known = providerSchema.properties ?? {}
   const manifest: Manifest = {}

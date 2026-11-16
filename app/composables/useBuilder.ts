@@ -7,6 +7,7 @@ export type BuilderContext = {
   issues: Ref<Map<string, Issue[]>>
   /** The path the preview asked to reveal; sections and cards open for it. */
   reveal: Ref<{ path: string, at: number } | undefined>
+  expansion: Ref<{ open: boolean, at: number } | undefined>
   /** The app parser's warnings for the current file, verbatim; empty until it has run. */
   warnings: Ref<string[]>
 }

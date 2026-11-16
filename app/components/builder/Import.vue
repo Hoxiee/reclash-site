@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { importManifest, manifestLimit, type Imported } from '~~/shared/provider/builder/document'
+import { importManifest, ManifestVersionError, manifestLimit, type Imported } from '~~/shared/provider/builder/document'
 import { YamlError } from '~~/shared/provider/builder/yaml'
 // Reads a manifest the provider already has. The text stays in the browser; links inside it are never opened.
 const emit = defineEmits<{ imported: [result: Imported] }>()
@@ -7,11 +7,14 @@ const { t } = useText()
 const text = ref('')
 const over = ref(false)
 const problem = ref('')
-const done = ref<{ dropped: string[], routing: boolean }>()
+const reading = ref(false)
+let readRevision = 0
+onBeforeUnmount(() => { readRevision++ })
 
 function read(source: string) {
+  readRevision++
+  reading.value = false
   problem.value = ''
-  done.value = undefined
   if (!source.trim()) return
   if (new TextEncoder().encode(source).length > manifestLimit) {
     problem.value = t('Файл больше 512 KiB — приложение его не примет.', 'The file is over 512 KiB; the app would not accept it.')
@@ -20,16 +23,30 @@ function read(source: string) {
   try {
     const result = importManifest(source)
     emit('imported', result)
-    done.value = { dropped: result.dropped, routing: !!result.routing }
     text.value = ''
   } catch (error) {
     const line = error instanceof YamlError && error.line ? t(`Строка ${error.line}: `, `Line ${error.line}: `) : ''
-    problem.value = line + (error instanceof Error ? error.message : String(error))
+    problem.value = error instanceof ManifestVersionError ? t(`Эта версия файла не поддерживается. Конструктор работает с version: ${error.expected}; текущая форма не изменена.`, `This file version is not supported. The builder uses version: ${error.expected}; your current form is unchanged.`) : line + (error instanceof Error ? error.message : String(error))
   }
 }
 async function readFile(file: File | undefined) {
   if (!file) return
-  read(await file.text())
+  const revision = ++readRevision
+  problem.value = ''
+  if (file.size > manifestLimit) {
+    reading.value = false
+    problem.value = t('Файл больше 512 KiB — приложение его не примет.', 'The file is over 512 KiB; the app would not accept it.')
+    return
+  }
+  reading.value = true
+  try {
+    const source = await file.text()
+    if (revision === readRevision) read(source)
+  } catch {
+    if (revision === readRevision) problem.value = t('Не удалось прочитать файл. Вставьте его текст; текущая форма не изменена.', 'Could not read the file. Paste its text; your current form is unchanged.')
+  } finally {
+    if (revision === readRevision) reading.value = false
+  }
 }
 function drop(event: DragEvent) {
   over.value = false
@@ -50,17 +67,10 @@ function drop(event: DragEvent) {
       <textarea id="bimport-text" v-model="text" class="input mono" rows="4" spellcheck="false" autocomplete="off" placeholder="version: 1&#10;provider:&#10;  name: Example VPN" />
     </div>
     <div class="bactions">
-      <button type="button" class="btn btn-ghost btn-s" :disabled="!text.trim()" @click="read(text)">{{ t('Загрузить в форму', 'Load into the form') }}</button>
+      <button type="button" class="btn btn-ghost btn-s" :disabled="!text.trim() || reading" @click="read(text)">{{ t('Загрузить в форму', 'Load into the form') }}</button>
       <small class="bf-help">{{ t('Текущая форма заменяется. Ссылки из файла не открываются.', 'This replaces the current form. Links in the file are not opened.') }}</small>
     </div>
     <p v-if="problem" class="bf-err" role="alert">{{ problem }}</p>
-    <div v-if="done" class="note" role="status" data-test="imported">
-      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-      <span>
-        {{ t('Загружено.', 'Loaded.') }}
-        <template v-if="done.routing">{{ t(' Routing сохранён как есть.', ' Routing is kept as written.') }}</template>
-        <template v-if="done.dropped.length">{{ t(' Неизвестные ключи отброшены:', ' Unknown keys were dropped:') }} <code v-for="key in done.dropped" :key="key" class="bdropped">{{ key }}</code></template>
-      </span>
-    </div>
+    <p v-if="reading" class="bf-help" role="status">{{ t('Читаем файл…', 'Reading the file…') }}</p>
   </div>
 </template>

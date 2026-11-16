@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { formSections } from '~~/shared/provider/builder/form'
-import { labelEntries } from '~~/shared/provider/builder/document'
+import { cloneValue, labelEntries } from '~~/shared/provider/builder/document'
 import { issueText } from '~~/shared/provider/builder/validate'
 // Power labels: each state holds variants; one is picked per app session. Kept as `{title, hint}` here, compacted on output.
 const { language, t } = useText()
@@ -18,6 +18,18 @@ function add(path: string) {
 function remove(path: string, index: number) {
   const next = entries(path).filter((_, at) => at !== index)
   set(path, next.length ? next : undefined)
+}
+function duplicate(path: string, index: number) {
+  const next = [...entries(path)]
+  next.splice(index + 1, 0, cloneValue(next[index]!))
+  set(path, next)
+  nextTick(() => document.getElementById(fieldId(`${path}.${index + 1}.title`))?.focus())
+}
+function move(path: string, index: number, by: number) {
+  const next = [...entries(path)]
+  const [entry] = next.splice(index, 1)
+  next.splice(index + by, 0, entry!)
+  set(path, next)
 }
 function track(event: FocusEvent) {
   const element = event.target
@@ -47,6 +59,9 @@ function insert(token: string) {
         <li v-for="(_, index) in entries(state.path)" :key="index" class="bitem" :data-path="`${state.path}.${index}`">
           <div class="bitem-bar">
             <b>{{ entries(state.path).length > 1 ? t(`Вариант ${index + 1}`, `Variant ${index + 1}`) : t('Подпись', 'Label') }}</b>
+            <button type="button" class="bicon" :aria-label="t('Дублировать вариант', 'Duplicate variant')" @click="duplicate(state.path, index)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 6h7v7H6zM3 10V3h7" /></svg></button>
+            <button type="button" class="bicon" :disabled="index === 0" :aria-label="t('Вариант выше', 'Move variant up')" @click="move(state.path, index, -1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4" /></svg></button>
+            <button type="button" class="bicon" :disabled="index === entries(state.path).length - 1" :aria-label="t('Вариант ниже', 'Move variant down')" @click="move(state.path, index, 1)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg></button>
             <button type="button" class="bicon" :aria-label="t('Удалить вариант', 'Remove variant')" @click="remove(state.path, index)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5l7 7m0-7l-7 7" /></svg></button>
           </div>
           <div class="bgrid">
