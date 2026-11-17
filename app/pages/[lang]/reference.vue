@@ -239,7 +239,6 @@ onBeforeUnmount(() => {
         <span class="tag">{{ t(`${countOf('alias')} алиасов`, `${countOf('alias')} aliases`) }}</span>
         <span class="tag">HWID</span>
       </template>
-      <ProviderTabs page="reference" />
     </PageHero>
 
     <section class="sub-sec ref-sec" :data-ready="ready || undefined">

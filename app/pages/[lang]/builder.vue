@@ -19,7 +19,6 @@ const ready = ref(false)
         <span class="tag">{{ t('Проверка парсером приложения', 'Checked by the app parser') }}</span>
         <span class="tag">{{ t('Всё остаётся в браузере', 'Nothing leaves the browser') }}</span>
       </template>
-      <ProviderTabs page="builder" />
     </PageHero>
     <ClientOnly><LazyBuilderTool @ready="ready = true" /></ClientOnly>
     <div v-if="!ready" class="bskel wrap" role="status">

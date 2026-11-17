@@ -7,20 +7,8 @@
   font: 500 0.82rem var(--mono); letter-spacing: 0.04em; text-transform: uppercase; }
 .ph-eyebrow::before { content: ''; width: 18px; height: 2px; border-radius: 2px; background: var(--brand); }
 
-/* grid items may shrink below their content, so the scrolling tabs never widen the hero */
+/* grid items may shrink below their content, so wide hero content never widens the grid */
 .ph-grid > * { min-width: 0; }
-
-/* developer section tabs */
-.dev-tabs { margin-top: 34px; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
-.dev-tabs::-webkit-scrollbar { display: none; }
-.dev-tabs-in { display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); }
-.dev-tabs-in .mg-ind { background: var(--bg-3); }
-.dev-tabs-in a { position: relative; padding: 9px 16px; border-radius: 999px; color: var(--fg-2); text-decoration: none;
-  font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: color 0.25s; }
-.dev-tabs-in a:hover, .dev-tabs-in a.is-mg { color: var(--fg); }
-.dev-tabs-in a[aria-current='page'] { color: var(--fg); }
-.dev-tabs-in a[aria-current='page']::after { content: ''; position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px;
-  margin-left: -2px; border-radius: 50%; background: var(--brand); }
 
 /* code block with a copy button */
 .codeblock { display: grid; gap: 8px; min-width: 0; }
