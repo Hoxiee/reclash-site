@@ -1,16 +1,8 @@
 <script setup lang="ts">
 import { docText, type DocLanguage } from '~~/shared/docs/catalogue'
-import type { DocBlock, DocCallout, DocScreenshot } from '~~/shared/docs/types'
+import type { DocBlock, DocCallout } from '~~/shared/docs/types'
 import type { CodeLanguage } from '~~/shared/site/highlight'
 const props = defineProps<{ blocks: DocBlock[], language: DocLanguage }>()
-const items = computed(() => props.blocks.reduce<Array<DocBlock | { type: 'shots', items: DocScreenshot[] }>>((list, block) => {
-  const last = list.at(-1)
-  if (block.type !== 'screenshot') list.push(block)
-  else if (last?.type === 'screenshot') list[list.length - 1] = { type: 'shots', items: [last, block] }
-  else if (last?.type === 'shots') last.items.push(block)
-  else list.push(block)
-  return list
-}, []))
 const t = (ru: string, en: string, zh?: string) => docText(props.language, ru, en, zh)
 const copyLabels = computed(() => ({ idle: t('Копировать', 'Copy', '复制'), done: t('Скопировано', 'Copied', '已复制'), failed: t('Не вышло', 'Could not copy', '复制失败') }))
 const highlighters: Record<string, CodeLanguage> = { yaml: 'yaml', json: 'yaml', http: 'http', sh: 'shell' }
@@ -28,7 +20,7 @@ const calloutIcons: Record<DocCallout, string> = {
 </script>
 
 <template>
-  <template v-for="(block, index) in items" :key="index">
+  <template v-for="(block, index) in blocks" :key="index">
     <template v-if="block.type === 'heading'">
       <span v-for="alias in block.aliases" :id="alias" :key="alias" class="hb-alias" aria-hidden="true" />
       <component :is="`h${block.level}`" :id="block.id" class="hb-h" :data-level="block.level" tabindex="-1">
@@ -50,10 +42,6 @@ const calloutIcons: Record<DocCallout, string> = {
     </aside>
     <blockquote v-else-if="block.type === 'quote'"><DocsBlocks :blocks="block.children" :language="language" /></blockquote>
     <DocsTable v-else-if="block.type === 'table'" :table="block" :label="t('Таблица', 'Table', '表格')" />
-    <DocsScreenshot v-else-if="block.type === 'screenshot'" :screenshot="block" :language="language" />
-    <div v-else-if="block.type === 'shots'" class="hb-shots">
-      <DocsScreenshot v-for="shot in block.items" :key="shot.id" :screenshot="shot" :language="language" />
-    </div>
     <figure v-else-if="block.type === 'diagram'" class="hb-diagram">
       <div class="hb-diagram-canvas" tabindex="0" role="region" :aria-label="block.title">
         <img :src="block.src" :alt="block.title" :width="block.width" :height="block.height" loading="lazy" decoding="async">

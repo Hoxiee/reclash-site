@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { after, test } from 'node:test'
 import { marked } from 'marked'
-import { compileDocument, contentRoot, docPath, makeCatalogue, readLibrary, screenshotManifest, searchIndex } from '../scripts/docs/engine.mjs'
+import { compileDocument, contentRoot, docPath, makeCatalogue, readLibrary, searchIndex } from '../scripts/docs/engine.mjs'
 
 function allBlocks(blocks) {
   return blocks.flatMap(block => [block, ...allBlocks(
@@ -134,10 +134,9 @@ test('the synchronized snapshot matches its catalogue and keeps every code sampl
   }
 })
 
-test('every internal link of the snapshot lands on a rendered heading or screenshot', () => {
+test('every internal link of the snapshot lands on a rendered heading', () => {
   const targets = new Map([...compiled.values()].map(document => [docPath(document.language, document.slug), new Set([
     'top', ...document.headings.flatMap(heading => [heading.id, ...heading.aliases]),
-    ...allBlocks(document.blocks).filter(block => block.type === 'screenshot').map(block => `screenshot-${block.id}`),
   ])]))
   for (const document of compiled.values()) {
     const current = docPath(document.language, document.slug)
@@ -151,17 +150,3 @@ test('every internal link of the snapshot lands on a rendered heading or screens
   }
 })
 
-test('screenshot slots appear once per language with reserved dimensions', () => {
-  for (const language of snapshot.languages) {
-    for (const section of snapshot.manifest.sections.filter(item => item.screenshots)) {
-      const manifest = screenshotManifest(snapshot, language, section)
-      const slots = [...compiled.values()].filter(document => document.language === language).flatMap(document => allBlocks(document.blocks).filter(block => block.type === 'screenshot'))
-      assert.ok(manifest.size > 0)
-      assert.deepEqual(slots.map(slot => slot.id).sort(), [...manifest.keys()].sort())
-      for (const slot of slots) {
-        assert.ok(slot.caption.length && slot.width && slot.height, slot.id)
-        if (slot.src) assert.match(slot.src, new RegExp(`^/assets/docs/screenshots/${language}/${slot.id}\\.(webp|avif|png|jpg)$`))
-      }
-    }
-  }
-})

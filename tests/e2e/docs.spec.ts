@@ -221,19 +221,6 @@ test('code samples copy their exact text', async ({ page, context }) => {
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(source)
 })
 
-test('screenshot slots reserve their size and link to the capture spec', async ({ page }) => {
-  await page.goto(docPath('en', 'rcx/editor/routes'))
-  const slot = page.locator('[data-screenshot]').first()
-  await expect(slot).toBeVisible()
-  const frame = await slot.locator('.hb-shot-frame').boundingBox()
-  const ratio = await slot.locator('.hb-shot-frame').evaluate(element => getComputedStyle(element).aspectRatio)
-  const [width, height] = ratio.split('/').map(Number)
-  expect(frame!.height / frame!.width).toBeCloseTo(height! / width!, 1)
-  await slot.locator('.hb-shot-spec').click()
-  await expect(page).toHaveURL(/\/en\/docs\/rcx\/screenshots\/?$/)
-  await expect(page.locator('.hb-table tbody tr').first()).toBeVisible()
-})
-
 for (const width of [390, 768]) {
   test(`phone and tablet layout at ${width}px uses the drawer and fits the viewport`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 })

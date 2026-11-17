@@ -19,7 +19,6 @@ const slugPattern = /^(?:[a-z0-9-]+(?:\/[a-z0-9-]+)*)?$/
 export const digest = text => createHash('sha256').update(text).digest('hex')
 export const docPath = (language, slug) => `/${language}/docs${slug ? `/${slug}` : ''}`
 export const diagramPath = source => `/assets/docs/diagrams/${digest(source).slice(0, 16)}.svg`
-export const screenshotBase = (language, id) => `/assets/docs/screenshots/${language}/${id}`
 
 export function markdownFiles(root) {
   return readdirSync(root, { withFileTypes: true }).flatMap(entry => {
@@ -157,20 +156,6 @@ export function makeCatalogue(library, commit) {
   }
 }
 
-export function screenshotManifest(library, language, section) {
-  if (!section.screenshots) return new Map()
-  const file = posix.join(section.dir, section.screenshots)
-  const table = library.documents.get(`${language}/${file}`)?.tokens.find(token => token.type === 'table')
-  if (!table || table.header.length !== 5) throw new Error(`${language}/${file}: missing screenshot manifest table`)
-  return new Map(table.rows.map(cells => {
-    const [id, image, page, about, capture] = cells.map(cell => plain(cell.tokens))
-    const target = posix.join(section.dir, page)
-    if (!/^[a-z0-9-]+$/.test(id) || image !== `images/${id}.png` || !library.pages.some(item => item.file === target)) throw new Error(`${language}/${file}: invalid screenshot ${id}`)
-    const size = /(\d{3,4})\s*[x×]\s*(\d{3,4})/.exec(about)
-    return [id, { id, file: image, page: target, description: about, capture, width: size ? Number(size[1]) : 412, height: size ? Number(size[2]) : 915 }]
-  }))
-}
-
 function headerNames() {
   const file = join(siteRoot, 'shared/provider/standard.json')
   if (!existsSync(file)) return new Set()
@@ -196,9 +181,8 @@ function resolveLink(href, document, library, catalogue) {
   if (fragment) {
     const anchor = decodeURIComponent(fragment)
     const heading = destination.headings.find(item => item.id === anchor || item.aliases.includes(anchor))
-    const screenshot = anchor.startsWith('screenshot-') && library.manifest.sections.some(section => screenshotManifest(library, document.language, section).has(anchor.slice(11)))
-    if (!heading && !screenshot) throw new Error(`${document.language}/${document.file}: missing anchor ${href}`)
-    hash = `#${heading?.id ?? anchor}`
+    if (!heading) throw new Error(`${document.language}/${document.file}: missing anchor ${href}`)
+    hash = `#${heading.id}`
   }
   if (!decoded) return { href: hash || '#top', external: false }
   return { href: `${docPath(document.language, destination.page.slug)}${hash}`, external: false }
@@ -225,11 +209,7 @@ function readDiagram(source, title, requireDiagrams) {
 }
 
 export function compileDocument(document, library, catalogue, { requireDiagrams = true } = {}) {
-  const section = library.manifest.sections.find(item => item.id === document.page.section)
-  const screenshots = section ? screenshotManifest(library, document.language, section) : new Map()
-  const manifestFile = section?.screenshots ? posix.join(section.dir, section.screenshots) : ''
   const headers = referenceLanguages.includes(document.language) ? headerNames() : new Set()
-  const usedScreenshots = []
   let headingIndex = 0
   const where = `${document.language}/${document.file}`
 
@@ -265,27 +245,11 @@ export function compileDocument(document, library, catalogue, { requireDiagrams 
     if (token.type === 'blockquote') {
       const alert = /^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*\n/i.exec(token.text)
       const body = alert ? token.text.slice(alert[0].length) : token.text
-      const slot = /^\*\*[^`\n]*`([a-z0-9-]+)`\*\*\s*[—–-]\s*/.exec(body)
-      if (slot) {
-        const entry = screenshots.get(slot[1])
-        if (!entry || entry.page !== document.file || usedScreenshots.includes(entry.id)) throw new Error(`${where}: invalid screenshot slot ${slot[1]}`)
-        usedScreenshots.push(entry.id)
-        const base = screenshotBase(document.language, entry.id)
-        const extension = ['webp', 'avif', 'png', 'jpg'].find(ext => existsSync(join(publicRoot, `${base}.${ext}`)))
-        return [{ type: 'screenshot', ...entry, caption: inline(marked.lexer(body.slice(slot[0].length))[0]?.tokens ?? []), ...(extension ? { src: `${base}.${extension}` } : {}) }]
-      }
       const children = blocks(marked.lexer(body, { gfm: true }))
       return [alert ? { type: 'callout', tone: alert[1].toLowerCase(), children } : { type: 'quote', children }]
     }
     if (token.type === 'table') {
       const rows = token.rows.map(cells => cells.map(cell => inline(cell.tokens)))
-      if (document.file === manifestFile) {
-        token.rows.forEach((cells, index) => {
-          const entry = screenshots.get(plain(cells[0].tokens))
-          const page = entry && library.pages.find(item => item.file === entry.page)
-          if (page) for (const column of [0, 2]) rows[index][column] = [{ type: 'link', href: `${docPath(document.language, page.slug)}#screenshot-${entry.id}`, external: false, children: rows[index][column] }]
-        })
-      }
       return [{ type: 'table', head: token.header.map(cell => inline(cell.tokens)), align: token.align, rows }]
     }
     throw new Error(`${where}: unsupported block ${token.type}${token.type === 'html' ? ` ${token.text.trim()}` : ''}`)
@@ -295,8 +259,6 @@ export function compileDocument(document, library, catalogue, { requireDiagrams 
   const first = document.tokens.findIndex((token, index) => index > start && token.type !== 'space')
   const lede = document.tokens[first]?.type === 'paragraph' ? document.tokens[first] : undefined
   const result = blocks(document.tokens.filter(token => token !== lede))
-  const expected = [...screenshots.values()].filter(entry => entry.page === document.file).map(entry => entry.id).sort()
-  if ([...usedScreenshots].sort().join() !== expected.join()) throw new Error(`${where}: screenshot slots do not match the manifest`)
   for (const block of result) if (block.type === 'callout' && !alerts.includes(block.tone)) throw new Error(`${where}: unknown callout ${block.tone}`)
   return { language: document.language, slug: document.page.slug, title: document.headings[0].title, lede: lede ? inline(lede.tokens) : [], headings: document.headings, blocks: result }
 }

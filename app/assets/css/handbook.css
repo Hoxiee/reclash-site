@@ -199,27 +199,6 @@ h4.hb-h { margin: 28px 0 8px; font-size: 1rem; font-weight: 650; }
 .hb-diagram summary { width: max-content; cursor: pointer; }
 .hb-diagram details .codeblock { margin-top: 10px; }
 
-.hb-shot { margin: 0 0 1.6em; scroll-margin-top: calc(var(--hb-top) + 8px); }
-.hb-shot-frame { max-width: 260px; overflow: hidden; border-radius: var(--r-m); background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line); }
-.hb-shot.is-wide .hb-shot-frame { max-width: none; }
-.hb-shot-frame img { width: 100%; height: 100%; object-fit: cover; }
-.hb-shot-empty { display: grid; place-content: center; justify-items: center; gap: 8px; height: 100%; color: var(--fg-3); font-size: 0.8rem;
-  background: repeating-linear-gradient(135deg, transparent 0 14px, oklch(0.945 0.012 85 / 0.025) 14px 28px); }
-.hb-shot-empty svg { width: 30px; height: 30px; stroke-width: 1.4; }
-.hb-shot-frame > .hb-shot-empty { min-height: 200px; padding: 16px; text-align: center; }
-.hb-shot.is-wide .hb-shot-empty { min-height: 150px; }
-.hb-shot-empty code { max-width: 100%; overflow-wrap: anywhere; }
-.hb-shot figcaption { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 10px; font-size: 0.86rem; line-height: 1.5; color: var(--fg-2); }
-.hb-shot-caption::first-letter { text-transform: uppercase; }
-.hb-shots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px 20px; margin: 0 0 1.6em; }
-.hb-shots .hb-shot { margin: 0; }
-.hb-shots .hb-shot.is-wide { grid-column: 1 / -1; }
-.hb-shots .hb-shot-frame { max-width: 200px; }
-.hb-shots .hb-shot.is-wide .hb-shot-frame { max-width: none; }
-@media (max-width: 640px) { .hb-shots { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 14px; } }
-.hb-prose .hb-shot-spec { color: var(--fg-3); text-decoration: none; }
-.hb-prose .hb-shot-spec:hover { color: var(--brand); }
-.hb-callout .hb-shot:last-child { margin-bottom: 0; }
 
 /* ---------- section map ---------- */
 .hb-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: stretch; gap: 16px; margin-bottom: 48px; }

@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "d7fa72bfd59a7886928ec00e265de2a6a22d0ad0"
+    "commit": "0ad0cd279fa82483285e39c4713ab2da2d2c983c"
   },
   "languages": [
     "ru",
@@ -92,15 +92,6 @@
             "rcx/editor/routes",
             "rcx/editor/groups",
             "rcx/editor/studio"
-          ]
-        },
-        {
-          "title": {
-            "ru": "Приложения",
-            "en": "Appendix"
-          },
-          "pages": [
-            "rcx/screenshots"
           ]
         }
       ]
@@ -409,8 +400,8 @@
         "en": "The Auto routing page: the switch, the running scenario with its routes, the smart groups, and the library with import and export."
       },
       "minutes": {
-        "ru": 5,
-        "en": 6
+        "ru": 4,
+        "en": 5
       }
     },
     {
@@ -426,7 +417,7 @@
         "en": "The route editor and its pickers: traffic, server order, steps, countries and conditions."
       },
       "minutes": {
-        "ru": 4,
+        "ru": 3,
         "en": 4
       }
     },
@@ -443,8 +434,8 @@
         "en": "The per-group sheet in Proxies: status, control, pool, behaviour, explanation, history and messages."
       },
       "minutes": {
-        "ru": 5,
-        "en": 6
+        "ru": 4,
+        "en": 5
       }
     },
     {
@@ -460,25 +451,8 @@
         "en": "The behaviour (profile) editor: form and YAML, a live preview on a group, warnings, merging and earlier versions."
       },
       "minutes": {
-        "ru": 3,
+        "ru": 2,
         "en": 3
-      }
-    },
-    {
-      "slug": "rcx/screenshots",
-      "file": "auto-routing/images/README.md",
-      "section": "rcx",
-      "titles": {
-        "ru": "Снимки экрана",
-        "en": "Screenshots"
-      },
-      "descriptions": {
-        "ru": "Места для снимков на страницах редактора в приложении и настройка для их съёмки.",
-        "en": "The screenshot slots of the in-app editor pages and the setup for capturing them."
-      },
-      "minutes": {
-        "ru": 7,
-        "en": 8
       }
     }
   ],
@@ -500,11 +474,10 @@
     "ru/auto-routing/scenarios.md": "9b62cea9479cd17e2532164cc3a78df5ad9af3bebcd31630d3f49761a3308923",
     "ru/auto-routing/sharing.md": "6ac0482545e86d1f310cc2ea3e6fcb1effc6a4d1c0b1664999b2a60a75949c30",
     "ru/auto-routing/cookbook.md": "98b0c4dca9245280a4768b4645bf7eca5cd46067c9f9928d58a7fbe40bc43e7c",
-    "ru/auto-routing/editor/hub.md": "a5a5b5fe39f84299efda3a0894644f51026937be8f0383ada684adf7eb316279",
-    "ru/auto-routing/editor/routes.md": "f915de324ff92276b6167eb8aa54f26a3aac731e6ca5b00e1e6b31e45311ba9c",
-    "ru/auto-routing/editor/groups.md": "df7c8eec9a58dfc457016c87db36190e9b47a03448389231696bf9a5736f195d",
-    "ru/auto-routing/editor/studio.md": "5ff5cd9df39d5f09f702091cd854b6dea02f8662b336e26c01a81e7c609eaa92",
-    "ru/auto-routing/images/README.md": "ec90b0cec5edffc5a5dd850418746da02f6dbd5e194087ad20fc5fcc76bb1c0f",
+    "ru/auto-routing/editor/hub.md": "103451d1616779edf7455dcf04cd44ddf74543cff94064856a2308afddbb66d0",
+    "ru/auto-routing/editor/routes.md": "c30ee6084cc1d909eacba6236dfb8911d0417dd603a5b657226693bfe0e2b2e3",
+    "ru/auto-routing/editor/groups.md": "59645c535413cf9789f2bb71c322a9a7d2982c0414d93bf58ebccf8212ac4413",
+    "ru/auto-routing/editor/studio.md": "d593c96494d9e8b5823897e9f15f83fb6c4967a98cf286a3dfb0e8487744fabf",
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
@@ -522,10 +495,9 @@
     "en/auto-routing/scenarios.md": "3a172d385f35a558cc8994ac5ec06d4676c9365c38fd6f69d1dbc84dd6c0cf50",
     "en/auto-routing/sharing.md": "be9d507ce646fe152105ad719956b6b9d8fc9fa7d29c83cedca1f869b8d07136",
     "en/auto-routing/cookbook.md": "0154695e44f8a0ba68fe18d9d9b6d12d838201c07c4c09dc06dbefd8228965bc",
-    "en/auto-routing/editor/hub.md": "d3b513238c6eaa24d9cbb5a85fb3d34a382bec55289e31d3efddfc7bed1bd151",
-    "en/auto-routing/editor/routes.md": "a34f01d1ba1bd585ff3a3e70abd65f0fea4f43215ecb76e11b4d71757999eff6",
-    "en/auto-routing/editor/groups.md": "45f09a617bd648da3c7646a3dfb90d8880896c2826139283477af2a91db3986d",
-    "en/auto-routing/editor/studio.md": "01a489156575faa3d942225451108a004ee3c4beb91bd2241711f26b7ad99983",
-    "en/auto-routing/images/README.md": "caf11fb07ad795494975a58789867fd99e39a108ca83e7177f58e9e426ef00a1"
+    "en/auto-routing/editor/hub.md": "a24ab861e5efa58b468532dcda3a0481bc11130cf6f7d4144e109ad10fb4ed87",
+    "en/auto-routing/editor/routes.md": "ad0356a10829a9e12a3ca7e0b0821d9e1b97047384ddb1e44cf1cfc7df804749",
+    "en/auto-routing/editor/groups.md": "29bb6c0c9fc614adaf961f11228813233f1f1651afc5a221cd820fcd283d86dd",
+    "en/auto-routing/editor/studio.md": "54c5fd526796468f2bc348f5c0832581c1d38b4104d2042746a4d24a9c56f3c9"
   }
 }
