@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "928dee7ff23be66eab7e90f064c008411dc90b3e"
+    "commit": "09296a7747fd00c0934d3589cdac2c1b37de7b34"
   },
   "languages": [
     "ru",
@@ -171,8 +171,8 @@
         "en": "The provider manifest is one static YAML file that a provider hosts once for all users and points to with the reclash-config response header. It carries everything ReClash shows or applies beyond the standard headers:…"
       },
       "minutes": {
-        "ru": 22,
-        "en": 25
+        "ru": 24,
+        "en": 26
       }
     },
     {
@@ -486,7 +486,7 @@
     "ru/README.md": "84646860924b9f74d16e0ed75c159d0e4f9ad3a42f1b1a17931480d81de9949b",
     "ru/providers/README.md": "8ccbe3e27c17ed982261c5580a2888b509c3cc94ffe18004aecb16a0af2f7be4",
     "ru/providers/rollout.md": "e06542f91923e1101954494ea8e987a45821ff447a3b60478759821a4ab8aa16",
-    "ru/providers/manifest.md": "7ecde5a7eefc412e67b4a1ec84ccfbb2a6731d58f818677ab1e9a0b805e6cc9c",
+    "ru/providers/manifest.md": "7d30c5bac5b3bccae3358e0b3142946337b02bf80e6e30447f39ee66e5ac7aea",
     "ru/providers/headers.md": "2b87117afd3c087ca396415e85e7c3c3228b2a2d75bb88dc5a4f39f4e9a99454",
     "ru/providers/request.md": "8713002af77551d9df350497bdb0c10cc0eb0e925da605769aae2d2bead4ea69",
     "ru/providers/policy.md": "2ef378e89b306021cf7ef9521283d21964f5838eb31a96ddfd923cd3a346663e",
@@ -508,7 +508,7 @@
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
-    "en/providers/manifest.md": "70ab6c60e9a6021012519539117501034a1a84d2e13fdefacf439fa014b3a055",
+    "en/providers/manifest.md": "9f020eb1e0a5a82155e33c5042cce334d437796b0e8382ba76872c3c754a5faa",
     "en/providers/headers.md": "703290994552d1d5a08d1302d4f739996cbec1a97b6f1b414d3f9b5a3e18c6db",
     "en/providers/request.md": "7d9d5bc848acacdbdf75a0982e5bff170562e08d7aea18aaae241cb4fc5c5ac7",
     "en/providers/policy.md": "a57ba0e4ce732f01763ab0341555ae7156abe91303b69b24d9f6c10f8cc06ddd",
