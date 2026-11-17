@@ -62,14 +62,6 @@ test('import links, provider theme, FAQ deep links and Nuxt transitions retain a
   await expect(page).toHaveURL(/\/en\/start(?:\.html|\/)?\?source=faq#faq-flclash$/)
   await expect(page.locator('#faq-flclash')).toHaveAttribute('data-open', '')
   await backToTop(page)
-  await page.locator('.nav-links').getByRole('link', { name: 'Gallery', exact: true }).click()
-  await expect(page.locator('.g-item')).toHaveCount(8)
-  await page.getByRole('button', { name: 'Themes', exact: true }).click()
-  await expect(page.locator('.g-item:not(.is-hidden)')).toHaveCount(2)
-  await page.getByRole('button', { name: 'Routing', exact: true }).click()
-  await expect(page.locator('.g-item:not(.is-hidden)')).toHaveCount(1)
-  await page.getByRole('button', { name: 'All', exact: true }).click()
-  await expect(page.locator('.g-item:not(.is-hidden)')).toHaveCount(8)
 })
 
 for (const language of ['ru', 'en'] as const) {
@@ -87,7 +79,7 @@ for (const language of ['ru', 'en'] as const) {
 test('releases load only on download and SHA256 stays local', async ({ page }) => {
   const requests: string[] = []
   page.on('request', request => { if (request.url().startsWith('https://')) requests.push(request.url()) })
-  await page.goto('/en/gallery')
+  await page.goto('/en/start')
   expect(requests).toEqual([])
   await page.goto('/en/download')
   await expect(page.locator('.rel-ver')).toHaveText('v1.2.3')

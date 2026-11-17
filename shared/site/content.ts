@@ -29,16 +29,6 @@ export const portedPages = {
       "en": "Fake test subscriptions for checking import, quota and theming in ReClash. Not working access."
     }
   },
-  "gallery": {
-    "title": {
-      "ru": "Галерея — ReClash",
-      "en": "Gallery — ReClash"
-    },
-    "description": {
-      "ru": "Обзор экранов ReClash: подключение, маршрутизация RCX, подписки и диагностика.",
-      "en": "Explore ReClash screens: connection, RCX routing, subscriptions and diagnostics."
-    }
-  },
   "builder": {
     "title": {
       "ru": "Конструктор манифеста — ReClash",

@@ -28,6 +28,7 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
     headers.push(mockPreviewPath(profile.key), '  Content-Type: application/json; charset=utf-8', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
   }
   for (const language of languages) {
+    redirects.push(`/${language}/gallery ${pagePath(language)} 301`, `/${language}/gallery.html ${pagePath(language)} 301`)
     for (const page of sitePages) {
       const canonical = pagePath(language, page.key)
       const legacy = legacyPath(language, page.key)

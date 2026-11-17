@@ -721,24 +721,3 @@ a.tag:hover { color: var(--fg); }
 .chips-list { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 8px; color: var(--fg-2); }
 .chips-list li { display: flex; gap: 10px; }
 .chips-list li::before { content: ''; flex: none; width: 6px; height: 6px; margin-top: 0.62em; border-radius: 2px; background: var(--brand); }
-
-/* ---------- gallery ---------- */
-.g-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
-.g-grid { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(12, 1fr); gap: 14px; list-style: none; margin: 0; padding: 0; position: relative; }
-.g-item { grid-column: span 4; position: relative; border-radius: var(--r-l); overflow: hidden; background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line);
-  aspect-ratio: 4 / 3; transform-origin: 50% 50%; }
-.g-item.wide { grid-column: span 8; aspect-ratio: auto; }
-.g-item.is-hidden { display: none; }
-.g-art { position: absolute; inset: 0; width: 100%; height: 100%; }
-.g-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 20px; display: grid; gap: 4px;
-  background: linear-gradient(transparent, color-mix(in oklab, var(--bg) 92%, transparent) 55%); }
-.g-cap b { font: 600 1rem/1.3 var(--display); letter-spacing: -0.01em; }
-.g-kind { position: absolute; top: 14px; left: 14px; display: inline-flex; gap: 6px; align-items: center; padding: 5px 11px; border-radius: 99px;
-  background: color-mix(in oklab, var(--bg) 70%, transparent); backdrop-filter: blur(8px); font-size: 0.8rem; color: var(--fg-2); }
-.g-kind i { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-3); }
-.g-kind.soon i { background: oklch(0.8 0.15 70); }
-.g-item .g-art * { transition: transform 1.2s var(--ease-gentle); transform-box: fill-box; transform-origin: center; }
-.g-item:hover .g-art .mv { transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--r, 0deg)); }
-@media (max-width: 900px) { .g-item, .g-item.wide { grid-column: span 6; aspect-ratio: 4 / 3; } }
-@media (max-width: 560px) { .g-item, .g-item.wide { grid-column: span 12; } }
-.g-empty { margin-top: 28px; color: var(--fg-3); font-size: 0.92rem; }

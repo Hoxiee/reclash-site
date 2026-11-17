@@ -12,7 +12,6 @@ export const sitePages = [
   { key: 'reference', title: { ru: 'Справочник', en: 'Reference' } },
   { key: 'builder', title: { ru: 'Конструктор', en: 'Builder' } },
   { key: 'mock-subs', title: { ru: 'Примеры подписок', en: 'Mock subscriptions' } },
-  { key: 'gallery', title: { ru: 'Галерея', en: 'Gallery' } },
   { key: 'motion', title: { ru: 'Лаборатория движения', en: 'Motion laboratory' } },
 ] as const satisfies ReadonlyArray<{ key: string, title: BilingualText }>
 

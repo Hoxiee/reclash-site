@@ -1,4 +1,4 @@
-/* Inner pages: start, download, gallery. Each block runs only if its markup is present. */
+/* Inner pages: start, download. Each block runs only if its markup is present. */
 export function initPages(scope, M, Theme, t, helpers) {
   'use strict';
   const $ = (s, r = scope.root) => r.querySelector(s);

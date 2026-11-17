@@ -29,7 +29,6 @@ function remember(next: 'ru' | 'en') {
     </SiteLink>
     <ul class="nav-links" data-group data-items=".nav-a" data-cpull="0.06">
       <li><SiteLink class="nav-a" data-mg :to="pagePath(language, 'index')" :aria-current="page === 'index' ? 'page' : undefined"><span class="mg-c">{{ t("Клиент", "Client") }}</span></SiteLink></li>
-      <li><SiteLink class="nav-a" data-mg :to="pagePath(language, 'gallery')" :aria-current="page === 'gallery' ? 'page' : undefined"><span class="mg-c">{{ t("Галерея", "Gallery") }}</span></SiteLink></li>
       <li><SiteLink class="nav-a" data-mg :to="pagePath(language, 'start')" :aria-current="page === 'start' ? 'page' : undefined"><span class="mg-c">{{ t("Старт и FAQ", "Start and FAQ") }}</span></SiteLink></li>
       <li><SiteLink class="nav-a" data-mg :to="pagePath(language, 'docs')" :aria-current="page === 'docs' ? 'page' : undefined"><span class="mg-c">{{ t("Документация", "Docs") }}</span></SiteLink></li>
       <li class="dd">
@@ -57,7 +56,6 @@ function remember(next: 'ru' | 'en') {
 <div class="menu" id="menu" :aria-label="t('Меню', 'Menu')">
   <ul>
     <li><SiteLink :to="pagePath(language, 'index')">{{ t("Клиент", "Client") }}</SiteLink></li>
-    <li><SiteLink :to="pagePath(language, 'gallery')">{{ t("Галерея", "Gallery") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'start')">{{ t("Старт и FAQ", "Start and FAQ") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'docs')">{{ t("Документация", "Documentation") }}</SiteLink></li>
     <li><SiteLink :to="pagePath(language, 'download')">{{ t("Скачать", "Download") }}</SiteLink></li>
