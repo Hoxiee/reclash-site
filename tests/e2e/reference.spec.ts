@@ -67,6 +67,19 @@ test('removed appearance headers have no reference entry and the config header r
   await expect(page.locator('#h-reclash-config')).toHaveCount(1)
 })
 
+test('alias headers and the alias switch have reference entries in both languages', async ({ page }) => {
+  for (const [language, text] of [['ru', 'Алиас другого клиента'], ['en', 'Alias from another client']] as const) {
+    await page.goto(`/${language}/reference`)
+    await hydrated(page)
+    await page.locator('.ref-filter[data-cat="alias"]').click()
+    await expect(cards(page)).toHaveCount(headerReference.filter(entry => entry.category === 'alias').length)
+    await expect(page.locator('#h-flclashx-servicename')).toContainText(text)
+  }
+  await page.goto('/en/reference#h-reclash-aliases')
+  await expect(page.locator('#h-reclash-aliases')).toHaveAttribute('open', '')
+  await expect(page.locator('#h-reclash-aliases')).toContainText('Invalid provider field')
+})
+
 test('cards toggle from the keyboard and the catalogue is translated', async ({ page }) => {
   await page.goto('/ru/reference')
   await hydrated(page)

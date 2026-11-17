@@ -236,6 +236,7 @@ onBeforeUnmount(() => {
       <template #tags>
         <span class="tag">{{ countOf('reclash') }} reclash-*</span>
         <span class="tag">{{ t(`${countOf('common')} общих`, `${countOf('common')} common`) }}</span>
+        <span class="tag">{{ t(`${countOf('alias')} алиасов`, `${countOf('alias')} aliases`) }}</span>
         <span class="tag">HWID</span>
       </template>
       <ProviderTabs page="reference" />

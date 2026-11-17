@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "1ec76d72f2715dfb0d0da27201f5cf7c9d27ad2c"
+    "commit": "928dee7ff23be66eab7e90f064c008411dc90b3e"
   },
   "languages": [
     "ru",
@@ -188,8 +188,8 @@
         "en": "The standard HTTP headers a subscription response can carry, their value formats, and the one reclash-config header that points to the provider manifest."
       },
       "minutes": {
-        "ru": 3,
-        "en": 3
+        "ru": 5,
+        "en": 5
       }
     },
     {
@@ -273,8 +273,8 @@
         "en": "Limits, manifest fields and HTTP headers of provider standard version 1, generated from the registry the app decodes with."
       },
       "minutes": {
-        "ru": 2,
-        "en": 2
+        "ru": 3,
+        "en": 3
       }
     },
     {
@@ -487,12 +487,12 @@
     "ru/providers/README.md": "8ccbe3e27c17ed982261c5580a2888b509c3cc94ffe18004aecb16a0af2f7be4",
     "ru/providers/rollout.md": "e06542f91923e1101954494ea8e987a45821ff447a3b60478759821a4ab8aa16",
     "ru/providers/manifest.md": "7ecde5a7eefc412e67b4a1ec84ccfbb2a6731d58f818677ab1e9a0b805e6cc9c",
-    "ru/providers/headers.md": "e1063c02cbb6bf04e43bbc95c78e51782e0fa232e74c8cb7a9802fa580810bb7",
+    "ru/providers/headers.md": "2b87117afd3c087ca396415e85e7c3c3228b2a2d75bb88dc5a4f39f4e9a99454",
     "ru/providers/request.md": "8713002af77551d9df350497bdb0c10cc0eb0e925da605769aae2d2bead4ea69",
     "ru/providers/policy.md": "2ef378e89b306021cf7ef9521283d21964f5838eb31a96ddfd923cd3a346663e",
     "ru/providers/preview-api.md": "7f0fc203887a710e648af12fb5c2daf71ded816e7368bdcb4c42d6a58e9c2c2a",
     "ru/providers/support.md": "ac2291449469d5164641db62e7e186a468e484d5271d0fd9b3bae042d4e39c56",
-    "ru/providers/standard.md": "b29acb5389f2227b1861173025c5470551799a58853ea1b2d14c05e960d0d5bc",
+    "ru/providers/standard.md": "f5f9a3a5fffbe5dac060e07fcf38d864b9e720e74a7d2e11a9bc14dc3e0a74bd",
     "ru/auto-routing/README.md": "003aed583e43c6e240e4a6d0466ba1a929b34e650b336df8f5b71c179eaf8250",
     "ru/auto-routing/engine.md": "4918e9c53a96c8c6ed2892eff962441d1afb9a52605a8be6a61d5ca14aeee401",
     "ru/auto-routing/profiles.md": "fb7a3613629321223ea47e3cf93712c2cde56ed7998c7105a0390d58f09001e8",
@@ -509,12 +509,12 @@
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
     "en/providers/manifest.md": "70ab6c60e9a6021012519539117501034a1a84d2e13fdefacf439fa014b3a055",
-    "en/providers/headers.md": "eb4d69a9d2a160eeeadbe00db5085f5a28bc2015cadf0dad6c8c88daf257d175",
+    "en/providers/headers.md": "703290994552d1d5a08d1302d4f739996cbec1a97b6f1b414d3f9b5a3e18c6db",
     "en/providers/request.md": "7d9d5bc848acacdbdf75a0982e5bff170562e08d7aea18aaae241cb4fc5c5ac7",
     "en/providers/policy.md": "a57ba0e4ce732f01763ab0341555ae7156abe91303b69b24d9f6c10f8cc06ddd",
     "en/providers/preview-api.md": "310adc40fe5231705bff6be2cba27a8765f8b22c7bd6b3a7c720c8d5a5268efc",
     "en/providers/support.md": "cf6932f61ca2715ab126fe6e5cdb8cd81ff358ca6d217a9c4fa2fae31e2b31ad",
-    "en/providers/standard.md": "add32fdf9d98d1ef25b51d0cb07853b92435aaa37da213debbd6a5589d8dc8ca",
+    "en/providers/standard.md": "55f6c81cdb1ab4de4bc4a45ccdb0fb9381dbd627ed7fa498ef3cb087f01b0941",
     "en/auto-routing/README.md": "41422076cc5b3996c89d60f46efc256971f2022abf902c672152b67169ad2e1f",
     "en/auto-routing/engine.md": "3611557ebae5faf8e9c9a54d9c879be41152d3dadfbc1221ce727d19631c6442",
     "en/auto-routing/profiles.md": "b66638987b4e93a94cd7560c9293900a881cb00cd44a7fc0ebbf00ac390be607",

@@ -8,7 +8,7 @@ import { providerStandard, type HeaderTransform } from './standard'
 // Prose is light markup: `code` and **strong**. Render it with
 // <ReferenceRich>, never as HTML; `plainText` strips it for search.
 
-export type HeaderCategory = 'common' | 'reclash' | 'hwid'
+export type HeaderCategory = 'common' | 'reclash' | 'alias' | 'hwid'
 export type HeaderDirection = 'response' | 'request'
 
 export type TokenRow = {
@@ -62,8 +62,11 @@ export const headerCategories: readonly CategoryInfo[] = [
     lede: bi('Стандартные заголовки Clash. Отдаёте их уже — ReClash подхватит без изменений.',
       'Standard Clash headers. If you already send them, ReClash picks them up unchanged.') },
   { key: 'reclash', label: bi('ReClash', 'ReClash'), badge: bi('ReClash', 'ReClash'), title: bi('Заголовок ReClash', 'ReClash header'),
-    lede: bi('Единственный заголовок, который понимает только ReClash: `reclash-config` указывает на манифест провайдера. Всё остальное (имя, логотип, объявления, кнопки, политика, внешний вид) лежит в разделах манифеста; подробности в документации «Манифест провайдера».',
-      'The only header only ReClash understands: `reclash-config` points to the provider manifest. Everything else (name, logo, announcements, buttons, policy, appearance) lives in manifest sections; see the Provider manifest documentation.') },
+    lede: bi('Заголовки, которые понимает только ReClash. `reclash-config` указывает на манифест провайдера, `reclash-aliases` включает или выключает чтение заголовков других клиентов. Всё остальное (имя, логотип, объявления, кнопки, политика, внешний вид) лежит в разделах манифеста; подробности в документации «Манифест провайдера».',
+      'Headers only ReClash understands. `reclash-config` points to the provider manifest and `reclash-aliases` switches reading of other clients\' headers on or off. Everything else (name, logo, announcements, buttons, policy, appearance) lives in manifest sections; see the Provider manifest documentation.') },
+  { key: 'alias', label: bi('Другие клиенты', 'Other clients'), badge: bi('Алиас', 'Alias'), title: bi('Заголовки других клиентов', 'Headers from other clients'),
+    lede: bi('Заголовки, которые ReClash читает как запасной источник уже существующих полей провайдера. Стандартный заголовок поля читается первым, затем алиасы по порядку; побеждает первое допустимое значение, а манифест перекрывает и то и другое. Алиасы не переносят настройки, приложения, маршрутизацию и политику.',
+      'Headers ReClash reads as a fallback source for existing provider fields. The standard header of a field is read first, then its aliases in order, and the first valid value wins; the manifest overrides both. Aliases never carry settings, apps, routing or policy.') },
   { key: 'hwid', label: bi('HWID', 'HWID'), badge: bi('HWID', 'HWID'), title: bi('Устройства и HWID', 'Devices and HWID'),
     lede: bi('Заголовки запроса от клиента и ответы на них.',
       'Request headers from the client and the responses to them.') },
@@ -107,14 +110,50 @@ const wireProse: Record<string, [string, string, string]> = {
   'profile-title': ['Имя профиля подписки.', 'Subscription profile name.', 'Nebula subscription'],
   'profile-update-interval': ['Интервал обновления профиля в часах.', 'Profile update interval in hours.', '12'],
   'hide-url': ['Скрывает URL подписки в интерфейсе, но не делает его секретным для сервера. Манифест перекрывает его значением `provider.hide-url`.', 'Hides the subscription URL in the interface without making it secret from the server. The manifest overrides it with `provider.hide-url`.', 'true'],
+  'reclash-aliases': ['Включает или выключает чтение заголовков других клиентов. Если ответ по HTTPS несёт указатель на манифест, алиасы выключены, пока не передано `1`. Без указателя на манифест они включены, а `0` их выключает. Любое другое значение выключает алиасы и даёт предупреждение «Invalid provider field».', 'Switches reading of other clients\' headers on or off. When an HTTPS response carries the manifest pointer, aliases are off unless the value is `1`. Without a manifest pointer they are on, and `0` turns them off. Any other value turns them off with an "Invalid provider field" warning.', '1'],
   'reclash-config': ['HTTPS-адрес манифеста провайдера: YAML-файла, который описывает всё остальное. Подробности — в разделе «Манифест провайдера».', 'HTTPS address of the provider manifest, the YAML file that describes everything else. See the Provider manifest guide.', 'https://nebula.example/reclash.yaml'],
 }
 const transforms: Record<string, HeaderTransform> = { 'announce': 'base64', 'profile-title': 'base64', 'profile-update-interval': 'hours-to-minutes' }
+
+type AliasFormat = 'plain' | 'percentEncoded' | 'urlWithNumber' | 'hostList'
+const aliasFormats: Record<AliasFormat, BilingualText> = {
+  plain: bi('Значение как есть.', 'The value as sent.'),
+  percentEncoded: bi('Текст с процентным кодированием.', 'Percent-encoded text.'),
+  urlWithNumber: bi('URL, после которого может стоять число.', 'A URL optionally followed by a number.'),
+  hostList: bi('Список хостов; нужен ответ по HTTPS.', 'A host list; needs an HTTPS response.'),
+}
+const aliasExamples: Record<string, string> = {
+  'flclashx-servicename': 'Nebula', 'isp-name': 'Nebula%20VPN',
+  'flclashx-servicelogo': 'https://nebula.example/logo.png', 'profile-logo': 'https://nebula.example/logo.png',
+  'homepage': 'https://nebula.example', 'isp-url': 'https://nebula.example',
+  'flclashx-buyplan': 'https://nebula.example/renew 30', 'sub-expire-button-link': 'https://nebula.example/renew',
+  'flclashx-buytraffic': 'https://nebula.example/top-up 20', 'announce-url': 'https://nebula.example/news',
+  'subscription-name': 'Nebula subscription', 'flclashx-newdomain': 'a.nebula.example,b.nebula.example',
+  'new-domain': 'nebula.example',
+}
+/** Alias header name to the provider field it feeds and the client it comes from, read from the registry. */
+const aliasOf = new Map(providerStandard.manifestFields.flatMap(field =>
+  ((field as { aliasHeaders?: Array<{ name: string, client: string, format: string }> }).aliasHeaders ?? [])
+    .map(alias => [alias.name, { path: field.path, ...alias }] as const)))
+
+function aliasProse(name: string): [string, string, string] {
+  const alias = aliasOf.get(name)
+  const format = aliasFormats[(alias?.format ?? 'plain') as AliasFormat] ?? aliasFormats.plain
+  const origin = alias ? `${alias.client}; поле \`${alias.path}\`` : ''
+  const originEn = alias ? `${alias.client}; field \`${alias.path}\`` : ''
+  return [
+    `Алиас другого клиента (${origin}). Читается, когда стандартный заголовок поля отсутствует или недопустим; ${format.ru} Манифест перекрывает его. Подробности о включении — в \`reclash-aliases\`.`,
+    `Alias from another client (${originEn}). Read when the field's standard header is absent or invalid. ${format.en} The manifest overrides it. See \`reclash-aliases\` for switching aliases on or off.`,
+    aliasExamples[name] ?? 'value',
+  ]
+}
+
 const wireEntries: HeaderEntry[] = providerStandard.headers.map(header => {
-  const [ru, en, example] = wireProse[header.name]!
+  const isAlias = (header.context as readonly string[]).some(item => item.startsWith('alias:'))
+  const [ru, en, example] = isAlias ? aliasProse(header.name) : wireProse[header.name]!
   const name = header.name.toLowerCase()
   return { id: referenceAnchor(name), name,
-    category: name === 'reclash-config' ? 'reclash' : name.startsWith('x-hwid') || ['x-device-os', 'x-ver-os', 'x-device-model', 'x-device-locale'].includes(name) ? 'hwid' : 'common',
+    category: isAlias ? 'alias' : name === 'reclash-config' || name === 'reclash-aliases' ? 'reclash' : name.startsWith('x-hwid') || ['x-device-os', 'x-ver-os', 'x-device-model', 'x-device-locale'].includes(name) ? 'hwid' : 'common',
     direction: header.direction as HeaderDirection, transform: transforms[name] ?? 'none',
     format: bi(header.encoding, header.encoding), summary: bi(ru, en), body: bi(ru, en),
     example: `${header.name}: ${example}`, keywords: bi(ru, en) }
