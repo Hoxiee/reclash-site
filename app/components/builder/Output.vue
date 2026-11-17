@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { docPath } from '~~/shared/docs/catalogue'
+import { pagePath } from '~~/shared/site/routes'
+import { referenceAnchor } from '~~/shared/provider/reference'
 import { manifestLimit, schemaCommentLine } from '~~/shared/provider/builder/document'
 import { caddySnippet, defaultGlobalFilter, exampleManifestUrl, globalGroup, headerLine, isHttpsUrl, nginxSnippet, remnawaveRule, tunExclusions } from '~~/shared/provider/builder/deploy'
 import type { CodeLanguage } from '~~/shared/site/highlight'
@@ -29,16 +31,20 @@ function download() {
   setTimeout(() => URL.revokeObjectURL(link.href), 0)
 }
 
+const mirror = ref('')
+const mirrorProblem = computed(() => mirror.value.trim() && !isHttpsUrl(mirror.value.trim()) ? t('Нужна ссылка https://. Заголовок с другой схемой не учитывается.', 'Use an https:// link. Any other scheme is ignored.') : '')
+// An invalid mirror stays out of the snippets so they never show a header the app would ignore.
+const update = computed(() => (mirror.value.trim() && !mirrorProblem.value ? mirror.value.trim() : ''))
 const target = computed(() => url.value.trim() || exampleManifestUrl)
 const urlProblem = computed(() => url.value.trim() && !isHttpsUrl(url.value.trim()) ? t('Нужна ссылка https://. Заголовок с другой схемой не учитывается.', 'Use an https:// link. Any other scheme is ignored.') : '')
 type Tab = 'header' | 'nginx' | 'caddy' | 'remnawave'
 const tab = ref<Tab>('header')
 const tabs: Array<{ key: Tab, text: string }> = [{ key: 'header', text: 'HTTP' }, { key: 'nginx', text: 'nginx' }, { key: 'caddy', text: 'Caddy' }, { key: 'remnawave', text: 'Remnawave' }]
 const snippet = computed<{ code: string, lang: CodeLanguage, label: string }>(() => ({
-  header: { code: headerLine(target.value), lang: 'http' as const, label: t('Заголовок ответа подписки', 'Subscription response header') },
-  nginx: { code: nginxSnippet(target.value), lang: 'nginx' as const, label: t('location подписки', 'Subscription location') },
-  caddy: { code: caddySnippet(target.value), lang: 'text' as const, label: 'Caddyfile' },
-  remnawave: { code: remnawaveRule(target.value), lang: 'text' as const, label: t('Subscription → Response Rules', 'Subscription → Response Rules') },
+  header: { code: headerLine(target.value, update.value), lang: 'http' as const, label: t('Заголовок ответа подписки', 'Subscription response header') },
+  nginx: { code: nginxSnippet(target.value, update.value), lang: 'nginx' as const, label: t('location подписки', 'Subscription location') },
+  caddy: { code: caddySnippet(target.value, update.value), lang: 'text' as const, label: 'Caddyfile' },
+  remnawave: { code: remnawaveRule(target.value, update.value), lang: 'text' as const, label: t('Subscription → Response Rules', 'Subscription → Response Rules') },
 })[tab.value])
 
 const listed = computed(() => get('policy.global') === 'listed')
@@ -114,7 +120,7 @@ const packages = computed(() => {
     </section>
 
     <section class="bpanel" aria-labelledby="bout-header">
-      <h3 id="bout-header" class="bpanel-h">{{ t('Заголовок reclash-config', 'The reclash-config header') }}</h3>
+      <h3 id="bout-header" class="bpanel-h">{{ t('Заголовки ответа подписки', 'Subscription response headers') }}</h3>
       <p class="bf-help">{{ t('Один раз, в ответе подписки по https. Без заголовка сохранённый манифест удаляется.', 'Once, in an https subscription response. Leaving it out deletes the stored manifest.') }}</p>
       <div class="bseg is-tabs" role="tablist" :aria-label="t('Сервер', 'Server')">
         <button v-for="item in tabs" :key="item.key" type="button" role="tab" :aria-selected="tab === item.key" @click="tab = item.key">{{ item.text }}</button>
@@ -122,6 +128,12 @@ const packages = computed(() => {
       <CodeBlock :key="tab" class="is-swap" :code="snippet.code" :lang="snippet.lang" :label="snippet.label" />
       <p v-if="tab === 'remnawave'" class="bf-help">{{ t('Выше правила Fallback Base64: правила идут сверху вниз до первого совпадения. Проверено на Remnawave 3.4.7.', 'Above the Fallback Base64 rule: rules run top to bottom and stop at the first match. Checked on Remnawave 3.4.7.') }}</p>
       <p v-else-if="tab !== 'header'" class="bf-help">{{ t('Прокси и CDN должны пропускать заголовок без изменений.', 'Proxies and CDNs must pass the header through unchanged.') }}</p>
+      <div class="bf">
+        <div class="bf-head"><label for="bout-update">{{ t('Зеркало обновлений (необязательно)', 'Update mirror (optional)') }}</label></div>
+        <input id="bout-update" v-model="mirror" class="input mono" type="url" inputmode="url" placeholder="https://updates.example.net/update-manifest.json" spellcheck="false" autocomplete="off" :aria-invalid="mirrorProblem ? true : undefined">
+        <p class="bf-help">{{ t('Добавляет заголовок reclash-update: копию подписанного манифеста обновлений ReClash.', 'Adds the reclash-update header: a copy of ReClash\'s signed update manifest.') }} <SiteLink class="tlink" :to="`${pagePath(language, 'reference')}#${referenceAnchor('reclash-update')}`">{{ t('Подробнее', 'Details') }}</SiteLink></p>
+        <p v-if="mirrorProblem" class="bf-err" role="alert">{{ mirrorProblem }}</p>
+      </div>
       <SiteLink class="tlink" :to="docPath(language, 'providers/rollout')">{{ t('Доставка и отладка', 'Delivery and debugging') }}</SiteLink>
     </section>
 

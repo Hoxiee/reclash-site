@@ -4,13 +4,15 @@ import { stringifyYaml } from './yaml.ts'
 // policy guides in content/docs/*/providers; only the manifest URL and the package list are filled in.
 export const exampleManifestUrl = 'https://example.net/reclash.yaml'
 
-export const headerLine = (url: string) => `reclash-config: ${url}`
+const quoted = (url: string) => url.replace(/["\\]/g, '\\$&')
 
-export const nginxSnippet = (url: string) => `add_header reclash-config "${url.replace(/["\\]/g, '\\$&')}" always;`
+export const headerLine = (url: string, update = '') => `reclash-config: ${url}${update ? `\nreclash-update: ${update}` : ''}`
 
-export const caddySnippet = (url: string) => `header reclash-config "${url.replace(/["\\]/g, '\\$&')}"`
+export const nginxSnippet = (url: string, update = '') => `add_header reclash-config "${quoted(url)}" always;${update ? `\nadd_header reclash-update "${quoted(update)}" always;` : ''}`
 
-export const remnawaveRule = (url: string) => `{
+export const caddySnippet = (url: string, update = '') => `header reclash-config "${quoted(url)}"${update ? `\nheader reclash-update "${quoted(update)}"` : ''}`
+
+export const remnawaveRule = (url: string, update = '') => `{
   "name": "ReClash",
   "description": "Mihomo config and manifest for ReClash",
   "enabled": true,
@@ -22,7 +24,8 @@ export const remnawaveRule = (url: string) => `{
   "responseModifications": {
     "applyHeadersToEnd": true,
     "headers": [
-      { "key": "reclash-config", "value": ${JSON.stringify(url)} }
+      { "key": "reclash-config", "value": ${JSON.stringify(url)} }${update ? `,
+      { "key": "reclash-update", "value": ${JSON.stringify(update)} }` : ''}
     ]
   }
 }`

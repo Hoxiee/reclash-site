@@ -10,6 +10,7 @@ import { validateManifest } from '../shared/provider/builder/validate.ts'
 import { parseYaml, stringifyYaml } from '../shared/provider/builder/yaml.ts'
 import { DraftHistory, historyBudget, historyGroupWindow, historyLimit } from '../shared/provider/builder/history.ts'
 import { createCard, mergeStarter, searchFields, starters } from '../shared/provider/builder/workbench.ts'
+import { caddySnippet, headerLine, nginxSnippet, remnawaveRule } from '../shared/provider/builder/deploy.ts'
 import { cloneValue, ManifestVersionError } from '../shared/provider/builder/document.ts'
 
 const isRouting = path => path === excludedRoot || path.startsWith(`${excludedRoot}.`)
@@ -274,4 +275,15 @@ test('cloning and applying templates remain safe after reactive list edits', () 
   card.items[0].label = 'Changed copy'
   assert.equal(manifest.cards[1].items[0].label, 'Support')
   assert.equal(cloneValue({ number: Infinity }).number, Infinity)
+})
+
+test('the update mirror adds a reclash-update header to every deployment snippet', () => {
+  const config = 'https://example.net/reclash.yaml'
+  const mirror = 'https://updates.example.net/update-manifest.json'
+  assert.equal(headerLine(config), `reclash-config: ${config}`)
+  assert.equal(headerLine(config, mirror), `reclash-config: ${config}\nreclash-update: ${mirror}`)
+  assert.match(nginxSnippet(config, mirror), /^add_header reclash-update "https:\/\/updates\.example\.net\/update-manifest\.json" always;$/m)
+  assert.match(caddySnippet(config, mirror), /^header reclash-update "https:/m)
+  assert.deepEqual(JSON.parse(remnawaveRule(config, mirror)).responseModifications.headers, [{ key: 'reclash-config', value: config }, { key: 'reclash-update', value: mirror }])
+  for (const snippet of [nginxSnippet(config), caddySnippet(config), remnawaveRule(config)]) assert.doesNotMatch(snippet, /reclash-update/)
 })
