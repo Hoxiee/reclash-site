@@ -40,7 +40,8 @@ export function normalizeReleases(input: unknown): ReleaseInfo[] {
     })
     if (releases.length === MAX_RELEASES) break
   }
-  return releases
+  // GitHub does not always list releases newest first (pre.10 landed below pre.8).
+  return releases.sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
 }
 
 /** Validates releases read back from the session cache; anything unexpected discards the cache. */
