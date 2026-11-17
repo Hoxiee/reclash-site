@@ -86,6 +86,7 @@ export const formSections: FormSection[] = [
     e('view.app.style', 'Стиль', 'Style'),
     e('view.app.black', 'Чёрный фон', 'Pure black'),
     e('view.app.navbar', 'Панель навигации', 'Navigation bar'),
+    e('view.app.seasonal', 'Сезонные эффекты', 'Seasonal effects', ['Включает или выключает настройку темы.', 'Turns the theme setting on or off.']),
     e('view.app.glass', 'Стекло', 'Glass', ['Запрошенное качество; при перегрузке может снижаться на сессию.', 'The requested quality; sustained overload can lower it for the session.']),
     e('view.proxies', 'Список прокси', 'Proxy list'),
     e('view.proxies.type', 'Вид', 'Type'),
@@ -101,6 +102,16 @@ export const formSections: FormSection[] = [
   { key: 'wallpaper', title: { ru: 'Обои', en: 'Wallpaper' }, summary: { ru: 'Фоновое изображение', en: 'Background image' }, entries: [
     e('wallpaper.url', 'Изображение', 'Image', ['https, PNG, JPEG или WebP.', 'https, PNG, JPEG or WebP.'], { placeholder: 'https://' }),
     e('wallpaper.opacity', 'Непрозрачность, %', 'Opacity, %'),
+  ] },
+  { key: 'seasonal', title: { ru: 'Сезонные эффекты', en: 'Seasonal effects' }, summary: { ru: 'Частицы за содержимым в выбранные даты', en: 'Particles behind the content on chosen dates' }, entries: [
+    e('seasonal', 'Сезонные эффекты', 'Seasonal effects'),
+    e('seasonal.calendar', 'Календарь клиента', 'Client calendar', ['none отключает встроенный календарь для этой подписки.', 'none turns off the built-in calendar for this subscription.']),
+    e('seasonal.effects', 'Эффекты', 'Effects', ['До 16; лишние игнорируются.', 'Up to 16; extra entries are ignored.']),
+    e('seasonal.effects.effect', 'Эффект', 'Effect'),
+    e('seasonal.effects.from', 'С даты', 'From', ['ММ-ДД или ГГГГ-ММ-ДД включительно, по местной дате.', 'MM-DD or YYYY-MM-DD, inclusive, device local date.'], { placeholder: '12-20' }),
+    e('seasonal.effects.to', 'По дату', 'To', ['Той же формы. Диапазон ММ-ДД может переходить через Новый год.', 'Same form as from. An MM-DD range may wrap past the new year.'], { placeholder: '01-14' }),
+    e('seasonal.effects.density', 'Плотность', 'Density'),
+    e('seasonal.effects.colors', 'Цвета', 'Colors', ['От 1 до 8 цветов RRGGBB, # необязателен. Заменяют палитру эффекта.', '1 to 8 RRGGBB colors, # optional. They replace the effect\'s own palette.'], { placeholder: '#336699' }),
   ] },
   { key: 'widgets', title: { ru: 'Виджеты', en: 'Widgets' }, summary: { ru: 'Карточки панели по порядку', en: 'Dashboard cards in order' }, entries: [
     e('widgets', 'Виджеты', 'Widgets', ['currentOutbound добавляется первым, если его нет. vpnButton — Android, networkTakeover — десктоп.', 'currentOutbound is added first when missing. vpnButton is Android, networkTakeover desktop.'], { ordered: true }),
