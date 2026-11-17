@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "09296a7747fd00c0934d3589cdac2c1b37de7b34"
+    "commit": "4c50f2d30bb7c27f0f832e29ca603d6881bf2db4"
   },
   "languages": [
     "ru",
@@ -401,12 +401,12 @@
       "file": "auto-routing/editor/hub.md",
       "section": "rcx",
       "titles": {
-        "ru": "Центр",
-        "en": "Hub"
+        "ru": "Экран автомаршрутизации",
+        "en": "Auto routing screen"
       },
       "descriptions": {
-        "ru": "Центр автомаршрутизации: работающий сценарий, его маршруты и группы, библиотека, импорт и экспорт.",
-        "en": "The auto routing hub: the running scenario, its routes and groups, the library, and import and export."
+        "ru": "Страница «Автомаршрутизация»: переключатель, работающий сценарий и его маршруты, умные группы, библиотека, импорт и экспорт.",
+        "en": "The Auto routing page: the switch, the running scenario with its routes, the smart groups, and the library with import and export."
       },
       "minutes": {
         "ru": 5,
@@ -493,17 +493,17 @@
     "ru/providers/preview-api.md": "7f0fc203887a710e648af12fb5c2daf71ded816e7368bdcb4c42d6a58e9c2c2a",
     "ru/providers/support.md": "ac2291449469d5164641db62e7e186a468e484d5271d0fd9b3bae042d4e39c56",
     "ru/providers/standard.md": "f5f9a3a5fffbe5dac060e07fcf38d864b9e720e74a7d2e11a9bc14dc3e0a74bd",
-    "ru/auto-routing/README.md": "003aed583e43c6e240e4a6d0466ba1a929b34e650b336df8f5b71c179eaf8250",
-    "ru/auto-routing/engine.md": "4918e9c53a96c8c6ed2892eff962441d1afb9a52605a8be6a61d5ca14aeee401",
-    "ru/auto-routing/profiles.md": "fb7a3613629321223ea47e3cf93712c2cde56ed7998c7105a0390d58f09001e8",
+    "ru/auto-routing/README.md": "194769c09f07cc38d3d060c761b548e7c5761a1f50f97c61bb6d712f31bddd64",
+    "ru/auto-routing/engine.md": "ce7034ce65829333b17ba5a671098443cbffd7b33841b665f315809c7a7d7ef3",
+    "ru/auto-routing/profiles.md": "011900ec2ff7ddf37441a8cb1f5b1afc922f8595ed791db694db9ddcc5990c07",
     "ru/auto-routing/conditions.md": "221652ad3fa308a71e9296d487f8808e52bd60bc1cd4950d0d7aebd545b845ef",
-    "ru/auto-routing/scenarios.md": "63f77cfda345a05c27edd36b7c7389e3d0eac8bc910439fb5a9fc47e9ddc204b",
-    "ru/auto-routing/sharing.md": "dd198a238ff8089d2f14674a01d94ec20d1c23819e3231ccacbe832faa5d35f1",
-    "ru/auto-routing/cookbook.md": "c6faa74d95ec1832d320a797a12b306203a4fe47d3718dec0981cc23ca7e9e3f",
-    "ru/auto-routing/editor/hub.md": "ea169b834bb54093f2b746502db31e2819695693d7b8ab97bc7360885f4e2c6c",
-    "ru/auto-routing/editor/routes.md": "c5536b9a0d8089081f9fb85122920dcc08ae0a0a4c91b604049600ecb999c9dd",
-    "ru/auto-routing/editor/groups.md": "e635d00254e0521dc052b5b5ee287f64ad0081e481c11629205b4141aa1963df",
-    "ru/auto-routing/editor/studio.md": "1306e486b0194e33d58d50a4f23b14ea24670d8486d06dc2f80e49ad51b2d2c7",
+    "ru/auto-routing/scenarios.md": "9b62cea9479cd17e2532164cc3a78df5ad9af3bebcd31630d3f49761a3308923",
+    "ru/auto-routing/sharing.md": "6ac0482545e86d1f310cc2ea3e6fcb1effc6a4d1c0b1664999b2a60a75949c30",
+    "ru/auto-routing/cookbook.md": "98b0c4dca9245280a4768b4645bf7eca5cd46067c9f9928d58a7fbe40bc43e7c",
+    "ru/auto-routing/editor/hub.md": "a5a5b5fe39f84299efda3a0894644f51026937be8f0383ada684adf7eb316279",
+    "ru/auto-routing/editor/routes.md": "f915de324ff92276b6167eb8aa54f26a3aac731e6ca5b00e1e6b31e45311ba9c",
+    "ru/auto-routing/editor/groups.md": "df7c8eec9a58dfc457016c87db36190e9b47a03448389231696bf9a5736f195d",
+    "ru/auto-routing/editor/studio.md": "5ff5cd9df39d5f09f702091cd854b6dea02f8662b336e26c01a81e7c609eaa92",
     "ru/auto-routing/images/README.md": "ec90b0cec5edffc5a5dd850418746da02f6dbd5e194087ad20fc5fcc76bb1c0f",
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
@@ -515,17 +515,17 @@
     "en/providers/preview-api.md": "310adc40fe5231705bff6be2cba27a8765f8b22c7bd6b3a7c720c8d5a5268efc",
     "en/providers/support.md": "cf6932f61ca2715ab126fe6e5cdb8cd81ff358ca6d217a9c4fa2fae31e2b31ad",
     "en/providers/standard.md": "55f6c81cdb1ab4de4bc4a45ccdb0fb9381dbd627ed7fa498ef3cb087f01b0941",
-    "en/auto-routing/README.md": "41422076cc5b3996c89d60f46efc256971f2022abf902c672152b67169ad2e1f",
-    "en/auto-routing/engine.md": "3611557ebae5faf8e9c9a54d9c879be41152d3dadfbc1221ce727d19631c6442",
-    "en/auto-routing/profiles.md": "b66638987b4e93a94cd7560c9293900a881cb00cd44a7fc0ebbf00ac390be607",
+    "en/auto-routing/README.md": "77e74b77912763b9cbb014418310d505ef921eabc86a6ffe685ea00c14a53b7c",
+    "en/auto-routing/engine.md": "10c719c977941473ffb6760f2990ed363a4a6f99252b6a8deddf88ea53cab67e",
+    "en/auto-routing/profiles.md": "b4d9e0ec3596a6071b80be397181640b614d9622ab4eafa6b95bd4a9368c9b6d",
     "en/auto-routing/conditions.md": "5e7932329b493616cfdf7590151de2822239f0d6149b94f342ed729e3c6fb389",
     "en/auto-routing/scenarios.md": "3a172d385f35a558cc8994ac5ec06d4676c9365c38fd6f69d1dbc84dd6c0cf50",
     "en/auto-routing/sharing.md": "be9d507ce646fe152105ad719956b6b9d8fc9fa7d29c83cedca1f869b8d07136",
-    "en/auto-routing/cookbook.md": "095e130ca76ece96499e00bb40ebeb449774064a658558b25f67f246bcf07893",
-    "en/auto-routing/editor/hub.md": "148a3796c38890a236826eacf98b824e5e876ea2a1b514f37bb69dca874ff146",
-    "en/auto-routing/editor/routes.md": "66735cb26390a163823fc983fb856105f2f325b095ddf1c854c6c5298a2ace6f",
-    "en/auto-routing/editor/groups.md": "2b1ef1df7d07c0a96098c4048e17b61b3addb50c5f3a87f605ab2fb5f9f80b23",
-    "en/auto-routing/editor/studio.md": "ff54492c94e8b9c91a79064c39c0d3c41e27e13ad30200910fee0f74977eeaa2",
+    "en/auto-routing/cookbook.md": "0154695e44f8a0ba68fe18d9d9b6d12d838201c07c4c09dc06dbefd8228965bc",
+    "en/auto-routing/editor/hub.md": "d3b513238c6eaa24d9cbb5a85fb3d34a382bec55289e31d3efddfc7bed1bd151",
+    "en/auto-routing/editor/routes.md": "a34f01d1ba1bd585ff3a3e70abd65f0fea4f43215ecb76e11b4d71757999eff6",
+    "en/auto-routing/editor/groups.md": "45f09a617bd648da3c7646a3dfb90d8880896c2826139283477af2a91db3986d",
+    "en/auto-routing/editor/studio.md": "01a489156575faa3d942225451108a004ee3c4beb91bd2241711f26b7ad99983",
     "en/auto-routing/images/README.md": "caf11fb07ad795494975a58789867fd99e39a108ca83e7177f58e9e426ef00a1"
   }
 }
