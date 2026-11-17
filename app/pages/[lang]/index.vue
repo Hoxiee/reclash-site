@@ -4,9 +4,9 @@ import { docPath } from '~~/shared/docs/catalogue'
 usePageMeta('index')
 const { language, t } = useText()
 const manifesto = computed(() => [
-  t('Ядро mihomo целиком.', 'The full mihomo core.'),
-  t('RCX выбирает узлы по профилям и сценариям.', 'RCX selects nodes with profiles and scenarios.'),
-  t('Открытый код на четырёх платформах.', 'Open source on four platforms.'),
+  t('Сам выбирает сервер.', 'Picks the server itself.'),
+  t('Объясняет почему.', 'Tells you why.'),
+  t('Бесплатно, открыто, без рекламы.', 'Free, open, ad-free.'),
 ].join(' ').split(' '))
 </script>
 
@@ -39,19 +39,19 @@ const manifesto = computed(() => [
       <div class="wrap">
         <div class="hero-tags">
           <SiteLink class="tag" to="https://github.com/Hoxiee/ReClash"><span class="pulse" aria-hidden="true"></span>{{ t("В активной разработке", "In active development") }}</SiteLink>
-          <span class="tag">{{ t("Форк FlClash", "FlClash fork") }}</span>
-          <span class="tag">{{ t("Ядро mihomo", "mihomo core") }}</span>
-          <span class="tag">GPL-3.0</span>
+          <span class="tag">{{ t("Бесплатно и без рекламы", "Free and ad-free") }}</span>
+          <span class="tag">{{ t("Открытый код", "Open source") }}</span>
+          <span class="tag">Windows · macOS · Linux · Android</span>
         </div>
         <h1 class="hero-h1" id="hero-title">
-          <span class="sr-only">{{ t("Свобода, которую нельзя отобрать, купить, отозвать или выключить.", "Freedom that cannot be taken, bought, revoked or switched off.") }}</span>
+          <span class="sr-only">{{ t("Подключение, которое думает.", "A connection that thinks.") }}</span>
           <span aria-hidden="true">
-            <span class="hl"><span class="t">{{ t("Свобода,", "Freedom,") }}</span></span>
-            <span class="hl"><span class="t">{{ t("которую нельзя", "that cannot be") }}</span></span>
-            <span class="hl"><span class="slot" :data-words="t('отобрать|купить|отозвать|выключить', 'taken|bought|revoked|switched off')"><span class="slot-in">{{ t("отобрать", "taken") }}</span></span><span class="hero-dot">.</span></span>
+            <span class="hl"><span class="t">{{ t("Подключение,", "A connection") }}</span></span>
+            <span class="hl"><span class="t">{{ t("которое", "that") }}</span></span>
+            <span class="hl"><span class="slot" :data-words="t('думает|не падает|не тупит', 'thinks|stays up|keeps up')"><span class="slot-in">{{ t("думает", "thinks") }}</span></span><span class="hero-dot">.</span></span>
           </span>
         </h1>
-        <p class="hero-sub">{{ t("Клиент на ядре mihomo: подписки и отдельные узлы, автоматический выбор серверов RCX по профилям и сценариям, TUN и инструменты диагностики. Открытый код на Windows, macOS, Linux и Android.", "A mihomo client for subscriptions and individual nodes, with RCX server selection through profiles and scenarios, TUN and diagnostic tools. Open source on Windows, macOS, Linux and Android.") }}</p>
+        <p class="hero-sub">{{ t("Клиент, который сам выбирает рабочий сервер, следит, открываются ли нужные сервисы, и показывает, сколько осталось трафика. Одна ссылка подписки — и всё работает на телефоне, компьютере и телевизоре.", "A client that picks a working server on its own, watches whether the services you need open, and shows how much traffic is left. One subscription link, and it works on your phone, computer and TV.") }}</p>
         <div class="hero-cta">
           <SiteLink class="btn btn-primary" :to="pagePath(language, 'download')">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -72,121 +72,140 @@ const manifesto = computed(() => [
   </div>
 </section>
 
-<!-- ============ WHAT IT IS ============ -->
-<section class="sec" id="about" aria-labelledby="about-title">
-  <div class="wrap lineage">
-    <div class="lineage-copy">
-      <h2 id="about-title" data-words>{{ t("Форк FlClash на ядре mihomo.", "A FlClash fork powered by mihomo.") }}</h2>
-      <p class="lede" data-fade>{{ t("ReClash развивает основу FlClash: добавляет маршрутизацию RCX, импорт подписок и отдельных узлов, метаданные провайдера и простую панель по умолчанию. Подробная панель включается в настройках оформления. На телефоне панель переключается между страницами свайпом; провайдер может задать вид кнопки включения. Интерфейс на Material You адаптируется к телефону и рабочему столу; соединения, DNS-запросы и логи доступны в инструментах.", "ReClash builds on FlClash with RCX routing, subscription and individual-node import, provider metadata and a simple dashboard by default. The detailed dashboard is enabled in Appearance settings. On phones, swipe between its pages; providers can set the power button's appearance. The Material You interface adapts to phones and desktops, with connections, DNS queries and logs available in Tools.") }}</p>
-      <p class="lineage-note" data-fade style="--d:120ms">{{ t("Проект не аффилирован с FlClash, mihomo или FlClashX.", "The project is not affiliated with FlClash, mihomo or FlClashX.") }} <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-flclash'">{{ t("Чем отличается от FlClash", "How it differs from FlClash") }}</SiteLink></p>
-    </div>
-
-    <div class="stack">
-      <svg class="stack-svg" viewBox="0 0 320 360" aria-hidden="true">
-        <defs>
-          <linearGradient id="slabGrad" x1="30" y1="94" x2="290" y2="94" gradientUnits="userSpaceOnUse">
-            <stop offset="0" style="stop-color:var(--brand-2)"/><stop offset=".5" style="stop-color:var(--brand)"/><stop offset="1" style="stop-color:var(--brand-3)"/>
-          </linearGradient>
-        </defs>
-        <g class="slab slab-0">
-          <path class="l" d="M30 262L160 324L160 350L30 288Z"/><path class="r" d="M160 324L290 262L290 288L160 350Z"/>
-          <path class="top" d="M160 200L290 262L160 324L30 262Z"/>
-          <ellipse cx="160" cy="262" rx="62" ry="29" fill="none" stroke="oklch(1 0 0 / .18)" stroke-dasharray="2 6" stroke-linecap="round" stroke-width="2"/>
-        </g>
-        <g class="slab slab-1">
-          <path class="l" d="M30 178L160 240L160 266L30 204Z"/><path class="r" d="M160 240L290 178L290 204L160 266Z"/>
-          <path class="top" d="M160 116L290 178L160 240L30 178Z"/>
-          <path d="M112 178L160 155L208 178L160 201Z" fill="none" stroke="oklch(1 0 0 / .22)" stroke-width="2" stroke-linejoin="round"/>
-        </g>
-        <g class="slab slab-2">
-          <path class="l" d="M30 94L160 156L160 182L30 120Z"/><path class="r" d="M160 156L290 94L290 120L160 182Z"/>
-          <path class="top" d="M160 32L290 94L160 156L30 94Z"/>
-          <ellipse cx="160" cy="94" rx="56" ry="26" fill="none" stroke="var(--on-brand)" stroke-width="6" opacity=".55"/>
-          <ellipse cx="160" cy="94" rx="10" ry="5" fill="var(--on-brand)" opacity=".7"/>
-        </g>
-      </svg>
-      <ul class="stack-list" data-group data-items="li" data-cpull="0.05">
-        <li data-mg data-layer="2" tabindex="0"><span class="mg-c"><b>ReClash</b><span class="s">{{ t("Маршрутизация RCX, подписки, панель и инструменты", "RCX routing, subscriptions, dashboard and tools") }}</span></span></li>
-        <li data-mg data-layer="1" tabindex="0"><span class="mg-c"><b>FlClash</b><span class="s">{{ t("Кроссплатформенная основа на Flutter", "A cross-platform foundation built with Flutter") }}</span></span></li>
-        <li data-mg data-layer="0" tabindex="0"><span class="mg-c"><b>mihomo</b><span class="s">{{ t("Ядро маршрутизации: правила, группы, GeoIP, fake-ip", "Routing core: rules, groups, GeoIP, fake-ip") }}</span></span></li>
-      </ul>
-    </div>
-  </div>
-</section>
-
 <!-- ============ FEATURES ============ -->
 <section class="sec" id="features" aria-labelledby="feat-title">
   <div class="wrap">
     <div class="sec-head">
-      <h2 id="feat-title" data-words>{{ t("Что умеет ReClash.", "What ReClash can do.") }}</h2>
+      <h2 id="feat-title" data-words>{{ t("Что ReClash делает за вас.", "What ReClash does for you.") }}</h2>
     </div>
     <ul class="feats" data-group data-items=".feat" data-cpull="0.03">
       <li class="feat" data-mg data-reveal>
-        <svg class="ico i-core" viewBox="0 0 64 64" aria-hidden="true">
-          <g class="orb">
-            <ellipse class="s draw" pathLength="1" cx="32" cy="32" rx="26" ry="10" transform="rotate(-32 32 32)"/>
-            <ellipse class="s draw dim" pathLength="1" cx="32" cy="32" rx="26" ry="10" transform="rotate(32 32 32)" style="--d:.15s"/>
-            <circle class="f" cx="54" cy="18.4" r="3"/>
-          </g>
-          <circle class="f nuc" cx="32" cy="32" r="7"/>
-        </svg>
-        <h3>{{ t("Ядро mihomo целиком", "The full mihomo core") }}</h3>
-        <p>{{ t("Правила, группы, провайдеры прокси, GeoIP и GeoSite, fake-ip, внешние контроллеры — всё, к чему вы привыкли в Clash.Meta.", "Rules, groups, proxy providers, GeoIP and GeoSite, fake-ip, external controllers: everything you know from Clash.Meta.") }}</p>
+        <svg class="ico i-auto" viewBox="0 0 64 64" aria-hidden="true">
+            <path class="s r1" pathLength="1" d="M12 48C28 48 36 16 52 16"/>
+            <path class="b r2" pathLength="1" d="M12 48L12 30Q12 16 26 16L52 16"/>
+            <path class="b x" d="M28 28l8 8M36 28l-8 8"/>
+            <circle class="f" cx="12" cy="48" r="4"/><circle cx="52" cy="16" r="4" fill="var(--fg)"/>
+          </svg>
+        <h3>{{ t("Сервер упал — вы не заметили", "A server fails, you don't notice") }}</h3>
+        <p>{{ t("Умная группа сама переходит на рабочий сервер, учитывая задержку, сбои и страну выхода в каждой сети. Приложение показывает, почему выбран именно этот сервер; закрепить свой или выбрать вручную можно в любой момент.", "A smart group moves to a working server on its own, weighing latency, failures and exit country on each network. The app shows why it picked that server, and you can pin one or choose manually at any time.") }}</p>
+        <SiteLink class="tlink" :to="docPath(language, 'rcx')">{{ t("Как это работает", "How it works") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
-        <svg class="ico i-auto" viewBox="0 0 64 64" aria-hidden="true">
-          <path class="s r1" pathLength="1" d="M12 48C28 48 36 16 52 16"/>
-          <path class="b r2" pathLength="1" d="M12 48L12 30Q12 16 26 16L52 16"/>
-          <path class="b x" d="M28 28l8 8M36 28l-8 8"/>
-          <circle class="f" cx="12" cy="48" r="4"/><circle cx="52" cy="16" r="4" fill="var(--fg)"/>
-        </svg>
-        <h3>{{ t("Автоматический выбор RCX", "RCX automatic selection") }}</h3>
-        <p>{{ t("Профили RCX задают порядок серверов и условия выбора для групп. Сценарии могут управлять несколькими группами, режимом подключения, поведением для разных сетей и маршрутами отдельных сайтов. Решение объясняется; сервер можно закрепить или выбрать вручную.", "RCX profiles define server order and selection conditions for groups. Scenarios can coordinate groups, connection mode, network-specific behavior and routes for selected traffic. Decisions are explained, and you can pin a server or choose one manually.") }}</p>
-        <SiteLink class="tlink" :to="docPath(language, 'rcx')">{{ t("Руководство по RCX", "RCX guide") }}</SiteLink>
+        <svg class="ico i-core" viewBox="0 0 64 64" aria-hidden="true">
+            <g class="orb">
+              <ellipse class="s draw" pathLength="1" cx="32" cy="32" rx="26" ry="10" transform="rotate(-32 32 32)"/>
+              <ellipse class="s draw dim" pathLength="1" cx="32" cy="32" rx="26" ry="10" transform="rotate(32 32 32)" style="--d:.15s"/>
+              <circle class="f" cx="54" cy="18.4" r="3"/>
+            </g>
+            <circle class="f nuc" cx="32" cy="32" r="7"/>
+          </svg>
+        <h3>{{ t("YouTube и ChatGPT открываются?", "Do YouTube and ChatGPT open?") }}</h3>
+        <p>{{ t("Проверки сервисов показывают, открываются ли Google, YouTube, ChatGPT, Netflix и другие сайты через текущий маршрут и с какой задержкой. Не нужно гадать, виноват сервер или сайт.", "Service checks show whether Google, YouTube, ChatGPT, Netflix and other sites open through the current route, and how fast. No guessing whether the server or the site is to blame.") }}</p>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-prov" viewBox="0 0 64 64" aria-hidden="true">
-          <rect class="f fill" x="16" y="30" width="32" height="22" rx="6" opacity=".9"/>
-          <rect class="s draw" pathLength="1" x="14" y="28" width="36" height="26" rx="8"/>
-          <path class="f drop" d="M32 4C32 4 25 12 25 16.5a7 7 0 0 0 14 0C39 12 32 4 32 4Z"/>
-        </svg>
-        <h3>{{ t("Подписка с контекстом", "Subscriptions with context") }}</h3>
-        <p>{{ t("Имя сервиса, логотип, полные объявления, остаток трафика, ссылки на поддержку и продление приходят вместе с подпиской. Оформление и настройки провайдера применяются с учётом ваших предпочтений.", "Service name, logo, full announcements, remaining traffic, support and renewal links arrive with the subscription. Provider appearance and settings respect your preferences.") }}</p>
+            <rect class="f fill" x="16" y="30" width="32" height="22" rx="6" opacity=".9"/>
+            <rect class="s draw" pathLength="1" x="14" y="28" width="36" height="26" rx="8"/>
+            <path class="f drop" d="M32 4C32 4 25 12 25 16.5a7 7 0 0 0 14 0C39 12 32 4 32 4Z"/>
+          </svg>
+        <h3>{{ t("Подписка рассказывает о себе", "Your subscription speaks for itself") }}</h3>
+        <p>{{ t("Остаток трафика, срок действия, логотип и объявления сервиса, ссылки на поддержку и продление приходят вместе с подпиской. Профили лежат стопкой, как карты в кошельке.", "Remaining traffic, expiry, the service's logo and announcements, support and renewal links arrive with the subscription. Profiles stack like cards in a wallet.") }}</p>
         <SiteLink class="tlink" to="#providers">{{ t("Попробовать на этой странице", "Try it on this page") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
-        <svg class="ico i-dpi" viewBox="0 0 64 64" aria-hidden="true">
-          <path class="s" d="M42 8v17M42 39v17"/>
-          <path class="s dim" d="M6 32h52" stroke-dasharray="2 5"/>
-          <rect class="f pa" x="8" y="26" width="11" height="12" rx="3"/>
-          <rect class="b pb" x="20" y="26" width="11" height="12" rx="3"/>
-        </svg>
-        <h3>{{ t("Диагностика под рукой", "Diagnostics within reach") }}</h3>
-        <p>{{ t("Смотрите активные соединения, запросы, DNS и логи. Если настройка «Скрыть IP» выключена, адрес выхода виден в заголовке карточки; нажатие открывает оценку качества IP или запускает проверку, если результата ещё нет.", "Inspect active connections, requests, DNS and logs. Unless Hide IP is enabled, the exit address appears in the card header; tap it to see the IP quality details or start a check if no result is available yet.") }}</p>
-        <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-trouble'">{{ t("Если не подключается", "Connection troubleshooting") }}</SiteLink>
+        <svg class="ico i-meter" viewBox="0 0 64 64" aria-hidden="true">
+            <path class="s dim" d="M12 46A21 21 0 1 1 52 46"/>
+            <path class="b arc" pathLength="1" d="M12 46A21 21 0 1 1 52 46"/>
+            <path class="s" d="M24 56h16"/>
+            <circle class="f" cx="32" cy="38" r="3.5"/>
+          </svg>
+        <h3>{{ t("Одна кнопка или все цифры", "One button or every number") }}</h3>
+        <p>{{ t("По умолчанию — простой экран: кнопка подключения, текущая страна и остаток подписки. Подробная панель из виджетов показывает трафик, IP выхода и его качество, соединения и проверки сервисов.", "By default, a simple screen: the connect button, current location and what is left on the subscription. The detailed dashboard adds widgets for traffic, exit IP and its quality, connections and service checks.") }}</p>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-scope" viewBox="0 0 64 64" aria-hidden="true">
-          <rect class="s draw" pathLength="1" x="8" y="10" width="48" height="38" rx="7"/>
-          <path class="s" d="M24 56h16"/>
-          <rect class="f all" x="13" y="15" width="38" height="28" rx="4" opacity=".35"/>
-          <rect class="s app" x="36" y="30" width="11" height="9" rx="2.5"/>
-          <rect class="s app" x="22" y="30" width="11" height="9" rx="2.5"/>
-        </svg>
-        <h3>{{ t("Весь трафик или только приложения", "All traffic or selected apps") }}</h3>
-        <p>{{ t("На компьютере выбирайте TUN или системный прокси. На Android используется VPN-сервис с выбором приложений. Правила mihomo определяют, что идёт напрямую, а что — через прокси.", "On desktop, choose TUN or the system proxy. Android uses a VPN service with per-app selection. mihomo rules decide what goes direct and what uses a proxy.") }}</p>
+            <rect class="s draw" pathLength="1" x="8" y="10" width="48" height="38" rx="7"/>
+            <path class="s" d="M24 56h16"/>
+            <rect class="f all" x="13" y="15" width="38" height="28" rx="4" opacity=".35"/>
+            <rect class="s app" x="36" y="30" width="11" height="9" rx="2.5"/>
+            <rect class="s app" x="22" y="30" width="11" height="9" rx="2.5"/>
+          </svg>
+        <h3>{{ t("Дома напрямую, в дороге — через прокси", "Direct at home, proxied on the go") }}</h3>
+        <p>{{ t("В доверенных сетях прокси встаёт на паузу, в остальных включается снова. Сценарии меняют режим для каждой сети и отправляют выбранные сайты в свою группу. На Android можно выбрать приложения, на компьютере — TUN или системный прокси.", "On networks you trust the proxy pauses, everywhere else it resumes. Scenarios set the mode per network and send chosen sites to their own group. Android lets you pick apps; desktops use TUN or the system proxy.") }}</p>
       </li>
       <li class="feat" data-mg data-reveal>
-        <svg class="ico i-meter" viewBox="0 0 64 64" aria-hidden="true">
-          <path class="s dim" d="M12 46A21 21 0 1 1 52 46"/>
-          <path class="b arc" pathLength="1" d="M12 46A21 21 0 1 1 52 46"/>
-          <path class="s" d="M24 56h16"/>
-          <circle class="f" cx="32" cy="38" r="3.5"/>
-        </svg>
-        <h3>{{ t("Трафик и срок на виду", "Traffic and expiry at a glance") }}</h3>
-        <p>{{ t("Клиент читает остаток трафика и дату окончания прямо из подписки и держит их на главном экране — без захода в личный кабинет. Карточка трафика по темпу последней недели показывает, когда закончится квота.", "The client reads remaining traffic and expiry directly from your subscription and shows them on the main screen, without visiting your account page. The traffic card uses the pace of the last week to show when the quota runs out.") }}</p>
+        <svg class="ico i-dpi" viewBox="0 0 64 64" aria-hidden="true">
+            <path class="s" d="M42 8v17M42 39v17"/>
+            <path class="s dim" d="M6 32h52" stroke-dasharray="2 5"/>
+            <rect class="f pa" x="8" y="26" width="11" height="12" rx="3"/>
+            <rect class="b pb" x="20" y="26" width="11" height="12" rx="3"/>
+          </svg>
+        <h3>{{ t("Если что-то не так — видно что", "When something is off, you see what") }}</h3>
+        <p>{{ t("Соединения, DNS-запросы и логи в реальном времени, оценка качества IP выхода и проверка подключения. Лишние пути утечки DNS закрыты.", "Live connections, DNS queries and logs, exit IP quality and a connection check. Extra DNS leak paths are closed.") }}</p>
+        <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-trouble'">{{ t("Если не подключается", "Connection troubleshooting") }}</SiteLink>
       </li>
     </ul>
+  </div>
+</section>
+
+<!-- ============ SCREENS ============ -->
+<section class="sec" id="screens" aria-labelledby="screens-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="screens-title" data-words>{{ t("Посмотрите сами.", "See for yourself.") }}</h2>
+    </div>
+  </div>
+  <ScreenSlider data-fade />
+</section>
+
+<!-- ============ COMPARE ============ -->
+<section class="sec" id="compare" aria-labelledby="compare-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="compare-title" data-words>{{ t("Чем ReClash отличается от обычного клиента.", "How ReClash differs from a typical client.") }}</h2>
+    </div>
+    <table class="cmp" data-fade>
+      <caption class="sr-only">{{ t("Сравнение ReClash с обычным клиентом по типичным ситуациям", "ReClash compared with a typical client in common situations") }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ t("Ситуация", "Situation") }}</th>
+          <th scope="col">{{ t("Обычный клиент", "Typical client") }}</th>
+          <th scope="col" class="cmp-us">ReClash</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">{{ t("Сервер перестал отвечать", "A server stops responding") }}</th>
+          <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Переключаете вручную или ждёте автовыбора по пингу", "You switch by hand or wait for a ping-based pick") }}</td>
+          <td class="cmp-us" data-label="ReClash">{{ t("Переходит сам с учётом сбоев и страны выхода и объясняет выбор", "Moves on its own, weighing failures and exit country, and explains the pick") }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t("Не открывается сайт", "A site will not open") }}</th>
+          <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Непонятно, виноват сервер или сайт", "Hard to tell whether the server or the site is at fault") }}</td>
+          <td class="cmp-us" data-label="ReClash">{{ t("Проверки сервисов показывают, что открывается через текущий маршрут", "Service checks show what opens through the current route") }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t("Сколько осталось трафика", "Traffic left") }}</th>
+          <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Часто только в настройках профиля", "Often buried in profile settings") }}</td>
+          <td class="cmp-us" data-label="ReClash">{{ t("Остаток и срок прямо на главном экране", "Remaining traffic and expiry on the main screen") }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t("Домашний Wi-Fi", "Home Wi-Fi") }}</th>
+          <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Выключать и включать руками", "Turn it off and on by hand") }}</td>
+          <td class="cmp-us" data-label="ReClash">{{ t("Пауза в доверенных сетях, включение в остальных", "Pauses on trusted networks, resumes elsewhere") }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t("Провайдер", "Provider") }}</th>
+          <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Только список серверов", "Just a server list") }}</td>
+          <td class="cmp-us" data-label="ReClash">{{ t("Логотип, объявления, поддержка и настройки, которые вы одобряете", "Logo, announcements, support and settings you approve") }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t("Цена", "Price") }}</th>
+          <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Бывает реклама или платные функции", "Sometimes ads or paid features") }}</td>
+          <td class="cmp-us" data-label="ReClash">{{ t("Бесплатно, открытый код, без рекламы", "Free, open source, ad-free") }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
@@ -296,6 +315,48 @@ const manifesto = computed(() => [
       <g class="free"><path class="lk lk-c" d="M300 65H380A35 35 0 0 1 380 135H300A35 35 0 0 1 300 65Z"/></g>
       <path class="lk lk-b" pathLength="100" style="stroke-dashoffset:56.5" d="M180 65H260A35 35 0 0 1 260 135H180A35 35 0 0 1 180 65Z"/>
     </svg>
+  </div>
+</section>
+
+<!-- ============ WHAT IT IS ============ -->
+<section class="sec" id="about" aria-labelledby="about-title">
+  <div class="wrap lineage">
+    <div class="lineage-copy">
+      <h2 id="about-title" data-words>{{ t("Под капотом — FlClash и mihomo.", "Under the hood: FlClash and mihomo.") }}</h2>
+      <p class="lede" data-fade>{{ t("ReClash развивает основу FlClash: добавляет маршрутизацию RCX, импорт подписок и отдельных узлов, метаданные провайдера и простую панель по умолчанию. Подробная панель включается в настройках оформления. На телефоне панель переключается между страницами свайпом; провайдер может задать вид кнопки включения. Интерфейс на Material You адаптируется к телефону и рабочему столу; соединения, DNS-запросы и логи доступны в инструментах.", "ReClash builds on FlClash with RCX routing, subscription and individual-node import, provider metadata and a simple dashboard by default. The detailed dashboard is enabled in Appearance settings. On phones, swipe between its pages; providers can set the power button's appearance. The Material You interface adapts to phones and desktops, with connections, DNS queries and logs available in Tools.") }}</p>
+      <p class="lineage-note" data-fade style="--d:120ms">{{ t("Проект не аффилирован с FlClash, mihomo или FlClashX.", "The project is not affiliated with FlClash, mihomo or FlClashX.") }} <SiteLink class="tlink" :to="pagePath(language, 'start') + '#faq-flclash'">{{ t("Чем отличается от FlClash", "How it differs from FlClash") }}</SiteLink></p>
+    </div>
+
+    <div class="stack">
+      <svg class="stack-svg" viewBox="0 0 320 360" aria-hidden="true">
+        <defs>
+          <linearGradient id="slabGrad" x1="30" y1="94" x2="290" y2="94" gradientUnits="userSpaceOnUse">
+            <stop offset="0" style="stop-color:var(--brand-2)"/><stop offset=".5" style="stop-color:var(--brand)"/><stop offset="1" style="stop-color:var(--brand-3)"/>
+          </linearGradient>
+        </defs>
+        <g class="slab slab-0">
+          <path class="l" d="M30 262L160 324L160 350L30 288Z"/><path class="r" d="M160 324L290 262L290 288L160 350Z"/>
+          <path class="top" d="M160 200L290 262L160 324L30 262Z"/>
+          <ellipse cx="160" cy="262" rx="62" ry="29" fill="none" stroke="oklch(1 0 0 / .18)" stroke-dasharray="2 6" stroke-linecap="round" stroke-width="2"/>
+        </g>
+        <g class="slab slab-1">
+          <path class="l" d="M30 178L160 240L160 266L30 204Z"/><path class="r" d="M160 240L290 178L290 204L160 266Z"/>
+          <path class="top" d="M160 116L290 178L160 240L30 178Z"/>
+          <path d="M112 178L160 155L208 178L160 201Z" fill="none" stroke="oklch(1 0 0 / .22)" stroke-width="2" stroke-linejoin="round"/>
+        </g>
+        <g class="slab slab-2">
+          <path class="l" d="M30 94L160 156L160 182L30 120Z"/><path class="r" d="M160 156L290 94L290 120L160 182Z"/>
+          <path class="top" d="M160 32L290 94L160 156L30 94Z"/>
+          <ellipse cx="160" cy="94" rx="56" ry="26" fill="none" stroke="var(--on-brand)" stroke-width="6" opacity=".55"/>
+          <ellipse cx="160" cy="94" rx="10" ry="5" fill="var(--on-brand)" opacity=".7"/>
+        </g>
+      </svg>
+      <ul class="stack-list" data-group data-items="li" data-cpull="0.05">
+        <li data-mg data-layer="2" tabindex="0"><span class="mg-c"><b>ReClash</b><span class="s">{{ t("Маршрутизация RCX, подписки, панель и инструменты", "RCX routing, subscriptions, dashboard and tools") }}</span></span></li>
+        <li data-mg data-layer="1" tabindex="0"><span class="mg-c"><b>FlClash</b><span class="s">{{ t("Кроссплатформенная основа на Flutter", "A cross-platform foundation built with Flutter") }}</span></span></li>
+        <li data-mg data-layer="0" tabindex="0"><span class="mg-c"><b>mihomo</b><span class="s">{{ t("Ядро маршрутизации: правила, группы, GeoIP, fake-ip", "Routing core: rules, groups, GeoIP, fake-ip") }}</span></span></li>
+      </ul>
+    </div>
   </div>
 </section>
 

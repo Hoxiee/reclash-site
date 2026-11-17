@@ -66,7 +66,7 @@ test('the loader covers the first paint, opens and leaves the page interactive',
 
 test('home, keyboard navigation and mobile layout work', async ({ page }) => {
   await page.goto('/en')
-  await expect(page.locator('#hero-title')).toContainText('Freedom')
+  await expect(page.locator('#hero-title')).toContainText('A connection that')
   await page.locator('.nav-links').getByRole('link', { name: 'Start and FAQ', exact: true }).click()
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('From zero to traffic.')
   await page.goto('/ru')
