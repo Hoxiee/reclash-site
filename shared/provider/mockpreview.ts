@@ -1,7 +1,8 @@
-import { mockPath, type MockProfile } from './mocks'
+import { mockPath, type MockProfile } from './mocks.ts'
+import { mockAssetFile, mockText } from './mockview.ts'
 
 // What a stand shows before ReClash adds it: a browser page that links the Provider Preview API, and that API's
-// JSON body. Both derive from the stand's response settings, so the confirmation never claims more than the
+// JSON body. Both derive from the stand's manifest and headers, so the confirmation never claims more than the
 // served headers carry.
 
 export const mockPagePath = (key: string) => `/mock-page/${key}`
@@ -15,18 +16,24 @@ export type MockPreview = {
 }
 
 export function mockPreview(profile: MockProfile): MockPreview {
-  const r = profile.response
-  const provider = r.serviceName ?? r.title ?? profile.name.en
+  const provider = (profile.manifest?.provider ?? {}) as Record<string, unknown>
+  const title = profile.headers?.title
+  const name = mockText(provider.name, 'en') ?? title ?? profile.name.en
+  const announce = (provider.announce as Record<string, unknown> | undefined)?.text ?? profile.headers?.announce
+  const logo = typeof provider.logo === 'string' ? provider.logo : undefined
+  const support = typeof provider['support-url'] === 'string' ? provider['support-url'] : profile.headers?.supportUrl
+  const type = typeof provider.type === 'string' ? provider.type : undefined
+  const asset = logo && mockAssetFile(logo)
   return {
     version: 1,
     provider: {
-      name: provider,
-      ...(r.announce && { description: r.announce.ru }),
-      ...(r.logo && { logoUrl: `/assets/mock/${r.logo}` }),
-      ...(r.supportUrl && { supportUrl: r.supportUrl }),
+      name,
+      ...(announce !== undefined && { description: mockText(announce, 'ru') }),
+      ...(logo && { logoUrl: asset ? `/assets/mock/${asset}` : logo }),
+      ...(support && { supportUrl: support }),
     },
-    ...(r.title && r.title !== provider && { account: { name: r.title } }),
-    ...(r.subscriptionType && { subscription: { type: r.subscriptionType } }),
+    ...(title && title !== name && { account: { name: title } }),
+    ...(type && { subscription: { type } }),
   }
 }
 

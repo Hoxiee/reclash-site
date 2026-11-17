@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { mockProfiles } from '../../shared/provider/mocks'
+import { mockPreview } from '../../shared/provider/mockpreview'
+import { mockText } from '../../shared/provider/mockview'
 
 // ReClash's confirmation sends this Accept and a browser User-Agent, never a client identity.
 const previewAccept = 'text/html,application/xhtml+xml'
@@ -18,9 +20,11 @@ for (const profile of mockProfiles) {
     expect(api.status()).toBe(200)
     expect(api.headers()['content-type'].split(';')[0]).toBe('application/json')
     const body = await api.json()
+    const provider = profile.manifest?.provider as Record<string, unknown> | undefined
     expect(body.version).toBe(1)
-    expect(body.provider.name).toBe(profile.response.serviceName ?? profile.response.title)
-    expect(body.subscription).toEqual(profile.response.subscriptionType ? { type: profile.response.subscriptionType } : undefined)
+    expect(body).toEqual(mockPreview(profile))
+    expect(body.provider.name).toBe(mockText(provider?.name, 'en') ?? profile.headers?.title)
+    expect(body.subscription).toEqual(typeof provider?.type === 'string' ? { type: provider.type } : undefined)
     if (body.provider.logoUrl) {
       const logo = await request.get(body.provider.logoUrl)
       expect(logo.status()).toBe(200)

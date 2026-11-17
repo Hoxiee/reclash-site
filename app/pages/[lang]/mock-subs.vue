@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { pagePath } from '~~/shared/site/routes'
 import { mockProfiles } from '~~/shared/provider/mocks'
 import { mockTheme } from '~~/shared/provider/mockview'
+import { previewCards, previewManifest, providerLogo, scenariosLabel } from '~/components/mock/view'
 import '~/assets/css/mock.css'
 
 usePageMeta('mock-subs')
@@ -10,64 +10,53 @@ const origin = useRuntimeConfig().public.siteOrigin
 // Relative expiries are computed once on the server and reused on hydration, matching the build's _headers.
 const now = useState('mock-subs-now', () => Date.now())
 
-const stands = mockProfiles.map(profile => ({ profile, swatch: mockTheme(profile) }))
-const count = mockProfiles.length
-const switcher = computed(() => stands.map(({ profile, swatch }) => ({ key: profile.key, name: profile.name[language.value], style: swatch.style, stock: !swatch.seed })))
+const count = computed(() => scenariosLabel(mockProfiles.length, language.value))
+const stands = computed(() => mockProfiles.map((profile) => {
+  const theme = mockTheme(profile)
+  const manifest = previewManifest(profile, now.value)
+  const image = previewCards(manifest, language.value).find(card => card.image)?.image
+  return { key: profile.key, name: profile.name[language.value], scenario: profile.scenario[language.value], style: theme.style, stock: !theme.seed, image, logo: providerLogo(manifest) }
+}))
+
+const current = ref(mockProfiles[0]!.key)
+const profile = computed(() => mockProfiles.find(item => item.key === current.value) ?? mockProfiles[0]!)
+const stand = useTemplateRef<HTMLElement>('stand')
+const route = useRoute()
+
+function select(key: string) {
+  current.value = key
+  history.replaceState(history.state, '', `#mock-${key}`)
+  nextTick(() => {
+    if ((stand.value?.getBoundingClientRect().top ?? 0) < 0) stand.value?.scrollIntoView({ block: 'start' })
+  })
+}
+
+function fromHash(hash: string) {
+  const key = hash.replace(/^#(mock-)?/, '')
+  if (mockProfiles.some(item => item.key === key)) current.value = key
+}
+onMounted(() => fromHash(route.hash || location.hash))
+watch(() => route.hash, fromHash)
 </script>
 
 <template>
   <div class="mock-page">
     <PageHero
       :title="t('Мок-подписки', 'Mock subscriptions')"
-      :lede="t('Четыре контрастных сценария: максимум оформления, только название и узлы, лёгкий брендинг и пробный тариф на исходе. Импортируйте и сравните — настоящего доступа здесь нет.', 'Four contrasting scenarios: full customization, just a name and nodes, light branding, and a trial at its limits. Import and compare — none provides real access.')"
+      :lede="t(`${count}: от голого минимума до полного оформления провайдера. Выберите стенд, импортируйте его в ReClash и сравните с тем, что отдаёт сервер.`, `${count}: from the bare minimum to full provider branding. Pick a stand, import it into ReClash and compare with what the server returns.`)"
       glyph="M150 168h100M150 200h100M150 232h60"
     >
       <template #eyebrow>{{ t('Для тестирования', 'For testing') }}</template>
       <template #tags>
-        <span class="tag">{{ t(`${count} сценария`, `${count} scenarios`) }}</span>
-        <span class="tag">{{ t('Тестовые данные', 'Test data') }}</span>
-        <span class="tag">{{ t('Ничего настоящего', 'Nothing real') }}</span>
-        <span class="tag">reclash://</span>
+        <span class="tag mock-warn" role="note">{{ t('Узлы на 127.0.0.1, ссылки и цифры вымышлены', 'Nodes point to 127.0.0.1; links and figures are invented') }}</span>
       </template>
-      <ProviderTabs page="mock-subs" />
     </PageHero>
 
-    <section class="sub-sec mock-intro" :aria-label="t('Как пользоваться', 'How to use')">
-      <div class="wrap two">
-        <div class="sec-head">
-          <h2 data-words>{{ t('Подписки, которые ничего не открывают.', 'Subscriptions that unlock nothing.') }}</h2>
-          <p class="lede" data-fade>{{ t('Каждый стенд — это настоящий HTTP-ответ: профиль mihomo в теле, стандартные заголовки и один заголовок reclash-config со ссылкой на манифест. Импортируйте его и смотрите, как клиент читает квоту, тему, объявления и сигналы сервера.', 'Each stand is a real HTTP response: a mihomo profile in the body, standard headers and one reclash-config header linking a manifest. Import it and watch how the client reads quota, theme, announcements and server signals.') }}</p>
-          <p class="note warn mock-warn" role="note" data-fade>
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.8 18 16.6H2Zm0 5.4v3.6m0 2.4v.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" /></svg>
-            <span>{{ t('Это не рабочий доступ. Узлы указывают на 127.0.0.1, ссылки и цифры вымышлены и существуют только для проверки приложения. Не используйте их как подписку.', 'This is not working access. The nodes point to 127.0.0.1, and the links and figures are invented to test the app. Do not use them as a subscription.') }}</span>
-          </p>
-        </div>
-        <div class="mock-intro-side">
-          <ol class="mock-how" data-fade>
-            <li><span class="mock-how-n">1</span><div><h3>{{ t('Импортируйте стенд', 'Import a stand') }}</h3><p>{{ t('Кнопка «Импорт» открывает ReClash по ссылке reclash://install-config. Или скопируйте URL и добавьте его в «Профили».', 'The Import button opens ReClash through a reclash://install-config link. Or copy the URL and add it under Profiles.') }}</p></div></li>
-            <li><span class="mock-how-n">2</span><div><h3>{{ t('Сверьте поведение', 'Check the behavior') }}</h3><p>{{ t('Квота и срок приходят в заголовках ответа, а логотип, тема и объявление — в манифесте, на который указывает reclash-config; цвет задаёт раздел view. Заголовки показаны у каждого стенда ровно так, как их отдаёт сервер.', 'Quota and expiry arrive in the response headers; logo, theme and announcement arrive in the manifest that reclash-config names, with the color set by the view section. Each stand shows its headers exactly as the server sends them.') }}</p></div></li>
-            <li><span class="mock-how-n">3</span><div><h3>{{ t('Соберите свои', 'Build your own') }}</h3><p>{{ t('Значение каждого заголовка описано в', 'Every header is explained in the') }} <SiteLink class="tlink" :to="pagePath(language, 'reference')">{{ t('справочнике', 'reference') }}</SiteLink>{{ t(', а собрать набор для своей панели поможет', ', and the') }} <SiteLink class="tlink" :to="pagePath(language, 'builder')">{{ t('конструктор', 'builder') }}</SiteLink>{{ t('.', ' assembles a set for your panel.') }}</p></div></li>
-          </ol>
-          <p class="mock-quota-note" data-fade>{{ t('Квоты здесь — образцы. Настоящая панель отдаёт Subscription-Userinfo сама и для каждого пользователя свой.', 'Quotas here are samples. A real panel sends Subscription-Userinfo itself, different for every user.') }}</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="sub-sec mock-list" :aria-labelledby="'mock-stands-title'">
-      <div class="wrap">
-        <div class="sec-head mock-list-head">
-          <h2 id="mock-stands-title" data-words>{{ t('Стенды', 'The stands') }}</h2>
-          <nav class="mock-index" data-fade :aria-label="t('Список стендов', 'Stand list')">
-            <a v-for="{ profile, swatch } in stands" :key="profile.key" :href="`#mock-${profile.key}`" class="mock-index-item theme-scope" :style="swatch.style">
-              <span class="mock-index-dot" :class="{ 'is-stock': !swatch.seed }" aria-hidden="true" />
-              <span class="mock-index-name">{{ profile.name[language] }}</span>
-              <span class="mock-index-blurb">{{ profile.scenario[language] }}</span>
-            </a>
-          </nav>
-        </div>
-        <MockSwitcher :stands="switcher" />
-        <div class="mock-stands">
-          <MockStand v-for="(profile, index) in mockProfiles" :key="profile.key" :profile="profile" :index="index" :origin="origin" :now="now" />
+    <section class="sub-sec mock-list" :aria-label="t('Стенды', 'Stands')">
+      <div class="wrap mock-shell">
+        <MockCatalog :stands="stands" :current="current" @select="select" />
+        <div ref="stand" class="mock-shell-pane">
+          <MockStand :key="profile.key" :profile="profile" :index="mockProfiles.indexOf(profile)" :total="mockProfiles.length" :origin="origin" :now="now" />
         </div>
       </div>
     </section>

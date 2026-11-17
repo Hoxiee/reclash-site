@@ -63,26 +63,39 @@ is keyed by field path in `shared/provider/reference.ts`. Refresh the snapshot
 when the app standard changes; do not restore the archived header schema.
 Provider accent colors use `ReClash-View: app.color:RRGGBB`, not `ReClash-Hex`.
 Mock responses, builder output and documentation must agree with that snapshot.
-`ReClash-SubscriptionType` supplies a display-only `test`, `promo` or `dev` badge;
-Ember declares `test`, Sentinel declares `promo`, and Nimbus and Aurora omit
-the type.
+The display-only `test`, `promo` or `dev` badge comes from `provider.type` in the manifest.
 Mock import links carry an encoded profile name as well as the subscription URL.
 The client reads native response metadata during import, including YAML responses.
 FlClashX headers require the app's explicit compatibility mode; they are not
 unconditional aliases in the native standard.
 
-`shared/provider/mocks.json` defines four deliberately different mock subscriptions:
+`shared/provider/mocks.json` defines seven deliberately different mock subscriptions.
+Each record holds an authored manifest (no `version`, no `routing`), the raw
+`routing:` YAML, a few standard response headers, a quota and the mihomo body:
 
-- **Ember Line:** full presentation controls, per-dashboard widget lists, a
-  power-button shape pool, quota, account links and announcements.
-- **Nimbus:** only `Profile-Title` and two fake nodes; no provider metadata or quota.
-- **Aurora Pass:** a service name, logo and violet accent, with no other overrides.
-- **Sentinel Trial:** a nearly exhausted promotional quota, expiry warnings,
-  renewal and top-up offers, reminders and a Global-mode restriction.
+- **Halo:** the curated showcase: theme, wallpaper, three cards and power-button captions.
+- **Ember Line:** every manifest section except `policy`, eight cards and all eight power-label states.
+- **Nimbus:** only `Profile-Title` and two fake nodes; no manifest or quota.
+- **Aurora Pass:** a name, light and dark logos and a violet accent.
+- **Sentinel Trial:** a nearly exhausted promotional quota, renew and top-up offers,
+  reminders, a Global-mode restriction, and support and website links sent as headers.
+- **Bastion:** all four `policy` limits, with a `GLOBAL` group that lists a subset of the
+  nodes and `tun.exclude-package` in the body, plus apps, transport and support.
+- **Atlas:** three auto-routing profiles, two scenarios and group bindings with chips.
 
-All nodes use loopback addresses and all account links are examples. The page,
-YAML responses, response headers and pre-import previews share these records.
-Missing quota metadata is not represented as an unlimited plan.
+Manifest strings may use tokens that `mockManifest` resolves at build time:
+`asset:<file>` (under `/assets/mock/`), `origin:<path>`, `host:` (the serving host, so
+fallback hosts never point away from the site) and `time:+3d` / `time:-1d` / `time:+12h`
+(unix seconds from the start of the current UTC day, emitted as integers). The hosted
+file is served at `/mock-config/<key>.yaml`. `npm run mocks:test` validates every
+config against the schema and runs it through the app's own parser
+(`public/runtime/kernel.js`); `dart run tool/rcx.dart lint` checks the routing in the app repository.
+
+All nodes use loopback addresses with a port and password unique across stands, and the
+first select group lists `DIRECT` first so importing a stand does not cut the user's
+traffic. All account links are examples. The page, YAML responses, response headers and
+pre-import previews share these records. Missing quota metadata is not represented as an
+unlimited plan.
 
 `shared/motion/core.ts` contains the original spring presets, integration,
 CSS easing simulation and blob geometry without browser dependencies.

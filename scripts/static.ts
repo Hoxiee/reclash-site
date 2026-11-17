@@ -18,13 +18,13 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
     writeFile(join(output, 'mock', profile.key), mockBody(profile)),
     writeFile(join(output, 'mock-page', profile.key), mockPage(profile)),
     writeFile(join(output, 'mock-preview', `${profile.key}.json`), `${JSON.stringify(mockPreview(profile), null, 2)}\n`),
-    ...(mockConfig(profile, origin) ? [writeFile(join(output, 'mock-config', `${profile.key}.yaml`), mockConfig(profile, origin)!)] : []),
+    ...(mockConfig(profile, origin, now) ? [writeFile(join(output, 'mock-config', `${profile.key}.yaml`), mockConfig(profile, origin, now)!)] : []),
   ]))
   for (const profile of mockProfiles) {
     headers.push(mockPath(profile.key), ...[...mockTransportHeaders, ...mockHeaders(profile, origin, now)].map(([key, value]) => `  ${key}: ${value}`))
     // The page and the preview JSON are what ReClash's confirmation reads before a stand is added.
     headers.push(mockPagePath(profile.key), '  Content-Type: text/html; charset=utf-8', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
-    if (mockConfig(profile, origin)) headers.push(mockConfigPath(profile.key), '  Content-Type: text/yaml; charset=utf-8', '  Access-Control-Allow-Origin: *', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
+    if (mockConfig(profile, origin, now)) headers.push(mockConfigPath(profile.key), '  Content-Type: text/yaml; charset=utf-8', '  Access-Control-Allow-Origin: *', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
     headers.push(mockPreviewPath(profile.key), '  Content-Type: application/json; charset=utf-8', '  Cache-Control: no-store', '  X-Robots-Tag: noindex')
   }
   for (const language of languages) {

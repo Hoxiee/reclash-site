@@ -1,5 +1,5 @@
 import { hexToOklch, normHex } from './theme.ts'
-import { mockExpire, type MockProfile } from './mocks.ts'
+import { mockExpire, mockNodeCount, type MockProfile } from './mocks.ts'
 import type { Language } from '../site/routes'
 
 // Display helpers for the mock-subs page: readable facts and a preview-only brand scope.
@@ -10,14 +10,44 @@ export const stockSeed = '7C5CFF'
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
+const record = (value: unknown): Record<string, unknown> | undefined =>
+  value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : undefined
+const manifestSection = (profile: MockProfile, key: string) => record(profile.manifest?.[key])
+const provider = (profile: MockProfile) => manifestSection(profile, 'provider')
+const appView = (profile: MockProfile) => record(manifestSection(profile, 'view')?.app)
+
+/** A string or a locale map (exact tag, then language, then en, then the first entry); undefined when there is none. */
+export function mockText(value: unknown, language: string): string | undefined {
+  if (typeof value === 'string') return value
+  const map = record(value)
+  if (!map) return undefined
+  const entries = Object.entries(map).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+  const lower = (tag: string) => tag.toLowerCase()
+  const find = (tag: string) => entries.find(([key]) => lower(key) === lower(tag))?.[1]
+  return find(language) ?? find(language.split('-')[0]!) ?? find('en') ?? entries[0]?.[1]
+}
+
+/** The provider name as the app would show it: the manifest, else the profile-title header, else the stand name. */
+export function mockName(profile: MockProfile, language: Language): string {
+  return mockText(provider(profile)?.name, language) ?? profile.headers?.title ?? profile.name[language]
+}
+
+/** File name of an `asset:` token under /assets/mock/, or undefined for any other value. */
+export const mockAssetFile = (value: unknown): string | undefined =>
+  typeof value === 'string' && value.startsWith('asset:') ? value.slice(6) : undefined
+
 /** Brand variables for a `.theme-scope` element, clamped like the site theme so text stays readable. */
 export function mockTheme(profile: MockProfile) {
-  const hex = profile.response.hex ?? ''
-  const seed = normHex(hex)
+  const app = appView(profile)
+  const seed = normHex(app?.color)
   const { l, c, h } = hexToOklch(seed ?? stockSeed)
+  const wallpaper = manifestSection(profile, 'wallpaper')
+  const file = mockAssetFile(wallpaper?.url)
   return {
     seed,
-    pureBlack: profile.response.view?.includes('app.black:true') ?? false,
+    seedDark: normHex(app?.['color-dark']),
+    pureBlack: app?.black === true,
+    wallpaper: file ? { file, opacity: typeof wallpaper?.opacity === 'number' ? wallpaper.opacity : 8 } : null,
     style: { '--bl': clamp(l, 0.68, 0.84).toFixed(4), '--bc': Math.min(c, 0.19).toFixed(4), '--bh': h.toFixed(2) },
   }
 }
@@ -26,7 +56,7 @@ export function mockTheme(profile: MockProfile) {
 export function mockFacts(profile: MockProfile, now: number, language: Language) {
   const ru = language === 'ru'
   const q = profile.quota
-  const minutes = profile.response.updateMinutes
+  const minutes = (profile.headers?.updateHours ?? 0) * 60
   let traffic: string | null = null
   let expires: string | null = null
   let share: number | null = null
@@ -51,7 +81,7 @@ export function mockFacts(profile: MockProfile, now: number, language: Language)
     : minutes % 60
       ? (ru ? `${minutes} мин` : `${minutes} min`)
       : (ru ? `${minutes / 60} ч` : `${minutes / 60} h`)
-  return { traffic, expires, share, refresh, nodes: profile.nodes }
+  return { name: mockName(profile, language), traffic, expires, share, refresh, nodes: mockNodeCount(profile) }
 }
 
 /** Decorative ring for the schematic preview, not a provider-controlled app element. */
@@ -65,7 +95,8 @@ export const stockRing = ['10EDF8', '2A8BFD', '6C58FC']
 export function mockStrip(profile: MockProfile, now: number, language: Language) {
   const ru = language === 'ru'
   const q = profile.quota
-  const r = profile.response
+  const renew = record(provider(profile)?.renew)
+  const topUp = record(provider(profile)?.['top-up'])
   const gb = (value: number) => ru ? `${value} ГБ` : `${value} GB`
   const used = q ? q.uploadGb + q.downloadGb : 0
   const total = q?.totalGb ?? 0
@@ -85,8 +116,8 @@ export function mockStrip(profile: MockProfile, now: number, language: Language)
       ? { tone: days <= 3 ? 'error' : 'primary', text: ru ? `Осталось ${days} ${word(days)}` : `Remaining ${days} ${word(days)}` }
       : { tone: 'muted', text: ru ? 'Бессрочно' : 'Never expires' }
   const offers = [
-    ...(r.buyPlan && days !== null && days <= 3 ? [ru ? 'Продлить подписку' : 'Renew subscription'] : []),
-    ...(r.buyTraffic && !unlimited && total - used < total * 0.1 ? [ru ? 'Докупить трафик' : 'Top up traffic'] : []),
+    ...(renew?.url && days !== null && days <= (typeof renew.days === 'number' ? renew.days : 3) ? [ru ? 'Продлить подписку' : 'Renew subscription'] : []),
+    ...(topUp?.url && !unlimited && share * 100 >= (typeof topUp.percent === 'number' ? topUp.percent : 90) ? [ru ? 'Докупить трафик' : 'Top up traffic'] : []),
   ]
   return {
     value: unlimited ? gb(used) : gb(Math.max(0, total - used)),

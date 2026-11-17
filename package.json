@@ -9,12 +9,13 @@
     "preview": "wrangler pages dev .output/public --ip 127.0.0.1 --port 4173",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
-    "check": "npm run docs:check && npm run docs:test && npm run builder:test && npm run typecheck && npm run build && node scripts/check-static.mjs",
+    "check": "npm run docs:check && npm run docs:test && npm run builder:test && npm run mocks:test && npm run typecheck && npm run build && node scripts/check-static.mjs",
     "docs:sync": "node scripts/docs/cli.mjs sync",
     "docs:check": "node scripts/docs/cli.mjs check",
     "docs:diagrams": "node scripts/docs/diagrams.mjs",
     "docs:test": "node --test tests/docs-engine.test.mjs",
     "builder:test": "node --test tests/builder.test.mjs",
+    "mocks:test": "node --test tests/mocks.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

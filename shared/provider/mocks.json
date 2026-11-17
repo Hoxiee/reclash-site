@@ -1,117 +1,1065 @@
 [
   {
-    "key": "ember",
-    "tone": "themed",
-    "scenario": { "ru": "Максимум", "en": "Full customization" },
-    "name": { "ru": "Ember Line", "en": "Ember Line" },
+    "key": "halo",
+    "tone": "featured",
+    "featured": true,
+    "scenario": {
+      "ru": "Витрина",
+      "en": "Showcase"
+    },
+    "name": {
+      "ru": "Halo",
+      "en": "Halo"
+    },
     "blurb": {
-      "ru": "Яркая тема, фон, формы кнопки и набор виджетов из размещённого конфига.",
-      "en": "Vivid theme, wallpaper, power-button shapes and a widget list from the hosted config."
+      "ru": "Сдержанный образцовый провайдер: бирюзовая тема, обои, три баннера и подписи кнопки подключения.",
+      "en": "A restrained reference provider: teal theme, wallpaper, three cards and power-button captions."
     },
     "teaches": {
-      "ru": "Проверьте весь набор оформления: логотип, чёрный фон с обоями, стекло, навигацию и выбор формы кнопки. Тема, обои, формы кнопки и виджеты приходят из размещённого конфига, на который указывает ReClash-Config. Есть квота, кабинет, оплата, объявления и напоминания; автозапуск VPN не включается.",
-      "en": "Try the full presentation set: logo, black wallpaper background, glass, navigation and a pool of power-button shapes. The theme, wallpaper, button shapes and widgets come from the hosted config that ReClash-Config names. Includes quota, account, billing, announcements and reminders; VPN autostart stays off."
+      "ru": "Проверьте общее впечатление: логотип и тема меняются со светлой на тёмную, на панели лежат обои и три карточки (баннер с обратным отсчётом, баннер с промокодом, четыре действия), кнопка подключения меняет форму и подписи. Кнопка баннера открывает сайт, промокод HALO2026 копируется, а объявление есть в окне импорта.",
+      "en": "Check the overall impression: the logo and theme switch between light and dark, the dashboard has a wallpaper and three cards (a countdown banner, a promo-code banner, four actions), and the power button changes shape and captions. The banner button opens the website, the code HALO2026 copies, and the import dialog shows the announcement."
     },
-    "nodes": 3,
-    "quota": { "uploadGb": 1, "downloadGb": 20, "totalGb": 100, "expireInDays": 30 },
-    "response": {
-      "subscriptionType": "test",
-      "title": "Ember Line",
-      "serviceName": "Ember Line",
-      "serverInfo": "Ember Select",
-      "hex": "FF6B1A",
-      "logo": "logo-ember.svg",
-      "background": { "file": "bg-ember.svg", "opacity": 22 },
-      "powerButton": "shape:sharpBurst,puffyDiamond,clover8Leaf;type:tonal",
-      "widgets": "health,outboundMode,serviceStatus",
-      "settings": "autoupdate,minimize",
-      "view": "app.style:vivid;app.black:true;app.navbar:floating;app.glass:ultra;proxies.type:list;proxies.sort:delay;proxies.layout:tight;proxies.icon:filled;proxies.card:compact",
-      "supportUrl": "https://example.com/support",
-      "webPageUrl": "https://example.com/account",
-      "buyPlan": "https://example.com/plans",
-      "buyTraffic": "https://example.com/traffic",
-      "announce": {
-        "ru": "Ember Line: всё оформление под провайдера — от обоев до кнопки подключения. Это демонстрация, узлы не дают доступа в сеть.",
-        "en": "Ember Line: provider styling from wallpaper to the connect button. This is a demo; the nodes do not provide network access."
+    "quota": {
+      "uploadGb": 3,
+      "downloadGb": 15,
+      "totalGb": 200,
+      "expireInDays": 24
+    },
+    "headers": {
+      "title": "Halo",
+      "updateHours": 6
+    },
+    "manifest": {
+      "provider": {
+        "name": "Halo",
+        "logo": "asset:halo-logo.svg",
+        "logo-dark": "asset:halo-logo-dark.svg",
+        "support-url": "https://example.com/halo/support",
+        "web-url": "https://example.com/halo",
+        "server-group": "Halo",
+        "announce": {
+          "text": {
+            "ru": "Короткое затмение: Halo показывает, как выглядит провайдер с полным оформлением. Это демонстрация, узлы не дают доступа в сеть.",
+            "en": "A brief eclipse: Halo shows a provider with full branding. This is a demo; the nodes do not provide network access."
+          }
+        }
       },
-      "announceUrl": "https://example.com/news",
-      "updateMinutes": 60,
-      "expireDays": "7,3,1",
-      "trafficPercent": "80,95"
+      "view": {
+        "app": {
+          "color": "#3FD8C2",
+          "color-dark": "#7CF3E1",
+          "style": "vivid",
+          "black": true,
+          "glass": "ultra",
+          "navbar": "floating"
+        },
+        "proxies": {
+          "type": "list",
+          "sort": "delay",
+          "layout": "standard",
+          "icon": "filled",
+          "card": "standard"
+        }
+      },
+      "power-button": {
+        "shape": [
+          "sunny",
+          "verySunny",
+          "flower"
+        ],
+        "type": "solid"
+      },
+      "wallpaper": {
+        "url": "asset:halo-wallpaper.svg",
+        "opacity": 36
+      },
+      "widgets": [
+        "currentOutbound",
+        "health",
+        "networkSpeed",
+        "serviceStatus"
+      ],
+      "cards": [
+        {
+          "id": "halo-hero",
+          "type": "banner",
+          "layout": "hero",
+          "tone": "primary",
+          "title": {
+            "ru": "Корона над горизонтом",
+            "en": "Corona over the horizon"
+          },
+          "text": {
+            "ru": "Демонстрационное предложение: полное оформление провайдера в одной карточке.",
+            "en": "A demo offer: full provider branding in a single card."
+          },
+          "image": "asset:halo-hero.webp",
+          "image-dark": "asset:halo-hero-dark.webp",
+          "countdown": "time:+5d",
+          "button": {
+            "label": {
+              "ru": "Открыть сайт",
+              "en": "Open website"
+            },
+            "app": "website"
+          },
+          "dismissible": true,
+          "when": {
+            "from": "time:-1d",
+            "until": "time:+30d"
+          }
+        },
+        {
+          "id": "halo-split",
+          "type": "banner",
+          "layout": "split",
+          "side": "start",
+          "tone": "tertiary",
+          "title": {
+            "ru": "Промокод HALO2026",
+            "en": "Promo code HALO2026"
+          },
+          "text": {
+            "ru": "Нажмите на карточку, чтобы скопировать код.",
+            "en": "Tap the card to copy the code."
+          },
+          "image": "asset:halo-split.webp",
+          "copy": "HALO2026"
+        },
+        {
+          "id": "halo-help",
+          "type": "actions",
+          "items": [
+            {
+              "icon": "support",
+              "label": {
+                "ru": "Поддержка",
+                "en": "Support"
+              },
+              "app": "support"
+            },
+            {
+              "icon": "telegram",
+              "label": {
+                "ru": "Канал",
+                "en": "Channel"
+              },
+              "url": "https://t.me/example"
+            },
+            {
+              "icon": "share",
+              "label": {
+                "ru": "Поделиться",
+                "en": "Share"
+              },
+              "share": "Halo: https://example.com/halo"
+            },
+            {
+              "icon": "speed",
+              "label": {
+                "ru": "Скорость",
+                "en": "Speed test"
+              },
+              "app": "speedTest"
+            }
+          ]
+        }
+      ],
+      "power-labels": {
+        "off": {
+          "ru": "Выйти на свет",
+          "en": "Step into the light"
+        },
+        "connecting": {
+          "ru": "Путь к {server}",
+          "en": "On the way to {server}"
+        },
+        "on": {
+          "ru": "Тихо и под защитой",
+          "en": "Quiet and protected"
+        },
+        "paused": {
+          "ru": "В тени, на паузе",
+          "en": "Resting in the shade"
+        }
+      }
     },
-    "body": "mixed-port: 7890\nmode: rule\nlog-level: info\nproxies:\n  - name: Ember Berlin\n    type: ss\n    server: 127.0.0.1\n    port: 8395\n    cipher: aes-256-gcm\n    password: ember-berlin\n  - name: Ember Tokyo\n    type: ss\n    server: 127.0.0.1\n    port: 8396\n    cipher: aes-256-gcm\n    password: ember-tokyo\n  - name: Ember Seattle\n    type: ss\n    server: 127.0.0.1\n    port: 8397\n    cipher: aes-256-gcm\n    password: ember-seattle\nproxy-groups:\n  - name: Ember Select\n    type: select\n    proxies: [Ember Berlin, Ember Tokyo, Ember Seattle, DIRECT]\n  - name: Ember Fastest\n    type: url-test\n    url: http://www.gstatic.com/generate_204\n    interval: 300\n    proxies: [Ember Berlin, Ember Tokyo, Ember Seattle]\nrules:\n  - MATCH,Ember Select\n"
+    "body": {
+      "nodes": [
+        "Halo Reykjavik",
+        "Halo Lisbon",
+        "Halo Kyoto",
+        "Halo Vancouver",
+        "Halo Singapore"
+      ],
+      "groups": [
+        {
+          "name": "Halo",
+          "type": "select",
+          "proxies": [
+            "DIRECT",
+            "Halo Reykjavik",
+            "Halo Lisbon",
+            "Halo Kyoto",
+            "Halo Vancouver",
+            "Halo Singapore"
+          ]
+        },
+        {
+          "name": "Halo Auto",
+          "type": "url-test",
+          "proxies": [
+            "Halo Reykjavik",
+            "Halo Lisbon",
+            "Halo Kyoto",
+            "Halo Vancouver",
+            "Halo Singapore"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "key": "ember",
+    "tone": "themed",
+    "scenario": {
+      "ru": "Каждая секция",
+      "en": "Every section"
+    },
+    "name": {
+      "ru": "Ember Line",
+      "en": "Ember Line"
+    },
+    "blurb": {
+      "ru": "Все секции манифеста, кроме политики: от панели провайдера и карточек до подписей кнопки и авто-маршрутизации.",
+      "en": "Every manifest section except policy: from the provider panel and cards to button captions and auto-routing."
+    },
+    "teaches": {
+      "ru": "Проверьте каждую секцию по очереди: оранжевая тема с чёрным фоном и обоями, пул форм кнопки, восемь подписей кнопки, виджеты и карточки (видны баннеры, действия и заметка об обновлении; заметки о трафике и сроке при квоте 21 из 100 ГБ и 30 днях скрыты). Скрытый адрес подписки, объявление и уведомление, реквизиты поддержки, запасные хосты, настройки, списки приложений и профиль авто-маршрутизации должны примениться без предупреждений в инспекторе. Автозапуск VPN не включается.",
+      "en": "Check each section in turn: the orange theme with black background and wallpaper, the power-button shape pool, all eight button captions, the widgets and the cards (banners, actions and the update note show; the traffic and expiry notes stay hidden at 21 of 100 GB and 30 days). The masked subscription URL, announcement and notice, support details, fallback hosts, settings, app lists and the auto-routing profile must all apply with no warnings in the inspector. VPN autostart stays off."
+    },
+    "quota": {
+      "uploadGb": 1,
+      "downloadGb": 20,
+      "totalGb": 100,
+      "expireInDays": 30
+    },
+    "headers": {
+      "title": "Ember Line",
+      "updateHours": 1
+    },
+    "manifest": {
+      "provider": {
+        "name": "Ember Line",
+        "logo": "asset:logo-ember.svg",
+        "logo-dark": "asset:logo-ember-dark.svg",
+        "support-url": "https://example.com/ember/support",
+        "web-url": "https://example.com/ember",
+        "type": "test",
+        "hide-url": true,
+        "server-group": "Ember Select",
+        "announce": {
+          "text": {
+            "ru": "Ember Line: оформление провайдера от обоев до кнопки подключения. Это демонстрация, узлы не дают доступа в сеть.",
+            "en": "Ember Line: provider styling from wallpaper to the connect button. This is a demo; the nodes do not provide network access."
+          },
+          "url": "https://example.com/ember/news"
+        },
+        "notice": {
+          "text": {
+            "ru": "Плановые работы в 02:00 UTC. Соединения могут прерваться.",
+            "en": "Maintenance at 02:00 UTC. Connections may drop."
+          },
+          "url": "https://example.com/ember/status"
+        },
+        "renew": {
+          "url": "https://example.com/ember/plans",
+          "days": 7
+        },
+        "top-up": {
+          "url": "https://example.com/ember/traffic",
+          "percent": 80
+        }
+      },
+      "reminders": {
+        "expire-days": [
+          7,
+          3,
+          1
+        ],
+        "traffic-percent": [
+          80,
+          95
+        ]
+      },
+      "settings": {
+        "minimize-on-exit": true,
+        "launch-at-login": false,
+        "start-hidden": false,
+        "connect-on-launch": false,
+        "check-app-updates": true,
+        "capture-logs": true,
+        "close-connections": true
+      },
+      "apps": {
+        "exclude": [
+          "com.example.bank",
+          "com.example.gov"
+        ],
+        "include": [
+          "com.example.work"
+        ],
+        "routing": "domestic"
+      },
+      "transport": {
+        "fallback-hosts": [
+          "host:"
+        ],
+        "new-domain": "host:"
+      },
+      "support": {
+        "keys": [
+          "ed25519:O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik"
+        ],
+        "upload-url": "https://example.com/reclash/reports"
+      },
+      "view": {
+        "app": {
+          "color": "#FF6B1A",
+          "color-dark": "#FFA66B",
+          "style": "vivid",
+          "black": true,
+          "glass": "ultra",
+          "navbar": "floating"
+        },
+        "proxies": {
+          "type": "list",
+          "sort": "delay",
+          "layout": "tight",
+          "icon": "filled",
+          "card": "compact"
+        }
+      },
+      "power-button": {
+        "shape": [
+          "sharpBurst",
+          "puffyDiamond",
+          "clover8Leaf"
+        ],
+        "type": "tonal"
+      },
+      "wallpaper": {
+        "url": "asset:bg-ember.svg",
+        "opacity": 22
+      },
+      "widgets": [
+        "currentOutbound",
+        "health",
+        "networkSpeed",
+        "outboundMode",
+        "serviceStatus",
+        "profiles",
+        "proxyGroups",
+        "connectionStats"
+      ],
+      "cards": [
+        {
+          "id": "ember-hero",
+          "type": "banner",
+          "layout": "hero",
+          "tone": "primary",
+          "title": {
+            "ru": "Жар в каждой секции",
+            "en": "Heat in every section"
+          },
+          "text": {
+            "ru": "Герой-баннер с картинкой, отсчётом и кнопкой.",
+            "en": "A hero banner with an image, a countdown and a button."
+          },
+          "image": "asset:ember-hero.webp",
+          "countdown": "time:+7d",
+          "button": {
+            "label": {
+              "ru": "Тарифы",
+              "en": "Plans"
+            },
+            "app": "renew"
+          },
+          "dismissible": true
+        },
+        {
+          "id": "ember-split",
+          "type": "banner",
+          "layout": "split",
+          "side": "end",
+          "tone": "secondary",
+          "title": {
+            "ru": "Разделённый баннер",
+            "en": "Split banner"
+          },
+          "text": {
+            "ru": "Картинка справа, действие у всей карточки.",
+            "en": "Image on the right, one action for the whole card."
+          },
+          "image": "asset:ember-split.webp",
+          "url": "https://example.com/ember/offer"
+        },
+        {
+          "id": "ember-strip",
+          "type": "banner",
+          "layout": "strip",
+          "tone": "tertiary",
+          "text": {
+            "ru": "Узкая полоса: плановые работы в 02:00 UTC.",
+            "en": "A strip: maintenance at 02:00 UTC."
+          },
+          "url": "https://example.com/ember/status"
+        },
+        {
+          "id": "ember-wide",
+          "type": "banner",
+          "layout": "image",
+          "image": "asset:ember-wide.webp",
+          "app": "website"
+        },
+        {
+          "id": "ember-update",
+          "type": "note",
+          "level": "info",
+          "text": {
+            "ru": "Вышла новая версия приложения.",
+            "en": "A new app version is out."
+          },
+          "app": "updateApp",
+          "when": {
+            "client-below": "99.0.0",
+            "platforms": [
+              "android",
+              "windows",
+              "macos",
+              "linux"
+            ]
+          }
+        },
+        {
+          "id": "ember-traffic",
+          "type": "note",
+          "level": "warning",
+          "text": {
+            "ru": "Трафик почти закончился.",
+            "en": "Traffic is almost used up."
+          },
+          "app": "topUp",
+          "when": {
+            "traffic-above": 90
+          }
+        },
+        {
+          "id": "ember-expiry",
+          "type": "note",
+          "level": "critical",
+          "text": {
+            "ru": "Подписка скоро закончится.",
+            "en": "The plan ends soon."
+          },
+          "app": "renew",
+          "when": {
+            "days-left-below": 7
+          }
+        },
+        {
+          "id": "ember-help",
+          "type": "actions",
+          "items": [
+            {
+              "icon": "telegram",
+              "label": {
+                "ru": "Канал",
+                "en": "Channel"
+              },
+              "url": "https://t.me/example"
+            },
+            {
+              "icon": "copy",
+              "label": {
+                "ru": "Код",
+                "en": "Code"
+              },
+              "copy": "EMBER2026"
+            },
+            {
+              "icon": "share",
+              "label": {
+                "ru": "Пригласить",
+                "en": "Invite"
+              },
+              "share": "Ember Line: https://example.com/ember"
+            },
+            {
+              "icon": "speed",
+              "label": {
+                "ru": "Скорость",
+                "en": "Speed test"
+              },
+              "app": "speedTest"
+            },
+            {
+              "icon": "doctor",
+              "label": {
+                "ru": "Диагностика",
+                "en": "Doctor"
+              },
+              "app": "doctor"
+            },
+            {
+              "icon": "support",
+              "label": {
+                "ru": "Поддержка",
+                "en": "Support"
+              },
+              "app": "support"
+            }
+          ]
+        }
+      ],
+      "power-labels": {
+        "off": {
+          "ru": "Нажмите, чтобы разжечь",
+          "en": "Tap to ignite"
+        },
+        "connecting": {
+          "title": {
+            "ru": "Подключение к {server}",
+            "en": "Connecting to {server}"
+          },
+          "hint": {
+            "ru": "Это займёт пару секунд",
+            "en": "Just a moment"
+          }
+        },
+        "on": [
+          {
+            "ru": "Огонь горит",
+            "en": "The fire is lit"
+          },
+          "Protected"
+        ],
+        "paused": {
+          "title": "Paused",
+          "hint": {
+            "ru": "Нажмите, чтобы продолжить",
+            "en": "Tap to resume"
+          }
+        },
+        "expired": [
+          {
+            "title": {
+              "ru": "Подписка закончилась",
+              "en": "Plan ended"
+            },
+            "hint": {
+              "ru": "Продлите, чтобы продолжить",
+              "en": "Renew to continue"
+            }
+          },
+          {
+            "ru": "Угли остыли",
+            "en": "The embers cooled"
+          }
+        ],
+        "exhausted": {
+          "ru": "Трафик израсходован",
+          "en": "Traffic used up"
+        },
+        "ending": {
+          "ru": "Осталось дней: {daysLeft}",
+          "en": "{daysLeft} days left"
+        },
+        "grace": {
+          "title": {
+            "ru": "Льготный период",
+            "en": "Grace period"
+          },
+          "hint": {
+            "ru": "Подписка уже закончилась",
+            "en": "The plan has ended"
+          }
+        }
+      }
+    },
+    "routing": "routing:\n  profiles:\n    ember-near:\n      rcx: 1\n      title: Nearest Ember\n      description: Prefers the Berlin node, then any live one.\n      prefer:\n        - { label: Berlin, when: 'name ~ /berlin/i and not dead' }\n        - { label: Any working, when: 'not dead' }\n      l10n:\n        ru:\n          'Nearest Ember': 'Ближайший Ember'\n          'Prefers the Berlin node, then any live one.': 'Сначала узел Берлина, затем любой живой.'\n          'Berlin': 'Берлин'\n          'Any working': 'Любой рабочий'\n  scenarios:\n    ember-day:\n      rcx: 1\n      title: Ember day\n      groups:\n        $main: { profile: provider/ember-near }\n      l10n:\n        ru:\n          'Ember day': 'День с Ember'\n  scenario: ember-day\n  bindings:\n    Ember Select: { profiles: [ember-near], default: ember-near }\n",
+    "body": {
+      "nodes": [
+        "Ember Berlin",
+        "Ember Tokyo",
+        "Ember Seattle"
+      ],
+      "groups": [
+        {
+          "name": "Ember Select",
+          "type": "select",
+          "proxies": [
+            "DIRECT",
+            "Ember Berlin",
+            "Ember Tokyo",
+            "Ember Seattle"
+          ]
+        },
+        {
+          "name": "Ember Fastest",
+          "type": "url-test",
+          "proxies": [
+            "Ember Berlin",
+            "Ember Tokyo",
+            "Ember Seattle"
+          ]
+        }
+      ]
+    }
   },
   {
     "key": "nimbus",
     "tone": "",
-    "scenario": { "ru": "Минимум", "en": "Bare minimum" },
-    "name": { "ru": "Nimbus", "en": "Nimbus" },
+    "scenario": {
+      "ru": "Минимум",
+      "en": "Bare minimum"
+    },
+    "name": {
+      "ru": "Nimbus",
+      "en": "Nimbus"
+    },
     "blurb": {
-      "ru": "Только название и два узла. Ни одного заголовка ReClash.",
-      "en": "Just a name and two nodes. Not a single ReClash header."
+      "ru": "Только имя профиля и два узла, без метаданных провайдера и квоты.",
+      "en": "Only a profile name and two nodes, with no provider metadata or quota."
     },
     "teaches": {
-      "ru": "Чистый импорт без подсказок провайдера: только Profile-Title и профиль mihomo. Нет логотипа, темы, типа подписки, квоты, срока, объявлений, ссылок или настроек. Отсутствие квоты не означает безлимит.",
-      "en": "A plain import with no provider hints: only Profile-Title and a mihomo profile. No logo, theme, subscription type, quota, expiry, announcements, links or settings. An absent quota does not mean unlimited traffic."
+      "ru": "Проверьте импорт без манифеста: имя берётся из заголовка, на карточке профиля монограмма вместо логотипа, нет полосы квоты, срока и значка типа. Отсутствие квоты не должно выглядеть как безлимит.",
+      "en": "Check an import with no manifest: the name comes from the header, the profile card shows a monogram instead of a logo, and there is no quota bar, expiry or type badge. A missing quota must not look unlimited."
     },
-    "nodes": 2,
     "quota": null,
-    "response": { "title": "Nimbus" }
+    "headers": {
+      "title": "Nimbus"
+    },
+    "body": {
+      "nodes": [
+        "Nimbus 01",
+        "Nimbus 02"
+      ],
+      "groups": [
+        {
+          "name": "Nimbus",
+          "type": "select",
+          "proxies": [
+            "DIRECT",
+            "Nimbus 01",
+            "Nimbus 02"
+          ]
+        }
+      ]
+    }
   },
   {
     "key": "aurora",
     "tone": "themed",
-    "scenario": { "ru": "Лёгкий брендинг", "en": "Light branding" },
-    "name": { "ru": "Aurora Pass", "en": "Aurora Pass" },
+    "scenario": {
+      "ru": "Лёгкий брендинг",
+      "en": "Light branding"
+    },
+    "name": {
+      "ru": "Aurora Pass",
+      "en": "Aurora Pass"
+    },
     "blurb": {
-      "ru": "Фиолетовый акцент и логотип — остальные настройки ваши.",
-      "en": "A violet accent and a logo — the other settings stay yours."
+      "ru": "Название, логотип для светлой и тёмной темы и фиолетовый акцент, без остальных настроек.",
+      "en": "A name, light and dark logos and a violet accent, with nothing else overridden."
     },
     "teaches": {
-      "ru": "Сравните с Nimbus: провайдер добавляет имя сервиса, логотип и цвет, но не задаёт фон, кнопку, виджеты или параметры приложения. Квота, срок и объявления не передаются.",
-      "en": "Compare with Nimbus: the provider adds a service name, logo and accent, but no wallpaper, power-button, widget or app-setting overrides. No quota, expiry or announcements are sent."
+      "ru": "Проверьте, что меняются только название, логотип (в тёмной теме другой) и акцентный цвет. Нет квоты, обоев, карточек и виджетов, форма кнопки и панель остаются стандартными.",
+      "en": "Check that only the name, the logo (a different one in the dark theme) and the accent colour change. There is no quota, wallpaper, cards or widgets, and the button and dashboard stay stock."
     },
-    "nodes": 4,
     "quota": null,
-    "response": {
-      "title": "Aurora Pass",
-      "serviceName": "Aurora Pass",
-      "hex": "6E55F5",
-      "logo": "logo-aurora.svg"
+    "headers": {
+      "title": "Aurora Pass"
+    },
+    "manifest": {
+      "provider": {
+        "name": "Aurora Pass",
+        "logo": "asset:logo-aurora.svg",
+        "logo-dark": "asset:logo-aurora-dark.svg"
+      },
+      "view": {
+        "app": {
+          "color": "#6E55F5",
+          "color-dark": "#B6A8FF"
+        }
+      }
+    },
+    "body": {
+      "nodes": [
+        "Aurora Oslo",
+        "Aurora Helsinki",
+        "Aurora Tromso",
+        "Aurora Gothenburg"
+      ],
+      "groups": [
+        {
+          "name": "Aurora",
+          "type": "select",
+          "proxies": [
+            "DIRECT",
+            "Aurora Oslo",
+            "Aurora Helsinki",
+            "Aurora Tromso",
+            "Aurora Gothenburg"
+          ]
+        }
+      ]
     }
   },
   {
     "key": "sentinel",
     "tone": "warn",
-    "scenario": { "ru": "Лимиты и продление", "en": "Limits and renewal" },
-    "name": { "ru": "Sentinel Trial", "en": "Sentinel Trial" },
+    "scenario": {
+      "ru": "Лимиты и продление",
+      "en": "Limits and renewal"
+    },
+    "name": {
+      "ru": "Sentinel Trial",
+      "en": "Sentinel Trial"
+    },
     "blurb": {
-      "ru": "Пробный тариф: 94 % квоты израсходовано, срок на исходе.",
-      "en": "A trial at its limits: 94% of traffic used, expiry approaching."
+      "ru": "Почти исчерпанная пробная квота, скорое окончание срока, предложения продлить и докупить, режим Global отключён.",
+      "en": "A nearly used-up trial quota, an imminent expiry, renew and top-up offers, and Global mode switched off."
     },
     "teaches": {
-      "ru": "Проверьте предупреждения о трафике и сроке, кнопки продления и докупки, кабинет и поддержку. Промоподписка запрещает режим Global, но не меняет оформление. Напоминания приходят за 3 и 1 день и при расходе 80 и 95 % квоты.",
-      "en": "Check traffic and expiry warnings, renewal and top-up offers, account and support links. This promotional subscription disables Global mode without changing the appearance. Reminders are set for 3 and 1 days remaining and 80% and 95% traffic usage."
+      "ru": "Проверьте полосу подписки: красный индикатор трафика (47 из 50 ГБ), метка «осталось 2 дня» и обе кнопки (продлить и докупить). Должны появиться две заметки, подписи кнопки подключения для окончания срока, режим Global недоступен. Ссылки поддержки и сайта приходят заголовками, а не манифестом.",
+      "en": "Check the subscription strip: a red traffic bar (47 of 50 GB), a \"2 days left\" pill and both buttons (renew and top up). Two notes should appear, the power button shows its ending captions, and Global mode is unavailable. The support and website links come from headers, not from the manifest."
     },
-    "nodes": 2,
-    "quota": { "uploadGb": 9, "downloadGb": 38, "totalGb": 50, "expireInDays": 2 },
-    "response": {
-      "subscriptionType": "promo",
+    "quota": {
+      "uploadGb": 9,
+      "downloadGb": 38,
+      "totalGb": 50,
+      "expireInDays": 2
+    },
+    "headers": {
       "title": "Sentinel Trial",
-      "serviceName": "Sentinel Trial",
-      "restrictions": "noglobal",
+      "updateHours": 12,
       "supportUrl": "https://example.com/support",
-      "webPageUrl": "https://example.com/account",
-      "buyPlan": "https://example.com/renew",
-      "buyTraffic": "https://example.com/topup",
-      "announce": {
-        "ru": "Осталось 3 ГБ, пробный период заканчивается. В демонстрации доступны продление и докупка трафика; режим Global отключён.",
-        "en": "3 GB remain and the trial is ending. This demo offers renewal and traffic top-ups; Global mode is disabled."
+      "webPageUrl": "https://example.com/account"
+    },
+    "manifest": {
+      "provider": {
+        "name": {
+          "ru": "Sentinel: пробный период",
+          "en": "Sentinel Trial"
+        },
+        "type": "promo",
+        "announce": {
+          "text": {
+            "ru": "Осталось 3 ГБ, пробный период заканчивается. В демонстрации доступны продление и докупка трафика; режим Global отключён.",
+            "en": "3 GB remain and the trial is ending. This demo offers renewal and traffic top-ups; Global mode is disabled."
+          },
+          "url": "https://example.com/trial"
+        },
+        "renew": {
+          "url": "https://example.com/renew",
+          "days": 3
+        },
+        "top-up": {
+          "url": "https://example.com/topup",
+          "percent": 80
+        }
       },
-      "announceUrl": "https://example.com/trial",
-      "updateMinutes": 720,
-      "expireDays": "3,1",
-      "trafficPercent": "80,95"
+      "reminders": {
+        "expire-days": [
+          3,
+          1
+        ],
+        "traffic-percent": [
+          80,
+          95
+        ]
+      },
+      "policy": {
+        "global": "off"
+      },
+      "cards": [
+        {
+          "id": "sentinel-expiry",
+          "type": "note",
+          "level": "critical",
+          "text": {
+            "ru": "Пробный период заканчивается, продлите подписку.",
+            "en": "The trial is ending, renew your plan."
+          },
+          "app": "renew",
+          "when": {
+            "days-left-below": 3
+          }
+        },
+        {
+          "id": "sentinel-traffic",
+          "type": "note",
+          "level": "warning",
+          "text": {
+            "ru": "Трафик почти закончился, докупите его.",
+            "en": "Traffic is almost gone, top it up."
+          },
+          "app": "topUp",
+          "when": {
+            "traffic-above": 90
+          }
+        }
+      ],
+      "power-labels": {
+        "ending": {
+          "title": {
+            "ru": "Осталось дней: {daysLeft}",
+            "en": "{daysLeft} days left"
+          },
+          "hint": {
+            "ru": "Осталось трафика: {trafficLeft}",
+            "en": "{trafficLeft} of traffic left"
+          }
+        },
+        "exhausted": {
+          "title": {
+            "ru": "Трафик закончился",
+            "en": "Traffic used up"
+          },
+          "hint": {
+            "ru": "Докупите, чтобы продолжить",
+            "en": "Top up to continue"
+          }
+        },
+        "expired": {
+          "title": {
+            "ru": "Подписка закончилась",
+            "en": "Plan ended"
+          },
+          "hint": {
+            "ru": "Продлите, чтобы продолжить",
+            "en": "Renew to continue"
+          }
+        },
+        "grace": {
+          "title": {
+            "ru": "Льготный период",
+            "en": "Grace period"
+          },
+          "hint": {
+            "ru": "Подписка уже закончилась",
+            "en": "The plan has ended"
+          }
+        }
+      }
+    },
+    "body": {
+      "nodes": [
+        "Sentinel Vienna",
+        "Sentinel Prague"
+      ],
+      "groups": [
+        {
+          "name": "Sentinel",
+          "type": "select",
+          "proxies": [
+            "DIRECT",
+            "Sentinel Vienna",
+            "Sentinel Prague"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "key": "bastion",
+    "tone": "strict",
+    "scenario": {
+      "ru": "Строгая политика",
+      "en": "Locked down"
+    },
+    "name": {
+      "ru": "Bastion",
+      "en": "Bastion"
+    },
+    "blurb": {
+      "ru": "Все четыре ограничения политики, списки приложений Android и скрытый адрес подписки.",
+      "en": "All four policy limits, Android app lists and a masked subscription URL."
+    },
+    "teaches": {
+      "ru": "Проверьте ограничения: в режиме Global работают только узлы Zurich и Oslo (Lisbon заблокирован), приложения из списка исключений остаются вне VPN, локальные порты закрыты, а на панели нельзя менять виджеты. Адрес подписки скрыт в редакторе и окне импорта. Автозапуск VPN отключён, закрытие соединений включено.",
+      "en": "Check the limits: in Global mode only the Zurich and Oslo nodes work (Lisbon is blocked), apps on the exclusion list stay outside the VPN, local ports are closed and the dashboards cannot be edited. The subscription URL is masked in the editor and import dialog. VPN autostart is off and closing connections is on."
+    },
+    "quota": {
+      "uploadGb": 4,
+      "downloadGb": 60,
+      "totalGb": 500,
+      "expireInDays": 180
+    },
+    "headers": {
+      "title": "Bastion",
+      "updateHours": 24,
+      "hideUrl": true
+    },
+    "manifest": {
+      "provider": {
+        "name": "Bastion",
+        "logo": "asset:logo-bastion.svg",
+        "type": "dev",
+        "hide-url": true,
+        "server-group": "Bastion"
+      },
+      "settings": {
+        "connect-on-launch": false,
+        "close-connections": true,
+        "launch-at-login": false
+      },
+      "policy": {
+        "global": "listed",
+        "apps": "required",
+        "local-ports": "closed",
+        "dashboard": "locked"
+      },
+      "apps": {
+        "exclude": [
+          "com.example.bank",
+          "com.example.gov"
+        ],
+        "include": [
+          "com.example.work"
+        ],
+        "routing": "domestic"
+      },
+      "transport": {
+        "fallback-hosts": [
+          "host:"
+        ],
+        "new-domain": "host:"
+      },
+      "support": {
+        "keys": [
+          "ed25519:O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik"
+        ],
+        "upload-url": "https://example.com/reclash/reports"
+      },
+      "view": {
+        "app": {
+          "style": "monochrome",
+          "color": "#9AA4B2"
+        }
+      }
+    },
+    "body": {
+      "nodes": [
+        "Bastion Zurich",
+        "Bastion Oslo",
+        "Bastion Lisbon"
+      ],
+      "tun": {
+        "exclude-package": [
+          "com.example.bank",
+          "com.example.gov"
+        ]
+      },
+      "groups": [
+        {
+          "name": "Bastion",
+          "type": "select",
+          "proxies": [
+            "DIRECT",
+            "Bastion Zurich",
+            "Bastion Oslo",
+            "Bastion Lisbon"
+          ]
+        },
+        {
+          "name": "GLOBAL",
+          "type": "select",
+          "proxies": [
+            "Bastion Zurich",
+            "Bastion Oslo"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "key": "atlas",
+    "tone": "themed",
+    "scenario": {
+      "ru": "Автороутинг",
+      "en": "Auto-routing"
+    },
+    "name": {
+      "ru": "Atlas",
+      "en": "Atlas"
+    },
+    "blurb": {
+      "ru": "Три профиля, два сценария и привязки к группам с быстрыми пулами.",
+      "en": "Three profiles, two scenarios and group bindings with one-tap pools."
+    },
+    "teaches": {
+      "ru": "Проверьте авто-маршрутизацию: у групп Atlas и Atlas Streaming есть выбор профиля (быстрый, ровный, видео) и пулы «Выбрать из», сценарий по умолчанию «Каждый день», «Вечер кино» переводит группу видео на её профиль. Условия опираются на имена узлов, поэтому работают на локальных узлах. В инспекторе нет предупреждений о привязках.",
+      "en": "Check auto-routing: the Atlas and Atlas Streaming groups offer a profile choice (fast, steady, streaming) and \"Choose from\" pools, the default scenario is Daily, and Movie night moves the streaming group onto its profile. Conditions use node names, so they work on loopback nodes. The inspector shows no binding warnings."
+    },
+    "quota": null,
+    "headers": {
+      "title": "Atlas"
+    },
+    "manifest": {
+      "provider": {
+        "name": "Atlas",
+        "logo": "asset:logo-atlas.svg",
+        "server-group": "Atlas"
+      },
+      "view": {
+        "app": {
+          "color": "#4C9AFF"
+        }
+      },
+      "widgets": [
+        "currentOutbound",
+        "proxyGroups",
+        "health"
+      ]
+    },
+    "routing": "routing:\n  profiles:\n    fast:\n      rcx: 1\n      title: Fastest\n      description: Nearest European nodes first, lowest latency wins.\n      prefer:\n        - { label: Europe, when: 'name ~ /germany|netherlands|sweden/i and not dead' }\n        - { label: Any working, when: 'not dead' }\n      rank: { by: latency, tolerance: 30 }\n      l10n:\n        ru:\n          'Fastest': 'Самый быстрый'\n          'Nearest European nodes first, lowest latency wins.': 'Сначала ближайшие европейские узлы, побеждает меньший отклик.'\n          'Europe': 'Европа'\n          'Any working': 'Любой рабочий'\n    stable:\n      rcx: 1\n      title: Steady\n      description: Holds a server and moves only when it fails.\n      pool: { exclude: 'name ~ /streaming/i' }\n      prefer:\n        - { label: Germany, when: 'name ~ /germany/i and not dead' }\n        - { label: Any working, when: 'not dead' }\n      rank: { by: stability }\n      switch: { feel: calm }\n      l10n:\n        ru:\n          'Steady': 'Ровный'\n          'Holds a server and moves only when it fails.': 'Держит один сервер и переключается только при сбое.'\n          'Germany': 'Германия'\n          'Any working': 'Любой рабочий'\n    streaming:\n      rcx: 1\n      title: Streaming\n      description: Streaming nodes first, then Dutch and Swedish ones.\n      prefer:\n        - { label: Streaming, when: 'name ~ /streaming/i and not dead' }\n        - { label: Nearby, when: 'name ~ /netherlands|sweden/i and not dead' }\n        - { label: Any working, when: 'not dead' }\n      l10n:\n        ru:\n          'Streaming': 'Видео'\n          'Streaming nodes first, then Dutch and Swedish ones.': 'Сначала узлы для видео, затем нидерландские и шведские.'\n          'Nearby': 'Рядом'\n          'Any working': 'Любой рабочий'\n  scenarios:\n    daily:\n      rcx: 1\n      title: Daily\n      description: The fast profile for everything.\n      groups:\n        $main: { profile: provider/fast }\n      l10n:\n        ru:\n          'Daily': 'Каждый день'\n          'The fast profile for everything.': 'Быстрый профиль для всего.'\n    movie-night:\n      rcx: 1\n      title: Movie night\n      description: Calm main group, streaming group on the streaming profile.\n      groups:\n        $main: { profile: provider/stable }\n        Atlas Streaming: { profile: provider/streaming }\n      l10n:\n        ru:\n          'Movie night': 'Вечер кино'\n          'Calm main group, streaming group on the streaming profile.': 'Ровная основная группа, группа для видео на профиле видео.'\n  scenario: daily\n  bindings:\n    Atlas:\n      profiles: [fast, stable]\n      default: fast\n      chips:\n        - { label: Germany, include: 'name ~ /germany/i' }\n        - { label: Nordics, include: 'name ~ /sweden/i' }\n        - { label: Asia and US, include: 'name ~ /japan|united states/i' }\n    Atlas Streaming:\n      profiles: [streaming]\n      default: streaming\n      chips:\n        - { label: Streaming, include: 'name ~ /streaming/i' }\n        - { label: Netherlands, include: 'name ~ /netherlands/i' }\n",
+    "body": {
+      "nodes": [
+        "Atlas Germany Frankfurt",
+        "Atlas Germany Berlin",
+        "Atlas Netherlands Amsterdam",
+        "Atlas Sweden Stockholm",
+        "Atlas Japan Tokyo",
+        "Atlas United States Seattle",
+        "Atlas Streaming NL"
+      ],
+      "groups": [
+        {
+          "name": "Atlas",
+          "type": "select",
+          "proxies": [
+            "DIRECT",
+            "Atlas Germany Frankfurt",
+            "Atlas Germany Berlin",
+            "Atlas Netherlands Amsterdam",
+            "Atlas Sweden Stockholm",
+            "Atlas Japan Tokyo",
+            "Atlas United States Seattle"
+          ]
+        },
+        {
+          "name": "Atlas Streaming",
+          "type": "select",
+          "proxies": [
+            "DIRECT",
+            "Atlas Streaming NL",
+            "Atlas Netherlands Amsterdam",
+            "Atlas Sweden Stockholm"
+          ]
+        }
+      ]
     }
   }
 ]

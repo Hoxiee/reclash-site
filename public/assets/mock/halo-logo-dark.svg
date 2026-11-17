@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Halo logo">
+<defs><linearGradient id="g" x1="16" y1="16" x2="112" y2="112" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#B8FFF4"/><stop offset="1" stop-color="#3FD8C2"/></linearGradient><radialGradient id="o" cx="64" cy="64" r="64" gradientUnits="userSpaceOnUse"><stop offset=".6" stop-color="#3FD8C2" stop-opacity=".28"/><stop offset="1" stop-color="#3FD8C2" stop-opacity="0"/></radialGradient></defs>
+<circle cx="64" cy="64" r="64" fill="url(#o)"/>
+<circle cx="64" cy="64" r="50" fill="none" stroke="url(#g)" stroke-width="9"/>
+<circle cx="64" cy="64" r="39" fill="#3FD8C2"/>
+<circle cx="69" cy="59" r="33" fill="#0B1220"/>
+<circle cx="64" cy="64" r="50" fill="none" stroke="#FFB86B" stroke-opacity=".7" stroke-width="1.6" stroke-dasharray="30 400" stroke-dashoffset="-120"/>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Bastion logo">
+<path d="M64 8 L108 24 V62 C108 88 90 108 64 120 C38 108 20 88 20 62 V24 Z" fill="#9AA4B2"/>
+<path d="M36 90 V50 H44 V42 H52 V50 H60 V42 H68 V50 H76 V42 H84 V50 H92 V90 Z" fill="#1F2630"/>
+<path d="M56 90 V74 A8 8 0 0 1 72 74 V90 Z" fill="#9AA4B2"/>
+<rect x="40" y="58" width="6" height="10" rx="3" fill="#9AA4B2"/><rect x="82" y="58" width="6" height="10" rx="3" fill="#9AA4B2"/>
+</svg>
