@@ -141,6 +141,9 @@ code, .mono { font-family: var(--mono); font-size: 0.9em; }
 .nav { position: fixed; inset: 14px var(--pad) auto; z-index: 60; display: flex; justify-content: center;
   transition: translate var(--dur-smooth) var(--ease-smooth); }
 .nav.is-hidden { translate: 0 calc(-100% - 28px); }
+/* Chrome drops the backdrop blur while the bar slides back, so it stays nearly opaque until the slide ends */
+.nav-bar { transition: background-color 0.3s var(--dur-smooth); }
+.nav.is-hidden .nav-bar { background-color: color-mix(in oklab, var(--bg-2) 96%, transparent); transition-delay: 0s; }
 .nav-bar { width: 100%; max-width: 1240px; display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 14px;
   border-radius: 999px; border: 1px solid var(--line);
   background: color-mix(in oklab, var(--bg-2) 74%, transparent); backdrop-filter: blur(20px) saturate(1.4); }
