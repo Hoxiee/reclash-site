@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "291eaad037adc4133059d131151f38ecc57e1d60"
+    "commit": "5a12e6ce0c37b2725488f933053ea0e1991304ad"
   },
   "languages": [
     "ru",
@@ -92,6 +92,25 @@
             "rcx/editor/routes",
             "rcx/editor/groups",
             "rcx/editor/studio"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "site-lock",
+      "slug": "site-lock",
+      "title": {
+        "ru": "Привязка сайтов",
+        "en": "Site lock"
+      },
+      "groups": [
+        {
+          "title": {
+            "ru": "Руководство",
+            "en": "Guide"
+          },
+          "pages": [
+            "site-lock"
           ]
         }
       ]
@@ -454,6 +473,23 @@
         "ru": 2,
         "en": 3
       }
+    },
+    {
+      "slug": "site-lock",
+      "file": "site-lock/README.md",
+      "section": "site-lock",
+      "titles": {
+        "ru": "Привязка сайтов",
+        "en": "Site lock"
+      },
+      "descriptions": {
+        "ru": "Привязка сайтов закрепляет выбранные сайты за выбранными выходными серверами: их трафик уходит только через один из этих серверов или не уходит вовсе, какими бы ни были режим, правила и выбранный прокси. Остальной тра…",
+        "en": "Site lock pins chosen sites to the exit servers you pick: their traffic leaves only through one of those servers or not at all, whatever the mode, rules or selected proxy. Everything else keeps its usual route."
+      },
+      "minutes": {
+        "ru": 5,
+        "en": 6
+      }
     }
   ],
   "files": {
@@ -476,8 +512,9 @@
     "ru/auto-routing/cookbook.md": "98b0c4dca9245280a4768b4645bf7eca5cd46067c9f9928d58a7fbe40bc43e7c",
     "ru/auto-routing/editor/hub.md": "0c1b55c0c916379ccb69944f75f3dc2b976324bea258aa4f71f7944ad8b15c92",
     "ru/auto-routing/editor/routes.md": "23207da658d6bdf3340034112e2446c57f158a3da7dc089f5a7a416c37376cd7",
-    "ru/auto-routing/editor/groups.md": "bede9107a9de1ce3abc7dc6efd055d12d5b1a7eb05f3afa181e34f4aef37dc95",
+    "ru/auto-routing/editor/groups.md": "cdbc3f01e34f04dd86e894ba0abd2554b9c412aaa3c4c41c7c04073f4252b56b",
     "ru/auto-routing/editor/studio.md": "5285cea4ebc1ebe9ab6c3a56f94530641b79fc068769a59edbeca035c9e9da25",
+    "ru/site-lock/README.md": "7d747d7b395225a1f274d5192b177b84c6937273688692acd2fce7a3308f664a",
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
@@ -497,7 +534,8 @@
     "en/auto-routing/cookbook.md": "0154695e44f8a0ba68fe18d9d9b6d12d838201c07c4c09dc06dbefd8228965bc",
     "en/auto-routing/editor/hub.md": "d28d0f6e55542d5c63db3dcd549312bcab7ad34ddedb60d0b7e81219c6762897",
     "en/auto-routing/editor/routes.md": "9abbadef636c284e6a88013f10958516bf6e474bb310d13d9f9ee550a4750d00",
-    "en/auto-routing/editor/groups.md": "c99c69ae2d4b5f6ef98e4ed614aede33d3c52ba3130fbf192c0630dff1453ce0",
-    "en/auto-routing/editor/studio.md": "9d146c6e77bb1dd1fe5a55136366555d350e74beecc563274cd4215a7d66f423"
+    "en/auto-routing/editor/groups.md": "67010e5aeeb7e2065f247df49a05df69c666a20e2605bf2e1f934c10e5ad78af",
+    "en/auto-routing/editor/studio.md": "9d146c6e77bb1dd1fe5a55136366555d350e74beecc563274cd4215a7d66f423",
+    "en/site-lock/README.md": "29c442aa33b7fd240ec2ac4f55ebb8d33eea3c363546cd2404bbd6f8160580c4"
   }
 }
