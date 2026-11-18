@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "830a5dd747a60a619dcc3b71f477d4d3df7954d3"
+    "commit": "5876ec6c10cf827a137b8f2ea1e3f6315255f736"
   },
   "languages": [
     "ru",
@@ -514,7 +514,7 @@
     "ru/auto-routing/editor/routes.md": "23207da658d6bdf3340034112e2446c57f158a3da7dc089f5a7a416c37376cd7",
     "ru/auto-routing/editor/groups.md": "cdbc3f01e34f04dd86e894ba0abd2554b9c412aaa3c4c41c7c04073f4252b56b",
     "ru/auto-routing/editor/studio.md": "5285cea4ebc1ebe9ab6c3a56f94530641b79fc068769a59edbeca035c9e9da25",
-    "ru/site-lock/README.md": "6893c313514cd2a030158b1e2a12d03e7a8070809fa857226d0b26c61da0ed56",
+    "ru/site-lock/README.md": "d28948d9b6822c295cd65e712c748ae3989b850e5e4f9a18ffd718b8f81852ff",
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
@@ -536,6 +536,6 @@
     "en/auto-routing/editor/routes.md": "9abbadef636c284e6a88013f10958516bf6e474bb310d13d9f9ee550a4750d00",
     "en/auto-routing/editor/groups.md": "67010e5aeeb7e2065f247df49a05df69c666a20e2605bf2e1f934c10e5ad78af",
     "en/auto-routing/editor/studio.md": "9d146c6e77bb1dd1fe5a55136366555d350e74beecc563274cd4215a7d66f423",
-    "en/site-lock/README.md": "802a73b4ea4dc4247ace80070193462766407d275d9a8ccc0fc7889e57ab6f3c"
+    "en/site-lock/README.md": "5ac892b9a4edb218f8564e8f58faddfe8708844c516db68b42dc944866e0a950"
   }
 }
