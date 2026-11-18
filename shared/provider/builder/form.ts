@@ -145,6 +145,17 @@ export const formSections: FormSection[] = [
     e('cards.when.platforms', 'Платформы', 'Platforms'),
     e('cards.when.client-below', 'Версия приложения ниже', 'App version below', ['Старые клиенты файл не читают.', 'Older clients do not read the file.'], { placeholder: '1.5.0' }),
   ] },
+  { key: 'chains', title: { ru: 'Цепочки', en: 'Chains' }, summary: { ru: 'Готовые маршруты через узлы подписки', en: 'Ready-made routes over the subscription\'s nodes' }, entries: [
+    e('chains', 'Цепочки', 'Chains', ['До 16. Только для чтения: пользователь может выключить цепочку или скопировать её.', 'Up to 16. Read-only: the user can switch a chain off or copy it.']),
+    e('chains.name', 'Название', 'Name', ['Уникальное. Цепочка пользователя с тем же именем главнее.', 'Unique. A user\'s chain with the same name wins.']),
+    e('chains.hops', 'Узлы', 'Hops', ['От 2 до 3 имён узлов или групп по порядку: вход, середина, выход.', 'Two or three node or group names in order: entry, middle, exit.']),
+    e('chains.target-group', 'Группа назначения', 'Target group', ['Группа, где предлагается цепочка. Без неё — основная группа (provider.server-group).', 'The group the chain is offered in. Without it, the main group (provider.server-group).'], { placeholder: 'Proxy' }),
+    e('chains.offered', 'Предлагать', 'Offered', ['false убирает цепочку из всех групп: она нужна только правилам маршрутизации. По умолчанию true.', 'false keeps the chain out of every group, for routing rules only. Default true.']),
+    e('chains.fingerprints', 'Отпечатки узлов', 'Hop fingerprints', ['По одному на узел, null — без отпечатка. Если узел переименован, Core берёт единственный узел с тем же отпечатком.', 'One per hop, null for none. When a hop is renamed, the Core takes the single node with the same fingerprint.']),
+    e('chains.fingerprints.type', 'Тип', 'Type', undefined, { placeholder: 'vless' }),
+    e('chains.fingerprints.server', 'Сервер', 'Server', undefined, { placeholder: 'de1.example.net' }),
+    e('chains.fingerprints.port', 'Порт', 'Port'),
+  ] },
   { key: 'power-labels', title: { ru: 'Подписи кнопки', en: 'Power labels' }, summary: { ru: 'Текст под кнопкой питания', en: 'Text under the power button' }, entries: powerStates.flatMap(([state, ru, en]) => [
     e(`power-labels.${state}`, ru, en),
     e(`power-labels.${state}.title`, 'Заголовок', 'Title'),
