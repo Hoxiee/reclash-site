@@ -4,8 +4,8 @@ import { docPath } from '~~/shared/docs/catalogue'
 usePageMeta('index')
 const { language, t } = useText()
 const manifesto = computed(() => [
-  t('Сам выбирает сервер.', 'Picks the server itself.'),
-  t('Объясняет почему.', 'Tells you why.'),
+  t('На связи с интернетом —', 'In touch with the internet —'),
+  t('и с тем, кто его даёт.', 'and with whoever provides it.'),
   t('Бесплатно, открыто, без рекламы.', 'Free, open, ad-free.'),
 ].join(' ').split(' '))
 </script>
@@ -44,14 +44,13 @@ const manifesto = computed(() => [
           <span class="tag">Windows · macOS · Linux · Android</span>
         </div>
         <h1 class="hero-h1" id="hero-title">
-          <span class="sr-only">{{ t("Подключение, которое думает.", "A connection that thinks.") }}</span>
+          <span class="sr-only">{{ t("ReClash на связи.", "ReClash. In touch.") }}</span>
           <span aria-hidden="true">
-            <span class="hl"><span class="t">{{ t("Подключение,", "A connection") }}</span></span>
-            <span class="hl"><span class="t">{{ t("которое", "that") }}</span></span>
-            <span class="hl"><span class="slot" :data-words="t('думает|не падает|не тупит', 'thinks|stays up|keeps up')"><span class="slot-in">{{ t("думает", "thinks") }}</span></span><span class="hero-dot">.</span></span>
+            <span class="hl"><span class="t">ReClash</span></span>
+            <span class="hl"><span class="slot" :data-words="t('на связи|в курсе', 'in touch|in the loop')"><span class="slot-in">{{ t("на связи", "in touch") }}</span></span><span class="hero-dot">.</span></span>
           </span>
         </h1>
-        <p class="hero-sub">{{ t("Клиент, который сам выбирает рабочий сервер, следит, открываются ли нужные сервисы, и показывает, сколько осталось трафика. Одна ссылка подписки — и всё работает на телефоне, компьютере и телевизоре.", "A client that picks a working server on its own, watches whether the services you need open, and shows how much traffic is left. One subscription link, and it works on your phone, computer and TV.") }}</p>
+        <p class="hero-sub">{{ t("Видно, что открывается, сколько осталось трафика и что сообщает провайдер. Одна ссылка подписки — и всё работает на телефоне, компьютере и телевизоре.", "See what opens, how much traffic is left and what your provider has to say. One subscription link, and it works on your phone, computer and TV.") }}</p>
         <div class="hero-cta">
           <SiteLink class="btn btn-primary" :to="pagePath(language, 'download')">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -86,9 +85,9 @@ const manifesto = computed(() => [
             <path class="b x" d="M28 28l8 8M36 28l-8 8"/>
             <circle class="f" cx="12" cy="48" r="4"/><circle cx="52" cy="16" r="4" fill="var(--fg)"/>
           </svg>
-        <h3>{{ t("Сервер упал — вы не заметили", "A server fails, you don't notice") }}</h3>
-        <p>{{ t("Умная группа сама переходит на рабочий сервер, учитывая задержку, сбои и страну выхода в каждой сети. Приложение показывает, почему выбран именно этот сервер; закрепить свой или выбрать вручную можно в любой момент.", "A smart group moves to a working server on its own, weighing latency, failures and exit country on each network. The app shows why it picked that server, and you can pin one or choose manually at any time.") }}</p>
-        <SiteLink class="tlink" :to="docPath(language, 'rcx')">{{ t("Как это работает", "How it works") }}</SiteLink>
+        <h3>{{ t("ChatGPT не увидит не ту страну", "ChatGPT never sees the wrong country") }}</h3>
+        <p>{{ t("Привязка сайтов отправляет выбранные сайты только через выбранные серверы выхода — или никуда, при любом режиме и правилах. Остальной трафик идёт как обычно.", "Site lock sends chosen sites only through the exit servers you pick, or nowhere, whatever the mode or rules. Everything else keeps its usual route.") }}</p>
+        <SiteLink class="tlink" :to="docPath(language, 'site-lock')">{{ t("Как это работает", "How it works") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-core" viewBox="0 0 64 64" aria-hidden="true">
@@ -99,7 +98,7 @@ const manifesto = computed(() => [
             </g>
             <circle class="f nuc" cx="32" cy="32" r="7"/>
           </svg>
-        <h3>{{ t("YouTube и ChatGPT открываются?", "Do YouTube and ChatGPT open?") }}</h3>
+        <h3>{{ t("Не грузит — сразу видно почему", "Won't load? You see why") }}</h3>
         <p>{{ t("Проверки сервисов показывают, открываются ли Google, YouTube, ChatGPT, Netflix и другие сайты через текущий маршрут и с какой задержкой. Не нужно гадать, виноват сервер или сайт.", "Service checks show whether Google, YouTube, ChatGPT, Netflix and other sites open through the current route, and how fast. No guessing whether the server or the site is to blame.") }}</p>
       </li>
       <li class="feat" data-mg data-reveal>
@@ -108,8 +107,8 @@ const manifesto = computed(() => [
             <rect class="s draw" pathLength="1" x="14" y="28" width="36" height="26" rx="8"/>
             <path class="f drop" d="M32 4C32 4 25 12 25 16.5a7 7 0 0 0 14 0C39 12 32 4 32 4Z"/>
           </svg>
-        <h3>{{ t("Подписка рассказывает о себе", "Your subscription speaks for itself") }}</h3>
-        <p>{{ t("Остаток трафика, срок действия, логотип и объявления сервиса, ссылки на поддержку и продление приходят вместе с подпиской. Профили лежат стопкой, как карты в кошельке.", "Remaining traffic, expiry, the service's logo and announcements, support and renewal links arrive with the subscription. Profiles stack like cards in a wallet.") }}</p>
+        <h3>{{ t("Хватит ли трафика — знаете заранее", "Know if your data will last") }}</h3>
+        <p>{{ t("Остаток и срок видны сразу, а прогноз подскажет, хватит ли трафика до конца периода. Вместе с подпиской приходят логотип и объявления сервиса, ссылки на поддержку и продление. Профили лежат стопкой, как карты в кошельке.", "Remaining traffic and expiry are in plain sight, and a forecast tells you whether the data will last the period. The service's logo, announcements, support and renewal links arrive with the subscription. Profiles stack like cards in a wallet.") }}</p>
         <SiteLink class="tlink" to="#providers">{{ t("Попробовать на этой странице", "Try it on this page") }}</SiteLink>
       </li>
       <li class="feat" data-mg data-reveal>
@@ -120,7 +119,7 @@ const manifesto = computed(() => [
             <circle class="f" cx="32" cy="38" r="3.5"/>
           </svg>
         <h3>{{ t("Одна кнопка или все цифры", "One button or every number") }}</h3>
-        <p>{{ t("По умолчанию — простой экран: кнопка подключения, текущая страна и остаток подписки. Подробная панель из виджетов показывает трафик, IP выхода и его качество, соединения и проверки сервисов.", "By default, a simple screen: the connect button, current location and what is left on the subscription. The detailed dashboard adds widgets for traffic, exit IP and its quality, connections and service checks.") }}</p>
+        <p>{{ t("По умолчанию — простой экран: кнопка подключения, текущая страна и остаток подписки. Подробная панель из виджетов показывает трафик, IP выхода и его качество, прогноз трафика, тест скорости, соединения и проверки сервисов.", "By default, a simple screen: the connect button, current location and what is left on the subscription. The detailed dashboard adds widgets for traffic, exit IP and its quality, a data forecast, a speed test, connections and service checks.") }}</p>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-scope" viewBox="0 0 64 64" aria-hidden="true">
@@ -131,7 +130,7 @@ const manifesto = computed(() => [
             <rect class="s app" x="22" y="30" width="11" height="9" rx="2.5"/>
           </svg>
         <h3>{{ t("Дома напрямую, в дороге — через прокси", "Direct at home, proxied on the go") }}</h3>
-        <p>{{ t("В доверенных сетях прокси встаёт на паузу, в остальных включается снова. Сценарии меняют режим для каждой сети и отправляют выбранные сайты в свою группу. На Android можно выбрать приложения, на компьютере — TUN или системный прокси.", "On networks you trust the proxy pauses, everywhere else it resumes. Scenarios set the mode per network and send chosen sites to their own group. Android lets you pick apps; desktops use TUN or the system proxy.") }}</p>
+        <p>{{ t("В доверенных сетях прокси встаёт на паузу, в остальных включается снова. На Android можно выбрать приложения, на компьютере — TUN или системный прокси.", "On networks you trust the proxy pauses, everywhere else it resumes. Android lets you pick apps; desktops use TUN or the system proxy.") }}</p>
       </li>
       <li class="feat" data-mg data-reveal>
         <svg class="ico i-dpi" viewBox="0 0 64 64" aria-hidden="true">
@@ -175,9 +174,9 @@ const manifesto = computed(() => [
       </thead>
       <tbody>
         <tr>
-          <th scope="row">{{ t("Сервер перестал отвечать", "A server stops responding") }}</th>
-          <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Переключаете вручную или ждёте автовыбора по пингу", "You switch by hand or wait for a ping-based pick") }}</td>
-          <td class="cmp-us" data-label="ReClash">{{ t("Переходит сам с учётом сбоев и страны выхода и объясняет выбор", "Moves on its own, weighing failures and exit country, and explains the pick") }}</td>
+          <th scope="row">{{ t("Сайт пускает только из одной страны", "A site only works from one country") }}</th>
+          <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Следить руками, какой сервер выбран", "Keep an eye on which server is selected") }}</td>
+          <td class="cmp-us" data-label="ReClash">{{ t("Сайт привязан к своим выходам и мимо них не уйдёт", "The site is pinned to its exits and never goes around them") }}</td>
         </tr>
         <tr>
           <th scope="row">{{ t("Не открывается сайт", "A site will not open") }}</th>
@@ -187,7 +186,7 @@ const manifesto = computed(() => [
         <tr>
           <th scope="row">{{ t("Сколько осталось трафика", "Traffic left") }}</th>
           <td :data-label="t('Обычный клиент', 'Typical client')">{{ t("Часто только в настройках профиля", "Often buried in profile settings") }}</td>
-          <td class="cmp-us" data-label="ReClash">{{ t("Остаток и срок прямо на главном экране", "Remaining traffic and expiry on the main screen") }}</td>
+          <td class="cmp-us" data-label="ReClash">{{ t("Остаток и срок на главном экране, прогноз — хватит ли до конца", "Remaining traffic and expiry on the main screen, and a forecast of whether it will last") }}</td>
         </tr>
         <tr>
           <th scope="row">{{ t("Домашний Wi-Fi", "Home Wi-Fi") }}</th>
