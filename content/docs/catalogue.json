@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "0ad0cd279fa82483285e39c4713ab2da2d2c983c"
+    "commit": "291eaad037adc4133059d131151f38ecc57e1d60"
   },
   "languages": [
     "ru",
@@ -400,8 +400,8 @@
         "en": "The Auto routing page: the switch, the running scenario with its routes, the smart groups, and the library with import and export."
       },
       "minutes": {
-        "ru": 4,
-        "en": 5
+        "ru": 5,
+        "en": 6
       }
     },
     {
@@ -417,7 +417,7 @@
         "en": "The route editor and its pickers: traffic, server order, steps, countries and conditions."
       },
       "minutes": {
-        "ru": 3,
+        "ru": 4,
         "en": 4
       }
     },
@@ -430,12 +430,12 @@
         "en": "Group sheet"
       },
       "descriptions": {
-        "ru": "Лист группы в «Прокси»: состояние, управление, пул, поведение, объяснение, история и сообщения.",
-        "en": "The per-group sheet in Proxies: status, control, pool, behaviour, explanation, history and messages."
+        "ru": "Лист группы в «Прокси»: состояние, управление, способ выбора сервера, подробности и сообщения.",
+        "en": "The per-group sheet in Proxies: status, control, how the group picks a server, details and messages."
       },
       "minutes": {
-        "ru": 4,
-        "en": 5
+        "ru": 5,
+        "en": 6
       }
     },
     {
@@ -474,10 +474,10 @@
     "ru/auto-routing/scenarios.md": "9b62cea9479cd17e2532164cc3a78df5ad9af3bebcd31630d3f49761a3308923",
     "ru/auto-routing/sharing.md": "6ac0482545e86d1f310cc2ea3e6fcb1effc6a4d1c0b1664999b2a60a75949c30",
     "ru/auto-routing/cookbook.md": "98b0c4dca9245280a4768b4645bf7eca5cd46067c9f9928d58a7fbe40bc43e7c",
-    "ru/auto-routing/editor/hub.md": "103451d1616779edf7455dcf04cd44ddf74543cff94064856a2308afddbb66d0",
-    "ru/auto-routing/editor/routes.md": "c30ee6084cc1d909eacba6236dfb8911d0417dd603a5b657226693bfe0e2b2e3",
-    "ru/auto-routing/editor/groups.md": "59645c535413cf9789f2bb71c322a9a7d2982c0414d93bf58ebccf8212ac4413",
-    "ru/auto-routing/editor/studio.md": "d593c96494d9e8b5823897e9f15f83fb6c4967a98cf286a3dfb0e8487744fabf",
+    "ru/auto-routing/editor/hub.md": "0c1b55c0c916379ccb69944f75f3dc2b976324bea258aa4f71f7944ad8b15c92",
+    "ru/auto-routing/editor/routes.md": "23207da658d6bdf3340034112e2446c57f158a3da7dc089f5a7a416c37376cd7",
+    "ru/auto-routing/editor/groups.md": "bede9107a9de1ce3abc7dc6efd055d12d5b1a7eb05f3afa181e34f4aef37dc95",
+    "ru/auto-routing/editor/studio.md": "5285cea4ebc1ebe9ab6c3a56f94530641b79fc068769a59edbeca035c9e9da25",
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "66ea61fd78409ed5133322e8edf493ba98d249168277d55b154f62946b462eea",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
@@ -495,9 +495,9 @@
     "en/auto-routing/scenarios.md": "3a172d385f35a558cc8994ac5ec06d4676c9365c38fd6f69d1dbc84dd6c0cf50",
     "en/auto-routing/sharing.md": "be9d507ce646fe152105ad719956b6b9d8fc9fa7d29c83cedca1f869b8d07136",
     "en/auto-routing/cookbook.md": "0154695e44f8a0ba68fe18d9d9b6d12d838201c07c4c09dc06dbefd8228965bc",
-    "en/auto-routing/editor/hub.md": "a24ab861e5efa58b468532dcda3a0481bc11130cf6f7d4144e109ad10fb4ed87",
-    "en/auto-routing/editor/routes.md": "ad0356a10829a9e12a3ca7e0b0821d9e1b97047384ddb1e44cf1cfc7df804749",
-    "en/auto-routing/editor/groups.md": "29bb6c0c9fc614adaf961f11228813233f1f1651afc5a221cd820fcd283d86dd",
-    "en/auto-routing/editor/studio.md": "54c5fd526796468f2bc348f5c0832581c1d38b4104d2042746a4d24a9c56f3c9"
+    "en/auto-routing/editor/hub.md": "d28d0f6e55542d5c63db3dcd549312bcab7ad34ddedb60d0b7e81219c6762897",
+    "en/auto-routing/editor/routes.md": "9abbadef636c284e6a88013f10958516bf6e474bb310d13d9f9ee550a4750d00",
+    "en/auto-routing/editor/groups.md": "c99c69ae2d4b5f6ef98e4ed614aede33d3c52ba3130fbf192c0630dff1453ce0",
+    "en/auto-routing/editor/studio.md": "9d146c6e77bb1dd1fe5a55136366555d350e74beecc563274cd4215a7d66f423"
   }
 }
