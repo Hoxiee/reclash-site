@@ -49,11 +49,11 @@ watch(() => props.open, open => { if (open) reveal(false) })
       <span>{{ t('Поиск', 'Search', '搜索') }}</span>
       <kbd aria-hidden="true">/</kbd>
     </button>
-    <SiteLink class="hb-nav-home" :to="docPath(language)" :aria-current="current('')">{{ t('Обзор документации', 'Documentation overview', '文档概览') }}</SiteLink>
-    <section v-for="section in sections" :key="section.id" class="hb-nav-section" :class="{ 'is-current': within(section) }">
+    <SiteLink class="hb-nav-home" :to="docPath(language)" :aria-current="current('')"><svg class="hb-nav-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6v6H4zm10 0h6v6h-6zM4 15h6v4H4zm10 0h6v4h-6z" /></svg>{{ t('Обзор документации', 'Documentation overview', '文档概览') }}</SiteLink>
+    <section v-for="(section, index) in sections" :key="section.id" class="hb-nav-section" :class="{ 'is-current': within(section) }">
       <h2 class="hb-nav-title">
         <button type="button" :aria-expanded="expanded.has(section.id)" :aria-controls="`hb-nav-${section.id}`" @click="toggle(section.id)">
-          {{ section.title[language] }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+          <span class="hb-nav-index" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>{{ section.title[language] }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
         </button>
       </h2>
       <div :id="`hb-nav-${section.id}`" class="hb-nav-body" :hidden="!expanded.has(section.id)">
@@ -70,7 +70,7 @@ watch(() => props.open, open => { if (open) reveal(false) })
     <section class="hb-nav-section hb-nav-tools">
       <h2 class="hb-nav-title">
         <button type="button" :aria-expanded="expanded.has('tools')" aria-controls="hb-nav-tools" @click="toggle('tools')">
-          {{ t('Инструменты', 'Tools', '工具') }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+          <svg class="hb-nav-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.1L4 16.7 7.3 20l5.3-5.3a4 4 0 0 0 5.1-5.4l-2.4 2.4-2.6-.6-.6-2.6 2.4-2.4Z" /></svg>{{ t('Инструменты', 'Tools', '工具') }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
         </button>
       </h2>
       <ul id="hb-nav-tools" class="hb-nav-body" :hidden="!expanded.has('tools')">

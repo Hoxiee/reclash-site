@@ -21,7 +21,7 @@ for (const language of ['ru', 'en'] as const) {
     for (const alternate of docLanguages) {
       await expect(page.locator(`link[rel="alternate"][hreflang="${alternate}"]`)).toHaveAttribute('href', `${origin}${docPath(alternate)}`)
     }
-    await expect(page.locator('.hb-map-card')).toHaveCount(docSections.length)
+    await expect(page.locator('.hb-map-row')).toHaveCount(docSections.length)
     await expect(page.locator('.hb-side .hb-nav-section:not(.hb-nav-tools) li a')).toHaveCount(docPages.length - 1)
   })
 }
