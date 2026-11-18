@@ -191,13 +191,26 @@ h4.hb-h { margin: 28px 0 8px; font-size: 1rem; font-weight: 650; }
 .hb-prose .codeblock pre code { padding: 0; border-radius: 0; background: none; box-shadow: none; font-weight: 400; overflow-wrap: normal; white-space: pre; }
 
 .hb-diagram { margin: 0 0 1.6em; }
-.hb-diagram-canvas { padding: clamp(16px, 3vw, 28px); overflow-x: auto; border-radius: var(--r-m); background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line); }
-.hb-diagram-canvas img { height: auto; margin: 0 auto; }
-.hb-diagram figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-top: 10px; font-size: 0.82rem; color: var(--fg-3); }
-.hb-diagram figcaption a { color: var(--fg-2); }
-.hb-diagram details { flex: 1 1 100%; }
+.hb-diagram-view { position: relative; }
+.hb-diagram-canvas { position: relative; overflow: hidden; border-radius: var(--r-m); background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line);
+  cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.hb-diagram-canvas:active { cursor: grabbing; }
+.hb-diagram-canvas img { position: absolute; top: 0; left: 0; max-width: none; transform-origin: 0 0; pointer-events: none; }
+.hb-diagram-tools { position: absolute; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 2px; padding: 4px;
+  border-radius: 999px; background: oklch(from var(--bg-3) l c h / 0.88); box-shadow: inset 0 0 0 1px var(--line); backdrop-filter: blur(8px); }
+.hb-diagram-tools button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%;
+  background: none; color: var(--fg-2); cursor: pointer; transition: background 150ms, color 150ms; }
+.hb-diagram-tools button:hover { background: var(--line); color: var(--fg); }
+.hb-diagram-tools svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.hb-diagram-tools output { min-width: 44px; font-size: 0.75rem; text-align: center; font-variant-numeric: tabular-nums; color: var(--fg-3); }
+.hb-diagram figcaption { margin-top: 10px; font-size: 0.82rem; color: var(--fg-3); }
 .hb-diagram summary { width: max-content; cursor: pointer; }
 .hb-diagram details .codeblock { margin-top: 10px; }
+.hb-diagram-dialog { width: calc(100vw - 32px); height: calc(100dvh - 32px); max-width: none; max-height: none; margin: auto; padding: 0;
+  border: 0; border-radius: var(--r-m); background: var(--bg-2); color: var(--fg); box-shadow: 0 30px 90px oklch(0 0 0 / 0.55); }
+.hb-diagram-dialog::backdrop { background: oklch(0.1 0.01 var(--bh) / 0.72); backdrop-filter: blur(6px); }
+.hb-diagram-view.is-expanded, .hb-diagram-view.is-expanded .hb-diagram-canvas { height: 100%; }
+.hb-diagram-view.is-expanded .hb-diagram-canvas { touch-action: none; box-shadow: none; }
 
 
 /* ---------- section map ---------- */

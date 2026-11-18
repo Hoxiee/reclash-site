@@ -42,14 +42,6 @@ const calloutIcons: Record<DocCallout, string> = {
     </aside>
     <blockquote v-else-if="block.type === 'quote'"><DocsBlocks :blocks="block.children" :language="language" /></blockquote>
     <DocsTable v-else-if="block.type === 'table'" :table="block" :label="t('Таблица', 'Table', '表格')" />
-    <figure v-else-if="block.type === 'diagram'" class="hb-diagram">
-      <div class="hb-diagram-canvas" tabindex="0" role="region" :aria-label="block.title">
-        <img :src="block.src" :alt="block.title" :width="block.width" :height="block.height" loading="lazy" decoding="async">
-      </div>
-      <figcaption>
-        <a :href="block.src" target="_blank" rel="noopener">{{ t('Открыть схему', 'Open diagram', '打开图表') }}</a>
-        <details><summary>{{ t('Исходник схемы', 'Diagram source', '图表源代码') }}</summary><CodeBlock :code="block.text" lang="text" label="mermaid" :copy-labels="copyLabels" /></details>
-      </figcaption>
-    </figure>
+    <DocsDiagram v-else-if="block.type === 'diagram'" :block="block" :language="language" :copy-labels="copyLabels" />
   </template>
 </template>
