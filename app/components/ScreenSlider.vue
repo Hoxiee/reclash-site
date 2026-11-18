@@ -2,6 +2,7 @@
 const { t } = useText()
 const slides = computed(() => [
   { src: 'mobile-dashboard', w: 730, h: 1438, title: t('Одна кнопка', 'One button'), text: t('Подключение, страна и остаток подписки на одном экране.', 'Connection, location and what is left on the subscription, on one screen.') },
+  { src: 'mobile-widgets', w: 730, h: 1438, title: t('Объявления провайдера', 'Provider announcements'), text: t('На вкладке «Виджеты» рядом с главной ваше объявление и уведомление о работах стоят первыми.', 'On the Widgets tab next to Home, your announcement and maintenance notice come first.') },
   { src: 'mobile-branded', w: 730, h: 1438, title: t('Клиент в цветах провайдера', 'Your provider\'s look'), text: t('Логотип, фон и кнопка приходят вместе с подпиской.', 'Logo, background and button arrive with the subscription.') },
   { src: 'mobile-profiles', w: 730, h: 1438, title: t('Подписки как карты в кошельке', 'Subscriptions as wallet cards'), text: t('Трафик и срок каждой видны сразу.', 'Traffic and expiry of each one at a glance.') },
   { src: 'mobile-proxies', w: 730, h: 1438, title: t('Избранное и цепочки', 'Favorites and chains'), text: t('Любимые серверы и маршруты через домашний вход наверху, у каждого видна задержка.', 'Favorite servers and routes through a home entry on top, each with its latency.') },
