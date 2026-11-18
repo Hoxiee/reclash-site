@@ -26,7 +26,7 @@ async function verify() {
   }
   const yaml = await get('/mock/ember', 'text/yaml')
   assert.equal(yaml.response.status, 200)
-  assert.equal(yaml.response.headers.get('reclash-subscriptiontype'), 'test')
+  assert.equal(yaml.response.headers.get('reclash-config'), `${origin}/mock-config/ember.yaml`)
   assert.ok(yaml.body.startsWith('# Mock subscription: ember.'))
   const html = await get('/mock/ember')
   assert.equal(html.response.status, 200)
