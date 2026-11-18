@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "25652973c9cd123b30db43d49582a6ea684d2797"
+    "commit": "29270b9762985498ecd70211267cf48847f40ebb"
   },
   "languages": [
     "ru",
@@ -413,7 +413,7 @@
     }
   ],
   "files": {
-    "ru/README.md": "f797a5e20f3058c2aa3c7d574e404797f75a98960a2d77296ea35ff1fc0371da",
+    "ru/README.md": "21b3109879a5458e4db6df8b29fe1c46d06d10f3a89a9d42140b55546af52a97",
     "ru/providers/README.md": "ff814259a4057eaddc7cc92850d33fb7fe2838bccb4bf6cf772cbda32061f5dc",
     "ru/providers/rollout.md": "e06542f91923e1101954494ea8e987a45821ff447a3b60478759821a4ab8aa16",
     "ru/providers/manifest.md": "3f4b9e0bf147803a363e31d1b6971c444a744c5ea9c43e61446f0b56e9e4de1f",
@@ -431,7 +431,7 @@
     "ru/auto-routing/sharing.md": "6ac0482545e86d1f310cc2ea3e6fcb1effc6a4d1c0b1664999b2a60a75949c30",
     "ru/auto-routing/cookbook.md": "98b0c4dca9245280a4768b4645bf7eca5cd46067c9f9928d58a7fbe40bc43e7c",
     "ru/site-lock/README.md": "5b97fc411ec959ce352c563f1368cd5cd58140dc55c9c93752d5db88e37dedbb",
-    "en/README.md": "9434703c5db0fd9b42d703b10416c8a28badbb18935cf13bf2bd43c93d49dff4",
+    "en/README.md": "a335258a93124e7ff9db01c6df6b9089c85e9efc5df86954a4b79fe398363dbc",
     "en/providers/README.md": "9fa0754ec4b3d49c462c05f36550a6600719728fc97a0646711c197cac30888e",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
     "en/providers/manifest.md": "98b9f50c6200afb2d8d56e5665f3d18fe8135d20e3e57f2f85810eda4b0826a3",
