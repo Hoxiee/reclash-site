@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "b53689b114740214b607df35286db10be869231c"
+    "commit": "8693ea49714b60958a4e5187c7bec5bf77b92741"
   },
   "languages": [
     "ru",
@@ -487,8 +487,8 @@
         "en": "Site lock pins chosen sites to the exit servers you pick: their traffic leaves only through one of those servers or not at all, whatever the mode, rules or selected proxy. Everything else keeps its usual route."
       },
       "minutes": {
-        "ru": 7,
-        "en": 8
+        "ru": 8,
+        "en": 9
       }
     }
   ],
@@ -496,7 +496,7 @@
     "ru/README.md": "84646860924b9f74d16e0ed75c159d0e4f9ad3a42f1b1a17931480d81de9949b",
     "ru/providers/README.md": "ff814259a4057eaddc7cc92850d33fb7fe2838bccb4bf6cf772cbda32061f5dc",
     "ru/providers/rollout.md": "e06542f91923e1101954494ea8e987a45821ff447a3b60478759821a4ab8aa16",
-    "ru/providers/manifest.md": "7d30c5bac5b3bccae3358e0b3142946337b02bf80e6e30447f39ee66e5ac7aea",
+    "ru/providers/manifest.md": "3f4b9e0bf147803a363e31d1b6971c444a744c5ea9c43e61446f0b56e9e4de1f",
     "ru/providers/headers.md": "33579e74319cf8b0b7f608714ad8d5f93d6e2f621fdd4471489a525341961b91",
     "ru/providers/request.md": "8713002af77551d9df350497bdb0c10cc0eb0e925da605769aae2d2bead4ea69",
     "ru/providers/policy.md": "2ef378e89b306021cf7ef9521283d21964f5838eb31a96ddfd923cd3a346663e",
@@ -514,11 +514,11 @@
     "ru/auto-routing/editor/routes.md": "23207da658d6bdf3340034112e2446c57f158a3da7dc089f5a7a416c37376cd7",
     "ru/auto-routing/editor/groups.md": "cdbc3f01e34f04dd86e894ba0abd2554b9c412aaa3c4c41c7c04073f4252b56b",
     "ru/auto-routing/editor/studio.md": "5285cea4ebc1ebe9ab6c3a56f94530641b79fc068769a59edbeca035c9e9da25",
-    "ru/site-lock/README.md": "2814b0f6fdc4c78ea41ff242bb8c0d99c669474dd1b8a1373286b3db491a7f04",
+    "ru/site-lock/README.md": "5b97fc411ec959ce352c563f1368cd5cd58140dc55c9c93752d5db88e37dedbb",
     "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
     "en/providers/README.md": "9fa0754ec4b3d49c462c05f36550a6600719728fc97a0646711c197cac30888e",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
-    "en/providers/manifest.md": "9f020eb1e0a5a82155e33c5042cce334d437796b0e8382ba76872c3c754a5faa",
+    "en/providers/manifest.md": "98b9f50c6200afb2d8d56e5665f3d18fe8135d20e3e57f2f85810eda4b0826a3",
     "en/providers/headers.md": "b85e9d2de3b4c43c8bf4f639cfe2c0cb03efa69d3e3d4215f98dd1695cb0c4ac",
     "en/providers/request.md": "7d9d5bc848acacdbdf75a0982e5bff170562e08d7aea18aaae241cb4fc5c5ac7",
     "en/providers/policy.md": "a57ba0e4ce732f01763ab0341555ae7156abe91303b69b24d9f6c10f8cc06ddd",
@@ -536,6 +536,6 @@
     "en/auto-routing/editor/routes.md": "9abbadef636c284e6a88013f10958516bf6e474bb310d13d9f9ee550a4750d00",
     "en/auto-routing/editor/groups.md": "67010e5aeeb7e2065f247df49a05df69c666a20e2605bf2e1f934c10e5ad78af",
     "en/auto-routing/editor/studio.md": "9d146c6e77bb1dd1fe5a55136366555d350e74beecc563274cd4215a7d66f423",
-    "en/site-lock/README.md": "b634f44294359877261f789698901ede823b2ccf4c920dcf2cdda1360c46628d"
+    "en/site-lock/README.md": "d2836daa550b40af04743e04e393e5c1961e6859da5aa7fbb0cda1b120aba12f"
   }
 }
