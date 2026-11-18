@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "8693ea49714b60958a4e5187c7bec5bf77b92741"
+    "commit": "25652973c9cd123b30db43d49582a6ea684d2797"
   },
   "languages": [
     "ru",
@@ -80,18 +80,6 @@
           },
           "pages": [
             "rcx/cookbook"
-          ]
-        },
-        {
-          "title": {
-            "ru": "Редактор в приложении",
-            "en": "In-app editor"
-          },
-          "pages": [
-            "rcx/editor/hub",
-            "rcx/editor/routes",
-            "rcx/editor/groups",
-            "rcx/editor/studio"
           ]
         }
       ]
@@ -407,74 +395,6 @@
       }
     },
     {
-      "slug": "rcx/editor/hub",
-      "file": "auto-routing/editor/hub.md",
-      "section": "rcx",
-      "titles": {
-        "ru": "Экран автомаршрутизации",
-        "en": "Auto routing screen"
-      },
-      "descriptions": {
-        "ru": "Страница «Автомаршрутизация»: переключатель, работающий сценарий и его маршруты, умные группы, библиотека, импорт и экспорт.",
-        "en": "The Auto routing page: the switch, the running scenario with its routes, the smart groups, and the library with import and export."
-      },
-      "minutes": {
-        "ru": 5,
-        "en": 6
-      }
-    },
-    {
-      "slug": "rcx/editor/routes",
-      "file": "auto-routing/editor/routes.md",
-      "section": "rcx",
-      "titles": {
-        "ru": "Редактор маршрута",
-        "en": "Route editor"
-      },
-      "descriptions": {
-        "ru": "Редактор маршрута и его средства выбора: трафик, порядок серверов, шаги, страны и условия.",
-        "en": "The route editor and its pickers: traffic, server order, steps, countries and conditions."
-      },
-      "minutes": {
-        "ru": 4,
-        "en": 4
-      }
-    },
-    {
-      "slug": "rcx/editor/groups",
-      "file": "auto-routing/editor/groups.md",
-      "section": "rcx",
-      "titles": {
-        "ru": "Лист группы",
-        "en": "Group sheet"
-      },
-      "descriptions": {
-        "ru": "Лист группы в «Прокси»: состояние, управление, способ выбора сервера, подробности и сообщения.",
-        "en": "The per-group sheet in Proxies: status, control, how the group picks a server, details and messages."
-      },
-      "minutes": {
-        "ru": 5,
-        "en": 6
-      }
-    },
-    {
-      "slug": "rcx/editor/studio",
-      "file": "auto-routing/editor/studio.md",
-      "section": "rcx",
-      "titles": {
-        "ru": "Студия",
-        "en": "Studio"
-      },
-      "descriptions": {
-        "ru": "Редактор поведения (профиля): форма и YAML, живой предпросмотр на группе, предупреждения, слияние и прежние версии.",
-        "en": "The behaviour (profile) editor: form and YAML, a live preview on a group, warnings, merging and earlier versions."
-      },
-      "minutes": {
-        "ru": 2,
-        "en": 3
-      }
-    },
-    {
       "slug": "site-lock",
       "file": "site-lock/README.md",
       "section": "site-lock",
@@ -493,7 +413,7 @@
     }
   ],
   "files": {
-    "ru/README.md": "84646860924b9f74d16e0ed75c159d0e4f9ad3a42f1b1a17931480d81de9949b",
+    "ru/README.md": "f797a5e20f3058c2aa3c7d574e404797f75a98960a2d77296ea35ff1fc0371da",
     "ru/providers/README.md": "ff814259a4057eaddc7cc92850d33fb7fe2838bccb4bf6cf772cbda32061f5dc",
     "ru/providers/rollout.md": "e06542f91923e1101954494ea8e987a45821ff447a3b60478759821a4ab8aa16",
     "ru/providers/manifest.md": "3f4b9e0bf147803a363e31d1b6971c444a744c5ea9c43e61446f0b56e9e4de1f",
@@ -510,12 +430,8 @@
     "ru/auto-routing/scenarios.md": "9b62cea9479cd17e2532164cc3a78df5ad9af3bebcd31630d3f49761a3308923",
     "ru/auto-routing/sharing.md": "6ac0482545e86d1f310cc2ea3e6fcb1effc6a4d1c0b1664999b2a60a75949c30",
     "ru/auto-routing/cookbook.md": "98b0c4dca9245280a4768b4645bf7eca5cd46067c9f9928d58a7fbe40bc43e7c",
-    "ru/auto-routing/editor/hub.md": "0c1b55c0c916379ccb69944f75f3dc2b976324bea258aa4f71f7944ad8b15c92",
-    "ru/auto-routing/editor/routes.md": "23207da658d6bdf3340034112e2446c57f158a3da7dc089f5a7a416c37376cd7",
-    "ru/auto-routing/editor/groups.md": "cdbc3f01e34f04dd86e894ba0abd2554b9c412aaa3c4c41c7c04073f4252b56b",
-    "ru/auto-routing/editor/studio.md": "5285cea4ebc1ebe9ab6c3a56f94530641b79fc068769a59edbeca035c9e9da25",
     "ru/site-lock/README.md": "5b97fc411ec959ce352c563f1368cd5cd58140dc55c9c93752d5db88e37dedbb",
-    "en/README.md": "e4fed08f86a058a067cb12a29112a81ffd880a590493f229af53bc6588ff4086",
+    "en/README.md": "9434703c5db0fd9b42d703b10416c8a28badbb18935cf13bf2bd43c93d49dff4",
     "en/providers/README.md": "9fa0754ec4b3d49c462c05f36550a6600719728fc97a0646711c197cac30888e",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
     "en/providers/manifest.md": "98b9f50c6200afb2d8d56e5665f3d18fe8135d20e3e57f2f85810eda4b0826a3",
@@ -532,10 +448,6 @@
     "en/auto-routing/scenarios.md": "3a172d385f35a558cc8994ac5ec06d4676c9365c38fd6f69d1dbc84dd6c0cf50",
     "en/auto-routing/sharing.md": "be9d507ce646fe152105ad719956b6b9d8fc9fa7d29c83cedca1f869b8d07136",
     "en/auto-routing/cookbook.md": "0154695e44f8a0ba68fe18d9d9b6d12d838201c07c4c09dc06dbefd8228965bc",
-    "en/auto-routing/editor/hub.md": "d28d0f6e55542d5c63db3dcd549312bcab7ad34ddedb60d0b7e81219c6762897",
-    "en/auto-routing/editor/routes.md": "9abbadef636c284e6a88013f10958516bf6e474bb310d13d9f9ee550a4750d00",
-    "en/auto-routing/editor/groups.md": "67010e5aeeb7e2065f247df49a05df69c666a20e2605bf2e1f934c10e5ad78af",
-    "en/auto-routing/editor/studio.md": "9d146c6e77bb1dd1fe5a55136366555d350e74beecc563274cd4215a7d66f423",
     "en/site-lock/README.md": "d2836daa550b40af04743e04e393e5c1961e6859da5aa7fbb0cda1b120aba12f"
   }
 }

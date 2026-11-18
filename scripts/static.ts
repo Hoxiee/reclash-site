@@ -52,6 +52,7 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
       redirects.push(`${old} ${docPath(target, page.slug)} 301`, `${old}.html ${docPath(target, page.slug)} 301`)
     }
     redirects.push(`/${language}/rcx/* ${docPath(target, 'rcx')} 301`)
+    redirects.push(`${docPath(language, 'rcx/editor')} ${docPath(target, 'rcx')} 301`, `${docPath(language, 'rcx/editor')}/* ${docPath(target, 'rcx')} 301`)
     if (target !== language) redirects.push(`${docPath(language)} ${docPath(target)} 301`, `${docPath(language)}/* ${docPath(target)}/:splat 301`)
   }
   const routes = [...new Set([

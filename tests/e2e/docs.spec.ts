@@ -183,7 +183,7 @@ test('the manifest schema link serves the published JSON Schema', async ({ page,
 })
 
 test('retired RCX paths, guide fragments and localized anchors reach the new pages', async ({ page, request }) => {
-  for (const [from, to] of [['/en/rcx', '/en/docs/rcx'], ['/ru/rcx/profiles', '/ru/docs/rcx/profiles'], ['/en/rcx/editor/studio.html', '/en/docs/rcx/editor/studio'], ['/zh-CN/rcx/engine', '/en/docs/rcx/engine'], ['/zh-CN/docs/rcx', '/en/docs/rcx']]) {
+  for (const [from, to] of [['/en/rcx', '/en/docs/rcx'], ['/ru/rcx/profiles', '/ru/docs/rcx/profiles'], ['/en/rcx/editor/studio.html', '/en/docs/rcx'], ['/zh-CN/rcx/engine', '/en/docs/rcx/engine'], ['/zh-CN/docs/rcx', '/en/docs/rcx']]) {
     const response = await request.get(from, { maxRedirects: 0 })
     expect(response.status(), from).toBe(301)
     expect(new URL(response.headers().location!, origin).pathname, from).toBe(to)
