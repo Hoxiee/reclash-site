@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "include": [
+    "/",
+    "/start",
+    "/download",
+    "/reference",
+    "/builder",
+    "/mock-subs",
+    "/docs",
+    "/docs/*",
+    "/mock/*"
+  ],
+  "exclude": []
+}

@@ -53,6 +53,28 @@ test('the root picks a language without a chooser and remembers explicit switche
   await context.close()
 })
 
+test('language-neutral links redirect to the visitor language and keep the query', async ({ request }) => {
+  const get = (path: string, headers: Record<string, string>) => request.get(path, { headers, maxRedirects: 0 })
+  const cases: Array<[string, Record<string, string>, string]> = [
+    ['/download', { 'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8' }, '/ru/download'],
+    ['/download/', { 'Accept-Language': 'en-US' }, '/en/download'],
+    ['/docs/site-lock/kill-switch?x=1', { 'Accept-Language': 'de-DE,be;q=0.5' }, '/ru/docs/site-lock/kill-switch?x=1'],
+    ['/docs', { 'Accept-Language': 'fr-FR' }, '/en/docs'],
+    ['/start', { 'Accept-Language': 'ru', Cookie: 'reclash-lang=en' }, '/en/start'],
+    ['/', { 'Accept-Language': 'ru-RU' }, '/ru'],
+  ]
+  for (const [path, headers, location] of cases) {
+    const response = await get(path, headers)
+    expect(response.status(), path).toBe(302)
+    expect(response.headers().location, path).toBe(location)
+    expect(response.headers().vary).toContain('Accept-Language')
+  }
+  const prefixed = await request.get('/ru/download', { headers: { 'Accept-Language': 'en' } })
+  expect(prefixed.status()).toBe(200)
+  expect(new URL(prefixed.url()).pathname).toMatch(/^\/ru\/download\/?$/)
+  expect((await request.get('/no-such-page', { headers: { 'Accept-Language': 'en' } })).status()).toBe(404)
+})
+
 test('the loader covers the first paint, opens and leaves the page interactive', async ({ page }) => {
   await page.goto('/en/start')
   await expect(page.locator('html')).toHaveClass(/\bjs\b/)

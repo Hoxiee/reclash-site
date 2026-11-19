@@ -41,6 +41,8 @@ for (const file of ['_headers', '_redirects', 'robots.txt', 'sitemap.xml', '404.
 const sitemap = await readFile(resolve(output, 'sitemap.xml'), 'utf8')
 assert.ok(!/\/(mock-subs|motion)<\/loc>/.test(sitemap), 'Private sections must not enter the sitemap')
 assert.ok((await stat(resolve(output, 'assets/img/og.png'))).size, 'The social preview image is missing')
+const routesFile = JSON.parse(await readFile(resolve(output, '_routes.json'), 'utf8'))
+for (const route of ['/', '/download', '/docs/*', '/mock/*']) assert.ok(routesFile.include.includes(route), `Pages Functions must run for ${route}`)
 assert.match(sitemap, /hreflang="x-default"/, 'Sitemap lacks language alternates')
 await assert.rejects(stat(resolve(output, '_worker.js')), 'Static build must not require a Worker')
 console.log(`Verified ${routes.length} prerendered routes and Pages artifacts; largest initial JS: ${(largest / 1024).toFixed(2)} KiB gzip.`)

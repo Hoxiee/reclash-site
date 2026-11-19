@@ -14,6 +14,8 @@ const languageLink = computed(() => switchLanguage(fullPath.value, otherLanguage
 // An explicit switch becomes the preference the root page redirects to.
 function remember(next: 'ru' | 'en') {
   try { localStorage.setItem(languageKey, next) } catch { /* Storage may be unavailable. */ }
+  // Neutral links such as /download are resolved on the server, which cannot read localStorage.
+  document.cookie = `${languageKey}=${next}; Path=/; Max-Age=31536000; SameSite=Lax`
 }
 </script>
 
