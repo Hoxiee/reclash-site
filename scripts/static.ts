@@ -55,13 +55,14 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
     redirects.push(`${docPath(language, 'rcx/editor')} ${docPath(target, 'rcx')} 301`, `${docPath(language, 'rcx/editor')}/* ${docPath(target, 'rcx')} 301`)
     if (target !== language) redirects.push(`${docPath(language)} ${docPath(target)} 301`, `${docPath(language)}/* ${docPath(target)}/:splat 301`)
   }
-  const routes = [...new Set([
-    ...languages.flatMap(language => sitePages
-      .filter(page => !privatePages.includes(page.key))
-      .map(page => `${origin}${pagePath(language, page.key)}`)),
-    ...docRoutes.map(path => `${origin}${path}`),
-  ])]
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.map(url => `  <url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`
+  const publicPages = sitePages.filter(page => !privatePages.includes(page.key))
+  const entries = new Map<string, string>()
+  for (const page of publicPages) {
+    const alternates = [...languages, 'x-default'].map(hreflang => `<xhtml:link rel="alternate" hreflang="${hreflang}" href="${origin}${pagePath(hreflang === 'x-default' ? 'en' : hreflang as typeof languages[number], page.key)}"/>`).join('')
+    for (const language of languages) entries.set(`${origin}${pagePath(language, page.key)}`, alternates)
+  }
+  for (const path of docRoutes) if (!entries.has(`${origin}${path}`)) entries.set(`${origin}${path}`, '')
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${[...entries].map(([url, alternates]) => `  <url><loc>${url}</loc>${alternates}</url>`).join('\n')}\n</urlset>\n`
   await Promise.all([
     writeFile(join(output, '_headers'), `${headers.join('\n')}\n`),
     writeFile(join(output, '_redirects'), `${redirects.join('\n')}\n`),

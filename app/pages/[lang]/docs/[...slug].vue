@@ -3,6 +3,7 @@ import {
   docEditUrl, docGroupOf, docLanguageFromPath, docLanguages, docNeighbours, docPage, docPath, docSection, docSlugFromPath,
   docSource, docSourceUrl, docText, legacyDocFragments, legacyRcxFragments,
 } from '~~/shared/docs/catalogue'
+import { ogImagePath } from '~~/shared/site/seo'
 import { docLoader } from '~/utils/docs'
 
 const route = useRoute()
@@ -33,13 +34,16 @@ useSeoMeta({
   title: fullTitle, description: page.descriptions[language],
   ogTitle: fullTitle, ogDescription: page.descriptions[language], ogUrl: canonical, ogType: 'article',
   ogLocale: { ru: 'ru_RU', en: 'en_US', 'zh-CN': 'zh_CN' }[language],
-  ogImage: `${origin}/assets/img/og.png`, robots: 'index, follow',
+  ogImage: `${origin}${ogImagePath}`, ogImageWidth: 1200, ogImageHeight: 630, ogSiteName: 'ReClash',
+  twitterCard: 'summary_large_image', twitterTitle: fullTitle, twitterDescription: page.descriptions[language], twitterImage: `${origin}${ogImagePath}`,
+  robots: 'index, follow',
 })
 useHead({
   htmlAttrs: { lang: language },
   link: [
     { rel: 'canonical', href: canonical },
     ...docLanguages.map(locale => ({ rel: 'alternate' as const, type: 'text/html', hreflang: locale, href: `${origin}${docPath(locale, slug)}` })),
+    { rel: 'alternate' as const, type: 'text/html', hreflang: 'x-default', href: `${origin}${docPath(docLanguages.includes('en') ? 'en' : language, slug)}` },
   ],
 })
 
