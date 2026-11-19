@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { languageScript } from '~~/shared/site/boot'
-import { ogImagePath, siteSummary } from '~~/shared/site/seo'
+import { canonicalUrl, ogImagePath, siteSummary } from '~~/shared/site/seo'
 definePageMeta({ layout: false })
 const config = useRuntimeConfig()
 useSeoMeta({
@@ -10,7 +10,7 @@ useSeoMeta({
   ogDescription: siteSummary.en,
   ogType: 'website',
   ogSiteName: 'ReClash',
-  ogUrl: `${config.public.siteOrigin}/en`,
+  ogUrl: canonicalUrl(config.public.siteOrigin, '/en'),
   ogImage: `${config.public.siteOrigin}${ogImagePath}`,
   twitterCard: 'summary_large_image',
 })
@@ -18,10 +18,10 @@ useSeoMeta({
 useHead({
   htmlAttrs: { lang: 'ru' },
   link: [
-    { rel: 'canonical', href: `${config.public.siteOrigin}/en` },
-    { rel: 'alternate', hreflang: 'ru', href: `${config.public.siteOrigin}/ru` },
-    { rel: 'alternate', hreflang: 'en', href: `${config.public.siteOrigin}/en` },
-    { rel: 'alternate', hreflang: 'x-default', href: `${config.public.siteOrigin}/en` },
+    { rel: 'canonical', href: canonicalUrl(config.public.siteOrigin, '/en') },
+    { rel: 'alternate', hreflang: 'ru', href: canonicalUrl(config.public.siteOrigin, '/ru') },
+    { rel: 'alternate', hreflang: 'en', href: canonicalUrl(config.public.siteOrigin, '/en') },
+    { rel: 'alternate', hreflang: 'x-default', href: canonicalUrl(config.public.siteOrigin, '/en') },
   ],
   script: [{ innerHTML: languageScript, tagPriority: 'critical' }],
 })

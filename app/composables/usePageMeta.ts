@@ -1,5 +1,5 @@
 import { pageLanguages, pagePath, privatePages, sitePages, type Language, type PageKey } from '~~/shared/site/routes'
-import { ogImagePath, siteSummary } from '~~/shared/site/seo'
+import { canonicalUrl, ogImagePath, siteSummary } from '~~/shared/site/seo'
 import { portedPages } from '~~/shared/site/content'
 
 function structuredData(origin: string, language: Language, description: string) {
@@ -12,7 +12,7 @@ function structuredData(origin: string, language: Language, description: string)
       {
         '@type': 'SoftwareApplication', '@id': `${origin}/#app`, name: 'ReClash', description, inLanguage: language,
         applicationCategory: 'UtilitiesApplication', operatingSystem: 'Windows, macOS, Linux, Android',
-        url: `${origin}/${language}`, downloadUrl: `${origin}/${language}/download`,
+        url: canonicalUrl(origin, `/${language}`), downloadUrl: canonicalUrl(origin, `/${language}/download`),
         image: `${origin}${ogImagePath}`, license: 'https://www.gnu.org/licenses/gpl-3.0.html',
         codeRepository: 'https://github.com/Hoxiee/ReClash', sameAs: ['https://github.com/Hoxiee/ReClash'],
         isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -37,7 +37,7 @@ export function usePageMeta(page: PageKey) {
     ...(content ? {
       ogTitle: () => localized('title'),
       ogDescription: () => localized('description'),
-      ogUrl: () => `${config.public.siteOrigin}${pagePath(language.value, page)}`,
+      ogUrl: () => canonicalUrl(config.public.siteOrigin, pagePath(language.value, page)),
       ogLocale: () => ({ ru: 'ru_RU', en: 'en_US', 'zh-CN': 'zh_CN' })[language.value],
       ogImage: () => `${config.public.siteOrigin}${ogImagePath}`,
       ogImageWidth: 1200,
@@ -57,9 +57,9 @@ export function usePageMeta(page: PageKey) {
     htmlAttrs: { lang: language.value },
     meta: [{ name: 'google-site-verification', content: 'IDIM6wK06j-4cmHguvqV6_J8C3CfJWjnh4hlyfS83dA' }],
     link: [
-      { rel: 'canonical', href: `${config.public.siteOrigin}${pagePath(language.value, page)}` },
-      ...pageLanguages(page).map(lang => ({ rel: 'alternate' as const, type: 'text/html', hreflang: lang, href: `${config.public.siteOrigin}${pagePath(lang, page)}` })),
-      { rel: 'alternate' as const, type: 'text/html', hreflang: 'x-default', href: `${config.public.siteOrigin}${pagePath('en', page)}` },
+      { rel: 'canonical', href: canonicalUrl(config.public.siteOrigin, pagePath(language.value, page)) },
+      ...pageLanguages(page).map(lang => ({ rel: 'alternate' as const, type: 'text/html', hreflang: lang, href: canonicalUrl(config.public.siteOrigin, pagePath(lang, page)) })),
+      { rel: 'alternate' as const, type: 'text/html', hreflang: 'x-default', href: canonicalUrl(config.public.siteOrigin, pagePath('en', page)) },
     ],
     script: page === 'index' ? [{ type: 'application/ld+json', innerHTML: JSON.stringify(structuredData(config.public.siteOrigin, language.value, siteSummary[language.value])) }] : [],
   }))

@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { canonicalUrl } from '../shared/site/seo'
 import { isTranslated, languages, legacyPath, pageLanguages, pagePath, privatePages, sitePages } from '../shared/site/routes'
 import { docLanguages, docPages, docPath, docRoutes } from '../shared/docs/catalogue'
 import { mockBody, mockConfig, mockConfigPath, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
@@ -39,7 +40,7 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
       const legacy = legacyPath(language, page.key)
       // A proxy preserves query/fragment state and avoids rendering home twice.
       redirects.push(`${legacy} ${canonical} 200`)
-      headers.push(legacy, `  Link: <${origin}${canonical}>; rel="canonical"`)
+      headers.push(legacy, `  Link: <${canonicalUrl(origin, canonical)}>; rel="canonical"`)
     }
   }
   // Cloudflare reads at most 100 header rules; Chinese pages have no legacy .html URLs to keep alive.
@@ -47,7 +48,7 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
     const legacy = `${canonical}.html`
     if (!redirects.includes(`${legacy} ${canonical} 200`)) {
       redirects.push(`${legacy} ${canonical} 200`)
-      headers.push(legacy, `  Link: <${origin}${canonical}>; rel="canonical"`)
+      headers.push(legacy, `  Link: <${canonicalUrl(origin, canonical)}>; rel="canonical"`)
     }
   }
   // The RCX handbook moved under the documentation; Chinese pages wait for a new translation.
@@ -65,10 +66,10 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
   const entries = new Map<string, string>()
   for (const page of publicPages) {
     const available = pageLanguages(page.key)
-    const alternates = [...available, 'x-default'].map(hreflang => `<xhtml:link rel="alternate" hreflang="${hreflang}" href="${origin}${pagePath(hreflang === 'x-default' ? 'en' : hreflang as typeof languages[number], page.key)}"/>`).join('')
-    for (const language of available) entries.set(`${origin}${pagePath(language, page.key)}`, alternates)
+    const alternates = [...available, 'x-default'].map(hreflang => `<xhtml:link rel="alternate" hreflang="${hreflang}" href="${canonicalUrl(origin, pagePath(hreflang === 'x-default' ? 'en' : hreflang as typeof languages[number], page.key))}"/>`).join('')
+    for (const language of available) entries.set(canonicalUrl(origin, pagePath(language, page.key)), alternates)
   }
-  for (const path of docRoutes) if (!entries.has(`${origin}${path}`)) entries.set(`${origin}${path}`, '')
+  for (const path of docRoutes) if (!entries.has(canonicalUrl(origin, path))) entries.set(canonicalUrl(origin, path), '')
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${[...entries].map(([url, alternates]) => `  <url><loc>${url}</loc>${alternates}</url>`).join('\n')}\n</urlset>\n`
   await Promise.all([
     writeFile(join(output, '_headers'), `${headers.join('\n')}\n`),

@@ -3,7 +3,7 @@ import {
   docEditUrl, docGroupOf, docLanguageFromPath, docLanguages, docNeighbours, docPage, docPath, docSection, docSlugFromPath,
   docSource, docSourceUrl, docText, legacyDocFragments, legacyRcxFragments,
 } from '~~/shared/docs/catalogue'
-import { ogImagePath } from '~~/shared/site/seo'
+import { canonicalUrl, ogImagePath } from '~~/shared/site/seo'
 import { docLoader } from '~/utils/docs'
 
 const route = useRoute()
@@ -28,7 +28,7 @@ const active = ref(outline.value[0]?.id ?? '')
 const articleRoot = useTemplateRef<HTMLElement>('article')
 
 const origin = useRuntimeConfig().public.siteOrigin
-const canonical = `${origin}${docPath(language, slug)}`
+const canonical = canonicalUrl(origin, docPath(language, slug))
 const fullTitle = slug ? `${title} — ${section ? `${section.title[language]} — ` : ''}ReClash` : `${t('Документация', 'Documentation', '文档')} — ReClash`
 useSeoMeta({
   title: fullTitle, description: page.descriptions[language],
@@ -42,8 +42,8 @@ useHead({
   htmlAttrs: { lang: language },
   link: [
     { rel: 'canonical', href: canonical },
-    ...docLanguages.map(locale => ({ rel: 'alternate' as const, type: 'text/html', hreflang: locale, href: `${origin}${docPath(locale, slug)}` })),
-    { rel: 'alternate' as const, type: 'text/html', hreflang: 'x-default', href: `${origin}${docPath(docLanguages.includes('en') ? 'en' : language, slug)}` },
+    ...docLanguages.map(locale => ({ rel: 'alternate' as const, type: 'text/html', hreflang: locale, href: canonicalUrl(origin, docPath(locale, slug)) })),
+    { rel: 'alternate' as const, type: 'text/html', hreflang: 'x-default', href: canonicalUrl(origin, docPath(docLanguages.includes('en') ? 'en' : language, slug)) },
   ],
 })
 

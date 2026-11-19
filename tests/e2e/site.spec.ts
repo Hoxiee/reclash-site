@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { isTranslated, languages, legacyPath, pagePath, sitePages } from '../../shared/site/routes'
+import { canonicalUrl } from '../../shared/site/seo'
 
 const errors: string[] = []
 test.beforeEach(async ({ page }) => {
@@ -20,7 +21,7 @@ test('all canonical and legacy pages serve prerendered bilingual HTML', async ({
         const body = await response.text()
         expect(body).toMatch(new RegExp(`<html\\b[^>]*\\blang="${language}"`))
         expect(body).toMatch(/<h1[ >]/)
-        expect(body).toContain(`href="https://reclash.pages.dev${pagePath(language, page.key)}"`)
+        expect(body).toContain(`href="${canonicalUrl('https://reclash.pages.dev', pagePath(language, page.key))}"`)
       }
     }
   }

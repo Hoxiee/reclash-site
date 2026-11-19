@@ -6,6 +6,9 @@ export const siteSummary = {
   'zh-CN': 'ReClash 是开源的 mihomo（Clash Meta）客户端，适用于 Windows、macOS、Linux 和 Android：导入订阅与节点、VLESS、服务商品牌定制、简洁与详细仪表盘。',
 } as const
 
+// Cloudflare Pages answers every directory page with a 308 to its trailing-slash URL, so that URL is the canonical one.
+export const canonicalUrl = (origin: string, path: string): string => `${origin}${path.endsWith('/') ? path : `${path}/`}`
+
 export function normalizeOrigin(value = 'https://reclash.pages.dev'): string {
   const url = new URL(value)
   if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password

@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 import { docLanguages, docPage, docPages, docPath, docSections, docSourceUrl } from '../../shared/docs/catalogue'
 import { headerReference } from '../../shared/provider/reference'
 import { isTranslated } from '../../shared/site/routes'
+import { canonicalUrl } from '../../shared/site/seo'
 
 const origin = 'https://reclash.pages.dev'
 const errors: string[] = []
@@ -18,9 +19,9 @@ for (const language of ['ru', 'en'] as const) {
     await expect(page.locator('html')).toHaveAttribute('lang', language)
     await expect(page.locator('h1')).toHaveText(docPage('')!.titles[language]!)
     await expect(page).toHaveTitle(new RegExp(language === 'ru' ? 'Документация' : 'Documentation'))
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${origin}${docPath(language)}`)
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', canonicalUrl(origin, docPath(language)))
     for (const alternate of docLanguages) {
-      await expect(page.locator(`link[rel="alternate"][hreflang="${alternate}"]`)).toHaveAttribute('href', `${origin}${docPath(alternate)}`)
+      await expect(page.locator(`link[rel="alternate"][hreflang="${alternate}"]`)).toHaveAttribute('href', canonicalUrl(origin, docPath(alternate)))
     }
     await expect(page.locator('.hb-map-row')).toHaveCount(docSections.length)
     await expect(page.locator('.hb-side .hb-nav-section:not(.hb-nav-tools) li a')).toHaveCount(docPages.length - 1)
@@ -34,7 +35,7 @@ test('every page is prerendered and articles link to their pinned source', async
       const response = await request.get(path)
       expect(response.status(), path).toBe(200)
       const html = await response.text()
-      expect(html, path).toContain(`rel="canonical" href="${origin}${path}"`)
+      expect(html, path).toContain(`rel="canonical" href="${canonicalUrl(origin, path)}"`)
       if (entry.slug) expect(html, path).toContain(`href="${docSourceUrl(language, entry.file)}"`)
       expect(html, path).toContain('class="hb-article"')
       if (language !== 'zh-CN') expect((await request.get(`${path}.html`)).status(), `${path}.html`).toBe(200)
@@ -104,7 +105,7 @@ test('docs navigation preserves its shell while replacing the reader', async ({ 
   await expect(page).toHaveURL(/\/en\/docs\/rcx\/profiles\/?$/)
   await expect(page.locator('h1')).toHaveText(profiles.titles.en!)
   await expect(page.locator('.hb-side a[aria-current="page"]')).toHaveText(profiles.titles.en!)
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${origin}${docPath('en', 'rcx/profiles')}`)
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', canonicalUrl(origin, docPath('en', 'rcx/profiles')))
   await expectArticleReplaced(oldArticle, oldToc)
   await expectSameShell()
   const profilesArticle = (await page.locator('.hb-article').elementHandle())!
@@ -112,7 +113,7 @@ test('docs navigation preserves its shell while replacing the reader', async ({ 
   const next = docPages[docPages.indexOf(profiles) + 1]!
   await page.locator('.hb-pager-link.is-next').click()
   await expect(page.locator('h1')).toHaveText(next.titles.en!)
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${origin}${docPath('en', next.slug)}`)
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', canonicalUrl(origin, docPath('en', next.slug)))
   await expectArticleReplaced(profilesArticle, profilesToc)
   await expectSameShell()
   await page.goBack()
