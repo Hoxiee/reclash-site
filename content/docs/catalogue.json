@@ -1,7 +1,7 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "f0ef72395a1cdb546c7b512f6dea44ac10012630"
+    "commit": "80ae8ae37e9487be1ef7d95a9f1e4c3ec456470a"
   },
   "languages": [
     "ru",
@@ -98,7 +98,8 @@
             "en": "Guide"
           },
           "pages": [
-            "site-lock"
+            "site-lock",
+            "site-lock/kill-switch"
           ]
         }
       ]
@@ -407,8 +408,25 @@
         "en": "Site lock pins chosen sites to the exit servers you pick: their traffic leaves only through one of those servers or not at all, whatever the mode, rules or selected proxy. Everything else keeps its usual route."
       },
       "minutes": {
-        "ru": 8,
-        "en": 9
+        "ru": 10,
+        "en": 12
+      }
+    },
+    {
+      "slug": "site-lock/kill-switch",
+      "file": "site-lock/kill-switch.md",
+      "section": "site-lock",
+      "titles": {
+        "ru": "Kill switch",
+        "en": "Kill switch"
+      },
+      "descriptions": {
+        "ru": "Kill switch на компьютере блокирует весь трафик вне TUN ReClash, чтобы при обрыве туннеля ничего не утекло. Он есть на Linux и Windows и требует TUN и Helper.",
+        "en": "The desktop kill switch blocks all traffic outside ReClash's TUN, so nothing leaks if the tunnel drops. It exists on Linux and Windows and needs TUN and the Helper."
+      },
+      "minutes": {
+        "ru": 2,
+        "en": 3
       }
     }
   ],
@@ -430,7 +448,8 @@
     "ru/auto-routing/scenarios.md": "9b62cea9479cd17e2532164cc3a78df5ad9af3bebcd31630d3f49761a3308923",
     "ru/auto-routing/sharing.md": "6ac0482545e86d1f310cc2ea3e6fcb1effc6a4d1c0b1664999b2a60a75949c30",
     "ru/auto-routing/cookbook.md": "98b0c4dca9245280a4768b4645bf7eca5cd46067c9f9928d58a7fbe40bc43e7c",
-    "ru/site-lock/README.md": "5b97fc411ec959ce352c563f1368cd5cd58140dc55c9c93752d5db88e37dedbb",
+    "ru/site-lock/README.md": "83339350a8147597e5505eccacfdb67119f6d98fedd849e13440e532e7ce4bb3",
+    "ru/site-lock/kill-switch.md": "857a77f075054d3292456af5f7d17aec1b15024cd50e7a4aa08eaa40e95d3324",
     "en/README.md": "a335258a93124e7ff9db01c6df6b9089c85e9efc5df86954a4b79fe398363dbc",
     "en/providers/README.md": "9fa0754ec4b3d49c462c05f36550a6600719728fc97a0646711c197cac30888e",
     "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
@@ -448,6 +467,7 @@
     "en/auto-routing/scenarios.md": "3a172d385f35a558cc8994ac5ec06d4676c9365c38fd6f69d1dbc84dd6c0cf50",
     "en/auto-routing/sharing.md": "be9d507ce646fe152105ad719956b6b9d8fc9fa7d29c83cedca1f869b8d07136",
     "en/auto-routing/cookbook.md": "0154695e44f8a0ba68fe18d9d9b6d12d838201c07c4c09dc06dbefd8228965bc",
-    "en/site-lock/README.md": "d2836daa550b40af04743e04e393e5c1961e6859da5aa7fbb0cda1b120aba12f"
+    "en/site-lock/README.md": "5ff6d771ec71e6dfc47c1496706cc7fef5c56391c0a409c3afa451d848edb5c8",
+    "en/site-lock/kill-switch.md": "3274b77c3fc8ec456651b11f0fdcf743644b211460969217d061051aa76f1d23"
   }
 }
