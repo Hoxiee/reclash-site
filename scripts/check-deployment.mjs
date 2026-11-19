@@ -24,6 +24,12 @@ async function verify() {
     assert.match(body, new RegExp(`<html\\b[^>]*\\blang="${language}"`))
     assert.match(body, /<h1[ >]/)
   }
+  const zh = await get('/zh-CN')
+  assert.equal(zh.response.status, 200)
+  assert.match(zh.body, /<html\b[^>]*\blang="zh-CN"/)
+  const neutral = await fetch(`${origin}/download`, { redirect: 'manual', headers: { 'Accept-Language': 'zh-CN' } })
+  assert.equal(neutral.status, 302)
+  assert.equal(new URL(neutral.headers.get('location'), origin).pathname, '/zh-CN/download')
   const yaml = await get('/mock/ember', 'text/yaml')
   assert.equal(yaml.response.status, 200)
   assert.equal(yaml.response.headers.get('reclash-config'), `${origin}/mock-config/ember.yaml`)

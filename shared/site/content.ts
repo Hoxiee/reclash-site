@@ -58,8 +58,8 @@ export const portedPages = {
       "zh-CN": "ReClash — 开源 mihomo 客户端"
     },
     "description": {
-      "ru": "ReClash — открытый клиент для mihomo: видно, что открывается, сколько осталось трафика и что сообщает провайдер. Привязка сайтов к серверам выхода, оформление провайдера, импорт подписок и отдельных узлов, простая и подробная панели. Windows, macOS, Linux и Android.",
-      "en": "ReClash is an open-source mihomo client that shows what opens, how much traffic is left and what your provider has to say. Site lock to chosen exit servers, provider branding, subscription and node import, simple and detailed dashboards. Windows, macOS, Linux and Android.",
+      "ru": "ReClash — открытый клиент для mihomo: видно, что открывается, сколько осталось трафика и что сообщает провайдер. Оформление под провайдера, импорт подписок и отдельных узлов, простая и подробная панели. Windows, macOS, Linux и Android.",
+      "en": "ReClash is an open-source mihomo client that shows what opens, how much traffic is left and what your provider has to say. Provider branding, subscription and node import, simple and detailed dashboards. Windows, macOS, Linux and Android.",
       "zh-CN": "ReClash 是开源的 mihomo（Clash Meta）客户端：一眼看清哪些能打开、剩余多少流量、服务商发来什么通知。支持订阅与节点导入、服务商品牌定制、简洁与详细两种仪表盘。适用于 Windows、macOS、Linux 和 Android。"
     }
   },
