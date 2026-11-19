@@ -7,7 +7,7 @@ export type Language = typeof languages[number]
 export const translatedPages: Record<Language, readonly string[]> = {
   ru: ['index', 'start', 'download', 'docs', 'reference', 'builder', 'mock-subs', 'motion'],
   en: ['index', 'start', 'download', 'docs', 'reference', 'builder', 'mock-subs', 'motion'],
-  'zh-CN': ['index', 'start', 'download'],
+  'zh-CN': ['index', 'start', 'download', 'docs'],
 }
 
 // Tool pages (builder, reference, mock subscriptions) are not translated into Chinese yet.

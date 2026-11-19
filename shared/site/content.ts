@@ -2,11 +2,13 @@ export const portedPages = {
   "docs": {
     "title": {
       "ru": "Документация — ReClash",
-      "en": "Documentation — ReClash"
+      "en": "Documentation — ReClash",
+      "zh-CN": "文档 — ReClash"
     },
     "description": {
       "ru": "Техническая документация ReClash: стандарт провайдера подписок и автомаршрутизация RCX.",
-      "en": "ReClash technical documentation: the subscription provider standard and RCX auto routing."
+      "en": "ReClash technical documentation: the subscription provider standard and RCX auto routing.",
+      "zh-CN": "ReClash 技术文档：订阅服务商标准与 RCX 自动路由。"
     }
   },
   "reference": {

@@ -152,9 +152,11 @@ export function makeCatalogue(library, commit) {
         minutes: Object.fromEntries(languages.map(language => [language, Math.max(1, Math.round(words(of(language).source) / 180))])),
       }
     }),
-    files: Object.fromEntries([...library.documents].map(([key, document]) => [key, digest(document.source)])),
   }
 }
+
+// Kept out of the catalogue: the browser bundles the catalogue and never needs the hashes.
+export const makeDigests = library => Object.fromEntries([...library.documents].map(([key, document]) => [key, digest(document.source)]))
 
 function headerNames() {
   const file = join(siteRoot, 'shared/provider/standard.json')

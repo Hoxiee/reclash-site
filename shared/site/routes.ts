@@ -8,7 +8,7 @@ export const sitePages = [
   { key: 'index', title: { ru: 'Главная', en: 'Home', 'zh-CN': '首页' } },
   { key: 'start', title: { ru: 'Начало работы', en: 'Quick start', 'zh-CN': '快速开始' } },
   { key: 'download', title: { ru: 'Скачать', en: 'Download', 'zh-CN': '下载' } },
-  { key: 'docs', title: { ru: 'Документация', en: 'Documentation' } },
+  { key: 'docs', title: { ru: 'Документация', en: 'Documentation', 'zh-CN': '文档' } },
   { key: 'reference', title: { ru: 'Справочник', en: 'Reference' } },
   { key: 'builder', title: { ru: 'Конструктор', en: 'Builder' } },
   { key: 'mock-subs', title: { ru: 'Примеры подписок', en: 'Mock subscriptions' } },

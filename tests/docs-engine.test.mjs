@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { after, test } from 'node:test'
 import { marked } from 'marked'
-import { compileDocument, contentRoot, docPath, makeCatalogue, readLibrary, searchIndex } from '../scripts/docs/engine.mjs'
+import { compileDocument, contentRoot, docPath, makeCatalogue, makeDigests, readLibrary, searchIndex } from '../scripts/docs/engine.mjs'
 
 function allBlocks(blocks) {
   return blocks.flatMap(block => [block, ...allBlocks(
@@ -119,6 +119,7 @@ const compiled = new Map([...snapshot.documents].map(([key, document]) => [key, 
 
 test('the synchronized snapshot matches its catalogue and keeps every code sample verbatim', () => {
   assert.deepEqual(makeCatalogue(snapshot, catalogue.source.commit), catalogue)
+  assert.deepEqual(makeDigests(snapshot), JSON.parse(readFileSync(join(contentRoot, 'digests.json'), 'utf8')))
   assert.equal(snapshot.documents.size, catalogue.pages.length * catalogue.languages.length)
   for (const [key, document] of compiled) {
     const source = snapshot.documents.get(key)

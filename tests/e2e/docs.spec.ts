@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { docLanguages, docPage, docPages, docPath, docSections, docSourceUrl } from '../../shared/docs/catalogue'
 import { headerReference } from '../../shared/provider/reference'
+import { isTranslated } from '../../shared/site/routes'
 
 const origin = 'https://reclash.pages.dev'
 const errors: string[] = []
@@ -36,7 +37,7 @@ test('every page is prerendered and articles link to their pinned source', async
       expect(html, path).toContain(`rel="canonical" href="${origin}${path}"`)
       if (entry.slug) expect(html, path).toContain(`href="${docSourceUrl(language, entry.file)}"`)
       expect(html, path).toContain('class="hb-article"')
-      expect((await request.get(`${path}.html`)).status(), `${path}.html`).toBe(200)
+      if (language !== 'zh-CN') expect((await request.get(`${path}.html`)).status(), `${path}.html`).toBe(200)
     }
   }
   expect((await request.get('/en/docs/no-such-page')).status()).toBe(404)
@@ -161,7 +162,7 @@ test('the command palette searches every section locally and opens the match', a
   expect(requests.every(url => new URL(url).origin === new URL(page.url()).origin)).toBe(true)
 })
 
-for (const language of docLanguages) {
+for (const language of docLanguages.filter(item => isTranslated(item, 'reference'))) {
   test(`header names in ${language} link to the provider reference`, async ({ page }) => {
     await page.goto(docPath(language, 'providers/headers'))
     const references = await page.locator('.hb-prose a.hb-ref').evaluateAll(links => links.map(link => link.getAttribute('href')!))
@@ -183,7 +184,7 @@ test('the manifest schema link serves the published JSON Schema', async ({ page,
 })
 
 test('retired RCX paths, guide fragments and localized anchors reach the new pages', async ({ page, request }) => {
-  for (const [from, to] of [['/en/rcx', '/en/docs/rcx'], ['/ru/rcx/profiles', '/ru/docs/rcx/profiles'], ['/en/rcx/editor/studio.html', '/en/docs/rcx'], ['/zh-CN/rcx/engine', '/en/docs/rcx/engine'], ['/zh-CN/docs/rcx', '/en/docs/rcx']]) {
+  for (const [from, to] of [['/en/rcx', '/en/docs/rcx'], ['/ru/rcx/profiles', '/ru/docs/rcx/profiles'], ['/en/rcx/editor/studio.html', '/en/docs/rcx'], ['/zh-CN/rcx/engine', '/zh-CN/docs/rcx/engine']]) {
     const response = await request.get(from, { maxRedirects: 0 })
     expect(response.status(), from).toBe(301)
     expect(new URL(response.headers().location!, origin).pathname, from).toBe(to)

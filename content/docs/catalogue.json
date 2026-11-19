@@ -1,11 +1,12 @@
 {
   "source": {
     "repository": "https://github.com/Hoxiee/ReClash",
-    "commit": "a50f1f3df7f02f9d1b35efb00348a61add75dff8"
+    "commit": "a73e4a4364181b8eb744c7153debe90270b31f0d"
   },
   "languages": [
     "ru",
-    "en"
+    "en",
+    "zh-CN"
   ],
   "sections": [
     {
@@ -13,13 +14,15 @@
       "slug": "providers",
       "title": {
         "ru": "Для провайдеров",
-        "en": "Providers"
+        "en": "Providers",
+        "zh-CN": "服务商"
       },
       "groups": [
         {
           "title": {
             "ru": "Основы",
-            "en": "Fundamentals"
+            "en": "Fundamentals",
+            "zh-CN": "基础"
           },
           "pages": [
             "providers",
@@ -29,7 +32,8 @@
         {
           "title": {
             "ru": "Справочник",
-            "en": "Reference"
+            "en": "Reference",
+            "zh-CN": "参考"
           },
           "pages": [
             "providers/manifest",
@@ -48,13 +52,15 @@
       "slug": "rcx",
       "title": {
         "ru": "Автомаршрутизация RCX",
-        "en": "RCX auto routing"
+        "en": "RCX auto routing",
+        "zh-CN": "RCX 自动路由"
       },
       "groups": [
         {
           "title": {
             "ru": "Концепции",
-            "en": "Concepts"
+            "en": "Concepts",
+            "zh-CN": "概念"
           },
           "pages": [
             "rcx",
@@ -64,7 +70,8 @@
         {
           "title": {
             "ru": "Справочник языка",
-            "en": "Language reference"
+            "en": "Language reference",
+            "zh-CN": "语言参考"
           },
           "pages": [
             "rcx/profiles",
@@ -76,7 +83,8 @@
         {
           "title": {
             "ru": "Рецепты",
-            "en": "Recipes"
+            "en": "Recipes",
+            "zh-CN": "示例"
           },
           "pages": [
             "rcx/cookbook"
@@ -89,13 +97,15 @@
       "slug": "site-lock",
       "title": {
         "ru": "Привязка сайтов",
-        "en": "Site lock"
+        "en": "Site lock",
+        "zh-CN": "站点锁定"
       },
       "groups": [
         {
           "title": {
             "ru": "Руководство",
-            "en": "Guide"
+            "en": "Guide",
+            "zh-CN": "指南"
           },
           "pages": [
             "site-lock",
@@ -112,15 +122,18 @@
       "section": "",
       "titles": {
         "ru": "Документация ReClash",
-        "en": "ReClash documentation"
+        "en": "ReClash documentation",
+        "zh-CN": "ReClash 文档"
       },
       "descriptions": {
         "ru": "Технический справочник для провайдеров подписок, которые интегрируются с ReClash, и для RCX — языка автомаршрутизации клиента.",
-        "en": "Technical reference for subscription providers integrating with ReClash and for RCX, the client's auto-routing language."
+        "en": "Technical reference for subscription providers integrating with ReClash and for RCX, the client's auto-routing language.",
+        "zh-CN": "面向与 ReClash 集成的订阅提供商，以及客户端自动路由语言 RCX 的技术参考。"
       },
       "minutes": {
         "ru": 1,
-        "en": 1
+        "en": 1,
+        "zh-CN": 1
       }
     },
     {
@@ -129,15 +142,18 @@
       "section": "providers",
       "titles": {
         "ru": "Интеграция провайдера",
-        "en": "Provider integration"
+        "en": "Provider integration",
+        "zh-CN": "服务商集成"
       },
       "descriptions": {
         "ru": "Как провайдер подписки передаёт ReClash конфигурацию, метаданные, маршрутизацию и политику. Начните с «Быстрого старта», затем откройте страницу нужной области.",
-        "en": "How a subscription provider delivers configuration, metadata, routing and policy to ReClash. Start with the Quick start, then open the page for your area."
+        "en": "How a subscription provider delivers configuration, metadata, routing and policy to ReClash. Start with the Quick start, then open the page for your area.",
+        "zh-CN": "订阅服务商如何向 ReClash 交付配置、元数据、路由和策略。请先阅读快速开始，再打开对应领域的页面。"
       },
       "minutes": {
         "ru": 5,
-        "en": 5
+        "en": 5,
+        "zh-CN": 3
       }
     },
     {
@@ -146,15 +162,18 @@
       "section": "providers",
       "titles": {
         "ru": "Доставка и отладка",
-        "en": "Delivery and debugging"
+        "en": "Delivery and debugging",
+        "zh-CN": "交付与调试"
       },
       "descriptions": {
         "ru": "Чек-лист запуска для провайдера, отдача заголовков и манифеста, проверка того, что получил ReClash, и разбор сбоев.",
-        "en": "Go-live checklist for a provider, how to serve the headers and the manifest, how to verify what ReClash received, and how to diagnose failures."
+        "en": "Go-live checklist for a provider, how to serve the headers and the manifest, how to verify what ReClash received, and how to diagnose failures.",
+        "zh-CN": "提供商上线检查清单、如何提供响应头和清单文件、如何核实 ReClash 收到了什么，以及如何诊断故障。"
       },
       "minutes": {
         "ru": 7,
-        "en": 8
+        "en": 8,
+        "zh-CN": 4
       }
     },
     {
@@ -163,15 +182,18 @@
       "section": "providers",
       "titles": {
         "ru": "Манифест провайдера",
-        "en": "Provider manifest"
+        "en": "Provider manifest",
+        "zh-CN": "提供商清单"
       },
       "descriptions": {
         "ru": "Манифест провайдера — один статический YAML-файл, который провайдер размещает один раз для всех пользователей и на который указывает заголовок ответа reclash-config. В нём всё, что ReClash показывает или применяет све…",
-        "en": "The provider manifest is one static YAML file that a provider hosts once for all users and points to with the reclash-config response header. It carries everything ReClash shows or applies beyond the standard headers:…"
+        "en": "The provider manifest is one static YAML file that a provider hosts once for all users and points to with the reclash-config response header. It carries everything ReClash shows or applies beyond the standard headers:…",
+        "zh-CN": "提供商清单是一个静态 YAML 文件，由提供商为所有用户统一托管一份，并通过 reclash-config 响应头指向它。它承载 ReClash 在标准响应头之外展示或应用的全部内容：提供商面板、提醒、设置、策略、Android 应用、传输、支持、外观、卡片和路由。订阅正文仍是纯 mihomo 配置。"
       },
       "minutes": {
         "ru": 25,
-        "en": 28
+        "en": 28,
+        "zh-CN": 15
       }
     },
     {
@@ -180,15 +202,18 @@
       "section": "providers",
       "titles": {
         "ru": "Заголовки ответа",
-        "en": "Response headers"
+        "en": "Response headers",
+        "zh-CN": "响应头"
       },
       "descriptions": {
         "ru": "Стандартные HTTP-заголовки, которые может нести ответ подписки, форматы их значений и единственный заголовок reclash-config, указывающий на манифест провайдера.",
-        "en": "The standard HTTP headers a subscription response can carry, their value formats, and the one reclash-config header that points to the provider manifest."
+        "en": "The standard HTTP headers a subscription response can carry, their value formats, and the one reclash-config header that points to the provider manifest.",
+        "zh-CN": "订阅响应可以携带的标准 HTTP 响应头、它们的值格式，以及指向提供商清单的 reclash-config 响应头。"
       },
       "minutes": {
         "ru": 7,
-        "en": 8
+        "en": 8,
+        "zh-CN": 4
       }
     },
     {
@@ -197,15 +222,18 @@
       "section": "providers",
       "titles": {
         "ru": "Заголовки запроса",
-        "en": "Request headers"
+        "en": "Request headers",
+        "zh-CN": "请求头"
       },
       "descriptions": {
         "ru": "Что ReClash отправляет при загрузке подписки, как выбирает клиентскую идентичность и как обрабатывает редиректы, статусы и резервные хосты.",
-        "en": "What ReClash sends when it fetches a subscription, how it picks a client identity, and how it handles redirects, statuses and fallback hosts."
+        "en": "What ReClash sends when it fetches a subscription, how it picks a client identity, and how it handles redirects, statuses and fallback hosts.",
+        "zh-CN": "ReClash 获取订阅时发送的内容、如何选择客户端身份，以及如何处理重定向、状态码和备用主机。"
       },
       "minutes": {
         "ru": 5,
-        "en": 5
+        "en": 5,
+        "zh-CN": 3
       }
     },
     {
@@ -214,15 +242,18 @@
       "section": "providers",
       "titles": {
         "ru": "Политика безопасности",
-        "en": "Safety policy"
+        "en": "Safety policy",
+        "zh-CN": "安全策略"
       },
       "descriptions": {
         "ru": "Что провайдер может закрепить в ReClash так, чтобы пользователь не мог это отменить.",
-        "en": "What a provider can enforce in ReClash so that the user cannot undo it."
+        "en": "What a provider can enforce in ReClash so that the user cannot undo it.",
+        "zh-CN": "服务商可以在 ReClash 中强制执行哪些限制，使用户无法撤销。"
       },
       "minutes": {
         "ru": 6,
-        "en": 6
+        "en": 6,
+        "zh-CN": 3
       }
     },
     {
@@ -231,15 +262,18 @@
       "section": "providers",
       "titles": {
         "ru": "Preview API",
-        "en": "Preview API"
+        "en": "Preview API",
+        "zh-CN": "预览 API"
       },
       "descriptions": {
         "ru": "Эндпоинт JSON только для чтения, версия 1: даёт оформление провайдера до того, как пользователь подтвердит импорт со страницы подписки в браузере.",
-        "en": "A read-only JSON endpoint, version 1, that supplies the provider's presentation before the user confirms an import from a browser subscription page."
+        "en": "A read-only JSON endpoint, version 1, that supplies the provider's presentation before the user confirms an import from a browser subscription page.",
+        "zh-CN": "一个只读的 JSON 端点,版本 1,用于在用户从浏览器订阅页面确认导入之前提供提供者的展示信息。"
       },
       "minutes": {
         "ru": 3,
-        "en": 4
+        "en": 4,
+        "zh-CN": 2
       }
     },
     {
@@ -248,15 +282,18 @@
       "section": "providers",
       "titles": {
         "ru": "Отчёты и ссылки-исправления",
-        "en": "Support reports and fix links"
+        "en": "Support reports and fix links",
+        "zh-CN": "支持报告与修复链接"
       },
       "descriptions": {
         "ru": "Как пользователь одной кнопкой присылает всё о своей проблеме и как ответить ему ссылкой, которая её исправит.",
-        "en": "How a user sends you everything about their problem with one button, and how you answer with a link that fixes it."
+        "en": "How a user sends you everything about their problem with one button, and how you answer with a link that fixes it.",
+        "zh-CN": "用户如何用一个按钮把问题的全部信息发给你，以及你如何用一个链接来修复它。"
       },
       "minutes": {
         "ru": 5,
-        "en": 5
+        "en": 5,
+        "zh-CN": 3
       }
     },
     {
@@ -265,15 +302,18 @@
       "section": "providers",
       "titles": {
         "ru": "Реестр стандарта",
-        "en": "Standard registry"
+        "en": "Standard registry",
+        "zh-CN": "标准注册表"
       },
       "descriptions": {
         "ru": "Ограничения, поля манифеста и HTTP-заголовки стандарта провайдеров версии 1, сгенерированные из реестра, по которому декодирует приложение.",
-        "en": "Limits, manifest fields and HTTP headers of provider standard version 1, generated from the registry the app decodes with."
+        "en": "Limits, manifest fields and HTTP headers of provider standard version 1, generated from the registry the app decodes with.",
+        "zh-CN": "提供商标准第 1 版的限制、清单字段和 HTTP 响应头，由应用解码时所用的注册表生成。"
       },
       "minutes": {
         "ru": 3,
-        "en": 3
+        "en": 3,
+        "zh-CN": 3
       }
     },
     {
@@ -282,15 +322,18 @@
       "section": "rcx",
       "titles": {
         "ru": "Автомаршрутизация",
-        "en": "Auto routing"
+        "en": "Auto routing",
+        "zh-CN": "自动路由"
       },
       "descriptions": {
         "ru": "RCX — движок выбора серверов ReClash: умные группы сами выбирают сервер по профилю, а сценарий управляет всем подключением.",
-        "en": "RCX is the ReClash server-selection engine: smart groups pick their own server by profile, and a scenario steers the whole connection."
+        "en": "RCX is the ReClash server-selection engine: smart groups pick their own server by profile, and a scenario steers the whole connection.",
+        "zh-CN": "RCX 是 ReClash 的服务器选择引擎：智能组按配置自行选择服务器，场景则引导整个连接。"
       },
       "minutes": {
         "ru": 4,
-        "en": 5
+        "en": 5,
+        "zh-CN": 3
       }
     },
     {
@@ -299,15 +342,18 @@
       "section": "rcx",
       "titles": {
         "ru": "Движок",
-        "en": "Engine"
+        "en": "Engine",
+        "zh-CN": "引擎"
       },
       "descriptions": {
         "ru": "Как RCX собирает свидетельства, распознаёт сети, принимает решения, переключается и тратит пробы, с точными правилами и значениями по умолчанию.",
-        "en": "How RCX gathers evidence, recognizes networks, decides, switches and spends probes, with the exact rules and defaults."
+        "en": "How RCX gathers evidence, recognizes networks, decides, switches and spends probes, with the exact rules and defaults.",
+        "zh-CN": "RCX 如何收集证据、识别网络、做出决策、切换服务器并分配探测,以及确切的规则和默认值。"
       },
       "minutes": {
         "ru": 9,
-        "en": 11
+        "en": 11,
+        "zh-CN": 4
       }
     },
     {
@@ -316,15 +362,18 @@
       "section": "rcx",
       "titles": {
         "ru": "Профили",
-        "en": "Profiles"
+        "en": "Profiles",
+        "zh-CN": "配置档"
       },
       "descriptions": {
         "ru": "Справочник формата профиля RCX: ключи, значения по умолчанию, наследование, привязки и лимиты.",
-        "en": "Reference for the RCX profile format: keys, defaults, inheritance, bindings and limits."
+        "en": "Reference for the RCX profile format: keys, defaults, inheritance, bindings and limits.",
+        "zh-CN": "RCX 配置档格式参考:键、默认值、继承、绑定与限制。"
       },
       "minutes": {
         "ru": 7,
-        "en": 8
+        "en": 8,
+        "zh-CN": 5
       }
     },
     {
@@ -333,15 +382,18 @@
       "section": "rcx",
       "titles": {
         "ru": "Условия",
-        "en": "Conditions"
+        "en": "Conditions",
+        "zh-CN": "条件"
       },
       "descriptions": {
         "ru": "Справочник языка условий RCX: грамматика, поля, функции, трёхзначная логика и лимиты.",
-        "en": "Reference for the RCX condition language: grammar, fields, functions, three-valued logic and limits."
+        "en": "Reference for the RCX condition language: grammar, fields, functions, three-valued logic and limits.",
+        "zh-CN": "RCX 条件语言参考:语法、字段、函数、三值逻辑与限制。"
       },
       "minutes": {
         "ru": 4,
-        "en": 4
+        "en": 4,
+        "zh-CN": 2
       }
     },
     {
@@ -350,15 +402,18 @@
       "section": "rcx",
       "titles": {
         "ru": "Сценарии",
-        "en": "Scenarios"
+        "en": "Scenarios",
+        "zh-CN": "场景"
       },
       "descriptions": {
         "ru": "Справочник формата сценария RCX: программы для групп, маршруты, типы сетей и режим туннеля.",
-        "en": "Reference for the RCX scenario format: programs for groups, routes, network kinds and the tunnel mode."
+        "en": "Reference for the RCX scenario format: programs for groups, routes, network kinds and the tunnel mode.",
+        "zh-CN": "RCX 场景格式参考:面向组、路由、网络类型和隧道模式的程序。"
       },
       "minutes": {
         "ru": 5,
-        "en": 6
+        "en": 6,
+        "zh-CN": 3
       }
     },
     {
@@ -367,15 +422,18 @@
       "section": "rcx",
       "titles": {
         "ru": "Обмен",
-        "en": "Sharing"
+        "en": "Sharing",
+        "zh-CN": "分享"
       },
       "descriptions": {
         "ru": "Пакеты, экспорт и импорт, ссылки reclash://routing, доставка от провайдера, согласие, rcxlint и JSON-схема.",
-        "en": "Bundles, export and import, reclash://routing links, provider delivery, consent, rcxlint and the JSON schema."
+        "en": "Bundles, export and import, reclash://routing links, provider delivery, consent, rcxlint and the JSON schema.",
+        "zh-CN": "包、导出与导入、reclash://routing 链接、服务商交付、同意、rcxlint 和 JSON schema。"
       },
       "minutes": {
         "ru": 5,
-        "en": 5
+        "en": 5,
+        "zh-CN": 3
       }
     },
     {
@@ -384,15 +442,18 @@
       "section": "rcx",
       "titles": {
         "ru": "Рецепты",
-        "en": "Cookbook"
+        "en": "Cookbook",
+        "zh-CN": "示例集"
       },
       "descriptions": {
         "ru": "Готовые профили и сценарии для частых задач. Каждый проходит rcxlint в том виде, как написан.",
-        "en": "Complete profiles and scenarios for common tasks. Each one passes rcxlint as written."
+        "en": "Complete profiles and scenarios for common tasks. Each one passes rcxlint as written.",
+        "zh-CN": "适用于常见任务的完整配置与场景。每一个按原样写入都能通过 rcxlint。"
       },
       "minutes": {
         "ru": 3,
-        "en": 3
+        "en": 3,
+        "zh-CN": 2
       }
     },
     {
@@ -401,15 +462,18 @@
       "section": "site-lock",
       "titles": {
         "ru": "Привязка сайтов",
-        "en": "Site lock"
+        "en": "Site lock",
+        "zh-CN": "站点锁定"
       },
       "descriptions": {
         "ru": "Привязка сайтов закрепляет выбранные сайты за выбранными выходными серверами: их трафик уходит только через один из этих серверов или не уходит вовсе, какими бы ни были режим, правила и выбранный прокси. Остальной тра…",
-        "en": "Site lock pins chosen sites to the exit servers you pick: their traffic leaves only through one of those servers or not at all, whatever the mode, rules or selected proxy. Everything else keeps its usual route."
+        "en": "Site lock pins chosen sites to the exit servers you pick: their traffic leaves only through one of those servers or not at all, whatever the mode, rules or selected proxy. Everything else keeps its usual route.",
+        "zh-CN": "站点锁定会把选定的站点固定到你指定的出口服务器：无论模式、规则或所选代理如何，这些站点的流量只会从其中一台服务器离开，否则就不走网络。其余流量仍按原有路由处理。"
       },
       "minutes": {
         "ru": 11,
-        "en": 13
+        "en": 13,
+        "zh-CN": 4
       }
     },
     {
@@ -418,56 +482,19 @@
       "section": "site-lock",
       "titles": {
         "ru": "Kill switch",
-        "en": "Kill switch"
+        "en": "Kill switch",
+        "zh-CN": "断网保护"
       },
       "descriptions": {
         "ru": "Kill switch на компьютере блокирует весь трафик вне TUN ReClash, чтобы при обрыве туннеля ничего не утекло. Он есть на Linux и Windows и требует TUN и Helper.",
-        "en": "The desktop kill switch blocks all traffic outside ReClash's TUN, so nothing leaks if the tunnel drops. It exists on Linux and Windows and needs TUN and the Helper."
+        "en": "The desktop kill switch blocks all traffic outside ReClash's TUN, so nothing leaks if the tunnel drops. It exists on Linux and Windows and needs TUN and the Helper.",
+        "zh-CN": "桌面端断网保护会阻断 ReClash 的 TUN 之外的所有流量，因此隧道中断时不会泄漏任何数据。它适用于 Linux 和 Windows，并需要 TUN 和 Helper。"
       },
       "minutes": {
         "ru": 2,
-        "en": 3
+        "en": 3,
+        "zh-CN": 1
       }
     }
-  ],
-  "files": {
-    "ru/README.md": "21b3109879a5458e4db6df8b29fe1c46d06d10f3a89a9d42140b55546af52a97",
-    "ru/providers/README.md": "ff814259a4057eaddc7cc92850d33fb7fe2838bccb4bf6cf772cbda32061f5dc",
-    "ru/providers/rollout.md": "e06542f91923e1101954494ea8e987a45821ff447a3b60478759821a4ab8aa16",
-    "ru/providers/manifest.md": "0459dc62586104e76afb889376670fcc311b4bbacc9dc651087bd3da4587b141",
-    "ru/providers/headers.md": "33579e74319cf8b0b7f608714ad8d5f93d6e2f621fdd4471489a525341961b91",
-    "ru/providers/request.md": "8713002af77551d9df350497bdb0c10cc0eb0e925da605769aae2d2bead4ea69",
-    "ru/providers/policy.md": "2ef378e89b306021cf7ef9521283d21964f5838eb31a96ddfd923cd3a346663e",
-    "ru/providers/preview-api.md": "7f0fc203887a710e648af12fb5c2daf71ded816e7368bdcb4c42d6a58e9c2c2a",
-    "ru/providers/support.md": "ac2291449469d5164641db62e7e186a468e484d5271d0fd9b3bae042d4e39c56",
-    "ru/providers/standard.md": "f5f9a3a5fffbe5dac060e07fcf38d864b9e720e74a7d2e11a9bc14dc3e0a74bd",
-    "ru/auto-routing/README.md": "194769c09f07cc38d3d060c761b548e7c5761a1f50f97c61bb6d712f31bddd64",
-    "ru/auto-routing/engine.md": "ce7034ce65829333b17ba5a671098443cbffd7b33841b665f315809c7a7d7ef3",
-    "ru/auto-routing/profiles.md": "011900ec2ff7ddf37441a8cb1f5b1afc922f8595ed791db694db9ddcc5990c07",
-    "ru/auto-routing/conditions.md": "221652ad3fa308a71e9296d487f8808e52bd60bc1cd4950d0d7aebd545b845ef",
-    "ru/auto-routing/scenarios.md": "9b62cea9479cd17e2532164cc3a78df5ad9af3bebcd31630d3f49761a3308923",
-    "ru/auto-routing/sharing.md": "6ac0482545e86d1f310cc2ea3e6fcb1effc6a4d1c0b1664999b2a60a75949c30",
-    "ru/auto-routing/cookbook.md": "98b0c4dca9245280a4768b4645bf7eca5cd46067c9f9928d58a7fbe40bc43e7c",
-    "ru/site-lock/README.md": "f571c3fd6cfdc3fd87b4084a3bcd71edc6d5a7877695cbd8ffd6eceb2f947865",
-    "ru/site-lock/kill-switch.md": "e74803114899a2c7f842602a713db72f18d83a552505186978cea4043f55b109",
-    "en/README.md": "a335258a93124e7ff9db01c6df6b9089c85e9efc5df86954a4b79fe398363dbc",
-    "en/providers/README.md": "9fa0754ec4b3d49c462c05f36550a6600719728fc97a0646711c197cac30888e",
-    "en/providers/rollout.md": "f54010d3fe8c4674ed0c1776de2bf463552e3850148130687d6ec7331ad519b5",
-    "en/providers/manifest.md": "7285a66d3da04fdcad8ae05ad67aba472925c4dc9ccae8a41eefb41a3433f7b7",
-    "en/providers/headers.md": "b85e9d2de3b4c43c8bf4f639cfe2c0cb03efa69d3e3d4215f98dd1695cb0c4ac",
-    "en/providers/request.md": "7d9d5bc848acacdbdf75a0982e5bff170562e08d7aea18aaae241cb4fc5c5ac7",
-    "en/providers/policy.md": "a57ba0e4ce732f01763ab0341555ae7156abe91303b69b24d9f6c10f8cc06ddd",
-    "en/providers/preview-api.md": "310adc40fe5231705bff6be2cba27a8765f8b22c7bd6b3a7c720c8d5a5268efc",
-    "en/providers/support.md": "cf6932f61ca2715ab126fe6e5cdb8cd81ff358ca6d217a9c4fa2fae31e2b31ad",
-    "en/providers/standard.md": "9429b5a99c8f0bb39432795f14b72930f7d1f6a9e50c429bee9dfa43af283768",
-    "en/auto-routing/README.md": "77e74b77912763b9cbb014418310d505ef921eabc86a6ffe685ea00c14a53b7c",
-    "en/auto-routing/engine.md": "10c719c977941473ffb6760f2990ed363a4a6f99252b6a8deddf88ea53cab67e",
-    "en/auto-routing/profiles.md": "b4d9e0ec3596a6071b80be397181640b614d9622ab4eafa6b95bd4a9368c9b6d",
-    "en/auto-routing/conditions.md": "5e7932329b493616cfdf7590151de2822239f0d6149b94f342ed729e3c6fb389",
-    "en/auto-routing/scenarios.md": "3a172d385f35a558cc8994ac5ec06d4676c9365c38fd6f69d1dbc84dd6c0cf50",
-    "en/auto-routing/sharing.md": "be9d507ce646fe152105ad719956b6b9d8fc9fa7d29c83cedca1f869b8d07136",
-    "en/auto-routing/cookbook.md": "0154695e44f8a0ba68fe18d9d9b6d12d838201c07c4c09dc06dbefd8228965bc",
-    "en/site-lock/README.md": "dfd654e74c27a65464e8146dd7c368745c5f3cb7ee538d42b3bff6688f1b1ae6",
-    "en/site-lock/kill-switch.md": "18e69d912c77603366857f7a6305c1185136e3a54b3d6418ad52e784dec22602"
-  }
+  ]
 }

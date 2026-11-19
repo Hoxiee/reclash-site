@@ -42,7 +42,8 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
       headers.push(legacy, `  Link: <${origin}${canonical}>; rel="canonical"`)
     }
   }
-  for (const canonical of docRoutes) {
+  // Cloudflare reads at most 100 header rules; Chinese pages have no legacy .html URLs to keep alive.
+  for (const canonical of docRoutes.filter(route => !route.startsWith('/zh-CN/'))) {
     const legacy = `${canonical}.html`
     if (!redirects.includes(`${legacy} ${canonical} 200`)) {
       redirects.push(`${legacy} ${canonical} 200`)

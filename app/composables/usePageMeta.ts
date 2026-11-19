@@ -55,6 +55,7 @@ export function usePageMeta(page: PageKey) {
   })
   useHead(() => ({
     htmlAttrs: { lang: language.value },
+    meta: [{ name: 'google-site-verification', content: 'IDIM6wK06j-4cmHguvqV6_J8C3CfJWjnh4hlyfS83dA' }],
     link: [
       { rel: 'canonical', href: `${config.public.siteOrigin}${pagePath(language.value, page)}` },
       ...pageLanguages(page).map(lang => ({ rel: 'alternate' as const, type: 'text/html', hreflang: lang, href: `${config.public.siteOrigin}${pagePath(lang, page)}` })),

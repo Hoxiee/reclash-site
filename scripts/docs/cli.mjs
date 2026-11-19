@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
-import { compileDocument, contentRoot, makeCatalogue, markdownFiles, readLibrary } from './engine.mjs'
+import { compileDocument, contentRoot, makeCatalogue, makeDigests, markdownFiles, readLibrary } from './engine.mjs'
 
 const [command, ...rest] = process.argv.slice(2)
 const draft = rest.includes('--draft')
@@ -31,6 +31,7 @@ if (command === 'sync') {
   for (const [key, document] of library.documents) await writeChanged(join(contentRoot, key), document.source)
   const catalogue = makeCatalogue(library, commit)
   await writeChanged(join(contentRoot, 'catalogue.json'), `${JSON.stringify(catalogue, null, 2)}\n`)
+  await writeChanged(join(contentRoot, 'digests.json'), `${JSON.stringify(makeDigests(library), null, 2)}\n`)
   console.log(`Synchronized ${library.documents.size} documents in ${library.languages.join(', ')} from ${commit.slice(0, 8)}${draft && dirty ? ' (draft: uncommitted source)' : ''}.`)
   try { verify(library, catalogue) } catch (error) { console.warn(`Warning: ${error.message}`) }
 } else if (command === 'check') {
@@ -38,6 +39,7 @@ if (command === 'sync') {
   assert.match(catalogue.source.commit, /^[a-f0-9]{40}$/)
   const library = readLibrary()
   assert.deepEqual(makeCatalogue(library, catalogue.source.commit), catalogue, 'Documentation catalogue is stale; synchronize the documentation')
+  assert.deepEqual(makeDigests(library), JSON.parse(readFileSync(join(contentRoot, 'digests.json'), 'utf8')), 'Documentation digests are stale; synchronize the documentation')
   for (const language of library.languages) assert.equal(markdownFiles(join(contentRoot, language)).length, library.pages.length)
   verify(library, catalogue)
   console.log(`Verified ${library.documents.size} documents (${library.languages.join(', ')}): links, anchors, translated headings and diagrams.`)

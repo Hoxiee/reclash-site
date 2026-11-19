@@ -65,7 +65,7 @@ test('language-neutral links redirect to the visitor language and keep the query
     ['/', { 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8' }, '/zh-CN'],
     ['/download', { 'Accept-Language': 'zh-TW' }, '/zh-CN/download'],
     ['/builder', { 'Accept-Language': 'zh-CN' }, '/en/builder'],
-    ['/docs', { 'Accept-Language': 'zh-CN' }, '/en/docs'],
+    ['/docs', { 'Accept-Language': 'zh-CN' }, '/zh-CN/docs'],
     ['/start', { 'Accept-Language': 'en', Cookie: 'reclash-lang=zh-CN' }, '/zh-CN/start'],
   ]
   for (const [path, headers, location] of cases) {
