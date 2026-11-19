@@ -63,14 +63,13 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
     if (target !== language) redirects.push(`${docPath(language)} ${docPath(target)} 301`, `${docPath(language)}/* ${docPath(target)}/:splat 301`)
   }
   const publicPages = sitePages.filter(page => !privatePages.includes(page.key))
-  const entries = new Map<string, string>()
+  const entries = new Set<string>()
   for (const page of publicPages) {
-    const available = pageLanguages(page.key)
-    const alternates = [...available, 'x-default'].map(hreflang => `<xhtml:link rel="alternate" hreflang="${hreflang}" href="${canonicalUrl(origin, pagePath(hreflang === 'x-default' ? 'en' : hreflang as typeof languages[number], page.key))}"/>`).join('')
-    for (const language of available) entries.set(canonicalUrl(origin, pagePath(language, page.key)), alternates)
+    // Language alternates live in each page's <head>; keeping the sitemap plain makes it the safest for crawlers.
+    for (const language of pageLanguages(page.key)) entries.add(canonicalUrl(origin, pagePath(language, page.key)))
   }
-  for (const path of docRoutes) if (!entries.has(canonicalUrl(origin, path))) entries.set(canonicalUrl(origin, path), '')
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${[...entries].map(([url, alternates]) => `  <url><loc>${url}</loc>${alternates}</url>`).join('\n')}\n</urlset>\n`
+  for (const path of docRoutes) entries.add(canonicalUrl(origin, path))
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...entries].map(url => `  <url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`
   await Promise.all([
     writeFile(join(output, '_headers'), `${headers.join('\n')}\n`),
     writeFile(join(output, '_redirects'), `${redirects.join('\n')}\n`),
