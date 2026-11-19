@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const { t } = useText()
 const slides = computed(() => [
-  { src: 'mobile-dashboard', w: 730, h: 1438, title: t('Одна кнопка', 'One button'), text: t('Подключение, страна и остаток подписки на одном экране.', 'Connection, location and what is left on the subscription, on one screen.') },
-  { src: 'mobile-widgets', w: 730, h: 1438, title: t('Объявления провайдера', 'Provider announcements'), text: t('На вкладке «Виджеты» рядом с главной ваше объявление и уведомление о работах стоят первыми.', 'On the Widgets tab next to Home, your announcement and maintenance notice come first.') },
-  { src: 'mobile-branded', w: 730, h: 1438, title: t('Клиент в цветах провайдера', 'Your provider\'s look'), text: t('Логотип, фон и кнопка приходят вместе с подпиской.', 'Logo, background and button arrive with the subscription.') },
-  { src: 'mobile-profiles', w: 730, h: 1438, title: t('Подписки как карты в кошельке', 'Subscriptions as wallet cards'), text: t('Трафик и срок каждой видны сразу.', 'Traffic and expiry of each one at a glance.') },
-  { src: 'mobile-proxies', w: 730, h: 1438, title: t('Избранное и цепочки', 'Favorites and chains'), text: t('Любимые серверы и маршруты через домашний вход наверху, у каждого видна задержка.', 'Favorite servers and routes through a home entry on top, each with its latency.') },
-  { src: 'desktop-dashboard', w: 1698, h: 1098, title: t('На компьютере так же просто', 'Just as simple on desktop'), text: t('Тот же экран на Windows, macOS и Linux.', 'The same screen on Windows, macOS and Linux.') },
-  { src: 'desktop-branded', w: 1698, h: 1098, title: t('Оформление провайдера везде', 'Provider style everywhere'), text: t('Брендинг подписки работает и на десктопе.', 'Subscription branding carries over to the desktop.') },
-  { src: 'desktop-profiles', w: 1698, h: 1098, title: t('Кошелёк на большом экране', 'The wallet on a big screen'), text: t('Все подписки и их остатки в одном месте.', 'Every subscription and its balance in one place.') },
+  { src: 'mobile-dashboard', w: 730, h: 1438, title: t('Одна кнопка', 'One button', '一键搞定'), text: t('Подключение, страна и остаток подписки на одном экране.', 'Connection, location and what is left on the subscription, on one screen.', '连接、位置和订阅剩余量，一屏尽览。') },
+  { src: 'mobile-widgets', w: 730, h: 1438, title: t('Объявления провайдера', 'Provider announcements', '服务商公告'), text: t('На вкладке «Виджеты» рядом с главной ваше объявление и уведомление о работах стоят первыми.', 'On the Widgets tab next to Home, your announcement and maintenance notice come first.', '在主页旁的“小组件”标签页中，你的公告和维护通知排在最前。') },
+  { src: 'mobile-branded', w: 730, h: 1438, title: t('Клиент в цветах провайдера', 'Your provider\'s look', '服务商的专属外观'), text: t('Логотип, фон и кнопка приходят вместе с подпиской.', 'Logo, background and button arrive with the subscription.', '徽标、背景和按钮随订阅一同送达。') },
+  { src: 'mobile-profiles', w: 730, h: 1438, title: t('Подписки как карты в кошельке', 'Subscriptions as wallet cards', '订阅如钱包卡片'), text: t('Трафик и срок каждой видны сразу.', 'Traffic and expiry of each one at a glance.', '每个订阅的流量和到期时间一目了然。') },
+  { src: 'mobile-proxies', w: 730, h: 1438, title: t('Избранное и цепочки', 'Favorites and chains', '收藏与链式代理'), text: t('Любимые серверы и маршруты через домашний вход наверху, у каждого видна задержка.', 'Favorite servers and routes through a home entry on top, each with its latency.', '常用服务器和经由家庭入口的路线置顶，每项都显示延迟。') },
+  { src: 'desktop-dashboard', w: 1698, h: 1098, title: t('На компьютере так же просто', 'Just as simple on desktop', '桌面端同样简单'), text: t('Тот же экран на Windows, macOS и Linux.', 'The same screen on Windows, macOS and Linux.', 'Windows、macOS 和 Linux 上是同一个界面。') },
+  { src: 'desktop-branded', w: 1698, h: 1098, title: t('Оформление провайдера везде', 'Provider style everywhere', '处处是服务商风格'), text: t('Брендинг подписки работает и на десктопе.', 'Subscription branding carries over to the desktop.', '订阅品牌样式同样适用于桌面端。') },
+  { src: 'desktop-profiles', w: 1698, h: 1098, title: t('Кошелёк на большом экране', 'The wallet on a big screen', '大屏上的钱包'), text: t('Все подписки и их остатки в одном месте.', 'Every subscription and its balance in one place.', '所有订阅及其余量集中在一处。') },
 ])
 // Three copies make the ribbon endless: the middle one is real, the outer ones are recentred after scrolling stops.
 const count = computed(() => slides.value.length)
@@ -61,7 +61,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-<div class="slider" role="region" aria-roledescription="carousel" :aria-label="t('Скриншоты ReClash', 'ReClash screenshots')">
+<div class="slider" role="region" aria-roledescription="carousel" :aria-label="t('Скриншоты ReClash', 'ReClash screenshots', 'ReClash 截图')">
   <div ref="track" class="slider-track" tabindex="0" @keydown="onKey" @scroll.passive="onScroll">
     <figure v-for="slide in ribbon" :key="slide.at" class="slide" :class="{ 'is-active': slide.at === at, 'is-wide': slide.w > slide.h }" :data-at="slide.at" :aria-hidden="slide.copy !== 1 || undefined" role="group" aria-roledescription="slide" :aria-label="`${slide.index + 1} / ${count}`" @click="go(slide.at)">
       <img :src="`/assets/screens/${slide.src}-dark.webp`" :width="slide.w" :height="slide.h" :alt="slide.title" loading="lazy" decoding="async" draggable="false">
@@ -69,13 +69,13 @@ onBeforeUnmount(() => {
     </figure>
   </div>
   <div class="slider-bar">
-    <button type="button" class="slider-btn" :aria-label="t('Предыдущий', 'Previous')" @click="go(at - 1)">
+    <button type="button" class="slider-btn" :aria-label="t('Предыдущий', 'Previous', '上一张')" @click="go(at - 1)">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <div class="slider-dots">
       <button v-for="(slide, index) in slides" :key="slide.src" type="button" class="slider-dot" :class="{ 'is-active': index === active }" :aria-label="slide.title" :aria-current="index === active" @click="pick(index)" />
     </div>
-    <button type="button" class="slider-btn" :aria-label="t('Следующий', 'Next')" @click="go(at + 1)">
+    <button type="button" class="slider-btn" :aria-label="t('Следующий', 'Next', '下一张')" @click="go(at + 1)">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
   </div>

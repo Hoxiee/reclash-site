@@ -2,7 +2,7 @@
 import type { PageKey } from '~~/shared/site/routes'
 const props = defineProps<{ page: PageKey }>()
 const { title } = usePageMeta(props.page)
-const { t } = useText()
+const { t } = useToolText()
 </script>
 
 <template>

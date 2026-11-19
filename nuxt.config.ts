@@ -1,4 +1,4 @@
-import { prerenderRoutes, sitePages } from './shared/site/routes'
+import { isTranslated, languages, prerenderRoutes, sitePages } from './shared/site/routes'
 import { normalizeOrigin } from './shared/site/seo'
 import { writeStaticFiles } from './scripts/static'
 import { bootScript } from './shared/site/boot'
@@ -27,7 +27,7 @@ export default defineNuxtConfig({
       for (const page of pages) {
         if (!page.path.startsWith('/:lang')) continue
         const key = page.path.split('/')[2] || 'index'
-        const locales = key === 'docs' ? docLanguages.join('|') : 'ru|en'
+        const locales = key === 'docs' ? docLanguages.join('|') : languages.filter(language => isTranslated(language, key)).join('|')
         page.path = page.path.replace(/^\/:lang(?:\([^)]*\))?/, `/:lang(${locales})`)
         if (sitePages.some(item => item.key === key) && (page.path.split('/').length <= 3 || key === 'docs')) {
           page.alias = [`/:lang(${locales})/${key}.html`]

@@ -57,31 +57,31 @@ async function toggle(key: number, event: Event) {
     </div>
 
     <div v-else-if="feed.status === 'error'" class="cl-card cl-fail cl-in">
-      <p>{{ feed.failure === 'none' ? t('Релизов пока нет — заметки появятся вместе с первым.', 'No releases yet. Notes will appear with the first one.') : t('Не получилось загрузить заметки к релизам. Они всегда есть на GitHub.', 'Could not load the release notes. They are always on GitHub.') }}</p>
-      <a class="btn btn-ghost btn-s" :href="RELEASES_PAGE" target="_blank" rel="noopener noreferrer">{{ t('Релизы на GitHub', 'Releases on GitHub') }}</a>
+      <p>{{ feed.failure === 'none' ? t('Релизов пока нет — заметки появятся вместе с первым.', 'No releases yet. Notes will appear with the first one.', '暂无发行版，首个发行版发布时会出现说明。') : t('Не получилось загрузить заметки к релизам. Они всегда есть на GitHub.', 'Could not load the release notes. They are always on GitHub.', '无法加载发行说明。它们始终可以在 GitHub 上找到。') }}</p>
+      <a class="btn btn-ghost btn-s" :href="RELEASES_PAGE" target="_blank" rel="noopener noreferrer">{{ t('Релизы на GitHub', 'Releases on GitHub', 'GitHub 上的发行版') }}</a>
     </div>
 
     <template v-else-if="current">
       <article class="cl-card cl-in" aria-labelledby="cl-current">
         <header class="cl-head">
           <h3 id="cl-current" class="cl-ver">{{ version(current) }}</h3>
-          <span class="cl-badge" :class="{ 'is-pre': current.prerelease }">{{ current.prerelease ? t('Предварительный', 'Prerelease') : t('Актуальный', 'Latest') }}</span>
+          <span class="cl-badge" :class="{ 'is-pre': current.prerelease }">{{ current.prerelease ? t('Предварительный', 'Prerelease', '预发行版') : t('Актуальный', 'Latest', '最新') }}</span>
           <time class="cl-date" :datetime="current.published">{{ date(current) }}</time>
-          <a class="btn btn-ghost btn-s cl-gh" :href="current.url" target="_blank" rel="noopener noreferrer">{{ t('На GitHub', 'On GitHub') }}</a>
+          <a class="btn btn-ghost btn-s cl-gh" :href="current.url" target="_blank" rel="noopener noreferrer">{{ t('На GitHub', 'On GitHub', '在 GitHub 查看') }}</a>
         </header>
         <div v-if="notes(current).blocks.length" class="md"><ReleaseMarkdown :blocks="notes(current).blocks" :level="4" /></div>
-        <p v-else class="cl-empty">{{ t('К этому релизу нет заметок.', 'No notes for this release.') }}</p>
-        <p v-if="notes(current).truncated" class="cl-more"><a class="tlink" :href="current.url" target="_blank" rel="noopener noreferrer">{{ t('Заметки сокращены — полный текст на GitHub', 'The notes are shortened. Read them in full on GitHub') }}</a></p>
+        <p v-else class="cl-empty">{{ t('К этому релизу нет заметок.', 'No notes for this release.', '此发行版没有说明。') }}</p>
+        <p v-if="notes(current).truncated" class="cl-more"><a class="tlink" :href="current.url" target="_blank" rel="noopener noreferrer">{{ t('Заметки сокращены — полный текст на GitHub', 'The notes are shortened. Read them in full on GitHub', '说明已被缩短，请在 GitHub 上阅读全文') }}</a></p>
       </article>
 
       <template v-if="others.length">
-        <h3 class="cl-sub">{{ newerPrerelease ? t('Другие релизы', 'Other releases') : t('Предыдущие релизы', 'Earlier releases') }}</h3>
+        <h3 class="cl-sub">{{ newerPrerelease ? t('Другие релизы', 'Other releases', '其他发行版') : t('Предыдущие релизы', 'Earlier releases', '较早的发行版') }}</h3>
         <ul class="cl-list">
           <li v-for="(release, index) in others" :key="index" class="cl-item cl-in" :data-open="open[index] ? '' : undefined" :style="`--i:${index}`">
             <h4 class="cl-row">
               <button :id="`cl-b-${index}`" class="cl-btn" type="button" :aria-expanded="!!open[index]" :aria-controls="`cl-p-${index}`" @click="toggle(index, $event)">
                 <span class="cl-v">{{ version(release) }}</span>
-                <span v-if="release.prerelease" class="cl-badge is-pre">{{ t('Предварительный', 'Prerelease') }}</span>
+                <span v-if="release.prerelease" class="cl-badge is-pre">{{ t('Предварительный', 'Prerelease', '预发行版') }}</span>
                 <time class="cl-date" :datetime="release.published">{{ date(release) }}</time>
                 <span class="pm" aria-hidden="true" />
               </button>
@@ -89,8 +89,8 @@ async function toggle(key: number, event: Event) {
             <div :id="`cl-p-${index}`" class="cl-panel" role="region" :aria-labelledby="`cl-b-${index}`">
               <div v-if="seen[index]" class="cl-body">
                 <div v-if="notes(release).blocks.length" class="md"><ReleaseMarkdown :blocks="notes(release).blocks" :level="5" /></div>
-                <p v-else class="cl-empty">{{ t('К этому релизу нет заметок.', 'No notes for this release.') }}</p>
-                <p class="cl-more"><a class="tlink" :href="release.url" target="_blank" rel="noopener noreferrer">{{ notes(release).truncated ? t('Заметки сокращены — полный текст на GitHub', 'The notes are shortened. Read them in full on GitHub') : t('Релиз на GitHub', 'This release on GitHub') }}</a></p>
+                <p v-else class="cl-empty">{{ t('К этому релизу нет заметок.', 'No notes for this release.', '此发行版没有说明。') }}</p>
+                <p class="cl-more"><a class="tlink" :href="release.url" target="_blank" rel="noopener noreferrer">{{ notes(release).truncated ? t('Заметки сокращены — полный текст на GitHub', 'The notes are shortened. Read them in full on GitHub', '说明已被缩短，请在 GitHub 上阅读全文') : t('Релиз на GitHub', 'This release on GitHub', 'GitHub 上的此发行版') }}</a></p>
               </div>
             </div>
           </li>

@@ -2,7 +2,7 @@
 export interface CatalogStand { key: string, name: string, scenario: string, style: Record<string, string>, stock: boolean, image?: string, logo?: string }
 defineProps<{ stands: CatalogStand[], current: string }>()
 defineEmits<{ select: [key: string] }>()
-const { t } = useText()
+const { t } = useToolText()
 </script>
 
 <template>

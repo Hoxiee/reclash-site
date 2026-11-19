@@ -5,7 +5,7 @@ import { splitPath } from '~~/shared/provider/builder/document'
 import { issueText } from '~~/shared/provider/builder/validate'
 // One manifest value. Its control, limits and options follow the schema node at the path.
 const props = defineProps<{ path: string, compact?: boolean }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 const { manifest, get, set, issuesAt } = useBuilder()
 const id = computed(() => fieldId(props.path))
 const entry = computed(() => entryFor(props.path))

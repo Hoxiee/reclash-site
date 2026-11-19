@@ -1,4 +1,4 @@
-import type { BilingualText, Language } from '../site/routes'
+import type { BilingualText, ToolLanguage } from '../site/routes'
 import { providerStandard, type HeaderTransform } from './standard'
 
 // The header reference: every header ReClash reads, with bilingual format,
@@ -171,7 +171,7 @@ export function plainText(text: string): string {
 }
 
 /** Lowercased haystack for search: names, both-language keywords and the prose in `language`. */
-export function searchText(entry: HeaderEntry, language: Language): string {
+export function searchText(entry: HeaderEntry, language: ToolLanguage): string {
   return [
     entry.name,
     entry.keywords.ru, entry.keywords.en,

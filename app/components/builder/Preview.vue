@@ -4,7 +4,7 @@ import type { KernelView } from '~/composables/useBuilder'
 // The build weighs megabytes and few visitors want it, so nothing is requested before an explicit open.
 const props = defineProps<{ yaml: string, kernel: KernelView }>()
 const emit = defineEmits<{ select: [path: string] }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 
 type Screen = 'home' | 'widgets' | 'import'
 type Platform = 'android' | 'windows' | 'macos' | 'linux'

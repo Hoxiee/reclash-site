@@ -3,7 +3,7 @@ import { formSections } from '~~/shared/provider/builder/form'
 import { cloneValue, labelEntries } from '~~/shared/provider/builder/document'
 import { issueText } from '~~/shared/provider/builder/validate'
 // Power labels: each state holds variants; one is picked per app session. Kept as `{title, hint}` here, compacted on output.
-const { language, t } = useText()
+const { language, t } = useToolText()
 const { get, set, issuesAt } = useBuilder()
 const states = formSections.find(section => section.key === 'power-labels')!.entries.filter(entry => entry.path.split('.').length === 2)
 const placeholders = ['{daysLeft}', '{trafficLeft}', '{server}']

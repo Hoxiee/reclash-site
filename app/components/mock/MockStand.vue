@@ -4,7 +4,7 @@ import { mockTheme } from '~~/shared/provider/mockview'
 
 // One mock subscription: what to check in the client, how to import it, and the exact response it serves.
 const props = defineProps<{ profile: MockProfile, index: number, total: number, origin: string, now: number }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 
 const theme = computed(() => mockTheme(props.profile))
 const url = computed(() => mockUrl(props.origin, props.profile.key))

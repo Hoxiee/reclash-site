@@ -3,7 +3,7 @@ import { importManifest, ManifestVersionError, manifestLimit, type Imported } fr
 import { YamlError } from '~~/shared/provider/builder/yaml'
 // Reads a manifest the provider already has. The text stays in the browser; links inside it are never opened.
 const emit = defineEmits<{ imported: [result: Imported] }>()
-const { t } = useText()
+const { t } = useToolText()
 const text = ref('')
 const over = ref(false)
 const problem = ref('')

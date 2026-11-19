@@ -13,7 +13,7 @@ const props = defineProps<{ yaml: string, kernel: KernelView, routing: boolean, 
 const emit = defineEmits<{ 'update:url': [value: string], retry: [] }>()
 const url = computed(() => props.url)
 const checked = (event: Event) => (event.target as HTMLInputElement).checked
-const { language, t } = useText()
+const { language, t } = useToolText()
 const { get } = useBuilder()
 
 const schemaComment = ref(false)

@@ -2,7 +2,7 @@
 import type { FormSection } from '~~/shared/provider/builder/form'
 import { kindOf, nodeAt } from '~~/shared/provider/builder/schema'
 const props = defineProps<{ section: FormSection }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 const { manifest, get, set, issuesAt, reveal, expansion } = useBuilder()
 const key = props.section.key
 const kind = kindOf(nodeAt([key], {}))

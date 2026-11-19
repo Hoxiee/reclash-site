@@ -1,13 +1,13 @@
 import { docLanguageFromPath, docRoutes } from '../docs/catalogue.ts'
+import { isTranslated, languages, type Language, type ToolLanguage } from './languages.ts'
 
-export const languages = ['ru', 'en'] as const
-export type Language = typeof languages[number]
-export type BilingualText = Record<Language, string>
+export { isTranslated, languages, translatedPages, type Language, type ToolLanguage } from './languages.ts'
+export type BilingualText = Record<ToolLanguage, string> & { 'zh-CN'?: string }
 
 export const sitePages = [
-  { key: 'index', title: { ru: 'Главная', en: 'Home' } },
-  { key: 'start', title: { ru: 'Начало работы', en: 'Quick start' } },
-  { key: 'download', title: { ru: 'Скачать', en: 'Download' } },
+  { key: 'index', title: { ru: 'Главная', en: 'Home', 'zh-CN': '首页' } },
+  { key: 'start', title: { ru: 'Начало работы', en: 'Quick start', 'zh-CN': '快速开始' } },
+  { key: 'download', title: { ru: 'Скачать', en: 'Download', 'zh-CN': '下载' } },
   { key: 'docs', title: { ru: 'Документация', en: 'Documentation' } },
   { key: 'reference', title: { ru: 'Справочник', en: 'Reference' } },
   { key: 'builder', title: { ru: 'Конструктор', en: 'Builder' } },
@@ -19,7 +19,12 @@ export type PageKey = typeof sitePages[number]['key']
 export const privatePages: ReadonlyArray<PageKey> = ['mock-subs', 'motion']
 
 export function pagePath(language: Language, page: PageKey = 'index'): string {
-  return page === 'index' ? `/${language}` : `/${language}/${page}`
+  const target = isTranslated(language, page) ? language : 'en'
+  return page === 'index' ? `/${target}` : `/${target}/${page}`
+}
+
+export function pageLanguages(page: PageKey): Language[] {
+  return languages.filter(language => isTranslated(language, page))
 }
 
 export function legacyPath(language: Language, page: PageKey = 'index'): string {
@@ -27,7 +32,7 @@ export function legacyPath(language: Language, page: PageKey = 'index'): string 
 }
 
 export function languageFromPath(path: string): Language {
-  return /^\/(?:en|zh-CN)(?:\/|$)/.test(path) ? 'en' : 'ru'
+  return /^\/zh-CN(?:\/|$)/.test(path) ? 'zh-CN' : /^\/en(?:\/|$)/.test(path) ? 'en' : 'ru'
 }
 
 export function pageFromPath(path: string): PageKey {
@@ -46,4 +51,4 @@ export function switchLanguage(fullPath: string, language: Language): string {
   return fullPath.replace(/^\/(?:ru|en|zh-CN)(?=\/|\?|#|$)/, `/${language}`)
 }
 
-export const prerenderRoutes = [...new Set(['/', ...languages.flatMap(language => sitePages.map(page => pagePath(language, page.key))), ...docRoutes])]
+export const prerenderRoutes = [...new Set(['/', ...languages.flatMap(language => sitePages.filter(page => isTranslated(language, page.key)).map(page => pagePath(language, page.key))), ...docRoutes])]

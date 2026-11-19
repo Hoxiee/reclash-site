@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { languages, legacyPath, pagePath, sitePages } from '../../shared/site/routes'
+import { isTranslated, languages, legacyPath, pagePath, sitePages } from '../../shared/site/routes'
 
 const errors: string[] = []
 test.beforeEach(async ({ page }) => {
@@ -13,7 +13,7 @@ test.afterEach(() => { expect(errors).toEqual([]) })
 
 test('all canonical and legacy pages serve prerendered bilingual HTML', async ({ request }) => {
   for (const language of languages) {
-    for (const page of sitePages) {
+    for (const page of sitePages.filter(item => isTranslated(language, item.key))) {
       for (const route of [pagePath(language, page.key), legacyPath(language, page.key)]) {
         const response = await request.get(route)
         expect(response.status(), route).toBe(200)
@@ -62,6 +62,11 @@ test('language-neutral links redirect to the visitor language and keep the query
     ['/docs', { 'Accept-Language': 'fr-FR' }, '/en/docs'],
     ['/start', { 'Accept-Language': 'ru', Cookie: 'reclash-lang=en' }, '/en/start'],
     ['/', { 'Accept-Language': 'ru-RU' }, '/ru'],
+    ['/', { 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8' }, '/zh-CN'],
+    ['/download', { 'Accept-Language': 'zh-TW' }, '/zh-CN/download'],
+    ['/builder', { 'Accept-Language': 'zh-CN' }, '/en/builder'],
+    ['/docs', { 'Accept-Language': 'zh-CN' }, '/en/docs'],
+    ['/start', { 'Accept-Language': 'en', Cookie: 'reclash-lang=zh-CN' }, '/zh-CN/start'],
   ]
   for (const [path, headers, location] of cases) {
     const response = await get(path, headers)

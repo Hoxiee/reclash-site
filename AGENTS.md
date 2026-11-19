@@ -32,7 +32,7 @@ TypeScript animation engine.
   Dispose timers, observers, requests and listeners on unmount.
 - Keep one lazy frame scheduler. No idle loops or unbounded particles.
 - Respect live reduced-motion changes, visibility, keyboard input and cancellation.
-- User-facing copy uses `t("Russian", "English")` in place or bilingual data.
+- User-facing copy uses `t("Russian", "English", "Chinese")` in place or bilingual data; the third argument is optional and falls back to English. Simplified Chinese (`zh-CN`) covers only the pages listed in `shared/site/languages.ts`; other pages redirect to `/en`, and tool pages use `useToolText()` (ru/en).
   Render rich content through components, not `v-html`.
 - Repository text is English; chat is Russian. No emoji.
 - No rotary lever controls, runtime animation libraries, UI kits, remote fonts

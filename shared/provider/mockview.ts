@@ -1,6 +1,6 @@
 import { hexToOklch, normHex } from './theme.ts'
 import { mockExpire, mockNodeCount, type MockProfile } from './mocks.ts'
-import type { Language } from '../site/routes'
+import type { ToolLanguage as Language } from '../site/routes'
 
 // Display helpers for the mock-subs page: readable facts and a preview-only brand scope.
 

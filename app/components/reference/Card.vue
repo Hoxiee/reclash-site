@@ -6,7 +6,7 @@ import { headerCategories, transformLabels, referenceAnchor, type HeaderEntry } 
 // and the content stays in the prerendered HTML; the page owns the open state.
 const props = defineProps<{ entry: HeaderEntry, open: boolean, terms: readonly string[] }>()
 const emit = defineEmits<{ toggle: [open: boolean] }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 const motion = usePageMotion()
 const root = useTemplateRef<HTMLDetailsElement>('root')
 

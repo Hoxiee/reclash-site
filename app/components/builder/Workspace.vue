@@ -5,7 +5,7 @@ import { issueText } from '~~/shared/provider/builder/validate'
 
 const props = defineProps<{ saved: 'idle' | 'saving' | 'saved' | 'failed' }>()
 const emit = defineEmits<{ starter: [key: string], select: [path: string], expand: [open: boolean] }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 const { manifest, issues } = useBuilder()
 const query = ref('')
 const templatesOpen = ref(false)

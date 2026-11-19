@@ -5,7 +5,7 @@ import { builderFragment } from './view'
 
 // Opens the builder with this stand's manifest and routing. Without JavaScript it is a plain link to the builder.
 const props = defineProps<{ profile: MockProfile, origin: string, now: number }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 const busy = ref(false)
 const path = computed(() => pagePath(language.value, 'builder'))
 

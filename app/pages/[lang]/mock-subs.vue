@@ -5,7 +5,7 @@ import { previewCards, previewManifest, providerLogo, scenariosLabel } from '~/c
 import '~/assets/css/mock.css'
 
 usePageMeta('mock-subs')
-const { language, t } = useText()
+const { language, t } = useToolText()
 const origin = useRuntimeConfig().public.siteOrigin
 // Relative expiries are computed once on the server and reused on hydration, matching the build's _headers.
 const now = useState('mock-subs-now', () => Date.now())

@@ -7,7 +7,7 @@ import { countdownText, iconPath, powerPath, policyBadges, previewCards, preview
 
 // A schematic subscription-data preview drawn from the manifest, not a replica of the app interface.
 const props = defineProps<{ profile: MockProfile, now: number }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 
 const manifest = computed(() => previewManifest(props.profile, props.now))
 const provider = computed(() => rec(manifest.value.provider))

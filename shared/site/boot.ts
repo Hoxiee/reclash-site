@@ -9,8 +9,8 @@ setTimeout(function(){if(!c.contains('is-ready')){c.remove('js');c.add('is-ready
 
 // Languages whose speakers usually read Russian; anything else falls back to English.
 export const languageScript = `(function(){var l=null;try{l=localStorage.getItem('reclash-lang')}catch(e){}
-if(l!=='ru'&&l!=='en'){l='en';var a=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||''];
-for(var i=0;i<a.length;i++){var x=String(a[i]).toLowerCase();if(/^(ru|be|kk|ky|tg|uz|tt|ba|cv|sah|os)(-|$)/.test(x)){l='ru';break}if(/^en(-|$)/.test(x))break}}
+if(l!=='ru'&&l!=='en'&&l!=='zh-CN'){l='en';var a=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||''];
+for(var i=0;i<a.length;i++){var x=String(a[i]).toLowerCase();if(/^(ru|be|kk|ky|tg|uz|tt|ba|cv|sah|os)(-|$)/.test(x)){l='ru';break}if(/^zh(-|$)/.test(x)){l='zh-CN';break}if(/^en(-|$)/.test(x))break}}
 location.replace('/'+l+location.search+location.hash)})()`
 
 export const languageKey = 'reclash-lang'

@@ -4,7 +4,7 @@ import { lineCount } from './view'
 
 // The exact response of one stand, split into what the client reads: headers, the hosted manifest and the profile body.
 const props = defineProps<{ profile: MockProfile, origin: string, now: number }>()
-const { t } = useText()
+const { t } = useToolText()
 
 const headers = computed(() => [
   ...mockTransportHeaders.map(([key, value]) => ({ key, value, kind: 'host' })),

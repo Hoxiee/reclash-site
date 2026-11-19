@@ -7,7 +7,7 @@ import type { PageMotion } from '~/composables/usePageMotion'
 import '~/assets/css/reference.css'
 
 usePageMeta('reference')
-const { language, t } = useText()
+const { language, t } = useToolText()
 const route = useRoute()
 const motion = usePageMotion()
 

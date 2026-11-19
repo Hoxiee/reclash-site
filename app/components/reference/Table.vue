@@ -3,7 +3,7 @@ import type { TokenTable } from '~~/shared/provider/reference'
 // Token vocabulary of a structured header (view keys, palette variants, widgets, settings).
 const props = defineProps<{ table: TokenTable }>()
 const hasNotes = computed(() => props.table.rows.some(row => row.note))
-const { language } = useText()
+const { language } = useToolText()
 </script>
 
 <template>

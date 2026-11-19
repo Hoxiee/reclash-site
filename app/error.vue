@@ -11,7 +11,7 @@ useSeoMeta({ robots: 'noindex, nofollow' })
   <main class="lang-gate">
     <BrandMark class="gate-mark is-off" />
     <p class="ph-eyebrow">ReClash · {{ error.statusCode }}</p>
-    <h1>{{ t('Страница недоступна', 'Page unavailable') }}</h1>
-    <p><a class="btn btn-primary btn-s" :href="pagePath(language)">{{ t('На главную', 'Back to home') }}</a></p>
+    <h1>{{ t('Страница недоступна', 'Page unavailable', '页面不可用') }}</h1>
+    <p><a class="btn btn-primary btn-s" :href="pagePath(language)">{{ t('На главную', 'Back to home', '返回首页') }}</a></p>
   </main>
 </template>

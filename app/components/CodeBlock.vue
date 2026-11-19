@@ -31,7 +31,7 @@ onBeforeUnmount(() => clearTimeout(timer))
       <button ref="button" class="btn btn-ghost btn-s copy-btn" :class="{ 'is-done': state === 'done' }" type="button" @click="copy">
         <svg class="ico-m cp" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9h10v10H9zM5 15V5h10" /></svg>
         <svg class="ico-m ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-        <span class="btn-label">{{ copyLabels?.[state] ?? (state === 'done' ? t('Скопировано', 'Copied') : state === 'failed' ? t('Не вышло', 'Could not copy') : t('Копировать', 'Copy')) }}</span>
+        <span class="btn-label">{{ copyLabels?.[state] ?? (state === 'done' ? t('Скопировано', 'Copied', '已复制') : state === 'failed' ? t('Не вышло', 'Could not copy', '复制失败') : t('Копировать', 'Copy', '复制')) }}</span>
       </button>
     </div>
     <pre><CodeLines :code="code" :lang="lang" :hint="label" /></pre>

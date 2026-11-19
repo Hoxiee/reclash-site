@@ -2,7 +2,7 @@
 import '~/assets/css/builder.css'
 
 const { title } = usePageMeta('builder')
-const { t } = useText()
+const { t } = useToolText()
 const ready = ref(false)
 </script>
 

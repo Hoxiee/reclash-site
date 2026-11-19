@@ -5,7 +5,7 @@ import { splitPath } from '~~/shared/provider/builder/document'
 import { issueText } from '~~/shared/provider/builder/validate'
 // A group of the manifest (a section, `provider.renew`, a card's `button`) or a single field.
 const props = defineProps<{ path: string, skip?: string[], flat?: boolean }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 const { manifest, get, set, issuesAt } = useBuilder()
 const entry = computed(() => entryFor(props.path))
 const node = computed(() => nodeAt(splitPath(props.path), manifest))

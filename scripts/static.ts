@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { languages, legacyPath, pagePath, privatePages, sitePages } from '../shared/site/routes'
+import { isTranslated, languages, legacyPath, pageLanguages, pagePath, privatePages, sitePages } from '../shared/site/routes'
 import { docLanguages, docPages, docPath, docRoutes } from '../shared/docs/catalogue'
 import { mockBody, mockConfig, mockConfigPath, mockHeaders, mockPath, mockProfiles, mockTransportHeaders } from '../shared/provider/mocks'
 import { mockPage, mockPagePath, mockPreview, mockPreviewPath } from '../shared/provider/mockpreview'
@@ -30,6 +30,11 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
   for (const language of languages) {
     redirects.push(`/${language}/gallery ${pagePath(language)} 301`, `/${language}/gallery.html ${pagePath(language)} 301`)
     for (const page of sitePages) {
+      if (!isTranslated(language, page.key)) {
+        // Documentation has its own fallback below; every other untranslated page sends visitors to English.
+        if (page.key !== 'docs') redirects.push(`/${language}/${page.key} ${pagePath('en', page.key)} 302`, `/${language}/${page.key}.html ${pagePath('en', page.key)} 302`)
+        continue
+      }
       const canonical = pagePath(language, page.key)
       const legacy = legacyPath(language, page.key)
       // A proxy preserves query/fragment state and avoids rendering home twice.
@@ -58,8 +63,9 @@ export async function writeStaticFiles(output: string, origin: string): Promise<
   const publicPages = sitePages.filter(page => !privatePages.includes(page.key))
   const entries = new Map<string, string>()
   for (const page of publicPages) {
-    const alternates = [...languages, 'x-default'].map(hreflang => `<xhtml:link rel="alternate" hreflang="${hreflang}" href="${origin}${pagePath(hreflang === 'x-default' ? 'en' : hreflang as typeof languages[number], page.key)}"/>`).join('')
-    for (const language of languages) entries.set(`${origin}${pagePath(language, page.key)}`, alternates)
+    const available = pageLanguages(page.key)
+    const alternates = [...available, 'x-default'].map(hreflang => `<xhtml:link rel="alternate" hreflang="${hreflang}" href="${origin}${pagePath(hreflang === 'x-default' ? 'en' : hreflang as typeof languages[number], page.key)}"/>`).join('')
+    for (const language of available) entries.set(`${origin}${pagePath(language, page.key)}`, alternates)
   }
   for (const path of docRoutes) if (!entries.has(`${origin}${path}`)) entries.set(`${origin}${path}`, '')
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${[...entries].map(([url, alternates]) => `  <url><loc>${url}</loc>${alternates}</url>`).join('\n')}\n</urlset>\n`

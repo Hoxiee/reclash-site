@@ -5,7 +5,7 @@ import { createCard } from '~~/shared/provider/builder/workbench'
 import { enumOptions, nodeAt, propertyOrder, resolve } from '~~/shared/provider/builder/schema'
 import { issueText } from '~~/shared/provider/builder/validate'
 // Cards above the dashboard widgets: add, remove, reorder; each card's fields follow its type's schema branch.
-const { language, t } = useText()
+const { language, t } = useToolText()
 const { manifest, get, set, issuesAt, reveal, expansion, warnings } = useBuilder()
 const rawCards = computed(() => (Array.isArray(get('cards')) ? get('cards') : []) as unknown[])
 const isCard = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value)

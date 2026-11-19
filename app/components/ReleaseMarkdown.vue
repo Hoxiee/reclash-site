@@ -5,9 +5,9 @@ import type { MdAlert, MdBlock } from '~~/shared/site/markdown'
 const props = withDefaults(defineProps<{ blocks: MdBlock[], level?: number }>(), { level: 4 })
 const { t } = useText()
 const tag = (depth: number) => `h${Math.min(6, props.level + Math.max(0, depth - 2))}`
-const alerts: Record<MdAlert, [string, string]> = {
-  note: ['Примечание', 'Note'], tip: ['Совет', 'Tip'], important: ['Важно', 'Important'],
-  warning: ['Внимание', 'Warning'], caution: ['Осторожно', 'Caution'],
+const alerts: Record<MdAlert, [string, string, string]> = {
+  note: ['Примечание', 'Note', '说明'], tip: ['Совет', 'Tip', '提示'], important: ['Важно', 'Important', '重要'],
+  warning: ['Внимание', 'Warning', '警告'], caution: ['Осторожно', 'Caution', '注意'],
 }
 </script>
 
@@ -23,7 +23,7 @@ const alerts: Record<MdAlert, [string, string]> = {
     <hr v-else-if="block.type === 'rule'" class="md-hr">
     <component :is="block.ordered ? 'ol' : 'ul'" v-else class="md-list" :start="block.ordered && block.start !== 1 ? block.start : undefined">
       <li v-for="(item, n) in block.items" :key="n" :class="{ 'md-task': item.checked !== undefined }">
-        <input v-if="item.checked !== undefined" type="checkbox" disabled :checked="item.checked" :aria-label="item.checked ? t('Готово', 'Done') : t('Не готово', 'Not done')">
+        <input v-if="item.checked !== undefined" type="checkbox" disabled :checked="item.checked" :aria-label="item.checked ? t('Готово', 'Done', '已完成') : t('Не готово', 'Not done', '未完成')">
         <ReleaseMarkdown :blocks="item.blocks" :level="level" />
       </li>
     </component>

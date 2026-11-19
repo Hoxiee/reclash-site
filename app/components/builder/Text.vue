@@ -4,7 +4,7 @@ import { splitPath } from '~~/shared/provider/builder/document'
 import { issueText } from '~~/shared/provider/builder/validate'
 // Localized text: one string, or a locale map (exact tag, then language, then en, then the first entry).
 const props = defineProps<{ path: string, multiline?: boolean, placeholder?: string }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 const { manifest, get, set, issuesAt } = useBuilder()
 const id = computed(() => fieldId(props.path))
 const limits = computed(() => textLimits(nodeAt(splitPath(props.path), manifest)))

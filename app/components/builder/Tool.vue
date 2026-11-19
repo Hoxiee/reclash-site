@@ -8,7 +8,7 @@ import { validateManifest, type Issue } from '~~/shared/provider/builder/validat
 import type { KernelResult, KernelView, ReclashKernel } from '~/composables/useBuilder'
 
 const emit = defineEmits<{ ready: [] }>()
-const { language, t } = useText()
+const { language, t } = useToolText()
 const route = useRoute()
 const router = useRouter()
 
